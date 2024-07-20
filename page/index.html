@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج إدخال البيانات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <form id="dataForm">
+        <label for="hijriDate">التاريخ (هجري):</label>
+        <input type="text" id="hijriDate" name="hijriDate" required>
+
+        <label for="weekday">اليوم (أسبوعي):</label>
+        <input type="text" id="weekday" name="weekday" required>
+
+        <label for="department">المناوبة/ الشعبة:</label>
+        <input type="text" id="department" name="department" required>
+
+        <label for="room">رقم الصالة:</label>
+        <input type="number" id="room" name="room" required>
+
+        <label for="name">الاسم:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="rank">الرتبة:</label>
+        <input type="text" id="rank" name="rank" required>
+
+        <label for="officerName">اسم ضابط الصالة:</label>
+        <input type="text" id="officerName" name="officerName" required>
+
+        <label for="officerRank">رتبة ضابط الصالة:</label>
+        <input type="text" id="officerRank" name="officerRank" required>
+
+        <button type="button" onclick="submitForm()">تنفيذ</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var today = new Date();
+        var options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        var formattedDate = today.toLocaleDateString('ar-SA', options).replace(/\d+/g, function(d) {
+            return ('0' + d).slice(-2);
+        }).replace(/\/(\d{2})\//g, '/$1/');
+        document.getElementById("hijriDate").value = toArabicNumbers(formattedDate);
+        document.getElementById("weekday").value = today.toLocaleDateString('ar-SA', { weekday: 'long' });
+    });
+
+    function toArabicNumbers(str) {
+        return str.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
+
+    function submitForm() {
+        const hijriDate = toArabicNumbers(document.getElementById('hijriDate').value);
+        const weekday = document.getElementById('weekday').value;
+        const department = document.getElementById('department').value;
+        const room = document.getElementById('room').value; // إزالة تحويل الأرقام إلى العربية
+        const name = document.getElementById('name').value;
+        const rank = document.getElementById('rank').value;
+        const officerName = document.getElementById('officerName').value;
+        const officerRank = document.getElementById('officerRank').value;
+
+        const url = `result.html?hijriDate=${encodeURIComponent(hijriDate)}&weekday=${encodeURIComponent(weekday)}&department=${encodeURIComponent(department)}&room=${encodeURIComponent(room)}&name=${encodeURIComponent(name)}&rank=${encodeURIComponent(rank)}&officerName=${encodeURIComponent(officerName)}&officerRank=${encodeURIComponent(officerRank)}`;
+
+        window.location.href = url;
+    }
+
+    document.querySelectorAll('input[type="text"]').forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = toArabicNumbers(this.value);
+        });
+    });
+</script>
+
+</body>
+</html>
