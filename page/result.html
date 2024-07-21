@@ -63,6 +63,7 @@
             width: 100%; /* عرض الجدول يكون بنسبة 100% */
             border-collapse: collapse; /* دمج حدود الجدول */
             margin-bottom: 20px;
+            font-size: 19px;
         }
         table, th, td {
             border: 1px solid #000; /* حدود الخلايا في الجدول */
@@ -81,14 +82,15 @@
             padding: 5px; /* إضافة padding */
         }
         .large-text {
-            font-size: 20px; /* تكبير النص */
+            font-size: 24px; /* تكبير النص */
             line-height: 1.6; /* تحسين تباعد الأسطر */
             padding: 5px; /* إضافة padding */
+            
         }
         .signature {
             margin-top: 20px; /* إضافة مساحة فوق التوقيع */
             text-align: left; /* محاذاة النص إلى اليسار */
-            font-size: 24px; /* تكبير النص */
+            font-size: 30px; /* تكبير النص */
             font-family: 'PT Bold Heading', Arial, sans-serif;
             font-weight: bold;
             padding: 5px; /* إضافة padding */
@@ -96,16 +98,19 @@
         .officer-details {
             text-align: left; /* محاذاة النص إلى اليسار */
             margin-left: 50px; /* إضافة هامش إلى اليسار */
-            font-size: 24px; /* تكبير النص */
+            font-size: 30px; /* تكبير النص */
             font-family: 'PT Bold Heading', Arial, sans-serif;
             font-weight: bold;
-            padding: 5px; /* إضافة padding */
+            padding: px; /* إضافة padding */
         }
         .signature p {
             margin: 0; /* إزالة المسافات حول الفقرة */
         }
         #officerRank {
-            margin-left: 150px;
+            margin-left: 200px;
+        }
+        #officerName{
+            margin-left: -20px;
         }
         .footer {
             margin-top: 20px; /* إضافة مساحة فوق التذييل */
@@ -114,6 +119,8 @@
         .inline {
             display: inline-block;
             vertical-align: middle;
+            font-size: 26px;
+
         }
         .bottom-info {
             margin-top: 20px;
@@ -135,6 +142,7 @@
             display: inline-block;
             width: 10px; /* تعديل عرض المسافة حسب الحاجة */
         }
+       
     </style>
 </head>
 <body>
@@ -169,7 +177,7 @@
             <!-- نص الرسالة -->
             <div>
                 <p class="bold-text inline">سعادة مدير جوازات مطار الملك خالد الدولي</p>
-                <p class="bold-text inline" style="margin-right: 120px;">الموقر</p>
+                <p class="bold-text inline" style="margin-right: 150px;">الموقر</p>
             </div>
             <div class="large-text">
                 <p>السلام عليكم ورحمة الله وبركاته:</p>
@@ -190,8 +198,8 @@
     </div>
     <!-- قسم التذييل يحتوي على معلومات إضافية -->
     <div class="footer bottom-info">
-        <p>الرقم:</p>
-        <p>التاريخ:<span id="date3"></span></p>
+        <p>الرقم: <span id="outgoingNumber"></span></p>
+        <p>التاريخ: <span id="date3"></span></p>
         <p class="left">المرفقات:</p>
     </div>
 </div>
@@ -222,12 +230,14 @@
     const weekday = getParameterByName('weekday');
     const officerName = getParameterByName('officerName');
     const officerRank = getParameterByName('officerRank');
+    const outgoingNumber = toArabicNumbers(getParameterByName('outgoingNumber'));
 
     document.getElementById('hijriDate').textContent = hijriDate;
     document.getElementById('weekday').textContent = weekday;
     document.getElementById('date3').textContent = hijriDate;
     document.getElementById('officerName').textContent = officerName;
     document.getElementById('officerRank').textContent = officerRank;
+    document.getElementById('outgoingNumber').textContent = outgoingNumber;
 </script>
 
 </body>
