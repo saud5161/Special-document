@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>محضر غياب</title>
+    <!-- إضافة رابط خط Noto Kufi Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@700&display=swap" rel="stylesheet">
     <style>
         @font-face {
             font-family: 'PT Bold Heading';
@@ -57,7 +59,7 @@
         }
         h2 {
             text-align: center; /* محاذاة عنوان "محضر غياب" في المنتصف */
-            text-decoration: underline; /* إضافة خط تحت العنوان */
+            text-decoration: none; /* إزالة الخط تحت العنوان */
         }
         table {
             width: 100%; /* عرض الجدول يكون بنسبة 100% */
@@ -80,6 +82,11 @@
             font-size: 24px; /* تكبير النص وجعله عريضًا */
             font-family: 'PT Bold Heading', Arial, sans-serif;
             padding: 5px; /* إضافة padding */
+        }
+        .bold-heading {
+            font-family: 'Almarai', sans-serif;
+            font-weight: bold;
+            font-size: 24px; /* حجم الخط */
         }
         .large-text {
             font-size: 24px; /* تكبير النص */
@@ -104,7 +111,7 @@
             font-size: 30px; /* تكبير النص */
             font-family: 'PT Bold Heading', Arial, sans-serif;
             font-weight: bold;
-            padding: px; /* إضافة padding */
+            padding: 0; /* إزالة padding */
         }
         .signature p {
             margin: 0; /* إزالة المسافات حول الفقرة */
@@ -157,7 +164,7 @@
     <!-- قسم المحتوى يحتوي على الإطار الرئيسي -->
     <div class="container">
         <div class="content">
-            <h2>محضر غياب</h2>
+            <h2>( محضر غياب )</h2>
             <!-- جدول يحتوي على المعلومات -->
             <table>
                 <thead>
@@ -177,13 +184,13 @@
             </table>
             <!-- نص الرسالة -->
             <div>
-                <p class="bold-text inline">سعادة مدير جوازات مطار الملك خالد الدولي</p>
-                <p class="bold-text inline" style="margin-right: 90px;">الموقر</p>
+                <p class="bold-heading inline">سعادة مدير جوازات مطار الملك خالد الدولي</p>
+                <p class="bold-heading inline" style="margin-right: 90px;">الموقر</p>
             </div>
             <div class="large-text">
                 <p>السلام عليكم ورحمة الله وبركاته:</p>
                 <p>نفيد سعادتكم بأن الفرد الموضح بياناته أعلاه تغيب عن العمل لهذا اليوم (
-                <span id="weekday"></span> ) <span class="spacer"></span>الموافق (
+                <span id="weekday"></span> ) <span class=""></span>الموافق (
                 <span id="hijriDate"></span> ) بدون إذن مسبق.</p>
                 <p>بأمل اطلاع سعادتكم والإحاطة. والسلام عليكم،،،،</p>
             </div>
