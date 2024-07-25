@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1400px;
+        }
+        .form-header {
+            text-align: center;
+            color: red;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            width: 32%;
+        }
+        .form-group label {
+            width: 40%;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .form-group input, .form-group select {
+            width: 58%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            display: inline-block;
+            font-size: 0.9em;
+        }
+        .form-group input[type="date"] {
+            padding-right: 10px;
+        }
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .form-footer button {
+            padding: 10px 20px;
+            background-color: green;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-footer button:hover {
+            background-color: darkgreen;
+        }
+        .form-trio {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .icon {
+            margin-left: 5px;
+            color: #555;
+        }
+        .form-group span {
+            color: red;
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        input[type="date"]::before {
+            content: attr(placeholder);
+            width: 100%;
+            color: #aaa;
+        }
+        input[type="date"]:focus::before,
+        input[type="date"]:valid::before {
+            display: none;
+        }
+        .editable-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background: transparent;
+            border: none;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h2>يرجى تعبئة الخانات و سيتم ادراجها بالحطاب تلقائيًا</h2>
+            <h3>الممنوعين والمطلوبين</h3>
+        </div>
+        <form id="main-form">
+            <div class="form-trio">
+                <div class="form-group">
+                    <span>1</span>
+                    <label for="boundary-number">رقم الحدود / رقم الهوية / رقم الاقامة <i class="fas fa-id-card icon"></i></label>
+                    <input type="text" id="boundary-number" name="boundary-number">
+                </div>
+                <div class="form-group">
+                    <span>2</span>
+                    <label for="name">اسم المسافر <i class="fas fa-user icon"></i></label>
+                    <input type="text" id="name" name="name">
+                </div>
+                <div class="form-group">
+                    <span>3</span>
+                    <label for="nationality">الجنسية <i class="fas fa-flag icon"></i></label>
+                    <input type="text" id="nationality" name="nationality">
+                </div>
+            </div>
+            <div class="form-trio">
+                <div class="form-group">
+                    <span>4</span>
+                    <label for="passport-number">رقم الجواز <i class="fas fa-passport icon"></i></label>
+                    <input type="text" id="passport-number" name="passport-number">
+                </div>
+                <div class="form-group">
+                    <span>5</span>
+                    <label for="issue-date">تاريخ الاصدار <i class="fas fa-calendar-alt icon"></i></label>
+                    <input type="date" id="issue-date" name="issue-date" placeholder="يوم/شهر/سنة">
+                </div>
+                <div class="form-group">
+                    <span>6</span>
+                    <label for="passport-source">مصدر الجواز <i class="fas fa-building icon"></i></label>
+                    <input type="text" id="passport-source" name="passport-source">
+                </div>
+            </div>
+            <div class="form-trio">
+                <div class="form-group">
+                    <span>7</span>
+                    <label for="place-of-birth">مكان الميلاد <i class="fas fa-map-marker-alt icon"></i></label>
+                    <input type="text" id="place-of-birth" name="place-of-birth">
+                </div>
+                <div class="form-group">
+                    <span>8</span>
+                    <label for="birth-date">تاريخ الميلاد <i class="fas fa-calendar icon"></i></label>
+                    <input type="date" id="birth-date" name="birth-date" placeholder="يوم/شهر/سنة">
+                </div>
+                <div class="form-group">
+                    <span>9</span>
+                    <label for="action-type">الإجراء المطلوب <i class="fas fa-tasks icon"></i></label>
+                    <input list="action-type-options" id="action-type" name="action-type" class="editable-select">
+                    <datalist id="action-type-options">
+                        <option value="Option 1">
+                        <option value="Option 2">
+                        <option value="Option 3">
+                    </datalist>
+                </div>
+            </div>
+            <div class="form-trio">
+                <div class="form-group">
+                    <span>10</span>
+                    <label for="officer-name">اسم الضابط <i class="fas fa-user-tie icon"></i></label>
+                    <input list="officer-name-options" id="officer-name" name="officer-name" class="editable-select">
+                    <datalist id="officer-name-options">
+                        <option value="Officer 1">
+                        <option value="Officer 2">
+                        <option value="Officer 3">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <span>11</span>
+                    <label for="rank">الرتبة <i class="fas fa-medal icon"></i></label>
+                    <input list="rank-options" id="rank" name="rank" class="editable-select">
+                    <datalist id="rank-options">
+                        <option value="Rank 1">
+                        <option value="Rank 2">
+                        <option value="Rank 3">
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <span>12</span>
+                    <label for="list-included">مدرج على قائمة <i class="fas fa-list icon"></i></label>
+                    <input list="list-included-options" id="list-included" name="list-included" class="editable-select">
+                    <datalist id="list-included-options">
+                        <option value="List 1">
+                        <option value="List 2">
+                        <option value="List 3">
+                    </datalist>
+                </div>
+            </div>
+            <div class="form-trio">
+                <div class="form-group">
+                    <span>13</span>
+                    <label for="registration-number">رقم السجل أو التعميم <i class="fas fa-file-alt icon"></i></label>
+                    <input type="text" id="registration-number" name="registration-number">
+                </div>
+                <div class="form-group">
+                    <span>14</span>
+                    <label for="command-number">رقم الأمر <i class="fas fa-hashtag icon"></i></label>
+                    <input type="text" id="command-number" name="command-number">
+                </div>
+                <div class="form-group">
+                    <span>15</span>
+                    <label for="command-date">تاريخ الأمر <i class="fas fa-calendar-check icon"></i></label>
+                    <input type="date" id="command-date" name="command-date" placeholder="يوم/شهر/سنة">
+                </div>
+            </div>
+            <div class="form-trio">
+                <div class="form-group">
+                    <span>16</span>
+                    <label for="command-body">جهة الأمر <i class="fas fa-building icon"></i></label>
+                    <input type="text" id="command-body" name="command-body">
+                </div>
+                <div class="form-group">
+                    <span>17</span>
+                    <label for="shift">مناوبة <i class="fas fa-clock icon"></i></label>
+                    <select id="shift" name="shift" class="editable-select">
+                        <option value="">اختر</option>
+                        <!-- Add options here -->
+                        <option value="Shift 1">Shift 1</option>
+                        <option value="Shift 2">Shift 2</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <span>18</span>
+                    <label for="source-number">رقم الصادر <i class="fas fa-file-invoice icon"></i></label>
+                    <input type="text" id="source-number" name="source-number">
+                </div>
+            </div>
+            <div class="form-trio">
+                <div class="form-group">
+                    <span>19</span>
+                    <label for="hijri-date">تاريخ اليوم بالهجري أم القرى <i class="fas fa-calendar-alt icon"></i></label>
+                    <input type="text" id="hijri-date" name="hijri-date" placeholder="يوم/شهر/سنة">
+                </div>
+            </div>
+            <div class="form-footer">
+                <button type="submit">موافق</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        document.getElementById('main-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var data = new FormData(event.target);
+            var params = new URLSearchParams();
+            data.forEach(function(value, key) {
+                params.append(key, value);
+            });
+            window.location.href = 'result.html?' + params.toString();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محضر غياب</title>
+    <!-- إضافة رابط خط Noto Kufi Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@700&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'PT Bold Heading';
+            src: url('path-to-PT-Bold-Heading.ttf') format('truetype');
+        }
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl; /* لضبط اتجاه النص من اليمين لليسار */
+            text-align: right;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            height: 100vh; /* تأكد من أن الصفحة تأخذ كامل الارتفاع */
+            display: flex;
+            align-items: flex-start; /* محاذاة المحتوى إلى الأعلى */
+        }
+        @page {
+            size: A4; /* تحديد حجم الصفحة لتكون A4 */
+            margin: 0;
+        }
+        .page {
+            width: 180mm; /* تعديل عرض الصفحة لتقليل الحواف */
+            height: 297mm; /* ارتفاع الصفحة A4 */
+            margin: auto;
+            padding: 0; /* إزالة الهوامش الداخلية */
+            position: relative;
+            box-sizing: border-box;
+        }
+        .header {
+            text-align: center; /* محاذاة الصورة في المنتصف */
+            position: relative;
+            margin-bottom: 10px;
+        }
+        .header img {
+            width: 70%; /* عرض الصورة يكون بنسبة 70% */
+            max-width: 550px; /* أقصى عرض للصورة */
+            margin-left: 200px;
+            position: relative;
+            top: -20px; /* رفع الصورة لتكون خارج الإطار */
+        }
+        .container {
+            border: 2px solid #024928; /* إضافة حدود سوداء للإطار */
+            padding: 6mm; /* حواف داخلية للإطار */
+            margin-top: -30px; /* رفع الإطار ليكون قريبًا من الصورة */
+            background-color: #f9f9f9; /* خلفية الإطار */
+            border-radius: 16px;
+        }
+        .content {
+            margin-top: 20px; /* إضافة مساحة فوق المحتوى */
+            margin-bottom: 220px; /* تعديل المسافة أسفل المحتوى */
+        }
+        table {
+            width: 100%; /* عرض الجدول يكون بنسبة 100% */
+            border-collapse: collapse; /* دمج حدود الجدول */
+            margin-bottom: 20px;
+            font-size: 14px; /* تصغير حجم الخط */
+            margin-top: -20px; /* تعديل المسافة العلوية للجدول */
+            background-color: #fff; /* جعل خلفية الجدول بيضاء */
+        }
+        table, th, td {
+            border: 1px solid #000; /* حدود الخلايا في الجدول */
+        }
+        th, td {
+            padding: 10px;
+            text-align: center; /* محاذاة النص في الخلايا في المنتصف */
+        }
+        .bold-text {
+            font-weight: bold;
+            font-size: 24px; /* تكبير النص وجعله عريضًا */
+            font-family: 'PT Bold Heading', Arial, sans-serif;
+            padding: 5px; /* إضافة padding */
+        }
+        .bold-heading {
+            font-family: 'Almarai', sans-serif;
+            font-weight: bold;
+            font-size: 24px; /* حجم الخط */
+        }
+        .large-text {
+            font-size: 24px; /* تكبير النص */
+            line-height: 1.6; /* تحسين تباعد الأسطر */
+            padding: 5px; /* إضافة padding */
+            margin-top: -10px; /* تقليل المسافة فوق النص */
+        }
+        .large-text p {
+            margin: 5px 0; /* تقليل المسافات حول الفقرات */
+        }
+        .signature {
+            margin-top: 20px; /* إضافة مساحة فوق التوقيع */
+            text-align: left; /* محاذاة النص إلى اليسار */
+            font-size: 28px; /* تكبير النص */
+            font-family: 'PT Bold Heading', Arial, sans-serif;
+            font-weight: bold;
+            padding: 5px; /* إضافة padding */
+        }
+        .officer-details {
+            text-align: left; /* محاذاة النص إلى اليسار */
+            font-size: 22px; /* تصغير حجم الخط */
+            font-family: 'PT Bold Heading', Arial, sans-serif;
+            font-weight: bold;
+            padding: 0; /* إزالة padding */
+            margin-left: 0; /* إزالة الهامش الأيسر */
+        }
+        .officer-details p {
+            margin: 0; /* إزالة المسافات حول الفقرة */
+        }
+        .officer-details .title {
+            text-align: left; /* محاذاة النص إلى اليسار */
+        }
+        .officer-details .rank {
+            text-align: left; /* محاذاة النص إلى اليسار */
+            margin-right: 0; /* إزالة الهامش الأيمن */
+            margin-left: 300px; /* إضافة الهامش الأيسر */
+        }
+        #officerName {
+            text-align: left; /* محاذاة النص إلى اليسار */
+            margin-left: 40px; /* إضافة الهامش الأيسر */
+        }
+        .footer {
+            margin-top: 20px; /* إضافة مساحة فوق التذييل */
+            text-align: center; /* محاذاة النص في المنتصف */
+        }
+        .inline {
+            display: inline-block;
+            vertical-align: middle;
+            font-size: 28px;
+        }
+        .bottom-info {
+            margin-top: 20px;
+            font-size: 18px; /* تكبير النص */
+            text-align: center; /* محاذاة النص في المنتصف */
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        .bottom-info p {
+            margin: 0;
+            padding: 0 10px; /* إضافة مساحة بين الكلمات */
+            display: inline-block;
+        }
+        .bottom-info .left {
+            margin-left: 50px; /* تعديل المسافة للمرفقات */
+        }
+        .spacer {
+            display: inline-block;
+            width: 10px; /* تعديل عرض المسافة حسب الحاجة */
+        }
+        .receiver-info {
+            text-align: right; /* محاذاة النص إلى اليمين */
+            font-size: 18px; /* حجم الخط */
+            font-family: 'PT Bold Heading', Arial, sans-serif;
+            padding: 5px; /* إضافة padding */
+            position: absolute;
+            bottom: 100px;
+            right: 10px;
+        }
+        .receiver-info p {
+            margin: 0; /* إزالة المسافات حول الفقرة */
+        }
+        .receiver-info .label {
+            font-size: 16px;
+            display: inline-block;
+            width: 80px; /* عرض ثابت للعناصر */
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- قسم الرأس يحتوي على الشعار -->
+    <div class="header">
+        <img src="image.png" alt="شعار">
+    </div>
+
+    <!-- قسم المحتوى يحتوي على الإطار الرئيسي -->
+    <div class="container">
+        <div class="content">
+            <!-- جدول يحتوي على المعلومات -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>الاسم</th>
+                        <th>الجنسية</th>
+                        <th>رقم السجل المدني ــ الإقامة ــ رقم الحدود</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="name"></td>
+                        <td id="nationality"></td>
+                        <td id="idNumber"></td>
+                    </tr>
+                    <tr>
+                        <th>مكان الميلاد</th>
+                        <th>تاريخ الميلاد</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td id="birthPlace"></td>
+                        <td id="birthDate"></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الجواز</th>
+                        <th>تاريخه</th>
+                        <th>مصدره</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="passportNumber"></td>
+                        <td id="passportDate"></td>
+                        <td id="passportSource"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- نص الرسالة -->
+            <div class="mangar-top" >
+                <p class="bold-heading inline">سعادة مدير جوازات مطار الملك خالد الدولي</p>
+                <p class="bold-heading inline" style="margin-right: 90px;">الموقر</p>
+            </div>
+            <div class="large-text">
+                <p>السلام عليكم ورحمة الله وبركاته:</p>
+                <p>نفيدكم أنه بتاريخ <span id="hijriDate"></span> هــ راجعنا الموضح بياناته بعالية بقصد السفر إلى <span id="destination"></span> علــــــى رحـلـــــة الخطوط رقم <span id="flightNumber"></span> . وعند الشروع في إنهاء إجراءات مغادرته بالحاسب الآلي أتضح أنه مدرجا على قائمة <span id="listName"></span> بالسجل رقم <span id="recordNumber"></span> والأمر رقم <span id="orderNumber"></span> وتاريخ <span id="orderDate"></span> هـ والسلطة <span id="authority"></span> والإجــــــــــــراء المطلوب ( <span id="requiredAction"></span> ) .</p>
+                <p>لذا نأمل استلامه وإكمال اللازم حسب الاختصاص. وبرفقة ( شرائح الحاسب الآلي وأصل وثيقة السفر ) والسلام عليكم،،،،</p>
+            </div>
+            <!-- توقيع -->
+            <div class="signature">
+                <div class="officer-details">
+                    <p class="title">مـديـر جــوازات مـطار المـلك خــالـد الدولي</p>
+                    <p class="rank">عقيد /</p>
+                    <p id="officerName">عــائــض بـن عــلــي الـقــحــطانــي</p>
+                </div>
+            </div>
+        </div>
+        <!-- قسم معلومات المستلم -->
+        <div class="receiver-info">
+            <p>المستلم من إدارة مطار الملك خالد الدولي /</p>
+            <p><span class="label">الاسم :</span></p>
+            <p><span class="label">الرتبة :</span></p>
+            <p><span class="label">التاريخ :</span></p>
+            <p><span class="label">التوقيع :</span></p>
+            <p><span class="label">الوقت :</span></p>
+        </div>
+    </div>
+    <!-- قسم التذييل يحتوي على معلومات إضافية -->
+    <div class="footer bottom-info">
+        <p>الرقم: <span id="outgoingNumber"></span></p>
+        <p>التاريخ: <span id="date3"></span></p>
+        <p class="left">المشفوعات:</p>
+    </div>
+</div>
+
+<script>
+    // دالة للحصول على القيم من URL
+    function getParameterByName(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+
+    // تحويل الأرقام الإنجليزية إلى أرقام عربية
+    function toArabicNumbers(str) {
+        return str.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
+
+    // تعبئة البيانات في الصفحة من URL
+    document.getElementById('name').textContent = getParameterByName('name');
+    document.getElementById('nationality').textContent = getParameterByName('nationality');
+    document.getElementById('idNumber').textContent = toArabicNumbers(getParameterByName('idNumber'));
+    document.getElementById('birthPlace').textContent = getParameterByName('birthPlace');
+    document.getElementById('birthDate').textContent = toArabicNumbers(getParameterByName('birthDate'));
+    document.getElementById('passportNumber').textContent = toArabicNumbers(getParameterByName('passportNumber'));
+    document.getElementById('passportDate').textContent = toArabicNumbers(getParameterByName('passportDate'));
+    document.getElementById('passportSource').textContent = getParameterByName('passportSource');
+
+    const hijriDate = toArabicNumbers(getParameterByName('hijriDate'));
+    const weekday = getParameterByName('weekday');
+    const officerName = getParameterByName('officerName');
+    const officerRank = getParameterByName('officerRank');
+    const outgoingNumber = toArabicNumbers(getParameterByName('outgoingNumber'));
+    const destination = getParameterByName('destination');
+    const flightNumber = toArabicNumbers(getParameterByName('flightNumber'));
+    const listName = getParameterByName('listName');
+    const recordNumber = toArabicNumbers(getParameterByName('recordNumber'));
+    const orderNumber = toArabicNumbers(getParameterByName('orderNumber'));
+    const orderDate = toArabicNumbers(getParameterByName('orderDate'));
+    const authority = getParameterByName('authority');
+    const requiredAction = getParameterByName('requiredAction');
+
+    document.getElementById('hijriDate').textContent = hijriDate;
+    document.getElementById('weekday').textContent = weekday;
+    document.getElementById('date3').textContent = hijriDate;
+    document.getElementById('officerName').textContent = officerName;
+    document.getElementById('officerRank').textContent = officerRank;
+    document.getElementById('outgoingNumber').textContent = outgoingNumber;
+    document.getElementById('destination').textContent = destination;
+    document.getElementById('flightNumber').textContent = flightNumber;
+    document.getElementById('listName').textContent = listName;
+    document.getElementById('recordNumber').textContent = recordNumber;
+    document.getElementById('orderNumber').textContent = orderNumber;
+    document.getElementById('orderDate').textContent = orderDate;
+    document.getElementById('authority').textContent = authority;
+    document.getElementById('requiredAction').textContent = requiredAction;
+</script>
+
+</body>
+</html>
