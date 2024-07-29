@@ -723,4 +723,32 @@ a {
         padding: 0px -200px;
         display: flex;
     }
+    .box {
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 1px;
+        padding: 2px;
+        text-align: center;
+        width: 80%; /* تقليل عرض المربعات */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, border 0.3s;
+        position: relative;
+        
+        margin: 0 10px; /* إضافة الهامش بين المربعات */
+    }
+    
+    .box:hover {
+        transform: scale(1.05);
+        border: 2px solid #01250e;
+    }
+    
+    .box i {
+        color: #01250e;
+        margin-bottom: 1px;
+    }
+    
+    
+    .box p {
+        font-size: 18px;
+        color: #01250e;
+    }
 }
