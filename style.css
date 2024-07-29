@@ -74,16 +74,16 @@ a {
 .container {
     display: flex;
     max-width: 100%;
-    margin: 10px auto 0 auto; /* تعديل الهوامش لتكون متناسبة */
+    margin: 10px auto 0 auto;
     background-color: #ffffff;
     border: 1px solid #ccc;
     padding-right: 3px;
     position: relative;
-    box-sizing: border-box; /* تضمين الحواف والحدود ضمن العرض */
+    box-sizing: border-box;
 }
 
 .sidebar {
-    width: 300px; /* إعادة العرض إلى القيمة السابقة */
+    width: 300px;
     background-color: #01250e;
     padding: 10px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -97,7 +97,7 @@ a {
 }
 
 .sidebar ul li i {
-    font-size: 25px; /* تقليل حجم الأيقونات */
+    font-size: 40px;
 }
 
 .sidebar.hidden {
@@ -110,7 +110,7 @@ a {
 }
 
 .sidebar li {
-    padding: 8px 5px; /* تقليل الحشو */
+    padding: 8px 5px;
     border-bottom: 1px solid #ddd;
     display: flex;
     align-items: center;
@@ -153,12 +153,12 @@ a {
 .sidebar li a {
     color: rgb(255, 255, 255);
     flex-grow: 1;
-    font-size: 14px; /* تقليل حجم النص */
+    font-size: 14px;
 }
 
 .sidebar li i {
     margin-left: 10px;
-    font-size: 25px; /* تقليل حجم الأيقونات */
+    font-size: 25px;
     color: white;
 }
 
@@ -188,13 +188,14 @@ a {
 .content {
     flex: 1;
     padding: 20px;
-    margin-right: 300px; /* تعديل الهامش ليكون متناسب مع عرض الشريط الجانبي */
+    margin-right: 300px;
     transition: margin-right 0.3s, width 0.3s;
-    box-sizing: border-box; /* تضمين الحواف والحدود ضمن العرض */
+    box-sizing: border-box;
 }
 
+
 .content h2 {
-    background-color: #003f0d;
+    background-color: #66a373;
     color: rgb(255, 255, 255);
     padding: 10px;
     border-radius: 5px;
@@ -204,6 +205,18 @@ a {
     font-size: 30px;
     font-weight: bold;
 }
+.content-section h2 {
+    background-color: #115006; /* لون الخلفية لتمييز العنوان */
+    color: #f7f7f7; /* لون النص */
+    padding: 15px; /* تباعد حول النص */
+    text-align: center; /* النص في المنتصف */
+    margin: 20px auto; /* مسافة حول العنوان */
+    font-size: 24px; /* حجم الخط */
+    font-weight: bold; /* خط عريض */
+    position: relative; /* لوضع العناصر النسبية */
+    
+}
+
 
 .button-grid {
     display: flex;
@@ -250,9 +263,9 @@ a {
 
 .button-grid .button .description h3 {
     font-size: 20px;
-    color: #162a4e;
+    color: #000000;
     font-weight: bold;
-    background-color: #dee4dd;
+    background-color: #c4e4be;
     border-radius: 10px 10px;
 }
 
@@ -263,7 +276,7 @@ a {
 .button-grid .button .button-container {
     display: flex;
     gap: 5px;
-    width: 100%;
+    width: 80%;
     justify-content: space-between;
     margin-top: auto;
     flex-wrap: wrap;
@@ -272,8 +285,8 @@ a {
 .button-grid .button a {
     flex: 1;
     padding: 3px 1px;
-    background-color: #004b0c;
-    color: white;
+    background-color: #96bea6;
+    color: rgb(3, 0, 0);
     border: none;
     border-radius: 5px;
     text-align: center;
@@ -281,9 +294,10 @@ a {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+    font-size: 13px;
     transition: background-color 0.3s, box-shadow 0.3s;
 }
+
 
 #date {
     font-family: 'Amiri', serif;
@@ -311,6 +325,12 @@ a {
     color: #007bff;
 }
 
+
+
+
+
+
+
 .content-section {
     background-color: #f0f0f0;
     margin-bottom: 20px;
@@ -318,6 +338,7 @@ a {
     border-radius: 5px;
     scroll-margin-top: 80px;
     border: 1px solid #ccc;
+    
 }
 
 .icon-top-con {
@@ -329,6 +350,117 @@ a {
     width: 100%;
     margin-bottom: -20px;
 }
+
+/* تنسيق المربعات المتحركة */
+.slider-container {
+    width: calc(100% - 300px); /* لضمان أن الحاوية لا تختفي خلف الشريط الجانبي */
+    overflow: hidden;
+    background-image:url(img/ARB.jpg);
+    background-size: cover;
+    position: relative;
+    margin-top: 70px; /* للتأكد من أن الشريط العلوي لا يغطي المحتوى */
+    padding: 10px 0 10px 0; /* تقليل padding في الأسفل */
+    margin-right: 300px; /* لضمان أن الحاوية لا تختفي خلف الشريط الجانبي */
+}
+
+.slider {
+    display: flex;
+    transition: transform 1s ease-in-out; /* للتحكم في حركة الانزلاق */
+}
+
+.slide {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.box {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    width: 15%; /* تقليل عرض المربعات */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, border 0.3s;
+    position: relative;
+    
+    margin: 0 10px; /* إضافة الهامش بين المربعات */
+}
+
+.box:hover {
+    transform: scale(1.05);
+    border: 2px solid #01250e;
+}
+
+.box i {
+    color: #01250e;
+    margin-bottom: 1px;
+}
+
+
+.box p {
+    font-size: 18px;
+    color: #01250e;
+}
+
+/* أزرار التحريك */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    margin-top: -22px;
+    padding: 16px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    border-radius: 0 3px 3px 0;
+    user-select: none;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 1100; /* للتأكد من أن الأزرار تكون فوق الشريط الجانبي */
+}
+
+.next {
+    right: 20px; /* تعديل الموضع الأيمن للأزرار */
+    border-radius: 3px 0 0 3px;
+}
+
+.prev {
+    left: 20px; /* تعديل الموضع الأيسر للأزرار */
+    border-radius: 3px 3px 0 0;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+
+/* تأثير الحركة */
+@keyframes slide {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(-100%);
+    }
+}
+
+.slider-header {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    background-color: #f3f0f0;
+    border-radius: 15px;
+    padding: 10px;
+    position: absolute;
+    top: -30px;
+    right: 50%;
+    transform: translateX(50%);
+    color: #004c1a;
+}
+
+
 
 @media (max-width: 768px) {
     .top-bar {
@@ -388,7 +520,7 @@ a {
         height: auto;
         display: block;
         position: fixed;
-        top: 50px; /* تعديل المسافة من الأعلى لتكون أسفل الشريط العلوي قليلاً */
+        top: 50px;
         right: 0;
         padding: 10px;
         background-color: #01250e;
@@ -399,12 +531,12 @@ a {
     }
 
     .sidebar li {
-        padding: 8px 5px; /* تقليل الحشو */
-        font-size: 12px; /* تقليل حجم النص */
+        padding: 8px 5px;
+        font-size: 12px;
     }
 
     .sidebar li i {
-        font-size: 20px; /* تقليل حجم الأيقونات */
+        font-size: 20px;
         margin-left: 5px;
     }
 
@@ -412,7 +544,7 @@ a {
         color: rgb(255, 255, 255);
         flex-grow: 1;
         justify-content: center;
-        font-size: 12px; /* تقليل حجم النص */
+        font-size: 12px;
     }
 
     .toggle-sidebar {
@@ -424,7 +556,7 @@ a {
     }
 
     .toggle-sidebar .fas.fa-bars {
-        display: none; /* إخفاء أيقونة الفتح في الأجهزة المحمولة */
+        display: none;
     }
 
     .content {
@@ -459,6 +591,26 @@ a {
         font-size: 1px;
         margin-right: 0;
     }
+
+    .slider-container {
+        width: calc(100% - 80px);
+        margin-right: 80px;
+        padding: 10px 0 10px 0;
+    }
+
+    .box {
+        width: 45%;
+    }
+
+    .prev, .next {
+        right: 10px;
+        left: 10px;
+    }
+
+    .prev {
+        padding: 10px; /* تعديل حجم الزر */
+        font-size: 14px; /* تعديل حجم النص */
+    }
 }
 
 @media (max-width: 480px) {
@@ -478,22 +630,22 @@ a {
     }
 
     .toggle-sidebar .fas.fa-bars {
-        display: none; /* إخفاء أيقونة الفتح في الأجهزة المحمولة */
+        display: none;
     }
 
     .sidebar {
         width: 80px;
         height: auto;
-        margin-top: 50px; /* تعديل المسافة من الأعلى لتكون أسفل الشريط العلوي قليلاً */
+        margin-top: 50px;
     }
 
     .sidebar li {
-        padding: 8px 5px; /* تقليل الحشو */
-        font-size: 12px; /* تقليل حجم النص */
+        padding: 8px 5px;
+        font-size: 12px;
     }
 
     .sidebar li i {
-        font-size: 20px; /* تقليل حجم الأيقونات */
+        font-size: 12px; /* تقليل حجم الأيقونات */
         margin-left: 5px;
     }
 
@@ -514,7 +666,7 @@ a {
     }
 
     .sidebar ul li i {
-        font-size: 20px;
+        font-size: 12px; /* تقليل حجم الأيقونات */
     }
 
     #date {
@@ -530,5 +682,45 @@ a {
 
     .TOP-KILED {
         font-size: 0px;
+    }
+
+    .slider-container {
+        width: calc(100% - 80px);
+        margin-right: 80px;
+        padding: 10px 0 10px 0;
+        margin-top: -10px;
+    }
+
+    .box {
+        width: 90%;
+    }
+
+    .prev, .next {
+        right: 5px;
+        left: 5px;
+    }
+
+    .prev {
+        padding: 15px; /* تعديل حجم الزر ليصبح صغير جداً */
+        font-size: 11px; /* تعديل حجم النص ليصبح صغير جداً */
+        margin-left: 300px;
+        margin-right: 20px;
+    }
+
+    .next {
+        padding: 15px; /* تعديل حجم الزر ليصبح صغير جداً */
+        font-size: 11px; /* تعديل حجم النص ليصبح صغير جداً */
+      
+        margin-right: 300px;
+        
+        
+
+    }
+    .slide{
+    margin-top: 15px;
+    }
+    .slide a{
+        padding: 0px -200px;
+        display: flex;
     }
 }
