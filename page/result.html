@@ -117,10 +117,10 @@
             margin: 0; /* إزالة المسافات حول الفقرة */
         }
         #officerRank {
-            margin-left: 200px;
+            margin-left: 220px;
         }
         #officerName{
-            margin-left: -20px;
+            margin-left: 27px;
         }
         .footer {
             margin-top: 20px; /* إضافة مساحة فوق التذييل */
@@ -177,27 +177,27 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td id="name"></td>
-                        <td id="rank"></td>
-                        <td><span id="department"></span> سفر (<span id="room"></span>)</td>
+                        <td id="name" contenteditable="true"></td>
+                        <td id="rank" contenteditable="true"></td>
+                        <td contenteditable="true"><span id="department"></span> سفر (<span id="room"></span>)</td>
                     </tr>
                 </tbody>
             </table>
             <!-- نص الرسالة -->
-            <div class="mangar-top" >
+            <div class="mangar-top" contenteditable="true">
                 <p class="bold-heading inline">سعادة مدير جوازات مطار الملك خالد الدولي</p>
                 <p class="bold-heading inline" style="margin-right: 90px;">الموقر</p>
             </div>
-            <div class="large-text">
+            <div class="large-text" contenteditable="true">
                 <p>السلام عليكم ورحمة الله وبركاته:</p>
-                <p>نفيد سعادتكم بأن الفرد الموضح بياناته أعلاه تغيب عن العمل لهذا اليوم (
-                <span id="weekday"></span> ) <span class=""></span>الموافق (
-                <span id="hijriDate"></span> ) بدون إذن مسبق.</p>
+                <p id="absenceParagraph">نفيد سعادتكم بأن المجندة الموضح بياناتها أعلاه تغيبت عن العمل لهذا اليوم     
+                <span id="weekday"></span>  <span class=""></span>الموافق 
+                <span id="hijriDate"></span>  بدون إذن مسبق.</p>
                 <p>بأمل اطلاع سعادتكم والإحاطة. والسلام عليكم،،،،</p>
             </div>
             <!-- توقيع -->
-            <div class="signature">
-                <p>رئيس مناوبة (<span id="department-signature"></span>) سفر (<span id="room-signature"></span>)</p>
+            <div class="signature" contenteditable="true">
+                <p>رئيس مناوبة ( <span id="department-signature"></span> ) سفر ( <span id="room-signature"></span> )</p>
                 <div class="officer-details">
                     <p id="officerRank"></p>
                     <p id="officerName"></p>
@@ -207,9 +207,9 @@
     </div>
     <!-- قسم التذييل يحتوي على معلومات إضافية -->
     <div class="footer bottom-info">
-        <p>الرقم: <span id="outgoingNumber"></span></p>
-        <p>التاريخ: <span id="date3"></span></p>
-        <p class="left">المشفوعات:</p>
+        <p>الرقم: <span id="outgoingNumber" contenteditable="true"></span></p>
+        <p>التاريخ: <span id="date3" contenteditable="true"></span></p>
+        <p class="left editable" contenteditable="true">المشفوعات:</p>
     </div>
 </div>
 
@@ -247,6 +247,16 @@
     document.getElementById('officerName').textContent = officerName;
     document.getElementById('officerRank').textContent = officerRank;
     document.getElementById('outgoingNumber').textContent = outgoingNumber;
+
+    // تغيير النص بناءً على نوع المحضر
+    const absenceType = getParameterByName('absenceType');
+    const absenceParagraph = document.getElementById('absenceParagraph');
+
+    if (absenceType === "أفراد") {
+        absenceParagraph.innerHTML = absenceParagraph.innerHTML.replace("المجندة", "الفرد")
+                                                              .replace("بياناتها", "بياناته")
+                                                              .replace("تغيبت", "تغيب");
+    }
 </script>
 
 </body>
