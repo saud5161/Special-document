@@ -57,6 +57,9 @@
             text-align: center;
             margin-top: 1.5rem;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .form-footer button {
             padding: 0.5rem 1rem;
@@ -70,18 +73,12 @@
         .form-footer button:hover {
             background-color: darkgreen;
         }
-        .skip-button {
-            padding: 0.5rem 1rem;
-            background-color: yellow;
-            color: #000;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            display: none;
-            margin-top: 1rem;
+        .skip-checkbox-container {
+            display: flex;
+            align-items: center;
         }
-        .skip-button:hover {
-            background-color: gold;
+        .skip-checkbox-container input {
+            margin-left: 0.5rem;
         }
         .section {
             background-color: #f9f9f9;
@@ -150,6 +147,7 @@
             bottom: -1.5rem;
             left: 50%;
             transform: translateX(-50%);
+            margin-bottom: 8px;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -240,12 +238,16 @@
                 </div>
                 <div class="form-group">
                     <label for="visa-type">نوع التأشيرة</label>
-                    <select id="visa-type" name="visa-type">
-                        <option value="">اختر</option>
-                        <option value="خروج نهائي">خروج نهائي</option>
-                        <option value="زيارة">زيارة</option>
-                        <option value="خروج وعودة">خروج وعودة</option>
-                    </select>
+                    <input list="visa-type-options" id="visa-type" name="visa-type" class="editable-select" placeholder="اختر نوع التأشيرة">
+                    <datalist id="visa-type-options">
+                        <option value="خروج نهائي">
+                        <option value="خروج وعودة">
+                        <option value="زيارة">
+                        <option value="عمره">
+                        <option value="مرور">
+                        <option value="زيارة سياحية">
+                        <option value="زيارة عائلية">
+                    </datalist>
                 </div>
             </div>
 
@@ -301,12 +303,12 @@
                     <label for="rank">رتبة الضابط</label>
                     <input list="rank-options" id="rank" name="rank" class="editable-select" placeholder="ادخل الرتبة">
                     <datalist id="rank-options">
-                        <option value="ملازم">
-                        <option value="ملازم اول">
-                        <option value="نقيب">
-                        <option value="رائد">
-                        <option value="مقدم">
-                        <option value="عقيد">
+                        <option value="ملازم/">
+                        <option value="ملازم اول/">
+                        <option value="نقيب/">
+                        <option value="رائد/">
+                        <option value="مقدم/">
+                        <option value="عقيد/">
                     </datalist>
                 </div>
                 <div class="form-group">
@@ -319,7 +321,8 @@
                         <option value="د">د</option>
                     </select>
                     <label for="shift-2">رقم الصالة</label>
-                    <select id="shift-2" name="shift-2" class="editable-select">
+                    <select id="shift-2" name="shift-2" class="editable-select" title="اختر رقم الصالة">
+                        <option value="">اختر</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
                         <option value="4">4</option>
@@ -369,9 +372,31 @@
                 </div>
             </div>
 
+            <div class="section">
+                <div class="section-header">
+                    <span>معلومات رقم الصادر والمرفقات</span>
+                    <i class="fas fa-file-alt icon-large"></i>
+                </div>
+                <div class="form-group">
+                    <label for="issue-number">رقم الصادر</label>
+                    <input type="text" id="issue-number" name="issue-number" placeholder="ادخل رقم الصادر">
+                </div>
+                <div class="form-group">
+                    <label for="attachments">المرفقات</label>
+                    <input list="attachments-options" id="attachments" name="attachments" class="editable-select" placeholder="اختر المرفقات">
+                    <datalist id="attachments-options">
+                        <option value="شرائح الحاسب الالي">
+                        <option value="شرائح الحاسب الالي + خطاب الخطوط الناقلة">
+                    </datalist>
+                </div>
+            </div>
+
             <div class="form-footer">
                 <button type="submit">موافق</button>
-                <button type="button" class="skip-button" id="skip-button" onclick="skipValidation()">تجاوز</button>
+                <div class="skip-checkbox-container">
+                    <label for="skip-checkbox">تجاوز التحقق</label>
+                    <input type="checkbox" id="skip-checkbox" name="skip-checkbox">
+                </div>
                 <div class="error-message" id="error-message">يرجى تعبئة جميع الخانات</div>
             </div>
         </form>
@@ -381,22 +406,24 @@
             var form = document.getElementById('main-form');
             var isValid = true;
             var inputs = form.querySelectorAll('input, select');
+            var skipCheckbox = document.getElementById('skip-checkbox').checked;
             document.getElementById('error-message').style.display = 'none';
 
-            inputs.forEach(function(input) {
-                input.classList.remove('error');
-                if (!input.value.trim()) {
-                    input.classList.add('error');
-                    isValid = false;
-                }
-            });
-
-            if (!isValid) {
-                document.getElementById('error-message').style.display = 'block';
-                document.getElementById('skip-button').style.display = 'block';
+            if (!skipCheckbox) {
+                inputs.forEach(function(input) {
+                    input.classList.remove('error');
+                    if (!input.value.trim()) {
+                        input.classList.add('error');
+                        isValid = false;
+                    }
+                });
             }
 
-            return isValid;
+            if (!isValid && !skipCheckbox) {
+                document.getElementById('error-message').style.display = 'block';
+            }
+
+            return isValid || skipCheckbox;
         }
 
         document.getElementById('main-form').addEventListener('submit', function(event) {
@@ -405,10 +432,6 @@
                 submitForm();
             }
         });
-
-        function skipValidation() {
-            submitForm();
-        }
 
         function submitForm() {
             var form = document.getElementById('main-form');
