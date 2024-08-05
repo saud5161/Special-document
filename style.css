@@ -45,11 +45,12 @@ a {
 
 .top-bar .left a {
     color: white;
-    margin-left: 10px;
+    margin-left: 30px;
 }
 
 .top-bar .left a:hover {
     text-decoration: underline;
+    background-color: #5a9c1c;
 }
 
 .top-bar .right .logo-container {
