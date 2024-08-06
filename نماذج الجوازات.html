@@ -205,16 +205,14 @@
             if (passwordInput === correctPassword) {
                 if (action === "developer") {
                     window.location.href = "link3.html"; // استبدل هذا الرابط بالرابط الذي تريده
-                
                 } else if (action === "departure") {
                     window.location.href = "Departure.html"; // استبدل هذا الرابط بالرابط الذي تريده
-                    (action === "arrival")
-                    window.location.href = "Departure.html";
+                } else if (action === "arrival") {
+                    window.location.href = "Arrival.html"; // استبدل هذا الرابط بالرابط الذي تريده
                 }
             } else {
                 alert("الرقم السري غير صحيح");
             }
-          
         }
 
         document.addEventListener("DOMContentLoaded", function() {
