@@ -28,7 +28,7 @@
         }
         .page {
             width: 180mm; /* تعديل عرض الصفحة لتقليل الحواف */
-            height: 297mm; /* ارتفاع الصفحة A4 */
+            height: 270mm; /* ارتفاع الصفحة A4 */
             margin: auto;
             padding: 0; /* إزالة الهوامش الداخلية */
             position: relative;
@@ -40,22 +40,25 @@
             margin-bottom: 10px;
         }
         .header img {
-            width: 70%; /* عرض الصورة يكون بنسبة 70% */
+            width: 60%; /* عرض الصورة يكون بنسبة 70% */
             max-width: 550px; /* أقصى عرض للصورة */
             margin-left: 200px;
+            margin-right: -70px;
             position: relative;
-            top: -20px; /* رفع الصورة لتكون خارج الإطار */
+            top: -18px; /* رفع الصورة لتكون خارج الإطار */
         }
         .container {
             border: 2px solid #024928; /* إضافة حدود سوداء للإطار */
             padding: 6mm; /* حواف داخلية للإطار */
             margin-top: -30px; /* رفع الإطار ليكون قريبًا من الصورة */
             background-color: #f9f9f9; /* خلفية الإطار */
+            
             border-radius: 16px;
         }
         .content {
             margin-top: 20px; /* إضافة مساحة فوق المحتوى */
-            margin-bottom: 220px; /* تعديل المسافة أسفل المحتوى */
+            margin-bottom: 120px; /* تعديل المسافة أسفل المحتوى */
+
         }
         h2 {
             text-align: center; /* محاذاة عنوان "تخلف مغادرة راكب" في المنتصف */
@@ -190,8 +193,9 @@
             </div>
             <div class="large-text" contenteditable="true">
                 <p>السلام عليكم ورحمة الله وبركاته:</p>
-                <p>نفيد سعادتكم بأن خلال استلامنا لهذا اليوم <span id="day"></span> الموافق <span id="date-today"></span> بأن الموضح بياناته أعلاه على الخطوط <span id="flight-stage"></span> رقم (<span id="flight-number"></span>) والمتجهة إلى <span id="destination"></span> قد تم إلغاء سفره من قبل الخطوط الناقلة بسبب تخلفه عن الرحلة وهو يحمل تأشيرة <span id="visa-type"></span>.</p>
+                <p>نفيد سعادتكم بأن خلال استلامنا لهذا اليوم <span id="day"></span> الموافق <span id="date-today"></span>  بأن الموضح بياناته أعلاه على رحلة <span id="flight-stage"></span> رقم (<span id="flight-number"></span>) والمتجهة إلى <span id="destination"></span> قد تم إلغاء سفره من قبل الخطوط الناقلة بسبب تخلفه عن الرحلة وهو يحمل تأشيرة <span id="visa-type"></span>.</p>
                 <p>وتجدون بطيه <span id="attachments"></span>.</p>
+                <span>هذا مالزم الرفع به لسعادتكم بامل الاطلاع والاحاطة,,,, والسلام عليكم</span>
             </div>
             <!-- توقيع -->
             <div class="signature" contenteditable="true">
