@@ -161,7 +161,7 @@
 <body>
     <div class="form-container">
         <div class="form-header">
-            <h2>يرجى تعبئة الخانات و سيتم ادراجها بالحطاب تلقائيًا</h2>
+            <h2>يرجى تعبئة الخانات و سيتم ادراجها بالخطاب تلقائيًا</h2>
             <h3>الممنوعين والمطلوبين</h3>
         </div>
         <form id="main-form">
@@ -171,9 +171,11 @@
                     <span>معلومات الجهة الطالبة</span>
                     <i class="fas fa-building icon-large"></i></div>
                 <div class="form-group">
-                    <label for="requesting-agency">الجهة الطالبة <i class="fas fa-building icon"></i></label>
-                    <select id="requesting-agency" name="requesting-agency" class="editable-select">
-                        <option value="">اختر الجهة الطالبة</option>
+                    <label for="requesting-agency">الجهة الطالبة <i class="fas fa-building icon"></i></label>                        
+                    </select>
+                    <input list="requesting-agency-options" id="requesting-agency" name="requesting-agency" class="editable-select" placeholder="ادخل اسم الجهة">
+                        <datalist id="requesting-agency-options">
+                            <option value="">اختر الجهة الطالبة</option>
                         <option value="مباحث">مباحث</option>
                         <option value="شرطة">شرطة</option>
                         <option value="جمارك">جمارك</option>
@@ -181,7 +183,8 @@
                         <option value="مرور">مرور</option>
                         <option value="مكافحة المخدرات">مكافحة المخدرات</option>
                         <option value="التحريات الادارية">التحريات الادارية</option>
-                    </select>
+                            
+                        </datalist>
                 </div>
             </div>
 
@@ -374,7 +377,7 @@
                     </div>
                     <div class="form-group">
                         <label for="airline-number">على متن رحلة الخطوط <i class="fas fa-plane icon"></i></label>
-                        <input type="text" id="airline-number" name="airline-number" placeholder="ادخل اسم شركة الطيران الخطوط">
+                        <input type="text" id="airline-number" name="airline-number" placeholder="ادخل اسم شركة الطيران ">
                     </div>
                     <div class="form-group">
                         <label for="flight-number">رقم الرحلة <i class="fas fa-plane icon"></i></label>

@@ -25,11 +25,12 @@
             margin: 0;
         }
         .page {
-            width: 200mm;
+            width: 210mm;
             height: 270mm;
             margin: auto;
-            padding: 10mm;
+            padding: 7mm;
             box-sizing: border-box;
+            
         }
         .header {
             text-align: right;
@@ -37,18 +38,19 @@
         }
         .header img {
             width: 60%;
-            max-width: 400px;
+            max-width: 500px;
         }
         .container {
             border: 2px solid #024928;
             padding: 3mm;
             background-color: #f9f9f9;
             border-radius: 16px;
-            height: calc(100% - 40mm);
+            height: calc(100% - 45mm);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             overflow: hidden;
+           
         }
         .content {
             flex-grow: 1;
@@ -58,7 +60,7 @@
             width: 100%;
             border-collapse: collapse;
             margin: 0 auto 10px auto;
-            font-size: 16px;
+            font-size: 18px;
             background-color: #fff;
             table-layout: fixed;
             border: 1px solid #000;
@@ -71,7 +73,7 @@
         }
         th, td {
             padding: 5px;
-            text-align: right;
+            text-align: ;
         }
         
         .bold-text {
@@ -99,7 +101,8 @@
             font-size: 28px;
             font-family: 'PT Bold Heading', Arial, sans-serif;
             font-weight: bold;
-            padding: 5px;
+            padding: 8px;
+          
         }
         .officer-details {
             text-align: left;
@@ -107,9 +110,10 @@
             font-family: 'PT Bold Heading', Arial, sans-serif;
             font-weight: bold;
             padding: 0;
+            
         }
         .officer-details p {
-            margin: 0;
+            margin: 9px;
         }
         .officer-details .title {
             text-align: left;
@@ -123,16 +127,19 @@
             margin-left: 40px;
         }
         .footer {
-            margin-top: 10px;
+            margin-top: 7px;
             text-align: center;
-            font-size: 14px;
+          
+            font-weight: 900;
         }
+       
         .inline {
             display: inline-block;
             vertical-align: middle;
             font-size: 25px;
             margin-bottom: 3px;
             margin-top: 3px;
+           
         }
         .bottom-info {
             font-size: 14px;
@@ -154,6 +161,7 @@
             font-size: 18px;
             font-family: 'PT Bold Heading', Arial, sans-serif;
             padding: 5px;
+            font-weight: 600;
         }
         .receiver-info p {
             margin: 0;
@@ -169,19 +177,22 @@
         .id-number-cell {
             width: 35%;
         }
-        .model-text {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            margin-top: 0;
-        }
+        
         .bold {
             font-weight: bold;
         }
         [contenteditable] {
             border: none;
             outline: none;
+        }
+        .b-od{
+            text-align:center;
+          
+            
+        }
+        .mangar-top {
+            margin-right: 50px;
+            padding: 4px;
         }
         
     </style>
@@ -198,14 +209,14 @@
         <div class="content">
             <table>
                 <thead>
-                    <tr>
+                    <tr class="b-od">
                         <th class="name-cell" >الاسم</th>
                         <th>الجنسية</th>
                         <th class="id-number-cell">رقم السجل المدني ــ الإقامة ــ رقم الحدود</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <tr class="b-od">
                         <td id="name" class="name-cell" ></td>
                         <td id="nationality" ></td>
                         <td id="idNumber" class="id-number-cell" ></td>
@@ -219,7 +230,7 @@
                     
                     <tr>
                         <th>مكان الميلاد : <span id="birthPlace" contenteditable="true"></span></th>
-                        <th colspan="2">تاريخ الميلاد <span id="birthDate" colspan="2" contenteditable="true"></span></th>
+                        <th colspan="2">تاريخ الميلاد : <span id="birthDate" colspan="2" contenteditable="true"></span></th>
                     </tr>
                     
                 </tbody>
@@ -230,9 +241,9 @@
                 <p class="bold-heading inline" style="margin-right: 90px;" contenteditable="true">الموقر</p>
             </div>
             <div class="large-text" contenteditable="true">
-                <p>السلام عليكم ورحمة الله وبركاته:</p>
+                <p>السلام عليكم ورحمة الله وبركاته,,,,</p>
                 <p>نفيدكم أنه بتاريخ <span id="hijriDate" contenteditable="true"></span> راجعنا الموضح بياناته بعالية بقصد السفر إلى <span id="destination" contenteditable="true"></span> علــــــى رحـلـــــة الخطوط <span id="flightNumber" contenteditable="true"></span> رقم ( <span id="airlineNumber" contenteditable="true"></span> ) وعند الشروع في إنهاء إجراءات مغادرته بالحاسب الآلي إتضح أنه مدرج على نظام <span id="listName" class="bold" contenteditable="true"></span> بالسجل رقم <span id="recordNumber" contenteditable="true"></span> والأمر رقم <span id="orderNumber" contenteditable="true"></span> وتاريخه <span id="orderDate" contenteditable="true"></span> هـ جهة اصدارة <span id="authority" class="bold" contenteditable="true"></span> والإجــــــــــــراء المطلوب ( <span id="requiredAction" class="bold" contenteditable="true"></span> ).</p>
-                <p>لذا نأمل استلامه وإكمال اللازم حسب الاختصاص. وبرفقة ( شرائح الحاسب الآلي + وثيقة السفر ) والسلام عليكم،،،،</p>
+                <p>لذا نأمل استلام المذكور وإكمال اللازم حسب الاختصاص. وبرفقة ( شرائح الحاسب الآلي + وثيقة السفر ) والسلام عليكم،،،،</p>
             </div>
 
             <div class="signature" contenteditable="true">
@@ -258,9 +269,9 @@
     </div>
 
     <div class="footer bottom-info" contenteditable="true">
-        <p>الرقم: <span id="outgoingNumber"></span> / م <SPan id="shift" > </SPan> سفر <SPan id="shift-2" > </SPan></p>
-        <p>التاريخ: <span id="date3"></span></p>
-        <p class="left">المشفوعات:</p>
+        <p>الـرقـم : <span id="outgoingNumber"></span> / م <SPan id="shift" > </SPan> سفر <SPan id="shift-2" > </SPan></p>
+        <p>الـتاريـخ : <span id="date3"></span></p>
+        <p class="left">المشفوعات :</p>
     </div>
 </div>
 
@@ -281,7 +292,8 @@
 
     document.getElementById('rank').textContent = getParameterByName('rank');
     document.getElementById('shift').textContent = getParameterByName('shift');
-    document.getElementById('shift-2').textContent = getParameterByName('shift-2');
+    document.getElementById('shift-2').textContent = toArabicNumbers(getParameterByName('shift-2'));
+
     document.getElementById('requestingAgencyName').textContent = getParameterByName('requesting-agency');
     document.getElementById('flightNumber').textContent = toArabicNumbers(getParameterByName('airline-number'));
     document.getElementById('requestingAgencyName1').textContent = getParameterByName('requesting-agency');
@@ -291,7 +303,7 @@
     document.getElementById('idNumber').textContent = toArabicNumbers(getParameterByName('boundary-number'));
     document.getElementById('birthPlace').textContent = getParameterByName('place-of-birth');
     document.getElementById('birthDate').textContent = toArabicNumbers(getParameterByName('birth-date'));
-    document.getElementById('passportNumber').textContent = toArabicNumbers(getParameterByName('passport-number'));
+    
     document.getElementById('passportDate').textContent = toArabicNumbers(getParameterByName('issue-date'));
     document.getElementById('passportSource').textContent = getParameterByName('passport-source');
     document.getElementById('hijriDate').textContent = toArabicNumbers(getParameterByName('hijri-date'));
@@ -306,6 +318,7 @@
     document.getElementById('date3').textContent = toArabicNumbers(getParameterByName('hijri-date'));
     document.getElementById('officerName').textContent = getParameterByName('officer-name');
     document.getElementById('officerRank').textContent = getParameterByName('rank');
+    
 </script>
 
 </body>
