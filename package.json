@@ -1,0 +1,29 @@
+{
+  "name": "aljawazat",
+  "version": "0.0.24",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "mammoth": "^1.9.0",
+    "simple-git": "^2.48.0"
+  },
+  "devDependencies": {
+    "electron": "^31.7.5",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.example.desktopapp",
+    "productName": "الجوازات السعودية",
+    "asar": false,
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "img/الجوازات-السعودية-_1_.ico"
+    }
+  }
+}
