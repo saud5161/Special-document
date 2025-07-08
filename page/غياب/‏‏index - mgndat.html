@@ -271,14 +271,16 @@
         "تهاني سعد البيشي", "ابرار مزعل الدهمشي", "أريج جمعان العصيمي", "فاطمة جابر محمد عبدلي",
         "محسن ذيب شليل العتيبي", "تركي مشعان نايض العتيبي", "عبدالرحمن أحمد الغامدي", "يحيى عسران موسى فقيهي"
     ];
-    const namesC3 = [
-    "مشاري سعود عواض المطيري", "عبدالعزيز فهد غازي العتيبي", "محمد حمود دباشي العلياني", "نايف سعد محمد القحطاني", 
-    "عايشة جوعان العنزي", "ريم هادي الصيعري", "شوق ناصر الشهراني", "سفره ظافر الشهراني", "انوار احمد العنزي", 
-    "عبدالله محمد عبدالله الشمراني", "عبدالله فيحان مضحي العتيبي", "سلمان عشوي سمر الرويلي", "شاديه حسن احمد", 
-    "نوف فيصل الشمري", "مي محمد عبيد", "امل عبدالله سهلي", "ريم علي الشهري", "رزان سالم القحطاني", 
-    "أحمد يحي حماد المالكي", "عبدالعزيز حميد باتل الرشيدي", "ماجد عشق بركة العتيبي", "شايع عبدالرحمن محمد العتيق", 
+   const namesC3 = [
+    "عبدالعزيز حميد باتل الرشيدي", "ماجد عشق بركة العتيبي", "مشاري سعود عواض المطيري", "عبدالعزيز فهد غازي العتيبي",
+    "محمد حمود دباشي العلياني", "نايف سعد محمد القحطاني", "عايشة جوعان العنزي", "ريم هادي الصيعري",
+    "شوق ناصر الشهراني", "سفره ظافر الشهراني", "ريمه عارف ال محمد", "حسن محمد أبو طالب",
+    "عبدالله محمد عبدالله الشمراني", "عبدالله فيحان مضحي العتيبي", "سلمان عشوي سمر الرويلي", "تهاني سعود العتيبي",
+    "شاديه حسن احمد", "نوف فيصل الشمري", "مي محمد عبيد", "امل عبدالله سهلي",
+    "ريم علي الشهري", "رزان سالم القحطاني", "أحمد يحي حماد المالكي", "شايع عبدالرحمن محمد العتيق",
     "سعود محمد سعود الحجي", "خالد عبدالرحمن الشهري"
 ];
+
 
     const namesD3 = [
         "سلمان محمد ثويمر المطيري", "أحمد نايف صالح المطيري", "محمد مناحي عبدالله القحطاني", "فهد فلاح مرزوق السبيعي",
@@ -446,6 +448,56 @@
             nameSelect.required = true;
             nameSelect.disabled = true; // سيتم تمكينه عند اختيار المناوبة والصالة
             recordDiv.appendChild(nameSelect);
+            // زر لإدخال الاسم يدويًا
+const manualButton = document.createElement("button");
+manualButton.type = "button";
+manualButton.textContent = "في حال كان الاسم غير موجود اضغط هنا";
+manualButton.style.margin = "5px 0";
+manualButton.style.padding = "2px 5px"; // الزر نفسه صغير الحجم
+manualButton.style.fontSize = "12px"; // حجم خط صغير
+manualButton.style.backgroundColor = "#eee"; // خلفية فاتحة للزر
+manualButton.style.border = "1px solid #ccc";
+manualButton.style.borderRadius = "4px";
+manualButton.style.cursor = "pointer";
+manualButton.style.color = "black"; // لون الخط أسود
+manualButton.style.fontWeight = "bold"; // الخط عريض
+recordDiv.appendChild(manualButton);
+
+// حقل إدخال يدوي مخفي مبدئيًا
+const manualInput = document.createElement("input");
+manualInput.type = "text";
+manualInput.placeholder = "ادخل الاسم هنا";
+manualInput.style.display = "none";
+manualInput.style.marginBottom = "10px";
+recordDiv.appendChild(manualInput);
+
+// تفعيل الإدخال اليدوي عند الضغط على الزر
+manualButton.addEventListener("click", function() {
+    manualInput.style.display = "block";
+    nameSelect.disabled = true;
+    manualInput.focus();
+});
+
+// عند فقدان التركيز من الحقل اليدوي، إذا أدخل الاسم يُستخدم، وإذا تركه فارغ يرجع للوضع الطبيعي
+manualInput.addEventListener("blur", function() {
+    const enteredName = manualInput.value.trim();
+    if (enteredName !== "") {
+        const newOption = document.createElement("option");
+        newOption.value = enteredName;
+        newOption.textContent = enteredName;
+        nameSelect.appendChild(newOption);
+        nameSelect.value = enteredName; // تحديد الاسم الجديد تلقائيًا
+
+        manualInput.style.display = "none";
+        nameSelect.disabled = false;
+        manualInput.value = ""; // مسح الحقل بعد الاستخدام (اختياري)
+    } else {
+        manualInput.style.display = "none";
+        nameSelect.disabled = false;
+    }
+});
+
+
 
             // رتبة
             const rankLabel = document.createElement("label");
@@ -471,7 +523,7 @@
                 option.textContent = rank;
                 rankSelect.appendChild(option);
             });
-
+            
             recordDiv.appendChild(rankSelect);
 
             // نوع المحضر
@@ -600,7 +652,13 @@
         const recordCount = parseInt(document.getElementById("recordCount").value) || 1;
 
         for (let i = 1; i <= recordCount; i++) {
-            const name = document.getElementById(`name${i}`).value;
+            const nameSelect = document.getElementById(`name${i}`);
+const recordDiv = nameSelect.closest('.record');
+const manualInput = recordDiv.querySelector("input[type='text']");
+
+const name = (manualInput && manualInput.style.display === "block" && manualInput.value.trim() !== "")
+    ? manualInput.value.trim()
+    : nameSelect.value;
             const rank = document.getElementById(`rank${i}`).value;
             const absenceType = document.getElementById(`absenceType${i}`).value;
             const outgoingNumber = document.getElementById(`outgoingNumber${i}`).value;
