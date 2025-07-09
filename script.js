@@ -305,5 +305,18 @@ setInterval(() => {
 document.addEventListener("DOMContentLoaded", () => {
     updateDocuments();
 });
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.quick-links a').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            const text = this.textContent.trim();
+            const searchInput = document.getElementById("search-input");
+            searchInput.value = text;
+
+            performSearch();
+        });
+    });
+});
 
  

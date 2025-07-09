@@ -420,7 +420,8 @@ a {
 }
 
 .button-grid .button a:hover {
-    background-color: #c7a33a;
+    background-color: #004c1a; /* أخضر غامق احترافي */
+    color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -506,7 +507,7 @@ a.tooltip:hover::after {
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-left: 10px;
-    width: 200px; /* جعل عرض حقل البحث قصيرًا */
+      width: 300px; /* جعل عرض حقل البحث قصيرًا */
 }
 
 .search-bar button {
@@ -910,4 +911,41 @@ h3 {
 
 .instruction-title span {
   display: inline-block;
+}
+.quick-links {
+    position: fixed;
+    top: 101px; /* أسفل شريط البحث مباشرة (ضبط حسب الحاجة) */
+    right: 0;
+    left: 0;
+    z-index: 999;
+    background-color: #f1f1f1;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.quick-links span {
+    font-weight: bold;
+    color: #333;
+}
+
+.quick-links a {
+    background-color: #a8b7ad;
+    color: #000000;
+    padding: 6px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+}
+
+.quick-links a:hover {
+    background-color: #7e8f84;
+}
+.highlight-section {
+    background-color: #fff4b3 !important; /* لون أصفر فاتح مؤقت */
+    transition: background-color 0.5s ease;
 }
