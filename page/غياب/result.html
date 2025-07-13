@@ -69,7 +69,8 @@
         h2 {
             text-align: center; /* محاذاة عنوان "محضر غياب" في المنتصف */
             text-decoration: none; /* إزالة الخط تحت العنوان */
-            
+            color: red;
+
         }
         table {
             width: 100%; /* عرض الجدول يكون بنسبة 100% */
@@ -145,6 +146,7 @@
         }
         #officerName{
             margin-left: 50px;
+            margin-top: -20PX;
         }
         .footer {
             margin-top: 2px; /* إضافة مساحة فوق التذييل */
@@ -220,6 +222,13 @@
     font-family: Arial, sans-serif;
     font-weight: bold;
     font-size: 27px; /* حجم الخط */
+}
+@media print {
+  th {
+    -webkit-print-color-adjust: exact; /* Chrome و Safari */
+    print-color-adjust: exact;         /* Firefox */
+    background-color: #32333836 !important;
+  }
 }
 
 
