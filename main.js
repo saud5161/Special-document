@@ -1,11 +1,12 @@
-const { app, BrowserWindow, globalShortcut, Menu } = require('electron');
+const { app, BrowserWindow, globalShortcut, Menu, ipcMain } = require('electron');
+
 const path = require('path');
 const https = require('https');
 const fs = require('fs');
 const { exec } = require('child_process');
 const simpleGit = require('simple-git');
 const git = simpleGit();
-
+const iconv = require('iconv-lite');
 let mainWindow;
 const MAX_FILES = 5; // الحد الأقصى لعدد النسخ المسموح بها (بما في ذلك النسخة الأصلية)
 let currentIndex = 0; // نبدأ من النسخة 1
@@ -21,6 +22,11 @@ const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/rel
 
 
 
+ipcMain.on('save-shift', (event, value) => {
+  const filePath = path.join(__dirname, 'shift.txt');
+  fs.writeFileSync(filePath, value, 'utf-8');
+});
+
 
 
 // دالة لإنشاء نافذة التطبيق
@@ -34,10 +40,12 @@ function createWindow() {
     mainWindow = new BrowserWindow({
         show: false,
         icon: path.join(__dirname, 'img', 'الجوازات-السعودية-_1_.ico'),
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
-        }
+       webPreferences: {
+    preload: path.join(__dirname, 'preload.js'),
+    contextIsolation: true,
+    nodeIntegration: false
+}
+
     });
 
     // شريط القوائم
@@ -472,6 +480,7 @@ if (!gotTheLock) {
     });
 
     // إغلاق التطبيق لما تنقفل كل النوافذ (ماعدا في نظام macOS)
+    
     app.on('window-all-closed', function () {
         if (process.platform !== 'darwin') app.quit();
     });
@@ -480,3 +489,38 @@ if (!gotTheLock) {
         if (mainWindow === null) createWindow();
     });
 }
+app.whenReady().then(createWindow);
+
+ipcMain.on('save-shift', (event, data) => {
+  const filePath = path.join(app.getPath('downloads'), 'shift.txt');
+
+  // تحويل النص إلى ترميز windows-1256
+  const encodedData = iconv.encode(data, 'windows-1256');
+
+  fs.writeFileSync(filePath, encodedData);
+});
+function clearShiftIfMatchedTime() {
+  const targetTimes = ['05:30', '13:30', '21:30'];
+  let lastCleared = null;
+
+  setInterval(() => {
+    const now = new Date();
+    const currentTime = now.toTimeString().slice(0, 5); // "HH:MM"
+
+    if (targetTimes.includes(currentTime) && lastCleared !== currentTime) {
+      const filePath = path.join(app.getPath('downloads'), 'shift.txt');
+
+      fs.writeFile(filePath, '', (err) => {
+        if (err) {
+          console.error('❌ خطأ أثناء تفريغ shift.txt:', err);
+        } else {
+          console.log(`✔ تم تفريغ shift.txt في ${currentTime}`);
+          lastCleared = currentTime;
+        }
+      });
+    }
+  }, 1000 * 60); // تحقق كل دقيقة
+}
+
+// استدعاء الوظيفة عند بدء التشغيل
+clearShiftIfMatchedTime();
