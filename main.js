@@ -6,7 +6,15 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const simpleGit = require('simple-git');
 const git = simpleGit();
+try {
+  require.resolve('iconv-lite');
+} catch (e) {
+  const { execSync } = require('child_process');
+  console.log('📦 جاري تثبيت iconv-lite ...');
+  execSync('npm install iconv-lite', { stdio: 'inherit' });
+}
 const iconv = require('iconv-lite');
+
 let mainWindow;
 const MAX_FILES = 5; // الحد الأقصى لعدد النسخ المسموح بها (بما في ذلك النسخة الأصلية)
 let currentIndex = 0; // نبدأ من النسخة 1
@@ -22,9 +30,15 @@ const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/rel
 
 
 
-ipcMain.on('save-shift', (event, value) => {
+ipcMain.on('save-shift', (event, data) => {
   const filePath = path.join(__dirname, 'shift.txt');
-  fs.writeFileSync(filePath, value, 'utf-8');
+  fs.writeFile(filePath, data, (err) => {
+    if (err) {
+      console.error('❌ فشل الحفظ:', err);
+    } else {
+      console.log('✅ تم حفظ shift.txt بنجاح');
+    }
+  });
 });
 
 
@@ -43,7 +57,7 @@ function createWindow() {
        webPreferences: {
     preload: path.join(__dirname, 'preload.js'),
     contextIsolation: true,
-    nodeIntegration: false
+    nodeIntegration: true
 }
 
     });
