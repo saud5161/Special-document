@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     exec(`start "" "${folderPath}"`);
   }
 });
+
 // ======================== تحديث الملفات ===========================
 // رابط المستودع الأساسي على GitHub
 const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
