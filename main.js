@@ -30,15 +30,15 @@ const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/rel
 
 
 
-ipcMain.on('save-shift', (event, data) => {
-  const filePath = path.join(__dirname, 'shift.txt');
-  fs.writeFile(filePath, data, (err) => {
-    if (err) {
-      console.error('❌ فشل الحفظ:', err);
-    } else {
-      console.log('✅ تم حفظ shift.txt بنجاح');
-    }
-  });
+
+ipcMain.on('send-date-info', (event, { date, day }) => {
+  const content = `TextBox4=${date}\nTextBox1=${day}`;
+  const filePath = path.join(app.getPath('downloads'), 'deta.txt');
+  try {
+    fs.writeFileSync(filePath, content, 'utf8');
+  } catch (err) {
+    console.error('❌ خطأ في حفظ deta.txt:', err);
+  }
 });
 
 
@@ -513,6 +513,37 @@ ipcMain.on('save-shift', (event, data) => {
 
   fs.writeFileSync(filePath, encodedData);
 });
+ipcMain.on('send-date-info', (event, { date, day }) => {
+  const filePath = path.join(app.getPath('downloads'), 'deta.txt');
+
+  const iconv = require('iconv-lite');
+
+  // تحويل الأرقام العربية إلى إنجليزية فقط
+  function convertEasternToWestern(str) {
+    const eastern = '٠١٢٣٤٥٦٧٨٩';
+    const western = '0123456789';
+    return str.replace(/[٠-٩]/g, d => western[eastern.indexOf(d)]);
+  }
+
+  const cleanDate = convertEasternToWestern(date).trim();
+
+  // استخدم encode مباشرة ليقوم بمعالجة الترميز
+  const dayLine = `ComboBox7=${day}`;
+  const dateLine = `TextBox4=${cleanDate}`;
+
+  try {
+    // ترميز كل المحتوى مرة واحدة
+    const content = `${dateLine}\n${dayLine}`;
+    const encodedData = iconv.encode(content, 'windows-1256'); // ← لا تنظف يدويًا
+
+    fs.writeFileSync(filePath, encodedData);
+    // console.log('✅ تم حفظ deta.txt بترميز windows-1256 بنجاح');
+  } catch (err) {
+    console.error('❌ خطأ في حفظ deta.txt:', err);
+  }
+});
+
+
 function clearShiftIfMatchedTime() {
   const targetTimes = ['05:30', '13:30', '21:30'];
   let lastCleared = null;

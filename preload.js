@@ -5,16 +5,17 @@ const { exec } = require('child_process');
 const os = require('os');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  saveShift: (data) => ipcRenderer.send('save-shift', data), // ← مهم جداً
+  saveShift: (data) => ipcRenderer.send('save-shift', data),
   openFontFolder: () => {
     const folderPath = path.join(__dirname, 'dic', 'font');
     exec(`start "" "${folderPath}"`);
-  }
+  },
+  sendDateInfo: (date, day) => ipcRenderer.send('send-date-info', { date, day }), // ← الجديد
 });
 
 // ======================== تحديث الملفات ===========================
 // رابط المستودع الأساسي على GitHub
-const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
+
 const filesJsonUrl = "files.json";
 
 // ملف الكاش المحلي (للتوافق فقط — لم نعد نستخدمه فعليًا)

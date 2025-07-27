@@ -14,3 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+setInterval(() => {
+  const date = document.getElementById("custom-hijri-date")?.value || '';
+  const day = document.getElementById("custom-weekday")?.value || '';
+
+  if (window.electronAPI && date && day) {
+    window.electronAPI.sendDateInfo(date, day);
+  }
+}, 1000);

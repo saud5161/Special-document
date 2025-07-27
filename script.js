@@ -1,3 +1,23 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const today = new Date();
+    const hours = today.getHours();
+
+    if (hours >= 0 && hours < 5) {
+        today.setDate(today.getDate() - 1);
+        document.getElementById("timeNote").style.display = "inline";
+    }
+
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    let formattedDate = today.toLocaleDateString('ar-SA', options).replace(/\d+/g, d => ('0' + d).slice(-2));
+    const weekday = today.toLocaleDateString('ar-SA', { weekday: 'long' });
+
+    document.getElementById("custom-hijri-date").value = toArabicNumbers(formattedDate);
+    document.getElementById("custom-weekday").value = weekday;
+});
+
+function toArabicNumbers(str) {
+    return str.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+}
 
 // دالة لإظهار أو إخفاء الشريط الجانبي
 function toggleSidebar() {
@@ -89,13 +109,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (clearBtn && form) {
     clearBtn.addEventListener('click', () => {
       form.querySelectorAll('input').forEach(input => {
-        input.value = '';
+        if (
+          input.id !== 'custom-hijri-date' &&
+          input.id !== 'custom-weekday'
+        ) {
+          input.value = '';
+        }
       });
     });
   }
 
   clearShiftFormAtSpecificTimes(); // ← يستمر عمل التفريغ التلقائي أيضًا
 });
+
 
 // دالة لإعداد التاريخ الحالي وعرضه في العنصر الذي يحتوي على المعرف "date"
 document.addEventListener("DOMContentLoaded", function() {
@@ -104,6 +130,30 @@ document.addEventListener("DOMContentLoaded", function() {
     var formattedDate = today.toLocaleDateString('ar-SA', options);
     document.getElementById("date").textContent = formattedDate;
 });
+setInterval(() => {
+    const now = new Date();
+    const hours = now.getHours();
+
+    if (hours >= 0 && hours < 5) {
+        now.setDate(now.getDate() - 1);
+        const timeNote = document.getElementById("timeNote");
+        if (timeNote) timeNote.style.display = "inline";
+    } else {
+        if (timeNote) timeNote.style.display = "none";
+    }
+
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const formattedDate = now.toLocaleDateString('ar-SA', options).replace(/\d+/g, d => ('0' + d).slice(-2));
+    const weekday = now.toLocaleDateString('ar-SA', { weekday: 'long' });
+
+    const dateEl = document.getElementById("custom-hijri-date");
+    const dayEl = document.getElementById("custom-weekday");
+
+    if (dateEl && dayEl) {
+        dateEl.value = toArabicNumbers(formattedDate);
+        dayEl.value = weekday;
+    }
+}, 1000); // ← كل 1000 ملي ثانية = 1 ثانية
 
 // دالة لتفعيل حقل إدخال الملف عند النقر على الزر
 function toggleFileInput(button) {
@@ -220,7 +270,7 @@ function toggleInstructions() {
 
 // ======================== تحديث الملفات ===========================
 // رابط المستودع الأساسي على GitHub
-const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
+
 const filesJsonUrl = "files.json";
 
 // ملف الكاش المحلي (للتوافق فقط — لم نعد نستخدمه فعليًا)
