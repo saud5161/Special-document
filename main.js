@@ -32,7 +32,15 @@ const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/rel
 
 
 ipcMain.on('send-date-info', (event, { date, day }) => {
-  const content = `TextBox4=${date}\nTextBox1=${day}`;
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  let hijriTomorrow = tomorrow.toLocaleDateString('ar-SA', options).replace(/\d+/g, d => ('0' + d).slice(-2));
+  hijriTomorrow = hijriTomorrow.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); // ترميز بالأرقام العربية
+
+  const content = `TextBox4=${date}\nTextBox1=${day}\nTextBox160=${hijriTomorrow} هـ`;
   const filePath = path.join(app.getPath('downloads'), 'deta.txt');
   try {
     fs.writeFileSync(filePath, content, 'utf8');
@@ -40,6 +48,7 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
     console.error('❌ خطأ في حفظ deta.txt:', err);
   }
 });
+
 
 
 
@@ -518,7 +527,6 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
 
   const iconv = require('iconv-lite');
 
-  // تحويل الأرقام العربية إلى إنجليزية فقط
   function convertEasternToWestern(str) {
     const eastern = '٠١٢٣٤٥٦٧٨٩';
     const western = '0123456789';
@@ -527,21 +535,28 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
 
   const cleanDate = convertEasternToWestern(date).trim();
 
-  // استخدم encode مباشرة ليقوم بمعالجة الترميز
-  const dayLine = `ComboBox7=${day}`;
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  let tomorrowHijri = tomorrow.toLocaleDateString('ar-SA', options).trim();
+  if (!tomorrowHijri.includes('هـ')) {
+    tomorrowHijri += ' هـ';
+  }
+  tomorrowHijri = convertEasternToWestern(tomorrowHijri).trim();
+
   const dateLine = `TextBox4=${cleanDate}`;
+  const dayLine = `ComboBox7=${day}`;
+  const tomorrowLine = `TextBox160=${tomorrowHijri}`;
 
   try {
-    // ترميز كل المحتوى مرة واحدة
-    const content = `${dateLine}\n${dayLine}`;
-    const encodedData = iconv.encode(content, 'windows-1256'); // ← لا تنظف يدويًا
-
+    const content = `${dateLine}\n${dayLine}\n${tomorrowLine}`;
+    const encodedData = iconv.encode(content, 'windows-1256');
     fs.writeFileSync(filePath, encodedData);
-    // console.log('✅ تم حفظ deta.txt بترميز windows-1256 بنجاح');
   } catch (err) {
     console.error('❌ خطأ في حفظ deta.txt:', err);
   }
 });
+
 
 
 function clearShiftIfMatchedTime() {

@@ -21,4 +21,4 @@ setInterval(() => {
   if (window.electronAPI && date && day) {
     window.electronAPI.sendDateInfo(date, day);
   }
-}, 1000);
+}, 300000);
