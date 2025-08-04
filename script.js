@@ -18,7 +18,14 @@ document.addEventListener("DOMContentLoaded", function () {
 function toArabicNumbers(str) {
     return str.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 }
-
+//الخطوط
+function openFolder() {
+  if (window.electronAPI && window.electronAPI.openFontFolder) {
+    window.electronAPI.openFontFolder();
+  } else {
+    alert("⚠️ لا يمكن فتح المجلد، تحقق من إعدادات التطبيق");
+  }
+}
 // دالة لإظهار أو إخفاء الشريط الجانبي
 function toggleSidebar() {
     var sidebar = document.getElementById("sidebar");

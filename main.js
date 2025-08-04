@@ -14,7 +14,15 @@ try {
   execSync('npm install iconv-lite', { stdio: 'inherit' });
 }
 const iconv = require('iconv-lite');
-
+// استجابة لطلب فتح مجلد الخطوط
+ipcMain.on('open-font-folder', () => {
+  const folderPath = path.join(__dirname, 'dic', 'Font');
+  shell.openPath(folderPath).then(result => {
+    if (result) {
+      console.error("❌ لم يتم فتح المجلد:", result);
+    }
+  });
+});
 let mainWindow;
 const MAX_FILES = 5; // الحد الأقصى لعدد النسخ المسموح بها (بما في ذلك النسخة الأصلية)
 let currentIndex = 0; // نبدأ من النسخة 1
@@ -32,15 +40,7 @@ const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/rel
 
 
 ipcMain.on('send-date-info', (event, { date, day }) => {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  let hijriTomorrow = tomorrow.toLocaleDateString('ar-SA', options).replace(/\d+/g, d => ('0' + d).slice(-2));
-  hijriTomorrow = hijriTomorrow.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]); // ترميز بالأرقام العربية
-
-  const content = `TextBox4=${date}\nTextBox1=${day}\nTextBox160=${hijriTomorrow} هـ`;
+  const content = `TextBox4=${date}\nTextBox1=${day}`;
   const filePath = path.join(app.getPath('downloads'), 'deta.txt');
   try {
     fs.writeFileSync(filePath, content, 'utf8');
@@ -48,7 +48,6 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
     console.error('❌ خطأ في حفظ deta.txt:', err);
   }
 });
-
 
 
 
@@ -527,6 +526,7 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
 
   const iconv = require('iconv-lite');
 
+  // تحويل الأرقام العربية إلى إنجليزية فقط
   function convertEasternToWestern(str) {
     const eastern = '٠١٢٣٤٥٦٧٨٩';
     const western = '0123456789';
@@ -535,28 +535,21 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
 
   const cleanDate = convertEasternToWestern(date).trim();
 
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  let tomorrowHijri = tomorrow.toLocaleDateString('ar-SA', options).trim();
-  if (!tomorrowHijri.includes('هـ')) {
-    tomorrowHijri += ' هـ';
-  }
-  tomorrowHijri = convertEasternToWestern(tomorrowHijri).trim();
-
-  const dateLine = `TextBox4=${cleanDate}`;
+  // استخدم encode مباشرة ليقوم بمعالجة الترميز
   const dayLine = `ComboBox7=${day}`;
-  const tomorrowLine = `TextBox160=${tomorrowHijri}`;
+  const dateLine = `TextBox4=${cleanDate}`;
 
   try {
-    const content = `${dateLine}\n${dayLine}\n${tomorrowLine}`;
-    const encodedData = iconv.encode(content, 'windows-1256');
+    // ترميز كل المحتوى مرة واحدة
+    const content = `${dateLine}\n${dayLine}`;
+    const encodedData = iconv.encode(content, 'windows-1256'); // ← لا تنظف يدويًا
+
     fs.writeFileSync(filePath, encodedData);
+    // console.log('✅ تم حفظ deta.txt بترميز windows-1256 بنجاح');
   } catch (err) {
     console.error('❌ خطأ في حفظ deta.txt:', err);
   }
 });
-
 
 
 function clearShiftIfMatchedTime() {
