@@ -171,8 +171,8 @@ setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
 
-    if (hours >= 0 && hours < 5) {
-        now.setDate(now.getDate() - 1);
+    if ((hours === 0 || hours < 5) || (hours === 5 && minutes < 40)) {
+    now.setDate(now.getDate() - 1);
         const timeNote = document.getElementById("timeNote");
         if (timeNote) timeNote.style.display = "inline";
     } else {
@@ -307,7 +307,7 @@ function toggleInstructions() {
 
 // ======================== تحديث الملفات ===========================
 // رابط المستودع الأساسي على GitHub
-const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
+
 const filesJsonUrl = "files.json";
 
 // ملف الكاش المحلي (للتوافق فقط — لم نعد نستخدمه فعليًا)
