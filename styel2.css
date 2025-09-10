@@ -1,0 +1,179 @@
+:root{
+  --green:#255748;
+  --gold:#f6e3a9;       
+  --gold-line:#e9cf84;  
+  --bg:#f6f7f9;
+  --card:#ffffff;
+  --text:#18212f;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --radius:0.75rem;
+  --shadow:0 0.4rem 0.9rem rgba(0,0,0,.05);
+
+  /* قياسات مرنة */
+  --fs-small:clamp(0.7rem, 0.6vw + 0.6rem, 0.85rem);
+  --fs-base:clamp(0.8rem, 0.65vw + 0.65rem, 1rem);
+  --fs-large:clamp(0.9rem, 0.8vw + 0.7rem, 1.25rem);
+  --pad-sm:clamp(0.25rem, 0.4vw, 0.5rem);
+  --pad-md:clamp(0.5rem, 0.6vw, 0.8rem);
+  --pad-lg:clamp(0.75rem, 0.8vw, 1rem);
+}
+
+/* أساسيات */
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Cairo',ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;
+  font-size:var(--fs-base);
+}
+
+/* أعلى الصفحة */
+.topbar{
+  position:sticky;top:0;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:var(--pad-sm) var(--pad-md);
+  background:linear-gradient(90deg,var(--green),#184337);
+  color:#fff
+}
+.brand{display:flex;align-items:center;gap:var(--pad-sm);font-weight:800}
+.brand-text{font-size:var(--fs-base)}
+.date-badge{
+  background:var(--gold);
+  color:#111;
+  padding:var(--pad-sm) var(--pad-md);
+  border-radius:999px;
+  font-weight:800;
+  font-size:var(--fs-small);
+}
+
+/* الحاوية */
+.container{
+  max-width:1040px;
+  margin:var(--pad-md) auto;
+  padding:0 var(--pad-md);
+}
+.sheet{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:var(--pad-md);
+}
+
+/* شبكة البطاقات */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+  gap:var(--pad-md);
+}
+
+/* البطاقة */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+/* رأس القسم */
+.section-header{
+  display:flex;align-items:center;gap:var(--pad-sm);
+  background:var(--gold);
+  border-bottom:1px solid var(--gold-line);
+  padding:var(--pad-sm) var(--pad-md);
+}
+.section-header h2{
+  margin:0;
+  font-weight:900;
+  font-size:var(--fs-large);
+  color:#111;
+}
+.section-header .icon svg{
+  width:clamp(0.9rem,0.8vw,1.1rem);
+  height:auto;
+}
+
+/* جسم البطاقة */
+.card-body{padding:var(--pad-md)}
+.two{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:var(--pad-sm) var(--pad-md);
+}
+@media (max-width:720px){ .two{grid-template-columns:1fr} }
+
+/* الحقول */
+.field label{
+  display:block;
+  margin-bottom:0.25em;
+  font-size:var(--fs-small);
+  font-weight:700;
+  color:#111
+}
+.field .emphasis{font-weight:900}
+.field input, .field select{
+  width:100%;
+  padding:var(--pad-sm) var(--pad-md);
+  font-size:var(--fs-base);
+  border:1px solid var(--border);
+  border-radius:calc(var(--radius) - 4px);
+  background:#fcfcfc;
+  outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.field input::placeholder {
+  color:#a3a7ae;
+  font-size:0.60em; /* أو أي حجم مناسب */
+}
+.field input:focus, .field select:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 2px rgba(37,87,72,.12);
+}
+.hint{color:var(--muted);font-size:var(--fs-small);margin-top:0.2em}
+
+/* اختيارات سريعة */
+.quick-picks{
+  display:flex;gap:var(--pad-sm);margin-top:var(--pad-sm);flex-wrap:wrap
+}
+.chip{
+  border:1px solid var(--border);
+  background:#fff;
+  padding:var(--pad-sm) var(--pad-md);
+  border-radius:calc(var(--radius) - 4px);
+  font-size:var(--fs-small);
+  cursor:pointer;
+}
+.chip.active,
+.chip:hover{
+  border-color:var(--green);
+  box-shadow:0 0 0 2px rgba(37,87,72,.08)
+}
+
+/* أزرار الإجراءات */
+.actions{
+  grid-column:1 / -1;
+  display:flex;justify-content:flex-end;
+  padding-top:var(--pad-sm);
+}
+@media (max-width:720px){ .actions{justify-content:center} }
+.btn{
+  border:0;
+  border-radius:calc(var(--radius) - 4px);
+  cursor:pointer;
+  font-weight:800;
+  line-height:1;
+  transition:filter .15s, transform .02s;
+}
+.btn-md{
+  padding:var(--pad-sm) var(--pad-lg);
+  font-size:var(--fs-base);
+}
+.btn-primary{
+  background:var(--green);
+  color:#fff
+}
+.btn:active{ transform:translateY(1px) }
+.btn:hover{ filter:brightness(.97) }

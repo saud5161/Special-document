@@ -1,0 +1,133 @@
+:root{
+  /* لوحة أخضر-توركواز ناعمة */
+  --brand:  #9eb4b2;     /* أخضر مائل للتوركواز */
+  --brand-2:#769474;     /* درجته الفاتحة */
+  --accent: #c4b99a;     /* لمسة كهرمانيّة دافئة للعناوين */
+  --label:  #0f3d3a;     /* لون نص العلامات */
+  --hl:     #e6e4e19a;     /*  خلفية الهاي لايت */
+  --bd:     #cadfd4;     /* حدود باستيليّة */
+  --tx:     #000000;     /* لون النص الأساسي */
+  --danger: #dc2626;     /* التحذير */
+}
+
+
+/* الحاوية */
+.layout-horizontal{max-width:1100px;margin:120px auto 40px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:14px;padding:0 12px}
+/* ضفها بعد تعريف .card */
+.card{ align-self: start; }   /* ← يخلي كل كرت يأخذ ارتفاع محتواه فقط */
+
+/* البطاقة */
+.card{direction:rtl;border:1px solid #e7e7e7;border-radius:14px;
+  box-shadow:0 4px 16px rgba(0,0,0,.05);background:#fff;overflow:hidden}
+.card h3{background:var(--accent);color:#070000;font-size:17px;padding:12px 14px;border-radius:14px 14px 0 0}
+
+.card .body{padding:14px;display:grid;gap:10px}
+
+/* الحقول */
+.field{display:grid;grid-template-columns:150px 1fr auto;
+  align-items:center;gap:10px;margin:6px 0}
+.card label{grid-column:1;font:700 14px/1.4 sans-serif;color:var(--label);
+  background:var(--hl);padding:6px 10px;border-radius:8px;white-space:nowrap}
+.card input,.card select,.card textarea{
+  grid-column:2;width:80%;height:30px;font-size:14px;color:var(--tx);
+  border:1px solid var(--bd);border-radius:8px;padding:6px 10px;transition:.2s}
+.card input:focus,.card select:focus,.card textarea:focus{
+  outline:0;border-color:var(--brand);box-shadow:0 0 0 2px var(--hl);
+  background:#fcfffe}
+
+/* شارة إلزامي */
+.badge-req{grid-column:3;color:var(--danger);background:#fee2e2;
+  border:1px solid #fecaca;border-radius:5px;padding:10px 8px;
+  font-weight:700;font-size:12px;white-space:nowrap}
+
+/* chips */
+.actions{grid-column:2;display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.chip{padding:5px 10px;border-radius:50px;font-size:10px;
+  border:1px solid var(--brand);background:#fff;cursor:pointer;
+  transition:.2s}
+.chip:hover{background:var(--brand);color:#fff}
+.chip.active{background:var(--accent);color:#000;border-color:var(--accent)}
+
+/* أزرار */
+.footer-actions {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 30px 0 10px;   /* 🔼 رفعه قليلاً لأعلى */
+  padding: 7px;         /* 🔽 حواف داخلية */
+  border-top: 1px solid var(--bd); /* 🔽 خط فاصل علوي أنيق */
+  background: #dbdbd7;   /* 🔽 خلفية فاتحة متناغمة مع hl-wrap */
+  border-radius: 12px;   /* 🔽 استدارة بسيطة */
+  margin-right: 200PX;
+  margin-top: -30PX;
+}
+
+/* قاعدة أساس موحّدة لكل الأزرار */
+.btn, .btn-primary, .btn-secondary, .btn-danger {
+  min-width: 150px;
+  height: 42px;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;     /* ← كان .btn-danger=13px، نوحّدها 14px */
+  cursor: pointer;
+  transition: .2s;
+}
+.footer-actions { display: flex; gap: 16px; }
+.footer-actions .btn { flex: 1; max-width: 220px; }
+
+/* موبايل */
+@media(max-width:560px){
+  .field{grid-template-columns:1fr}
+  .card label,.card input,.card select,.card textarea,.badge-req{grid-column:1}
+  .badge-req{justify-self:start;margin-top:4px}
+  .actions{grid-column:1}
+}
+.btn-danger {
+  background-color: #dc3545; /* أحمر */
+  color: white;
+  border: none;
+  
+  cursor: pointer;
+  font-size: 13px;     /* 🔽 تصغير الخط */
+  font-weight: bold;
+}
+.btn-danger:hover {
+  background-color: #a71d2a; /* أغمق عند المرور */
+}
+/* حاوية الهاي لايت */
+.hl-wrap{
+  background-color: #f7f7f4; /* أغمق عند المرور */
+  border: 1px solid var(--bd);
+  border-radius: 18px;
+  padding: 18px 14px 16px;
+  max-width: 1140px;
+  margin: 60px auto 40px;  /* 🔼 رفع للأعلى */
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+.hl-wrap .layout-horizontal{ margin:0; max-width:none; }
+.hl-wrap .footer-actions{ margin-bottom:0; padding-top:10px; }
+.empty-field{
+  background: #f1f1ee;
+  border-color: #000000;
+  box-shadow: 0 0 0 1px rgb(211, 153, 153);
+  transition: background .2s, border-color .2s, box-shadow .2s;
+}
+
+.card input,
+.card select,
+.card textarea {
+  grid-column: 2;
+  width: 70%;       /* 🔽 تصغير العرض */
+  height: 26px;     /* 🔽 تقليل الارتفاع */
+  font-size: 13px;  /* 🔽 خط أصغر */
+  color: var(--tx);
+  border: 1px solid var(--bd);
+  border-radius: 6px; /* 🔽 تقليل الاستدارة */
+  padding: 4px 8px;  /* 🔽 حواف داخلية أصغر */
+  transition: .2s;
+}
+
+

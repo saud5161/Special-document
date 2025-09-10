@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>بيانات الاستلام لهذا اليوم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- نستخدم نفس ملف التنسيق لضمان التطابق -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="styleindx.css" />
+
+  <link rel="icon" href="img/icon-g.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+<body>
+  <!-- الشريط العلوي المختصر -->
+  <div class="top-bar">
+    <div class="right">
+      
+    </div>
+    <div class="center">
+      <span id="header-date"></span>
+    </div>
+    <div class="left">
+      <a id="print-button"><i class="fas fa-print"></i></a>
+      <a href="Departure.html"><i class="fa-solid fa-power-off"></i></a>
+    </div>
+  </div>
+
+
+
+
+
+
+
+<div class="hl-wrap">
+
+  <div class="layout-horizontal" id="receipt-page">
+
+  <!-- بطاقة 1: بيانات الاستلام -->
+  <div class="card" id="card-receipt">
+    <h3><i class="fas fa-file-signature"></i> بيانات التاريخ والمستلم</h3>
+    <div id="shift-alert" style="all: unset; display: none; color: #bb1313; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; font-size: 12px; font-weight: 500; margin-top: 4px;">
+  تنبيه: تم ضبط التاريخ واليوم تلقائيًا حسب وقت الاستلام
+
+</div>
+
+    <div class="body">
+
+      <label for="custom-hijri-date">
+        
+        <i class="fas fa-calendar-alt"></i> التاريخ (هجري)
+      </label>
+      <input id="custom-hijri-date" class="form-control"  placeholder="يُملأ تلقائيًا">
+      
+      <label for="custom-weekday">
+        <i class="fas fa-calendar-day"></i> اليوم
+      </label>
+      <input id="custom-weekday" class="form-control"  placeholder="—">
+
+      <label for="officer-name">
+        <i class="fas fa-user-tie"></i> اسم ضابط الصالة
+      </label>
+      <input id="officer-name" list="names" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
+
+      <label for="officer-rank">
+        <i class="fas fa-medal"></i> الرتبة
+      </label>
+      <input id="officer-rank" list="ranks" placeholder="الرتبة" />
+      <div class="actions row-span-2" data-target="#officer-rank">
+        
+      </div>
+<label for="commander-name">
+  <i class="fas fa-user-shield"></i> اسم الآمر المناوب
+</label>
+<input id="commander-name" list="commanders" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
+<datalist id="commanders"></datalist>
+
+<!-- جديد: رتبة الآمر المناوب -->
+<label for="commander-rank">
+  <i class="fas fa-medal"></i> رتبته
+</label>
+<input id="commander-rank" list="ranks" placeholder="الرتبة" />
+<div class="actions row-span-2" data-target="#commander-rank">
+  
+</div>
+      <label for="shift-number">
+        <i class="fas fa-clock"></i> المناوبة
+      </label>
+      <input id="shift-number" list="shifts" placeholder="أ / ب / ج / د" />
+      <div class="actions row-span-2" data-target="#shift-number">
+        <button type="button" class="chip" data-value="أ">أ</button>
+        <button type="button" class="chip" data-value="ب">ب</button>
+        <button type="button" class="chip" data-value="ج">ج</button>
+        <button type="button" class="chip" data-value="د">د</button>
+      </div>
+
+      <label for="hall-number">
+        <i class="fas fa-building"></i> رقم الصالة
+      </label>
+      <input id="hall-number" list="halls" placeholder="1 / 2 / 3 / 4" />
+      <div class="actions row-span-2" data-target="#hall-number">
+        <button type="button" class="chip" data-value="1">1</button>
+        <button type="button" class="chip" data-value="2">2</button>
+        <button type="button" class="chip" data-value="3">3</button>
+        <button type="button" class="chip" data-value="4">4</button>
+      </div>
+
+      <span id="timeNote" class="row-span-2 muted" style="display:none">
+        <i class="fas fa-info-circle"></i> تم ضبط التاريخ واليوم تلقائيًا
+      </span>
+    </div>
+  </div>
+
+  <!-- بطاقة 2: بيانات المسافر -->
+  <div class="card" id="card-traveler">
+    <h3><i class="fas fa-user"></i> بيانات المسافر</h3>
+    <div class="body">
+      <label for="TravelerName">
+        <i class="fas fa-id-card"></i> اسم المسافر
+      </label>
+      <input id="TravelerName" placeholder="اسم المسافر" />
+
+      <label for="Nationality">
+        <i class="fas fa-flag"></i> الجنسية
+      </label>
+      <input id="Nationality" list="nationalities" placeholder="الجنسية" />
+      <datalist id="nationalities"></datalist>
+
+      <label for="PassportNumber">
+        <i class="fas fa-passport"></i> رقم الجواز
+      </label>
+      <input id="PassportNumber" placeholder="رقم الجواز" />
+      <label for="id">
+  <i class="fas fa-address-card"></i>رقم الهوية - اقامة
+</label>
+<input id="id" placeholder="مثال: 1234567890" />
+<label for="VisaType">
+  <i class="fas fa-stamp"></i> نوع التأشيرة
+</label>
+<input id="VisaType" list="visaTypes" placeholder="زيارة / عمل / عمرة / ...">
+<datalist id="visaTypes"></datalist>
+    </div>
+  </div>
+
+  <!-- بطاقة 3: بيانات الرحلة -->
+  <div class="card" id="card-flight">
+    <h3><i class="fas fa-plane"></i> بيانات الرحلة</h3>
+    <div class="body">
+      <label for="AirlineName">
+        <i class="fas fa-plane-departure"></i> الخطوط الناقلة
+      </label>
+      <input id="AirlineName" placeholder="مثال: السعودية" />
+
+      <label for="FlightNumber">
+        <i class="fas fa-hashtag"></i> رقم الرحلة
+      </label>
+      <input id="FlightNumber" placeholder="مثال: SV225" />
+
+      <label for="TravelDestination">
+        <i class="fas fa-map-marker-alt"></i> وجهة السفر
+      </label>
+      <input id="TravelDestination" placeholder="مثال: دبي" />
+
+      
+    </div>
+      <!-- بطاقة جديدة: بيانات الصادر -->
+  <div class="card" id="card-issued">
+    <h3><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
+    <div class="body">
+      <label for="AttachedCount">
+        <i class="fas fa-copy"></i> عدد المشفوعات
+      </label>
+      
+      <input id="AttachedCount" type="number" placeholder="مثال: 2" />
+       <label for="IssuedNumber">
+        <i class="fas fa-file-alt"></i> رقم الصادر
+      </label>
+      <input id="IssuedNumber" placeholder="رقم الصادر" />
+    </div>
+    </div>
+  </div>
+
+  </div>
+
+</div>
+
+
+
+
+  <div class="footer-actions">
+    <p style="margin-top:10px; font-size:14px; color:#444;">
+    في حال لم يتم تنفيذ المعطيات في ملف الوورد 
+     <a href="dic/Doc4.docm" style="color:#007bff; text-decoration:underline;">اضغط هنا للاصلاح</a>
+    </p>
+
+<button id="save-btn" class="btn btn-primary" type="button">
+  <i class="fas fa-file-word"></i> تنفيذ وحفظ
+</button>
+
+    
+            <span id="check-officer-name" class="row-span-2 muted" style="display:none">✔ تم تنفيذ المعطيات</span>
+
+<button id="clear-btn" class="btn btn-secondary" type="button">تفريغ الخانات</button>
+<button id="close-btn" class="btn btn-danger" type="button">رجوع والغاء</button>
+
+  </div>
+  </div>
+  <!-- قوائم البيانات -->
+  <datalist id="names"></datalist>
+  <datalist id="ranks">
+    <option value="ملازم"><option value="ملازم اول"><option value="نقيب"><option value="رائد"><option value="مقدم"><option value="عقيد">
+  </datalist>
+  <datalist id="shifts"><option value="أ"><option value="ب"><option value="ج"><option value="د"></datalist>
+  <datalist id="halls"><option value="1"><option value="2"><option value="3"><option value="4"></datalist>
+
+
+
+
+
+
+
+
+<script src="sscrpt.js"></script>
+
+  <script src="https://kit.fontawesome.com/a2e0e6ad5c.js" crossorigin="anonymous"></script>
+</body>
+</html>

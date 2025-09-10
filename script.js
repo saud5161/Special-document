@@ -307,7 +307,7 @@ function toggleInstructions() {
 
 // ======================== تحديث الملفات ===========================
 // رابط المستودع الأساسي على GitHub
-
+const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
 const filesJsonUrl = "files.json";
 
 // ملف الكاش المحلي (للتوافق فقط — لم نعد نستخدمه فعليًا)
@@ -442,7 +442,12 @@ function autoFillOfficerDetails() {
     });
   }
 }
-
+ window.addEventListener('pageshow', function(){
+    try {
+      localStorage.removeItem('wordLinkChoice');
+      localStorage.removeItem('lastWordLinkChoice');
+    } catch(e){}
+  });
 
 
 

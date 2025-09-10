@@ -193,6 +193,7 @@
     <a href="#">عدم قبول البصمة</a>
         </div>
 
+
           <div class="instruction-wrapper">
   <div class="instruction-header" onclick="toggleInstructions()">
     <h3 class="instruction-title">
@@ -339,7 +340,6 @@
 
 </div>
 </div>
-
       
 
             
@@ -347,7 +347,7 @@
     <h2><i class="fas fa-calendar-check"></i> الحضور والانصراف</h2>
     <div class="update-info">
         <i class="fas fa-check-circle"></i>
-        <span class="update-label">تم تحديث الكشوفات بتاريخ <strong>1447/01/01</strong></span>
+        <span class="update-label">تم تحديث الكشوفات بتاريخ <strong>1447/03/14</strong></span>
     </div>
 </div>
    
@@ -526,7 +526,7 @@
     <a href="dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ج.pdf"
        class="btn-icon pdf-icon" target="_blank" title="عرض PDF"
        onclick="window.open(this.href, 'popup', 'width=800,height=600'); return false;"></a>
-    <a href="dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةح.docm"
+    <a href="dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةج.docm"
        class="btn-icon word-icon" target="_top" title="تعديل Word"></a>
     <a href="javascript:void(0);"
        onclick="printFile('dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ج.pdf');"
@@ -1069,12 +1069,13 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <a
-        href="dic/نــماذج  اليومية/تعذر مغادرة.docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
-      </a>
+       <a 
+  href="index.html" 
+  class="btn-icon word-icon" 
+  target="_top" 
+  title="تعديل Word"
+  onclick="localStorage.setItem('wordLinkChoice', 'Unable')">
+</a>
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -1243,12 +1244,14 @@
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
       <!-- تعديل Word -->
-      <a
-        href="dic/نــماذج  اليومية/خطاب باسم .docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
-      </a>
+      <a 
+  href="index.html" 
+  class="btn-icon word-icon" 
+  target="_top" 
+  title="تعديل Word"
+  onclick="localStorage.setItem('wordLinkChoice', 'refused')">
+</a>
+
       <!-- طباعة -->
       <a
         href="javascript:void(0);"
@@ -1274,12 +1277,14 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <a
-        href="dic/نــماذج  اليومية/خطاب بدون اسم.docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
-      </a>
+   <a 
+    href="index.html" 
+    class="btn-icon word-icon" 
+    target="_top" 
+    title="تعديل Word"
+    onclick="localStorage.setItem('wordLinkChoice', 'canceled')">
+    </a>
+
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -2467,7 +2472,7 @@
     <div class="card-actions">
       <!-- عرض PDF -->
       <a
-        href="dic/السعودين/خطاب_اقل_من_٦_شهور[1].pdf"
+        href="dic/السعودين/مواطن مغادر.pdf"
         class="btn-icon pdf-icon"
         target="_blank"
         title="عرض PDF"
@@ -2475,17 +2480,19 @@
       </a>
       <!-- تعديل Word -->
       <a
-        href="dic/السعودين/خطاب اقل من ٦ شهور.docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
+       href="index.html" 
+    class="btn-icon word-icon" 
+    target="_top" 
+    title="تعديل Word"
+    onclick="localStorage.setItem('wordLinkChoice', 'moatan')">
+        
       </a>
       <!-- طباعة -->
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
         title="طباعة"
-        onclick="printFile('dic/السعودين/خطاب_اقل_من_٦_شهور[1].pdf');">
+        onclick="printFile('dic/السعودين/مواطن مغادر.pdf');">
         <i class="fa-solid fa-print"></i>
       </a>
     </div>
