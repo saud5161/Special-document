@@ -1,4 +1,13 @@
- const correctPassword = "123123";
+const storedHash = "96cae35ce8a9b0244178bf28e4966c2ce1b8385723a96a6b838858cdd6ca0a1e"; 
+
+// دالة تُرجع SHA-256 للنص المُدخل بصيغة hex
+async function sha256Hex(text) {
+  const data = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
 
   // تحقق من وجود إذن مسبق
   window.addEventListener("DOMContentLoaded", () => {
@@ -7,19 +16,28 @@
     }
   });
 
-  function checkPassword() {
-    const password = document.getElementById("page-password").value;
-    const errorMsg = document.getElementById("error-msg");
+async function checkPassword() {
+  const password = document.getElementById("page-password").value;
+  const errorMsg = document.getElementById("error-msg");
 
-    if (password === correctPassword) {
+  try {
+    const inputHash = await sha256Hex(password);
+    if (inputHash === storedHash) {
       localStorage.setItem("departureAccess", "granted");
       document.getElementById("password-container").style.display = "none";
     } else {
       errorMsg.textContent = "الرقم السري غير صحيح، في حال عدم توفر الرقم السري التواصل معي";
       errorMsg.style.display = "block";
-      document.getElementById("page-password").value = ""; // تفريغ الحقل
+      document.getElementById("page-password").value = "";
     }
+  } catch (e) {
+    // في حال عدم دعم Web Crypto (نادرًا جدًا)
+    console.error("Hash error:", e);
+    errorMsg.textContent = "حدث خطأ تقني أثناء التحقق. جرّب تحديث الصفحة.";
+    errorMsg.style.display = "block";
   }
+}
+
 
   function redirectToExit() {
     window.location.href = "passport-d.html";
