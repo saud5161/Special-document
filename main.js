@@ -23,6 +23,7 @@ ipcMain.on('open-font-folder', () => {
     }
   });
 });
+
 let mainWindow;
 const MAX_FILES = 5; // الحد الأقصى لعدد النسخ المسموح بها (بما في ذلك النسخة الأصلية)
 let currentIndex = 0; // نبدأ من النسخة 1
@@ -49,33 +50,6 @@ ipcMain.on('send-date-info', (event, { date, day }) => {
   }
 });
 
-function openAndCloseWord() {
-  const docPath = path.join(__dirname, 'NORMAL.docm'); // يجب أن يكون بجانب main.js
-
-  // سكربت PowerShell: فتح Word مخفيًا، فتح الملف، انتظار 3 ثوانٍ، إغلاق بدون حفظ، ثم Quit
-  const ps = `
-    $ErrorActionPreference = 'SilentlyContinue'
-    $wdDoNotSaveChanges = 0
-    try {
-      $word = New-Object -ComObject Word.Application
-      $word.Visible = $false
-      $word.DisplayAlerts = 0
-      if (Test-Path '${docPath.replace(/'/g,"''").replace(/\\/g,'/')}') {
-        $doc = $word.Documents.Open('${docPath.replace(/'/g,"''").replace(/\\/g,'/')}', $false, $false)
-        Start-Sleep -Seconds 3
-        $doc.Close($wdDoNotSaveChanges)  # إغلاق بدون حفظ
-      }
-    } finally {
-      try { $word.Quit() } catch {}
-      [System.GC]::Collect(); [System.GC]::WaitForPendingFinalizers()
-    }
-  `;
-
-  // تشغيل Powershell بشكل خفي وموثوق (EncodedCommand لتفادي مشاكل الاقتباسات)
-  const encoded = Buffer.from(ps, 'utf16le').toString('base64');
-  const cmd = `%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -EncodedCommand ${encoded}`;
-  exec(cmd);
-}
 
 
 
@@ -715,5 +689,4 @@ function clearShiftIfMatchedTime() {
 
 // استدعاء الوظيفة عند بدء التشغيل
 clearShiftIfMatchedTime();
-
 

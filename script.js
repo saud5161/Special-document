@@ -427,13 +427,13 @@ function autoFillOfficerDetails() {
   const officerMap = {
     "ماجد عبدالعزيز السحيم": {
       rank: "نقيب",
-      shift: "ج",
-      hall: "4"
+      shift: "ا",
+      hall: "3"
     },
     "فيصل عبدالإله الهرف": {
       rank: "ملازم أول",
-      shift: "أ",
-      hall: "4"
+      shift: "د",
+      hall: "1"
     }
   };
 
