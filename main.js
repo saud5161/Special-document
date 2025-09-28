@@ -14,6 +14,7 @@ try {
   execSync('npm install iconv-lite', { stdio: 'inherit' });
 }
 const iconv = require('iconv-lite');
+
 // استجابة لطلب فتح مجلد الخطوط
 ipcMain.on('open-font-folder', () => {
   const folderPath = path.join(__dirname, 'dic', 'Font');
@@ -22,6 +23,39 @@ ipcMain.on('open-font-folder', () => {
       console.error("❌ لم يتم فتح المجلد:", result);
     }
   });
+});
+// === Word Fixer ===
+// يفتح Doc4.docm مخفياً ليشغّل الماكرو ثم يغلقه
+const runWordFixer = () => {
+  // منع التداخل لو استدعاء سابق ما خلص
+  if (global.__wfRunning) return;
+  global.__wfRunning = true;
+
+  const fixerPath = path.join(__dirname, 'dic', 'Doc4.docm'); // نفس ملف الإصلاح المشار له في صفحتك
+  // PowerShell: افتح Word مخفي، افتح الملف قراءة فقط، انتظر 3 ثواني، أغلق الملف وWord
+  const psCmd = `
+    $ErrorActionPreference='SilentlyContinue';
+    $w=New-Object -ComObject Word.Application;
+    $w.Visible=$false;
+    $doc=$w.Documents.Open('${fixerPath.replace(/\\/g,'\\\\')}', $false, $true);
+    Start-Sleep -Seconds 3;
+    try{$doc.Close($false)}catch{};
+    try{$w.Quit()}catch{};
+  `.replace(/\r?\n/g,' ');
+
+  exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psCmd}"`, (err) => {
+    if (err) console.error('❌ runWordFixer error:', err);
+    global.__wfRunning = false;
+  });
+};
+// === /Word Fixer ===
+app.on('ready', () => {
+  createWindow();
+  // ... أي تهيئة أخرى عندك هنا
+
+  // استدعاء المؤقت هنا أيضاً
+ runWordFixer();
+setInterval(runWordFixer, 5 * 60 * 1000);
 });
 
 let mainWindow;

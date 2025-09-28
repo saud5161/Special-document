@@ -15,8 +15,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 // ======================== تحديث الملفات ===========================
 // رابط المستودع الأساسي على GitHub
-
-const filesJsonUrl = "files.json";
+const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
+const filesJsonUrl = repoBase + "files.json"; // ✅ يقرأ من الخادم
 
 // ملف الكاش المحلي (للتوافق فقط — لم نعد نستخدمه فعليًا)
 const localFilesJsonPath = path.join(__dirname, "files_local_cache.json");
@@ -112,7 +112,4 @@ setInterval(() => {
 document.addEventListener("DOMContentLoaded", () => {
     updateDocuments();
 });
-contextBridge.exposeInMainWorld('electronAPI', {
-  // ...
-  saveFormFile: (text) => ipcRenderer.invoke('save-form-file', text),
-});
+
