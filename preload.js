@@ -15,7 +15,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
 // ======================== تحديث الملفات ===========================
 // رابط المستودع الأساسي على GitHub
-
+const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
 const filesJsonUrl = repoBase + "files.json"; // ✅ يقرأ من الخادم
 
 // ملف الكاش المحلي (للتوافق فقط — لم نعد نستخدمه فعليًا)
