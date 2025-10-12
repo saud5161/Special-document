@@ -100,16 +100,17 @@
             </select>
           </div>
           <div>
-            <label>رقم الصالة</label>
-            <!-- استبدلنا select بحقل + datalist -->
-            <input id="hallInput" list="hallList" placeholder="مثال: 1" />
-            <datalist id="hallList"></datalist>
+            <label>رقم الصالة (اختياري)</label>
+            <select id="hallSelect">
+            </select>
           </div>
         </div>
 
         <div style="height:10px"></div>
 
         <div class="toolbar">
+          <button class="btn btn-outline" id="btnOfficers">📋 عرض قاعدة أسماء الضباط</button>
+          <button class="btn btn-outline" id="btnBack">⬅️ رجوع</button>
           <button class="btn btn-primary" id="btnShow">عرض</button>
           <button class="btn btn-success" id="btnSaveGit">حفظ في القاعدة</button>
           <button class="btn btn-outline" id="btnImport">استيراد ملف</button>
@@ -139,7 +140,7 @@
         <div style="overflow:auto; max-height:60vh;">
           <table>
             <thead>
-              <tr>
+              <tr id="theadRow">
                 <th style="width:52px">#</th>
                 <th>الاسم</th>
                 <th style="width:160px">الرتبة</th>
@@ -157,7 +158,37 @@
           <span class="muted" style="margin-inline-start:auto" id="listStats"></span>
         </div>
       </section>
+    
+    <!-- نافذة تحويل الاسم -->
+    <div class="modal-backdrop" id="transferBackdrop">
+      <div class="modal" role="dialog" aria-modal="true">
+        <h4>تحويل الاسم</h4>
+        <div class="row">
+          <div style="grid-column:1/-1">
+            <div id="transferTargetName" class="muted"></div>
+          </div>
+          <div>
+            <label>المناوبة الهدف</label>
+            <select id="targetShift">
+              <option value="ا">ا</option>
+              <option value="ب">ب</option>
+              <option value="ج">ج</option>
+              <option value="د">د</option>
+            </select>
+          </div>
+          <div>
+            <label>الصالة الهدف</label>
+            <select id="targetHall"></select>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-outline" id="transferCancel">إلغاء</button>
+          <span class="right"></span>
+          <button class="btn btn-success" id="transferOk">تحويل</button>
+        </div>
+      </div>
     </div>
+</div>
   </main>
 
   <!-- نافذة إعدادات GitHub -->
@@ -210,11 +241,21 @@
     // عناصر DOM
     const rowsEl   = $('#rows');
     const shiftSel = $('#shiftSelect');
-    const hallIn   = $('#hallInput');
+    const hallSel  = $('#hallSelect');
     const badgeEl  = $('#badge');
+    const btnBack  = $('#btnBack');
+    const transferBackdrop = $('#transferBackdrop');
+    const targetShift = $('#targetShift');
+    const targetHall  = $('#targetHall');
+    const transferTargetName = $('#transferTargetName');
     const searchEl = $('#searchInput');
     const statsEl  = $('#stats');
     const listStatsEl = $('#listStats');
+    const theadRow = $('#theadRow');
+    const btnOfficers = $('#btnOfficers');
+
+    // وضع العرض: main = القاعدة حسب المناوبة/الصالة، officers = قاعدة الضباط
+    let MODE = 'main';
 
     // القاعدة في الذاكرة
     let DB = {};
@@ -233,20 +274,26 @@
     function recalcHalls(){
       const shift = shiftSel.value;
       const halls = DB?.[shift] ? Object.keys(DB[shift]).sort((a,b)=>Number(a)-Number(b)) : [];
-      const dl = document.getElementById('hallList');
-      dl.innerHTML = '';
-      halls.forEach(h => {
-        const opt = document.createElement('option');
-        opt.value = h;
-        dl.appendChild(opt);
-      });
-      if(!hallIn.value) hallIn.value = halls[0] || '1';
+      hallSel.innerHTML = '<option value="">الكل</option>' + halls.map(h=>`<option value="${h}">${h}</option>`).join('');
     }
 
     function getActiveList(){
+      if(MODE === 'officers'){
+        DB.officers ??= [];
+        return DB.officers;
+      }
       const shift = shiftSel.value;
-      const hall  = String(hallIn.value || '1').trim();
+      const hall  = String(hallSel.value || '').trim();
       DB[shift] ??= {};
+      if(!hall){
+        const all = [];
+        Object.keys(DB[shift]).forEach(h=>{
+          (DB[shift][h]||[]).forEach((rec,idx)=>{
+            all.push(Object.assign({__srcHall:h, __srcIndex:idx}, rec));
+          });
+        });
+        return all;
+      }
       DB[shift][hall] ??= [];
       return DB[shift][hall];
     }
@@ -263,6 +310,11 @@
       const q = (searchEl.value||'').trim();
       const filtered = !q ? list : list.filter(r => (r.name||'').includes(q) || (r.rank||'').includes(q));
 
+      // رأس الجدول يتغير في وضع الضباط لإخفاء حقول الصالة/التحويل
+      theadRow.innerHTML = (MODE==='officers')
+        ? `<th style="width:52px">#</th><th>الاسم</th><th style="width:160px">الرتبة</th><th style="width:240px">إجراءات</th>`
+        : `<th style="width:52px">#</th><th>الاسم</th><th style="width:160px">الرتبة</th><th style="width:240px">إجراءات</th>`;
+
       rowsEl.innerHTML = '';
       filtered.forEach((rec, idx) => {
         const tr = document.createElement('tr');
@@ -273,7 +325,7 @@
           <td>
             <div class="toolbar">
               <button class="btn btn-success btn-save">حفظ</button>
-              <button class="btn btn-outline btn-reset">إلغاء</button>
+              ${MODE==='officers' ? '' : '<button class="btn btn-outline btn-transfer">تحويل</button>'}
               <button class="btn btn-outline btn-del">حذف</button>
               <span class="muted" style="margin-inline-start:auto">${rec.__dirty? 'معدّل':''}</span>
             </div>
@@ -283,7 +335,7 @@
         const rankIn   = tr.querySelector('.in-rank');
         const btnSave  = tr.querySelector('.btn-save');
         const btnDel   = tr.querySelector('.btn-del');
-        const btnReset = tr.querySelector('.btn-reset');
+        const btnTransfer = tr.querySelector('.btn-transfer');
 
         const original = { name: rec.name||'', rank: rec.rank||'' };
 
@@ -300,12 +352,17 @@
           rec.__dirty = false;
           render();
         };
-        btnReset.onclick = () => {
-          nameIn.value = original.name;
-          rankIn.value = original.rank;
-          rec.__dirty = false;
-          render();
-        };
+        if(btnTransfer){
+          btnTransfer.onclick = () => {
+            // افتح نافذة التحويل
+            transferTargetName.textContent = `الاسم: ${rec.name||''}`;
+            targetShift.value = shiftSel.value;
+            const halls = DB?.[targetShift.value] ? Object.keys(DB[targetShift.value]).sort((a,b)=>Number(a)-Number(b)) : [];
+            targetHall.innerHTML = halls.map(h=>`<option value="${h}">${h}</option>`).join('') || '<option value="1">1</option>';
+            transferBackdrop.style.display = 'flex';
+            transferBackdrop.__ctx = { rec, originalShift: shiftSel.value, originalHall: rec.__srcHall || hallSel.value, idx: rec.__srcIndex };
+          };
+        }
         btnDel.onclick = () => {
           const listRef = getActiveList();
           const realIdx = listRef.indexOf(rec);
@@ -315,22 +372,38 @@
         rowsEl.appendChild(tr);
       });
 
-      badgeEl.textContent = `مناوبة ${shiftSel.value} — صالة ${hallIn.value || '1'}`;
+      badgeEl.textContent = (MODE==='officers')
+        ? `قاعدة أسماء الضباط`
+        : `مناوبة ${shiftSel.value} — صالة ${hallSel.value || 'الكل'}`;
+
+      // تهيئة الأزرار حسب الوضع
+      $('#btnAdd').textContent = MODE==='officers' ? '+ إضافة ضابط' : '+ إضافة اسم';
+      $('#btnClearHall').textContent = MODE==='officers' ? 'حذف كل الضباط' : 'حذف كل صفوف الصالة';
       renderStats();
     }
 
-    // تحميل القاعدة (GitHub → fallback لا شيء)
+    // تحميل القاعدة (GitHub → fallback لا شيء) + دمج officers.json
     async function loadDB(){
       try{
         const r = await fetch(REMOTE_URL, { cache:'no-store' });
         if(!r.ok) throw new Error('HTTP '+r.status);
         DB = await r.json();
+        // تحميل ودمج officers.json إن وُجد بجانب القاعدة
+        try{
+          const ro = await fetch('https://raw.githubusercontent.com/saud5161/Special-document/main/officers.json', {cache:'no-store'});
+          if(ro.ok){
+            const off = await ro.json();
+            DB.officers ??= [];
+            const seen = new Set(DB.officers.map(o=>(o.name||'').trim()));
+            off.forEach(o=>{ const nm=(o.name||'').trim(); if(nm && !seen.has(nm)){ DB.officers.push({name:nm, rank:(o.rank||'').trim()}); } });
+          }
+        }catch(_){ /* تجاهل */ }
         recalcHalls();
         render();
         toast('تم تحميل القاعدة من GitHub');
       }catch(e){
         console.warn('fetch failed', e);
-        DB = {};
+        DB = { officers: [] };
         recalcHalls();
         render();
         toast('قاعدة فارغة — تعذر التحميل من GitHub', false);
@@ -348,6 +421,7 @@
         try {
           const text = (e.target && e.target.result) ? e.target.result : '';
           DB = JSON.parse(text) || {};
+          DB.officers ??= [];
           recalcHalls(); render();
           toast('✔ تم الاستيراد من ملف');
         } catch (err) {
@@ -369,14 +443,16 @@
     const ghSet = (k, v) => localStorage.setItem(ghKey(k), v||'');
 
     function getGhCfg(){
+      const t = ghGet('token','') || localStorage.getItem('API_TOKEN') || '';
       return {
         owner: ghGet('owner', GH_DEFAULT.owner),
         repo: ghGet('repo', GH_DEFAULT.repo),
         branch: ghGet('branch', GH_DEFAULT.branch),
         path: ghGet('path', GH_DEFAULT.path),
-        token: ghGet('token','')
+        token: t
       };
     }
+    
 
     function openGhModal(){
       const cfg = getGhCfg();
@@ -402,18 +478,33 @@
       closeGhModal();
     };
 
-    // حفظ إلى GitHub
+    // حفظ إلى GitHub (مع حفظ officers.json محليًا أو على GitHub)
     const toBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
+
+    function doDownload(filename, text){
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([text], {type:"application/json"}));
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
 
     async function saveToGitHub(){
       try{
-        const { owner, repo, branch, path, token } = getGhCfg();
-        if(!token){ toast('✖ أضف GitHub Token من الإعدادات', false); return; }
-
-        // نظّف القاعدة من الحقول المؤقتة
+        if(!confirm('تأكيد الحفظ في القاعدة (GitHub)؟')) return;
+        // نظّف القاعدة من الحقول المؤقتة أولاً
         const clean = JSON.parse(JSON.stringify(DB));
         (function walk(obj){ if(Array.isArray(obj)) obj.forEach(r=>delete r.__dirty); else if(obj && typeof obj==='object') Object.values(obj).forEach(walk); })(clean);
         const content = JSON.stringify(clean, null, 2);
+
+        const { owner, repo, branch, path, token } = getGhCfg();
+        if(!token){
+          // تنزيل محلي بديل
+          doDownload('name.json', content);
+          if(Array.isArray(clean.officers)) doDownload('officers.json', JSON.stringify(clean.officers, null, 2));
+          toast('تم إنشاء ملفات محلية بدل الرفع', false);
+          return;
+        }
 
         // احصل على sha الحالي للملف (إن وجد) لتحديثه
         const base = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
@@ -462,14 +553,49 @@
     $('#btnSaveGit').onclick = saveToGitHub;
     $('#btnAdd').onclick = () => { getActiveList().push({ name:'', rank:'' }); render(); };
     $('#btnClearHall').onclick = () => {
-      if(confirm('سيتم حذف جميع صفوف الصالة الحالية. هل أنت متأكد؟')){
-        const list = getActiveList(); list.splice(0, list.length); render();
+      const list = getActiveList();
+      const label = (MODE==='officers') ? 'كل الضباط' : 'كل صفوف الصالة الحالية';
+      if(confirm(`سيتم حذف ${label}. هل أنت متأكد؟`)){
+        list.splice(0, list.length); render();
       }
     };
 
-    shiftSel.addEventListener('change', ()=>{ recalcHalls(); render(); });
-    hallIn.addEventListener('input', ()=>{ render(); });
+    shiftSel.addEventListener('change', ()=>{ if(MODE==='main'){ recalcHalls(); render(); } });
+
+    // تحويل الاسم
+    const closeTransfer = ()=>{ transferBackdrop.style.display = 'none'; transferBackdrop.__ctx = null; };
+    $('#transferCancel').onclick = closeTransfer;
+    $('#transferBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='transferBackdrop') closeTransfer(); });
+    $('#transferOk').onclick = ()=>{
+      const ctx = transferBackdrop.__ctx;
+      if(!ctx){ closeTransfer(); return; }
+      const destShift = targetShift.value;
+      const destHall  = targetHall.value || '1';
+      DB[destShift] ??= {};
+      DB[destShift][destHall] ??= [];
+      DB[destShift][destHall].push({ name: ctx.rec.name||'', rank: ctx.rec.rank||'', __dirty: true });
+      if(ctx.originalShift && ctx.originalHall){
+        const arr = DB[ctx.originalShift]?.[ctx.originalHall];
+        if(Array.isArray(arr)){
+          const i = typeof ctx.idx==='number' ? ctx.idx : arr.findIndex(r=>r===ctx.rec || (r.name===ctx.rec.name && r.rank===ctx.rec.rank));
+          if(i>-1){ arr.splice(i,1); }
+        }
+      }
+      toast('✔ تم التحويل'); closeTransfer(); render();
+    };
+
+    hallSel.addEventListener('change', ()=>{ if(MODE==='main'){ render(); } });
     searchEl.addEventListener('input', ()=>{ render(); });
+
+    // زر "عرض قاعدة أسماء الضباط" (تبديل)
+    btnOfficers.onclick = () => {
+      MODE = (MODE === 'officers') ? 'main' : 'officers';
+      btnOfficers.textContent = (MODE==='officers') ? '↩️ الرجوع إلى عرض المناوبات' : '📋 عرض قاعدة أسماء الضباط';
+      // في وضع الضباط لا نحتاج التحويل/الصالات
+      render();
+    };
+
+    btnBack && (btnBack.onclick = ()=>{ history.back(); });
 
     // بدء التشغيل
     loadDB();
