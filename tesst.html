@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>إدارة المناوبات والقاعدة (ويب)</title>
+  <style>
+    :root {
+      --bg: #0f172a;            /* slate-900 */
+      --card: #111827;          /* gray-900 */
+      --muted: #94a3b8;         /* slate-400 */
+      --text: #e5e7eb;          /* gray-200 */
+      --accent: #22c55e;        /* green-500 */
+      --accent-2: #06b6d4;      /* cyan-500 */
+      --danger: #ef4444;        /* red-500 */
+      --border: #1f2937;        /* gray-800 */
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+      background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header { position: sticky; top: 0; z-index: 10; background: rgba(17,24,39,.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+    .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
+    .title { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 20px; }
+    .title .dot { width: 10px; height: 10px; border-radius: 999px; background: var(--accent-2); box-shadow: 0 0 12px var(--accent-2); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 380px 1fr; } }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .card h3 { margin: 0 0 12px; font-size: 16px; color: #cbd5e1; }
+
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    select, input[type="text"], button, textarea {
+      border-radius: 12px; border: 1px solid var(--border); background: #0b1220; color: var(--text);
+      padding: 10px 12px; font-size: 14px; outline: none; width: 100%;
+    }
+    select:focus, input:focus, textarea:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(6,182,212,.15); }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    .toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn { cursor: pointer; font-weight: 700; transition: transform .08s ease, opacity .2s ease; }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-2), #0ea5e9); border: none; }
+    .btn-success { background: linear-gradient(135deg, #16a34a, #22c55e); border: none; }
+    .btn-outline { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
+
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; }
+    thead th { background: #0b1220; position: sticky; top: 0; z-index: 1; }
+    th, td { border-bottom: 1px solid var(--border); padding: 10px 12px; font-size: 14px; text-align: right; }
+    tbody tr:hover { background: rgba(6,182,212,.05); }
+
+    .pill { font-size: 12px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--border); color: #a7f3d0; background: rgba(16,185,129,.08) }
+    .muted { color: var(--muted); font-size: 12px; }
+
+    .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+      background: #0b1220; border: 1px solid var(--border); color: var(--text);
+      padding: 10px 14px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); display: none;
+    }
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:520px;width:92%;padding:16px;box-shadow:0 15px 50px rgba(0,0,0,.5)}
+    .modal h4{margin:0 0 12px;color:#cbd5e1}
+    .modal .row{grid-template-columns:1fr 1fr}
+    .modal .actions{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
+    .modal .actions .right{margin-inline-start:auto}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="title">
+        <span class="dot"></span>
+        صفحة إدارة القاعدة والمناوبات (ويب)
+        <span class="muted">— اختر المناوبة والصالة ثم عدّل الأسماء والرتب</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <!-- لوحة التحكم -->
+      <section class="card">
+        <h3>الملخص و خيارات العرض</h3>
+
+        <div class="row">
+          <div>
+            <label>المناوبة</label>
+            <select id="shiftSelect">
+              <option value="ا">ا</option>
+              <option value="ب">ب</option>
+              <option value="ج">ج</option>
+              <option value="د">د</option>
+            </select>
+          </div>
+          <div>
+            <label>رقم الصالة</label>
+            <!-- استبدلنا select بحقل + datalist -->
+            <input id="hallInput" list="hallList" placeholder="مثال: 1" />
+            <datalist id="hallList"></datalist>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="toolbar">
+          <button class="btn btn-primary" id="btnShow">عرض</button>
+          <button class="btn btn-success" id="btnSaveGit">حفظ في القاعدة</button>
+          <button class="btn btn-outline" id="btnImport">استيراد ملف</button>
+          <input type="file" id="filePicker" accept="application/json" style="display:none" />
+          <button class="btn btn-outline" id="btnGhSettings">إعدادات GitHub</button>
+          <button class="btn btn-outline" id="btnReload">إعادة تحميل</button>
+          <span class="muted" style="margin-inline-start:auto" id="stats"></span>
+        </div>
+      </section>
+
+      <!-- الجدول -->
+      <section class="card">
+        <div class="toolbar" style="justify-content:space-between; margin-bottom:10px">
+          <h3 style="margin:0">البيانات</h3>
+          <span class="pill" id="badge"></span>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>بحث</label>
+            <input type="text" id="searchInput" placeholder="ابحث بالاسم أو الرتبة…" />
+          </div>
+          <div></div>
+        </div>
+        <div style="height:8px"></div>
+
+        <div style="overflow:auto; max-height:60vh;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:52px">#</th>
+                <th>الاسم</th>
+                <th style="width:160px">الرتبة</th>
+                <th style="width:240px">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <div style="height:10px"></div>
+        <div class="toolbar">
+          <button class="btn" id="btnAdd" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa); border:none;">+ إضافة اسم</button>
+          <button class="btn btn-outline" id="btnClearHall">حذف كل صفوف الصالة</button>
+          <span class="muted" style="margin-inline-start:auto" id="listStats"></span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- نافذة إعدادات GitHub -->
+  <div class="modal-backdrop" id="ghBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h4>إعدادات GitHub</h4>
+      <div class="row">
+        <div>
+          <label>Owner</label>
+          <input type="text" id="ghOwner" />
+        </div>
+        <div>
+          <label>Repo</label>
+          <input type="text" id="ghRepo" />
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Branch</label>
+          <input type="text" id="ghBranch" />
+        </div>
+        <div>
+          <label>Path</label>
+          <input type="text" id="ghPath" />
+        </div>
+      </div>
+      <div class="row">
+        <div style="grid-column:1/-1">
+          <label>Personal Access Token</label>
+          <input type="password" id="ghToken" placeholder="ghp_..." />
+          <div class="muted">سيتم حفظ التوكن محليًا في هذا المتصفح فقط.</div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-outline" id="ghCancel">إلغاء</button>
+        <span class="right"></span>
+        <button class="btn btn-success" id="ghSave">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    "use strict";
+
+    const $  = (s) => document.querySelector(s);
+    const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+    // عناصر DOM
+    const rowsEl   = $('#rows');
+    const shiftSel = $('#shiftSelect');
+    const hallIn   = $('#hallInput');
+    const badgeEl  = $('#badge');
+    const searchEl = $('#searchInput');
+    const statsEl  = $('#stats');
+    const listStatsEl = $('#listStats');
+
+    // القاعدة في الذاكرة
+    let DB = {};
+    const REMOTE_URL = 'https://raw.githubusercontent.com/saud5161/Special-document/main/name.json';
+
+    function toast(msg, ok=true){
+      const el = $('#toast');
+      el.style.display = 'block';
+      el.style.borderColor = ok? 'var(--accent)': 'var(--danger)';
+      el.style.color = ok? '#d1fae5': '#fecaca';
+      el.textContent = msg;
+      clearTimeout(el.__t);
+      el.__t = setTimeout(()=>{ el.style.display = 'none'; }, 2200);
+    }
+
+    function recalcHalls(){
+      const shift = shiftSel.value;
+      const halls = DB?.[shift] ? Object.keys(DB[shift]).sort((a,b)=>Number(a)-Number(b)) : [];
+      const dl = document.getElementById('hallList');
+      dl.innerHTML = '';
+      halls.forEach(h => {
+        const opt = document.createElement('option');
+        opt.value = h;
+        dl.appendChild(opt);
+      });
+      if(!hallIn.value) hallIn.value = halls[0] || '1';
+    }
+
+    function getActiveList(){
+      const shift = shiftSel.value;
+      const hall  = String(hallIn.value || '1').trim();
+      DB[shift] ??= {};
+      DB[shift][hall] ??= [];
+      return DB[shift][hall];
+    }
+
+    function renderStats(){
+      const list = getActiveList();
+      const dirty = list.filter(r=>r.__dirty).length;
+      statsEl.textContent = `${list.length} صف${list.length!==1?'وف':''} — ${dirty} غير محفوظ`;
+      listStatsEl.textContent = dirty ? 'هناك تعديلات غير محفوظة' : '';
+    }
+
+    function render(){
+      const list = getActiveList();
+      const q = (searchEl.value||'').trim();
+      const filtered = !q ? list : list.filter(r => (r.name||'').includes(q) || (r.rank||'').includes(q));
+
+      rowsEl.innerHTML = '';
+      filtered.forEach((rec, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="muted">${idx+1}</td>
+          <td><input type="text" class="in in-name" value="${rec.name||''}" /></td>
+          <td><input type="text" class="in in-rank" value="${rec.rank||''}" /></td>
+          <td>
+            <div class="toolbar">
+              <button class="btn btn-success btn-save">حفظ</button>
+              <button class="btn btn-outline btn-reset">إلغاء</button>
+              <button class="btn btn-outline btn-del">حذف</button>
+              <span class="muted" style="margin-inline-start:auto">${rec.__dirty? 'معدّل':''}</span>
+            </div>
+          </td>`;
+
+        const nameIn   = tr.querySelector('.in-name');
+        const rankIn   = tr.querySelector('.in-rank');
+        const btnSave  = tr.querySelector('.btn-save');
+        const btnDel   = tr.querySelector('.btn-del');
+        const btnReset = tr.querySelector('.btn-reset');
+
+        const original = { name: rec.name||'', rank: rec.rank||'' };
+
+        function mark(){
+          rec.__dirty = (nameIn.value !== original.name) || (rankIn.value !== original.rank);
+          renderStats();
+        }
+        nameIn.addEventListener('input', mark);
+        rankIn.addEventListener('input', mark);
+
+        btnSave.onclick = () => {
+          rec.name = nameIn.value.trim();
+          rec.rank = rankIn.value.trim();
+          rec.__dirty = false;
+          render();
+        };
+        btnReset.onclick = () => {
+          nameIn.value = original.name;
+          rankIn.value = original.rank;
+          rec.__dirty = false;
+          render();
+        };
+        btnDel.onclick = () => {
+          const listRef = getActiveList();
+          const realIdx = listRef.indexOf(rec);
+          if(realIdx>-1){ listRef.splice(realIdx,1); render(); }
+        };
+
+        rowsEl.appendChild(tr);
+      });
+
+      badgeEl.textContent = `مناوبة ${shiftSel.value} — صالة ${hallIn.value || '1'}`;
+      renderStats();
+    }
+
+    // تحميل القاعدة (GitHub → fallback لا شيء)
+    async function loadDB(){
+      try{
+        const r = await fetch(REMOTE_URL, { cache:'no-store' });
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        DB = await r.json();
+        recalcHalls();
+        render();
+        toast('تم تحميل القاعدة من GitHub');
+      }catch(e){
+        console.warn('fetch failed', e);
+        DB = {};
+        recalcHalls();
+        render();
+        toast('قاعدة فارغة — تعذر التحميل من GitHub', false);
+      }
+    }
+
+    // استيراد ملف محلي (اختياري)
+    $('#btnImport').onclick = () => { $('#filePicker').click(); };
+    $('#filePicker').addEventListener('change', (ev) => {
+      const f = ev.target.files && ev.target.files[0];
+      if (!f) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = (e.target && e.target.result) ? e.target.result : '';
+          DB = JSON.parse(text) || {};
+          recalcHalls(); render();
+          toast('✔ تم الاستيراد من ملف');
+        } catch (err) {
+          console.error(err);
+          toast('✖ ملف غير صالح (JSON)', false);
+        }
+      };
+      reader.onerror = (e) => {
+        console.error('FileReader error:', e);
+        toast('✖ تعذر قراءة الملف', false);
+      };
+      reader.readAsText(f, 'utf-8');
+    });
+
+    // GitHub إعدادات
+    const GH_DEFAULT = { owner: 'saud5161', repo: 'Special-document', branch: 'main', path: 'name.json' };
+    const ghKey = (k)=>`gh_${k}`;
+    const ghGet = (k, d='') => localStorage.getItem(ghKey(k)) || d;
+    const ghSet = (k, v) => localStorage.setItem(ghKey(k), v||'');
+
+    function getGhCfg(){
+      return {
+        owner: ghGet('owner', GH_DEFAULT.owner),
+        repo: ghGet('repo', GH_DEFAULT.repo),
+        branch: ghGet('branch', GH_DEFAULT.branch),
+        path: ghGet('path', GH_DEFAULT.path),
+        token: ghGet('token','')
+      };
+    }
+
+    function openGhModal(){
+      const cfg = getGhCfg();
+      $('#ghOwner').value  = cfg.owner;
+      $('#ghRepo').value   = cfg.repo;
+      $('#ghBranch').value = cfg.branch;
+      $('#ghPath').value   = cfg.path;
+      $('#ghToken').value  = cfg.token;
+      $('#ghBackdrop').style.display = 'flex';
+    }
+    function closeGhModal(){ $('#ghBackdrop').style.display = 'none'; }
+
+    $('#btnGhSettings').onclick = openGhModal;
+    $('#ghCancel').onclick = closeGhModal;
+    $('#ghBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='ghBackdrop') closeGhModal(); });
+    $('#ghSave').onclick = () => {
+      ghSet('owner',  $('#ghOwner').value.trim());
+      ghSet('repo',   $('#ghRepo').value.trim());
+      ghSet('branch', $('#ghBranch').value.trim());
+      ghSet('path',   $('#ghPath').value.trim());
+      ghSet('token',  $('#ghToken').value.trim());
+      toast('تم حفظ إعدادات GitHub');
+      closeGhModal();
+    };
+
+    // حفظ إلى GitHub
+    const toBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
+
+    async function saveToGitHub(){
+      try{
+        const { owner, repo, branch, path, token } = getGhCfg();
+        if(!token){ toast('✖ أضف GitHub Token من الإعدادات', false); return; }
+
+        // نظّف القاعدة من الحقول المؤقتة
+        const clean = JSON.parse(JSON.stringify(DB));
+        (function walk(obj){ if(Array.isArray(obj)) obj.forEach(r=>delete r.__dirty); else if(obj && typeof obj==='object') Object.values(obj).forEach(walk); })(clean);
+        const content = JSON.stringify(clean, null, 2);
+
+        // احصل على sha الحالي للملف (إن وجد) لتحديثه
+        const base = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+        let sha = undefined;
+        const infoUrl = `${base}?ref=${encodeURIComponent(branch)}`;
+        const commonHeaders = {
+          'Accept': 'application/vnd.github+json',
+          'Authorization': `Bearer ${token}`,
+          'X-GitHub-Api-Version': '2022-11-28'
+        };
+        try{
+          const infoRes = await fetch(infoUrl, { headers: commonHeaders, cache:'no-store' });
+          if(infoRes.ok){
+            const js = await infoRes.json();
+            sha = js.sha;
+          }
+        }catch(_){ /* تجاهل */ }
+
+        const body = {
+          message: `Update ${path} via Web UI — ${new Date().toISOString()}`,
+          content: toBase64(content),
+          branch,
+          sha
+        };
+
+        const putRes = await fetch(base, {
+          method:'PUT',
+          headers: { ...commonHeaders, 'Content-Type':'application/json' },
+          body: JSON.stringify(body)
+        });
+        if(!putRes.ok){
+          const errText = await putRes.text();
+          throw new Error(`GitHub API ${putRes.status}: ${errText}`);
+        }
+
+        toast('✔ تم الحفظ في القاعدة (GitHub)');
+      }catch(e){
+        console.error(e);
+        toast('✖ فشل الحفظ على GitHub: '+ e.message, false);
+      }
+    }
+
+    // ربط الأزرار
+    $('#btnShow').onclick = render;
+    $('#btnReload').onclick = loadDB;
+    $('#btnSaveGit').onclick = saveToGitHub;
+    $('#btnAdd').onclick = () => { getActiveList().push({ name:'', rank:'' }); render(); };
+    $('#btnClearHall').onclick = () => {
+      if(confirm('سيتم حذف جميع صفوف الصالة الحالية. هل أنت متأكد؟')){
+        const list = getActiveList(); list.splice(0, list.length); render();
+      }
+    };
+
+    shiftSel.addEventListener('change', ()=>{ recalcHalls(); render(); });
+    hallIn.addEventListener('input', ()=>{ render(); });
+    searchEl.addEventListener('input', ()=>{ render(); });
+
+    // بدء التشغيل
+    loadDB();
+  </script>
+</body>
+</html>
