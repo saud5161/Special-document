@@ -92,7 +92,7 @@
           <button class="btn btn-success" id="btnSave" title="يتطلب PIN">حفظ في القاعدة</button>
           <button class="btn btn-outline" id="btnImport">استيراد ملف</button>
           <input type="file" id="filePicker" accept="application/json" style="display:none" />
-          <button class="btn btn-outline" id="btnGhSettings">إعدادات GitHub</button>
+          <button class="btn btn-outline" id="btnGhSettings">إعدادات الخادم</button>
           <button class="btn btn-outline" id="btnReload">إعادة تحميل</button>
           <span class="muted" style="margin-inline-start:auto" id="stats"></span>
         </div>
@@ -172,7 +172,7 @@
   <!-- نافذة إعدادات GitHub -->
   <div class="modal-backdrop" id="ghBackdrop">
     <div class="modal" role="dialog" aria-modal="true">
-      <h4>إعدادات GitHub</h4>
+      <h4>إعدادات الخادم</h4>
       <div class="row">
         <div>
           <label>Owner</label>
@@ -472,7 +472,7 @@
       ghSet('officersPath', $('#ghOfficersPath').value.trim());
       // احفظ التوكن في التخزين المحلي كذلك (إن أردت)
       ghSet('token',  $('#ghToken').value.trim());
-      toast('تم حفظ إعدادات GitHub');
+      toast('تم حفظ إعدادات الخادم');
       closeGhModal();
     };
 
@@ -669,7 +669,7 @@
       ghSet('path',   $('#ghPath').value.trim());
       ghSet('officersPath', $('#ghOfficersPath').value.trim());
       ghSet('token',  $('#ghToken').value.trim());
-      toast('تم حفظ إعدادات GitHub');
+      toast('تم حفظ إعدادات خادم');
       closeGhModal();
     };
 
