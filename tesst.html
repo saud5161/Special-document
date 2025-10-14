@@ -4,24 +4,16 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>إدارة المناوبات والقاعدة (ويب)</title>
+  <title>إدارة المناوبات والقاعدة (ويب) — مضمّن توكن</title>
   <style>
     :root {
-      --bg: #0f172a;            /* slate-900 */
-      --card: #111827;          /* gray-900 */
-      --muted: #94a3b8;         /* slate-400 */
-      --text: #e5e7eb;          /* gray-200 */
-      --accent: #22c55e;        /* green-500 */
-      --accent-2: #06b6d4;      /* cyan-500 */
-      --danger: #ef4444;        /* red-500 */
-      --border: #1f2937;        /* gray-800 */
+      --bg: #0f172a; --card: #111827; --muted: #94a3b8; --text: #e5e7eb;
+      --accent: #22c55e; --accent-2: #06b6d4; --danger: #ef4444; --border: #1f2937;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Arabic", Tahoma, Arial, sans-serif;
-      background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
-      color: var(--text);
-      min-height: 100vh;
+      background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%); color: var(--text); min-height: 100vh;
     }
     header { position: sticky; top: 0; z-index: 10; background: rgba(17,24,39,.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
     .container { max-width: 1100px; margin: 0 auto; padding: 16px; }
@@ -29,47 +21,33 @@
     .title .dot { width: 10px; height: 10px; border-radius: 999px; background: var(--accent-2); box-shadow: 0 0 12px var(--accent-2); }
     .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
     @media (min-width: 900px) { .grid { grid-template-columns: 380px 1fr; } }
-
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
     .card h3 { margin: 0 0 12px; font-size: 16px; color: #cbd5e1; }
-
     label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
-    select, input[type="text"], button, textarea {
-      border-radius: 12px; border: 1px solid var(--border); background: #0b1220; color: var(--text);
-      padding: 10px 12px; font-size: 14px; outline: none; width: 100%;
-    }
+    select, input[type="text"], input[type="password"], button, textarea { border-radius: 12px; border: 1px solid var(--border); background: #0b1220; color: var(--text); padding: 10px 12px; font-size: 14px; outline: none; width: 100%; }
     select:focus, input:focus, textarea:focus { border-color: var(--accent-2); box-shadow: 0 0 0 3px rgba(6,182,212,.15); }
-
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-
     .toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
     .btn { cursor: pointer; font-weight: 700; transition: transform .08s ease, opacity .2s ease; }
     .btn:active { transform: translateY(1px); }
     .btn-primary { background: linear-gradient(135deg, var(--accent-2), #0ea5e9); border: none; }
     .btn-success { background: linear-gradient(135deg, #16a34a, #22c55e); border: none; }
     .btn-outline { background: transparent; border: 1px dashed var(--muted); color: var(--muted); }
-
     table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 14px; }
     thead th { background: #0b1220; position: sticky; top: 0; z-index: 1; }
     th, td { border-bottom: 1px solid var(--border); padding: 10px 12px; font-size: 14px; text-align: right; }
     tbody tr:hover { background: rgba(6,182,212,.05); }
-
     .pill { font-size: 12px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--border); color: #a7f3d0; background: rgba(16,185,129,.08) }
     .muted { color: var(--muted); font-size: 12px; }
-
-    .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-      background: #0b1220; border: 1px solid var(--border); color: var(--text);
-      padding: 10px 14px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); display: none;
-    }
-
-    /* Modal */
+    .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #0b1220; border: 1px solid var(--border); color: var(--text); padding: 10px 14px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.3); display: none; }
     .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50}
     .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:520px;width:92%;padding:16px;box-shadow:0 15px 50px rgba(0,0,0,.5)}
     .modal h4{margin:0 0 12px;color:#cbd5e1}
     .modal .row{grid-template-columns:1fr 1fr}
     .modal .actions{display:flex;gap:8px;justify-content:space-between;margin-top:10px}
     .modal .actions .right{margin-inline-start:auto}
+    .pulse { animation: pulse 1s ease-in-out 0s 6 alternate; box-shadow: 0 0 0 0 rgba(239,68,68,.6); border-color: var(--danger) !important; }
+    @keyframes pulse { from { box-shadow: 0 0 0 0 rgba(239,68,68,.6); } to { box-shadow: 0 0 0 6px rgba(239,68,68,.0); } }
   </style>
 </head>
 <body>
@@ -77,8 +55,8 @@
     <div class="container">
       <div class="title">
         <span class="dot"></span>
-        صفحة إدارة القاعدة والمناوبات (ويب)
-        <span class="muted">— اختر المناوبة والصالة ثم عدّل الأسماء والرتب</span>
+        صفحة إدارة القاعدة والمناوبات (مضمّن توكن)
+        <span class="muted"></span>
       </div>
     </div>
   </header>
@@ -101,8 +79,7 @@
           </div>
           <div>
             <label>رقم الصالة (اختياري)</label>
-            <select id="hallSelect">
-            </select>
+            <select id="hallSelect"></select>
           </div>
         </div>
 
@@ -112,7 +89,7 @@
           <button class="btn btn-outline" id="btnOfficers">📋 عرض قاعدة أسماء الضباط</button>
           <button class="btn btn-outline" id="btnBack">⬅️ رجوع</button>
           <button class="btn btn-primary" id="btnShow">عرض</button>
-          <button class="btn btn-success" id="btnSaveGit">حفظ في القاعدة</button>
+          <button class="btn btn-success" id="btnSave" title="يتطلب PIN">حفظ في القاعدة</button>
           <button class="btn btn-outline" id="btnImport">استيراد ملف</button>
           <input type="file" id="filePicker" accept="application/json" style="display:none" />
           <button class="btn btn-outline" id="btnGhSettings">إعدادات GitHub</button>
@@ -158,37 +135,38 @@
           <span class="muted" style="margin-inline-start:auto" id="listStats"></span>
         </div>
       </section>
-    
-    <!-- نافذة تحويل الاسم -->
-    <div class="modal-backdrop" id="transferBackdrop">
-      <div class="modal" role="dialog" aria-modal="true">
-        <h4>تحويل الاسم</h4>
-        <div class="row">
-          <div style="grid-column:1/-1">
-            <div id="transferTargetName" class="muted"></div>
+
+      <!-- نافذة نقل الفرد -->
+      <div class="modal-backdrop" id="transferBackdrop">
+        <div class="modal" role="dialog" aria-modal="true">
+          <h4>نقل الفرد</h4>
+          <div class="row">
+            <div style="grid-column:1/-1">
+              <div id="transferTargetName" class="muted"></div>
+            </div>
+            <div>
+              <label>المناوبة الهدف</label>
+              <select id="targetShift">
+                <option value="ا">ا</option>
+                <option value="ب">ب</option>
+                <option value="ج">ج</option>
+                <option value="د">د</option>
+              </select>
+            </div>
+            <div>
+              <label>الصالة الهدف</label>
+              <select id="targetHall"></select>
+            </div>
           </div>
-          <div>
-            <label>المناوبة الهدف</label>
-            <select id="targetShift">
-              <option value="ا">ا</option>
-              <option value="ب">ب</option>
-              <option value="ج">ج</option>
-              <option value="د">د</option>
-            </select>
+          <div class="actions">
+            <button class="btn btn-outline" id="transferCancel">إلغاء</button>
+            <span class="right"></span>
+            <button class="btn btn-success" id="transferOk">نقل الفرد</button>
           </div>
-          <div>
-            <label>الصالة الهدف</label>
-            <select id="targetHall"></select>
-          </div>
-        </div>
-        <div class="actions">
-          <button class="btn btn-outline" id="transferCancel">إلغاء</button>
-          <span class="right"></span>
-          <button class="btn btn-success" id="transferOk">تحويل</button>
         </div>
       </div>
+
     </div>
-</div>
   </main>
 
   <!-- نافذة إعدادات GitHub -->
@@ -211,15 +189,24 @@
           <input type="text" id="ghBranch" />
         </div>
         <div>
-          <label>Path</label>
+          <label>Path (name.json)</label>
           <input type="text" id="ghPath" />
         </div>
       </div>
       <div class="row">
-        <div style="grid-column:1/-1">
-          <label>Personal Access Token</label>
-          <input type="password" id="ghToken" placeholder="ghp_..." />
-          <div class="muted">سيتم حفظ التوكن محليًا في هذا المتصفح فقط.</div>
+        <div>
+          <label>Officers Path (officers.json)</label>
+          <input type="text" id="ghOfficersPath" />
+        </div>
+        <div>
+          <label>Personal Access Token (ظاهر)</label>
+          <!-- الحقل ظاهر عمداً حسب طلبك -->
+          <input type="text" id="ghToken" placeholder="github_pat_..." />
+          <div class="muted">التوكن معروض هنا. لن يتم رفع القاعدة إلا بعد التحقق من الرقم السري.</div>
+          <div class="toolbar" style="margin-top:8px">
+            <button class="btn btn-outline" id="btnSaveProtectedToken">💾 حفظ التوكن محلياً</button>
+            <button class="btn btn-outline" id="btnInsertToken">🔐 إدراج التوكن (بـ PIN)</button>
+          </div>
         </div>
       </div>
       <div class="actions">
@@ -230,20 +217,41 @@
     </div>
   </div>
 
+  <!-- نافذة PIN -->
+  <div class="modal-backdrop" id="pinBackdrop">
+    <div class="modal" role="dialog" aria-modal="true">
+      <h4>تحقق PIN</h4>
+      <div>
+        <label>أدخل الرقم السري</label>
+        <input type="password" id="pinInput" inputmode="numeric" placeholder="••••••" />
+      </div>
+      <div class="actions">
+        <button class="btn btn-outline" id="pinCancel">إلغاء</button>
+        <span class="right"></span>
+        <button class="btn btn-success" id="pinOk">تأكيد</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
     "use strict";
 
+    // ---------- CONFIGURATION YOU REQUESTED ----------
+    // ضع التوكن هنا (ظاهر في الحقل أيضاً). استبدل المثال بالتوكن الحقيقي إذا رغبت.
+    const EMBEDDED_GITHUB_TOKEN = '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';
+    // ------------------------------------------------
+
+    // DOM shortcuts
     const $  = (s) => document.querySelector(s);
     const $$ = (s) => Array.from(document.querySelectorAll(s));
 
-    // عناصر DOM
+    // Elements
     const rowsEl   = $('#rows');
     const shiftSel = $('#shiftSelect');
     const hallSel  = $('#hallSelect');
     const badgeEl  = $('#badge');
-    const btnBack  = $('#btnBack');
     const transferBackdrop = $('#transferBackdrop');
     const targetShift = $('#targetShift');
     const targetHall  = $('#targetHall');
@@ -254,12 +262,15 @@
     const theadRow = $('#theadRow');
     const btnOfficers = $('#btnOfficers');
 
-    // وضع العرض: main = القاعدة حسب المناوبة/الصالة، officers = قاعدة الضباط
+    // MODE: main | officers
     let MODE = 'main';
 
-    // القاعدة في الذاكرة
+    // DB in-memory
     let DB = {};
     const REMOTE_URL = 'https://raw.githubusercontent.com/saud5161/Special-document/main/name.json';
+
+    // PIN verification state
+    let PIN_VERIFIED = false;
 
     function toast(msg, ok=true){
       const el = $('#toast');
@@ -310,10 +321,7 @@
       const q = (searchEl.value||'').trim();
       const filtered = !q ? list : list.filter(r => (r.name||'').includes(q) || (r.rank||'').includes(q));
 
-      // رأس الجدول يتغير في وضع الضباط لإخفاء حقول الصالة/التحويل
-      theadRow.innerHTML = (MODE==='officers')
-        ? `<th style="width:52px">#</th><th>الاسم</th><th style="width:160px">الرتبة</th><th style="width:240px">إجراءات</th>`
-        : `<th style="width:52px">#</th><th>الاسم</th><th style="width:160px">الرتبة</th><th style="width:240px">إجراءات</th>`;
+      theadRow.innerHTML = `<th style="width:52px">#</th><th>الاسم</th><th style="width:160px">الرتبة</th><th style="width:240px">إجراءات</th>`;
 
       rowsEl.innerHTML = '';
       filtered.forEach((rec, idx) => {
@@ -325,7 +333,7 @@
           <td>
             <div class="toolbar">
               <button class="btn btn-success btn-save">حفظ</button>
-              ${MODE==='officers' ? '' : '<button class="btn btn-outline btn-transfer">تحويل</button>'}
+              ${MODE==='officers' ? '' : '<button class="btn btn-outline btn-transfer">نقل الفرد</button>'}
               <button class="btn btn-outline btn-del">حذف</button>
               <span class="muted" style="margin-inline-start:auto">${rec.__dirty? 'معدّل':''}</span>
             </div>
@@ -354,7 +362,6 @@
         };
         if(btnTransfer){
           btnTransfer.onclick = () => {
-            // افتح نافذة التحويل
             transferTargetName.textContent = `الاسم: ${rec.name||''}`;
             targetShift.value = shiftSel.value;
             const halls = DB?.[targetShift.value] ? Object.keys(DB[targetShift.value]).sort((a,b)=>Number(a)-Number(b)) : [];
@@ -372,23 +379,18 @@
         rowsEl.appendChild(tr);
       });
 
-      badgeEl.textContent = (MODE==='officers')
-        ? `قاعدة أسماء الضباط`
-        : `مناوبة ${shiftSel.value} — صالة ${hallSel.value || 'الكل'}`;
-
-      // تهيئة الأزرار حسب الوضع
+      badgeEl.textContent = (MODE==='officers') ? `قاعدة أسماء الضباط` : `مناوبة ${shiftSel.value} — صالة ${hallSel.value || 'الكل'}`;
       $('#btnAdd').textContent = MODE==='officers' ? '+ إضافة ضابط' : '+ إضافة اسم';
       $('#btnClearHall').textContent = MODE==='officers' ? 'حذف كل الضباط' : 'حذف كل صفوف الصالة';
       renderStats();
     }
 
-    // تحميل القاعدة (GitHub → fallback لا شيء) + دمج officers.json
+    // --- تحميل DB من GitHub (name.json) ودمج officers.json إذا وُجد ---
     async function loadDB(){
       try{
         const r = await fetch(REMOTE_URL, { cache:'no-store' });
         if(!r.ok) throw new Error('HTTP '+r.status);
         DB = await r.json();
-        // تحميل ودمج officers.json إن وُجد بجانب القاعدة
         try{
           const ro = await fetch('https://raw.githubusercontent.com/saud5161/Special-document/main/officers.json', {cache:'no-store'});
           if(ro.ok){
@@ -397,70 +399,64 @@
             const seen = new Set(DB.officers.map(o=>(o.name||'').trim()));
             off.forEach(o=>{ const nm=(o.name||'').trim(); if(nm && !seen.has(nm)){ DB.officers.push({name:nm, rank:(o.rank||'').trim()}); } });
           }
-        }catch(_){ /* تجاهل */ }
-        recalcHalls();
-        render();
-        toast('تم تحميل القاعدة من GitHub');
+        }catch(_){}
+        recalcHalls(); render(); toast('تم تحميل القاعدة من GitHub');
       }catch(e){
         console.warn('fetch failed', e);
         DB = { officers: [] };
-        recalcHalls();
-        render();
-        toast('قاعدة فارغة — تعذر التحميل من GitHub', false);
+        recalcHalls(); render(); toast('قاعدة فارغة — تعذر التحميل من GitHub', false);
       }
     }
 
-    // استيراد ملف محلي (اختياري)
+    // استيراد ملف JSON محلي
     $('#btnImport').onclick = () => { $('#filePicker').click(); };
     $('#filePicker').addEventListener('change', (ev) => {
       const f = ev.target.files && ev.target.files[0];
       if (!f) return;
-
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
           const text = (e.target && e.target.result) ? e.target.result : '';
           DB = JSON.parse(text) || {};
           DB.officers ??= [];
-          recalcHalls(); render();
-          toast('✔ تم الاستيراد من ملف');
+          recalcHalls(); render(); toast('✔ تم الاستيراد من ملف');
         } catch (err) {
           console.error(err);
           toast('✖ ملف غير صالح (JSON)', false);
         }
       };
-      reader.onerror = (e) => {
-        console.error('FileReader error:', e);
-        toast('✖ تعذر قراءة الملف', false);
-      };
+      reader.onerror = (e) => { console.error('FileReader error:', e); toast('✖ تعذر قراءة الملف', false); };
       reader.readAsText(f, 'utf-8');
     });
 
-    // GitHub إعدادات
-    const GH_DEFAULT = { owner: 'saud5161', repo: 'Special-document', branch: 'main', path: 'name.json' };
+    // GitHub settings storage helpers
+    const GH_DEFAULT = { owner: 'saud5161', repo: 'Special-document', branch: 'main', path: 'name.json', officersPath: 'officers.json' };
     const ghKey = (k)=>`gh_${k}`;
     const ghGet = (k, d='') => localStorage.getItem(ghKey(k)) || d;
     const ghSet = (k, v) => localStorage.setItem(ghKey(k), v||'');
 
     function getGhCfg(){
-      const t = ghGet('token','') || localStorage.getItem('API_TOKEN') || '';
+      const t = ghGet('token','') || '';
       return {
         owner: ghGet('owner', GH_DEFAULT.owner),
         repo: ghGet('repo', GH_DEFAULT.repo),
         branch: ghGet('branch', GH_DEFAULT.branch),
         path: ghGet('path', GH_DEFAULT.path),
+        officersPath: ghGet('officersPath', GH_DEFAULT.officersPath),
         token: t
       };
     }
-    
 
+    // Open/close GitHub modal — when opened, show EMBEDDED_GITHUB_TOKEN in field
     function openGhModal(){
       const cfg = getGhCfg();
       $('#ghOwner').value  = cfg.owner;
       $('#ghRepo').value   = cfg.repo;
       $('#ghBranch').value = cfg.branch;
       $('#ghPath').value   = cfg.path;
-      $('#ghToken').value  = cfg.token;
+      $('#ghOfficersPath').value = cfg.officersPath;
+      // إظهار التوكن المضمن في الحقل (حسب طلبك)
+      $('#ghToken').value  = EMBEDDED_GITHUB_TOKEN || cfg.token || '';
       $('#ghBackdrop').style.display = 'flex';
     }
     function closeGhModal(){ $('#ghBackdrop').style.display = 'none'; }
@@ -473,84 +469,155 @@
       ghSet('repo',   $('#ghRepo').value.trim());
       ghSet('branch', $('#ghBranch').value.trim());
       ghSet('path',   $('#ghPath').value.trim());
+      ghSet('officersPath', $('#ghOfficersPath').value.trim());
+      // احفظ التوكن في التخزين المحلي كذلك (إن أردت)
       ghSet('token',  $('#ghToken').value.trim());
       toast('تم حفظ إعدادات GitHub');
       closeGhModal();
     };
 
-    // حفظ إلى GitHub (مع حفظ officers.json محليًا أو على GitHub)
-    const toBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
+    // تخزين التوكن محلياً (Base64) — بسيط كما طلبت
+    $('#btnSaveProtectedToken').onclick = () => {
+      const val = $('#ghToken').value.trim();
+      if(!val){ toast('أدخل التوكن أولاً', false); return; }
+      try{
+        const b64 = btoa(unescape(encodeURIComponent(val)));
+        localStorage.setItem('gh_enc_token', b64);
+        toast('تم حفظ التوكن محلياً (محمي بسيط)');
+      }catch(e){ toast('تعذر حفظ التوكن', false); }
+    };
 
-    function doDownload(filename, text){
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([text], {type:"application/json"}));
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(a.href);
+    // إدراج التوكن بعد التحقق من PIN
+    $('#btnInsertToken').onclick = () => { openPinModal(); };
+
+    // PIN modal behaviour
+    async function sha256hex(str){
+      const enc = new TextEncoder();
+      const buf = await crypto.subtle.digest('SHA-256', enc.encode(str));
+      return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
     }
 
+    function openPinModal(){ $('#pinInput').value=''; $('#pinBackdrop').style.display='flex'; }
+    function closePinModal(){ $('#pinBackdrop').style.display='none'; }
+
+    $('#pinCancel').onclick = () => { closePinModal(); };
+
+    $('#pinOk').onclick = async () => {
+      try{
+        const pin = $('#pinInput').value.trim();
+        const hash = await sha256hex(pin);
+        const expected = await sha256hex('123123');
+        if(hash !== expected){ toast('الرقم السري غير صحيح', false); return; }
+        // PIN صحيح — استرجع التوكن المحفوظ (المشفر Base64) إن وُجد أو استخدم EMBEDDED_GITHUB_TOKEN
+        const enc = localStorage.getItem('gh_enc_token');
+        let token = '';
+        if(enc){
+          token = decodeURIComponent(escape(atob(enc)));
+        } else if(EMBEDDED_GITHUB_TOKEN){
+          token = EMBEDDED_GITHUB_TOKEN;
+        }
+        if(!token){ toast('لا يوجد توكن محفوظ أو مضمّن', false); closePinModal(); return; }
+        $('#ghToken').value = token;
+        ghSet('token', token);
+        PIN_VERIFIED = true;
+        toast('✔ تم إدراج التوكن وحفظه محلياً');
+        closePinModal();
+      }catch(e){ console.error(e); toast('حدث خطأ أثناء التحقق', false); }
+    };
+
+    // GitHub API helpers (get sha then PUT)
+    const toBase64 = (str) => btoa(unescape(encodeURIComponent(str)));
+
+    async function getFileSha({owner,repo,branch,path,headers}){
+      const url = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(branch)}`;
+      try{
+        const res = await fetch(url, { headers, cache:'no-store' });
+        if(res.ok){ const js = await res.json(); return js.sha; }
+      }catch(_){}
+      return undefined;
+    }
+
+    async function putFile({owner,repo,branch,path,token,content}){
+      const base = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
+      const headers = {
+        'Accept': 'application/vnd.github+json',
+        'Authorization': `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Content-Type': 'application/json'
+      };
+      const sha = await getFileSha({owner,repo,branch,path,headers});
+      const body = {
+        message: `Update ${path} via Web UI — ${new Date().toISOString()}`,
+        content: toBase64(content),
+        branch,
+        sha
+      };
+      const res = await fetch(base, { method:'PUT', headers, body: JSON.stringify(body) });
+      if(!res.ok){ throw new Error(`GitHub API ${res.status}: ${await res.text()}`); }
+    }
+
+    // Ensure PIN verified before any save
+    async function ensurePinVerified(){
+      if(PIN_VERIFIED) return true;
+      // open pin modal; wait for user to confirm; if successful PIN_VERIFIED will be set
+      openPinModal();
+      return new Promise((resolve) => {
+        const okBtn = $('#pinOk');
+        const cancelBtn = $('#pinCancel');
+        function onOk(){ // user clicked verify; handler above will set PIN_VERIFIED
+          setTimeout(()=>{ // small delay to allow PIN handler run
+            okBtn.removeEventListener('click', onOk);
+            cancelBtn.removeEventListener('click', onCancel);
+            resolve(PIN_VERIFIED);
+          }, 200);
+        }
+        function onCancel(){
+          okBtn.removeEventListener('click', onOk);
+          cancelBtn.removeEventListener('click', onCancel);
+          resolve(false);
+        }
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+      });
+    }
+
+    // Save to GitHub — requires PIN verification first
     async function saveToGitHub(){
       try{
-        if(!confirm('تأكيد الحفظ في القاعدة (GitHub)؟')) return;
-        // نظّف القاعدة من الحقول المؤقتة أولاً
+        const verified = await ensurePinVerified();
+        if(!verified){ toast('لا يمكن الحفظ بدون التحقق من PIN', false); return; }
+
+        // prepare clean DB
         const clean = JSON.parse(JSON.stringify(DB));
         (function walk(obj){ if(Array.isArray(obj)) obj.forEach(r=>delete r.__dirty); else if(obj && typeof obj==='object') Object.values(obj).forEach(walk); })(clean);
-        const content = JSON.stringify(clean, null, 2);
 
-        const { owner, repo, branch, path, token } = getGhCfg();
-        if(!token){
-          // تنزيل محلي بديل
-          doDownload('name.json', content);
-          if(Array.isArray(clean.officers)) doDownload('officers.json', JSON.stringify(clean.officers, null, 2));
-          toast('تم إنشاء ملفات محلية بدل الرفع', false);
-          return;
+        const mainContent = JSON.stringify(clean, null, 2);
+        const officersContent = JSON.stringify(Array.isArray(clean.officers) ? clean.officers.map(o=>({name:o.name||'', rank:o.rank||''})) : [], null, 2);
+
+        const cfg = getGhCfg();
+        // prefer token from field (set after PIN) else embedded token
+        const token = ($('#ghToken').value && $('#ghToken').value.trim()) || EMBEDDED_GITHUB_TOKEN || cfg.token;
+        if(!token){ toast('لا يوجد توكن صالح للحفظ', false); openGhModal(); return; }
+
+        if(!confirm('تأكيد الحفظ في القاعدة (GitHub)؟')) return;
+
+        // upload name.json
+        await putFile({ owner: cfg.owner, repo: cfg.repo, branch: cfg.branch, path: cfg.path, token, content: mainContent });
+        // upload officers.json if path given
+        if(cfg.officersPath){
+          await putFile({ owner: cfg.owner, repo: cfg.repo, branch: cfg.branch, path: cfg.officersPath, token, content: officersContent });
         }
-
-        // احصل على sha الحالي للملف (إن وجد) لتحديثه
-        const base = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`;
-        let sha = undefined;
-        const infoUrl = `${base}?ref=${encodeURIComponent(branch)}`;
-        const commonHeaders = {
-          'Accept': 'application/vnd.github+json',
-          'Authorization': `Bearer ${token}`,
-          'X-GitHub-Api-Version': '2022-11-28'
-        };
-        try{
-          const infoRes = await fetch(infoUrl, { headers: commonHeaders, cache:'no-store' });
-          if(infoRes.ok){
-            const js = await infoRes.json();
-            sha = js.sha;
-          }
-        }catch(_){ /* تجاهل */ }
-
-        const body = {
-          message: `Update ${path} via Web UI — ${new Date().toISOString()}`,
-          content: toBase64(content),
-          branch,
-          sha
-        };
-
-        const putRes = await fetch(base, {
-          method:'PUT',
-          headers: { ...commonHeaders, 'Content-Type':'application/json' },
-          body: JSON.stringify(body)
-        });
-        if(!putRes.ok){
-          const errText = await putRes.text();
-          throw new Error(`GitHub API ${putRes.status}: ${errText}`);
-        }
-
         toast('✔ تم الحفظ في القاعدة (GitHub)');
       }catch(e){
         console.error(e);
-        toast('✖ فشل الحفظ على GitHub: '+ e.message, false);
+        toast('✖ فشل الحفظ على GitHub: '+ (e.message||e), false);
       }
     }
 
-    // ربط الأزرار
+    // Buttons wiring
     $('#btnShow').onclick = render;
     $('#btnReload').onclick = loadDB;
-    $('#btnSaveGit').onclick = saveToGitHub;
+    $('#btnSave').onclick = saveToGitHub;
     $('#btnAdd').onclick = () => { getActiveList().push({ name:'', rank:'' }); render(); };
     $('#btnClearHall').onclick = () => {
       const list = getActiveList();
@@ -562,7 +629,7 @@
 
     shiftSel.addEventListener('change', ()=>{ if(MODE==='main'){ recalcHalls(); render(); } });
 
-    // تحويل الاسم
+    // transfer logic
     const closeTransfer = ()=>{ transferBackdrop.style.display = 'none'; transferBackdrop.__ctx = null; };
     $('#transferCancel').onclick = closeTransfer;
     $('#transferBackdrop').addEventListener('click', (e)=>{ if(e.target.id==='transferBackdrop') closeTransfer(); });
@@ -581,24 +648,42 @@
           if(i>-1){ arr.splice(i,1); }
         }
       }
-      toast('✔ تم التحويل'); closeTransfer(); render();
+      toast('✔ تم النقل'); closeTransfer(); render();
     };
 
     hallSel.addEventListener('change', ()=>{ if(MODE==='main'){ render(); } });
     searchEl.addEventListener('input', ()=>{ render(); });
 
-    // زر "عرض قاعدة أسماء الضباط" (تبديل)
     btnOfficers.onclick = () => {
       MODE = (MODE === 'officers') ? 'main' : 'officers';
       btnOfficers.textContent = (MODE==='officers') ? '↩️ الرجوع إلى عرض المناوبات' : '📋 عرض قاعدة أسماء الضباط';
-      // في وضع الضباط لا نحتاج التحويل/الصالات
       render();
     };
 
-    btnBack && (btnBack.onclick = ()=>{ history.back(); });
+    $('#btnImport').onclick = () => { $('#filePicker').click(); };
 
-    // بدء التشغيل
-    loadDB();
+    $('#ghSave').onclick = () => { // override to ensure token field saved too
+      ghSet('owner',  $('#ghOwner').value.trim());
+      ghSet('repo',   $('#ghRepo').value.trim());
+      ghSet('branch', $('#ghBranch').value.trim());
+      ghSet('path',   $('#ghPath').value.trim());
+      ghSet('officersPath', $('#ghOfficersPath').value.trim());
+      ghSet('token',  $('#ghToken').value.trim());
+      toast('تم حفظ إعدادات GitHub');
+      closeGhModal();
+    };
+
+    // Back button
+    $('#btnBack').onclick = ()=>{ try{ history.back(); }catch(_){} };
+
+    // start
+    // Pre-populate ghToken field with EMBEDDED_GITHUB_TOKEN so it's visible at load
+    window.addEventListener('load', () => {
+      // set initial ghToken visible
+      $('#ghToken').value = EMBEDDED_GITHUB_TOKEN || ghGet('token','');
+      loadDB();
+    });
+
   </script>
 </body>
 </html>
