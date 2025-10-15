@@ -17,6 +17,20 @@ function setHijriAndDayNow(){
     now.setDate(now.getDate() - 1);
     useYesterday = true;
   }
+// داخل setHijriAndDayNow()… بعد حساب hour/minute وتعبئة الحقول
+{
+  const mins = hour * 60 + minute;
+  const inShiftChangeWindow = (mins >= 5*60 && mins < 6*60); // 05:00–05:59
+
+  const dateEl = $('custom-hijri-date');
+  const dayEl  = $('custom-weekday');
+  const hdrEl  = $('header-date');
+  const noteEl = $('shift-change-note');
+
+  [dateEl, dayEl].forEach(el => el?.classList.toggle('orange-highlight', inShiftChangeWindow));
+  hdrEl?.classList.toggle('orange-text', inShiftChangeWindow);
+  if (noteEl) noteEl.style.display = inShiftChangeWindow ? 'block' : 'none';
+}
 
   const fmt = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', {
     day: '2-digit', month: '2-digit', year: 'numeric'
@@ -713,30 +727,46 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // بالنقر
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.chip');
-    if (!btn) return;
-    const container = btn.closest('.chips');
-    const parent = btn.closest('.with-chips');
-    const targetSel = parent?.getAttribute('data-target') || parent?.dataset.target || (parent?.querySelector('input') ? ('#' + parent.querySelector('input').id) : null);
-    const target = targetSel ? document.querySelector(targetSel) : null;
+// ===== أزرار الاختيارات السريعة (chips) — تصحيح لحفظ قيمة shift/hall =====
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.chip');
+  if (!btn) return;
 
-    if (target) {
-      target.value = btn.dataset.value || btn.getAttribute('data-value') || '';
-      target.dispatchEvent(new Event('change', { bubbles:true }));
-      target.focus();
+  // جد الحاوية التي تحتوي attribute data-target (قد تكون .chips أو أي عنصر)
+  const wrap = btn.closest('[data-target]') || btn.parentElement;
+  const targetSel = wrap?.getAttribute ? wrap.getAttribute('data-target') : null;
+  if (!targetSel) return;
+
+  const target = document.querySelector(targetSel);
+  if (target) {
+    // 1) عيّن القيمة في الحقل
+    const val = btn.getAttribute('data-value') || '';
+    target.value = val;
+
+    // 2) أطلق أحداث change و input ليُلتقط التغيير من أي استماع
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+    target.dispatchEvent(new Event('change', { bubbles: true }));
+
+    // 3) إذا كان الهدف هو المناوبة أو الصالة — خزّن فورًا ونفّذ تحديثات مرتبطة
+    if (targetSel === '#shift-number' || targetSel === '#hall-number') {
+      if (typeof populateNamesForCurrentSelection === 'function') {
+        populateNamesForCurrentSelection();
+      }
+      // حفظ القيم المختارة مباشرة حتى لو لم ينتظر المستخدم كتابة إضافية
+      if (typeof saveShiftFields === 'function') saveShiftFields();
+
+      // تركيز على حقل الاسم لتسهيل اختيار الاسم
+      const nameInput = document.getElementById('IndividualName');
+      if (nameInput) nameInput.focus();
     }
-    if (container) setActiveChip(container, btn);
-  });
+  }
 
-  // بلوحة المفاتيح: Enter/Space
-  document.addEventListener('keydown', (e) => {
-    const btn = e.target.closest('.chip');
-    if (!btn) return;
-    if (e.key !== 'Enter' && e.key !== ' ') return;
-    e.preventDefault();
-    btn.click();
-  });
+  // مظهر تفعيل الزر: إزالة active من الأخريات وإضافة للزِر الحالي
+  const container = wrap || btn.parentElement;
+  container.querySelectorAll?.('.chip')?.forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+});
+
 })();
 // ======== وقت الاستلام التلقائي ========
 let _userEditedReceiveTime = false;
@@ -795,3 +825,101 @@ function bindReceiveTimeEditGuards(){
     toEl.addEventListener(evt,   ()=>{ _userEditedReceiveTime = true; });
   });
 }
+
+
+
+// ===== حفظ / تحميل حقول المناوبة المحددة فقط =====
+const SHIFT_KEYS = ['officer-name','officer-rank','shift-number','hall-number','summary'];
+const SHIFT_STORAGE_KEY = 'shift_fields_payload';
+const LAST_CLEAR_KEY = 'lastShiftClearTime';
+
+// اقرأ القيم من DOM إلى كائن
+function collectShiftFields(){
+  const out = {};
+  SHIFT_KEYS.forEach(id=>{
+    const el = document.getElementById(id);
+    if (el) out[id] = (el.value ?? '').toString();
+  });
+  return out;
+}
+
+// حفظ البيانات
+function saveShiftFields(){
+  try {
+    const data = collectShiftFields();
+    localStorage.setItem(SHIFT_STORAGE_KEY, JSON.stringify(data));
+    const ok = document.getElementById('check-officer-name');
+    if (ok) { ok.style.display = 'inline'; setTimeout(()=> ok.style.display = 'none', 1400); }
+  } catch(e){ console.error('حفظ حقول المناوبة فشل:', e); }
+}
+
+// تحميل البيانات
+function loadShiftFields(){
+  try {
+    const raw = localStorage.getItem(SHIFT_STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    Object.keys(data).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = data[id] ?? '';
+    });
+  } catch(e){ console.error('تحميل حقول المناوبة فشل:', e); }
+}
+
+// حذف التخزين
+function clearShiftFieldsStorage(){
+  try { localStorage.removeItem(SHIFT_STORAGE_KEY); } catch(e){}
+}
+
+// منظّم التنظيف
+function scheduleShiftStorageCleaner(){
+  const TARGET_HOURS = [6,14,22];
+
+  function runCheck(){
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    // فقط ساعات دقيقة 00
+    if (!TARGET_HOURS.includes(h) || m !== 0) return;
+
+    const key = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${h}-${m}`;
+    const last = localStorage.getItem(LAST_CLEAR_KEY);
+    if (last !== key){
+      // نظّف الحقول والتخزين
+      SHIFT_KEYS.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      clearShiftFieldsStorage();
+      localStorage.setItem(LAST_CLEAR_KEY, key);
+      console.info('تم تنظيف حقول المناوبة والتخزين عند', now.toISOString());
+    }
+  }
+
+  runCheck(); // فوري عند التحميل
+  setInterval(runCheck, 30*1000); // تحقق كل 30 ثانية
+}
+
+// الحفظ التلقائي
+function bindAutoSaveForShiftFields(){
+  SHIFT_KEYS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', ()=>{
+      if(el._saveTimer) clearTimeout(el._saveTimer);
+      el._saveTimer = setTimeout(()=> saveShiftFields(), 400);
+    });
+  });
+}
+
+// تعديل clearAll
+const _origClearAll = window.clearAll;
+window.clearAll = function(){
+  try { clearShiftFieldsStorage(); } catch(e){}
+  if (typeof _origClearAll === 'function') _origClearAll();
+};
+
+// تهيئة
+document.addEventListener('DOMContentLoaded', ()=>{
+  loadShiftFields();
+  bindAutoSaveForShiftFields();
+  scheduleShiftStorageCleaner();
+});
+
