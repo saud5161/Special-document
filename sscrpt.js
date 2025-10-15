@@ -111,7 +111,7 @@ async function loadVisaTypes() {
     });
   } catch {
     // قائمة افتراضية في حال عدم وجود الملف
-    ['زيارة','خروج وعودة','نهائي',' زيارة سياحية','مرور','عمرة','زيارة عائلية','زيارة رجال اعمال'].forEach(v=>{
+    ['زيارة','خروج وعودة',' خروج نهائي',' زيارة سياحية','مرور','عمرة','زيارة عائلية','زيارة رجال اعمال'].forEach(v=>{
       const opt = document.createElement('option'); opt.value = v; dl.appendChild(opt);
     });
   }
@@ -198,7 +198,8 @@ function collect(){
     FlightNumber:     $('FlightNumber')?.value      || '',
     TravelDestination:$('TravelDestination')?.value || '',
     IssuedNumber:     $('IssuedNumber')?.value      || '',
-    AttachedCount:    $('AttachedCount')?.value     || '', // ✅ جديد: عدد المشفوعات
+    // ✅ جديد: عدد المشفوعات
+    AttachedCount:    $('AttachedCount')?.value     || '', 
     // الآمر المناوب
     CommanderName:    $('commander-name')?.value    || '', // جديد
     CommanderRank:    $('commander-rank')?.value    || '',  // جديد
@@ -281,8 +282,9 @@ if (ENABLE_SHIFT_FILE && window.electronAPI?.saveShift) {
     // ✅ غياب أفراد
     wordLink.href = "dic/نماذج الافراد/غياب افراد.docm";
     }else if (choice === "absence2") {
-    // ✅ غياب مجندات
     wordLink.href = "dic/نماذج الافراد/غياب مجندات.docm";
+    }else if (choice === "FINGER") {
+    wordLink.href = "dic/خطابات جاهزة لتعديل/عدم قبول الخصائص الحيوية.docm";
   } else {
     wordLink.href = "default.docm"; // أو رابط افتراضي إن أردت
   }
