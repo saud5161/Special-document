@@ -299,6 +299,8 @@ if (ENABLE_SHIFT_FILE && window.electronAPI?.saveShift) {
     wordLink.href = "dic/نماذج الافراد/غياب مجندات.docm";
     }else if (choice === "FINGER") {
     wordLink.href = "dic/خطابات جاهزة لتعديل/عدم قبول الخصائص الحيوية.docm";
+  }else if (choice === "FINGERCON") {
+    wordLink.href = "dic/خطابات جاهزة لتعديل/ارتباط بصمات.docm"
   } else {
     wordLink.href = "default.docm"; // أو رابط افتراضي إن أردت
   }
