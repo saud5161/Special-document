@@ -1308,8 +1308,9 @@ h3 {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
   display: inline-block;          /* حتى يكون بجانب تعليمات Word */
   vertical-align: top;
-  margin-right: 20px;             /* إلى أقصى اليمين */
+  margin-right: 800px;             /* إلى أقصى اليمين */
   margin-left: 0;
+  margin-bottom: 15px;
   direction: rtl;
 }
 
@@ -1553,3 +1554,21 @@ h3 {
 }
 .btn-primary:hover { background-color: #2f5b48; }
 .btn-secondary:hover { background-color: #bbb; }
+/* فقط لتموضع الشارة داخل محتوى البطاقة */
+.model-card .card-content { position: relative; }
+
+/* شارة "جديد" بسيطة أعلى اليسار */
+.badge-new{
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px; /* أعلى اليسار وتدعم RTL/LTR */
+  background: #e53935;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  user-select: none;
+  white-space: nowrap;
+}
