@@ -290,3 +290,92 @@ body{
 .time-range input {
   flex: 1;
 }
+/* إبراز التاريخ/اليوم عند 5–6 صباحاً */
+.orange-highlight {
+  background: #fff4e5 !important;
+  border-color: #ffb74d !important;
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, .25) inset;
+}
+
+/* تلوين نص التاريخ في الهيدر */
+.today.orange-text {
+  color: #ff9800 !important;
+  font-weight: 700;
+}
+
+/* نسخة برتقالية لصندوق التنبيه */
+.inline-alert.orange {
+  background: #fff4e5;
+  border-color: #ffd08a;
+  color: #7a4a00;
+}
+/* لوح مواطن مغادر — عرضي ومُلتف */
+#moatan-compact{
+  background:#fff;
+  border:1px solid var(--bd);
+  border-radius:12px;
+  box-shadow: var(--shadow-sm);
+  padding:10px 12px;
+  margin-top:10px;
+  max-width: var(--page-max);
+  font-size:.9rem;
+  line-height:1.55;
+  margin-right: 100px;
+}
+
+/* كل سطر “اختيار” يكون صفّي ويلتف عند الحاجة */
+#moatan-compact .mc-line,
+#moatan-compact .mc-check{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;              /* يلتف تلقائيًا لو ضاق العرض */
+}
+
+/* مجموعة الخيارات الفرعية تصبح صفوف ملتفّة أيضًا */
+#moatan-compact .mc-sub{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-inline-start: 6px;    /* مسافة بسيطة فقط */
+}
+
+/* النص بعد الـ checkbox يظل مرنًا ويلف */
+#moatan-compact .mc-check > span{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+/* مربعات التواريخ/الأرقام عرضية قصيرة ومتماسكة */
+#moatan-compact .mc-mini{
+  width:110px;
+  border:1px solid var(--bd);
+  border-radius:8px;
+  padding:3px 6px;
+  font-size:.86rem;
+  text-align:center;
+}
+
+#moatan-compact .mc-wide{
+  width:260px;
+  border:1px solid var(--bd);
+  border-radius:8px;
+  padding:3px 6px;
+  font-size:.86rem;
+}
+
+/* حجم المربعات قبل النص */
+#moatan-compact input[type="checkbox"]{
+  accent-color: var(--brand-600);
+  transform: scale(1.05);
+  margin-inline-end: 4px;
+}
+
+/* تحسين استجابة أصغر الشاشات: تصغير بسيط وترك التفاف أكبر */
+@media (max-width: 720px){
+  #moatan-compact{ font-size:.88rem; }
+  #moatan-compact .mc-mini{ width:100px; }
+  #moatan-compact .mc-wide{ width:220px; }
+}

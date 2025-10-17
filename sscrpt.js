@@ -228,15 +228,43 @@ BalanceTimeFrom:        $('BalanceTimeFrom')?.value        || '',
 BalanceTimeTo:          $('BalanceTimeTo')?.value          || '',
 EveningBalanceFrom:     $('EveningBalanceFrom')?.value     || '',
 EveningBalanceTo:       $('EveningBalanceTo')?.value       || '',
-BalanceDateNight:       $('BalanceDateNight')?.value       || ''
+BalanceDateNight:       $('BalanceDateNight')?.value       || '',
+MarkedCheck: document.getElementById("myCheckBox")?.checked ? "True" : "False",
+    // ===== MOATAN: مواطن مغادر (لوح moatan-compact) =====
+    // المربع الرئيسي:
+    MC_Forbidden:        document.getElementById('mc-forbidden')?.checked ? 'True' : 'False',
+
+    // برقية وزارة الداخلية:
+    MC_MOI:              document.getElementById('mc-moi')?.checked ? 'True' : 'False',
+    MC_MOI_Number:       document.getElementById('mc-moiNum')?.value?.trim() || '',
+    MC_MOI_DateH:        document.getElementById('mc-moiDate')?.value?.trim() || '',
+    MC_MOI_DirNumber:    document.getElementById('mc-moiDirNum')?.value?.trim() || '',
+
+    // برقية مدير عام الجوازات:
+    MC_Jawazat:          document.getElementById('mc-jawazat')?.checked ? 'True' : 'False',
+    MC_Jawazat_Number:   document.getElementById('mc-jawazatNum')?.value?.trim() || '',
+    MC_Jawazat_DateH:    document.getElementById('mc-jawazatDate')?.value?.trim() || '',
+
+    // جواز دبلوماسي:
+    MC_Diplomatic:       document.getElementById('mc-diplomatic')?.checked ? 'True' : 'False',
+    MC_Diplomatic_Desc:  document.getElementById('mc-diplomaticDesc')?.value?.trim() || '',
+
+    // دون السن 18:
+    MC_Under18:          document.getElementById('mc-under18')?.checked ? 'True' : 'False'
+
   };
 }
 
 // تحويل الكائن إلى نص INI على شكل سطور key=value
 function payloadToIni(obj){
-  return Object.entries(obj)
-    .map(([k,v])=>`${k}=${(v??'').toString().replace(/\r|\n/g,' ').trim()}`)
-    .join("\r\n");
+  const lines = [];
+  for (const [k, vRaw] of Object.entries(obj)) {
+    const v = (vRaw ?? '').toString().replace(/\r|\n/g, ' ').trim();
+    // ❗️تجاهُل المفاتيح ذات القيم الفارغة (مربعات نص فقط)
+    if (v === '') continue;
+    lines.push(`${k}=${v}`);
+  }
+  return lines.join('\r\n');
 }
 
 // حفظ/تنفيذ
@@ -356,17 +384,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  if (choice === "moatan") {
-    
+// ===== moatan: إظهار اللوح المستقل فقط وإخفاء "نوع التأشيرة" كالسابق =====
+if (choice === "moatan") {
+  // إخفاء نوع التأشيرة فقط (كما كنت تفعل)
+  const visaField = document.getElementById("VisaType");
+  const visaLabel = document.querySelector("label[for='VisaType']");
+  if (visaField) visaField.style.display = "none";
+  if (visaLabel) visaLabel.style.display = "none";
 
-    // 2) إخفاء نوع التأشيرة
-    const visaField = document.getElementById("VisaType");
-    const visaLabel = document.querySelector("label[for='VisaType']");
-    if (visaField) visaField.style.display = "none";
-    if (visaLabel) visaLabel.style.display = "none";
-    
-    
+  // إظهار اللوح المستقل
+  const mc = document.getElementById("moatan-compact");
+  if (mc) {
+    mc.hidden = false;
+    setTimeout(()=> mc.scrollIntoView({ behavior: "smooth", block: "center" }), 250);
   }
+}
+
+
+
   
 
 if (choice === "Unable") {
@@ -925,3 +960,70 @@ document.addEventListener('DOMContentLoaded', ()=>{
   scheduleShiftStorageCleaner();
 });
 
+// ===== Auto-check for "moatan-compact" =====
+function initMoatanAutoCheck(){
+  const mc = document.getElementById('moatan-compact');
+  if (!mc) return;
+
+  const master = mc.querySelector('#mc-forbidden');
+  const rowCheckboxes = Array.from(mc.querySelectorAll('.mc-check input[type="checkbox"]'))
+    .filter(cb => cb.id !== 'mc-forbidden');
+
+  // كل حقول النص في اللوح (اعتمدنا على الكلاسات mc-mini/mc-wide)
+  const textInputs = mc.querySelectorAll('input.mc-mini, input.mc-wide');
+
+  // حدّث صحّ السطر بناءً على امتلاء أي حقل نص فيه
+  function updateRowCheckboxFromInput(input){
+    const line = input.closest('.mc-check');
+    if (!line) return;
+    const lineCbs = line.querySelectorAll('input[type="checkbox"]');
+    const lineTextInputs = line.querySelectorAll('input.mc-mini, input.mc-wide');
+
+    // هل أي حقل نص في السطر غير فارغ؟
+    const anyFilled = Array.from(lineTextInputs).some(i => (i.value || '').trim() !== '');
+
+    // إن وجد checkbox في نفس السطر (عادة واحد)
+    if (lineCbs.length) {
+      lineCbs[0].checked = anyFilled;
+    }
+    updateMaster();
+  }
+
+  // حدّث صحّ الرئيسي: إذا أي سطر مُفعّل → فعّل الرئيسي
+  function updateMaster(){
+    const anyRowChecked = rowCheckboxes.some(cb => cb.checked);
+    if (master) master.checked = anyRowChecked;
+  }
+
+  // اربط أحداث الكتابة/التغيير لكل حقل نص
+  textInputs.forEach(inp => {
+    ['input','change'].forEach(evt => {
+      inp.addEventListener(evt, () => updateRowCheckboxFromInput(inp));
+    });
+  });
+
+  // إذا المستخدم فعّل/عطّل سطرًا يدويًا، حدّث الرئيسي
+  rowCheckboxes.forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (cb.checked && master) master.checked = true;
+      else updateMaster();
+    });
+  });
+
+  // تهيئة أولية (لو في قيم محفوظة/ملتصقة)
+  textInputs.forEach(inp => updateRowCheckboxFromInput(inp));
+}
+
+// فعّل المنطق عندما يكون الاختيار moatan ظاهر
+document.addEventListener('DOMContentLoaded', () => {
+  const choice = localStorage.getItem('wordLinkChoice');
+  if (choice === 'moatan') {
+    // قد تكون عندك أسطر إظهار اللوح هنا
+    // مثال منطقك الحالي لإظهار اللوح:
+    // const mc = document.getElementById('moatan-compact');
+    // if (mc) mc.hidden = false;
+
+    // ثم فعّل الربط:
+    setTimeout(initMoatanAutoCheck, 0);
+  }
+});

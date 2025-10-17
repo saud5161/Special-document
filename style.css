@@ -1296,45 +1296,128 @@ h3 {
   }
 }
 
+/* ====== صندوق بيانات الاستلام الصغير في أقصى اليمين ====== */
 .shift-form {
   background-color: #f9f9f9;
-  padding: 15px 20px;
+  padding: 10px 12px;
   border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-top: 30px;
-  max-width: 500px;
-  margin-right: auto;
-  margin-left: auto;
-  font-size: 14px;
+  border-radius: 6px;
+  margin-top: 20px;
+  max-width: 340px;               /* صغير ومضغوط */
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  display: inline-block;          /* حتى يكون بجانب تعليمات Word */
+  vertical-align: top;
+  margin-right: 20px;             /* إلى أقصى اليمين */
+  margin-left: 0;
+  direction: rtl;
 }
 
+/* العنوان */
 .shift-form h3 {
   color: #b6920b;
-  margin-bottom: 10px;
-  font-size: 18px;
-  text-align: center;
+  margin-bottom: 6px;
+  font-size: 14px;
+  text-align: right;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 4px;
 }
 
+/* الملاحظة الصغيرة */
 .shift-form .hint {
-  font-size: 12px;
+  font-size: 11px;
   color: #777;
-  text-align: center;
-  margin-bottom: 15px;
+  text-align: right;
+  margin-bottom: 8px;
 }
 
+/* شبكة من خانتين في كل صف */
+.shift-form .field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 10px;  /* مسافات بين الحقول */
+  align-items: center;
+}
+
+/* تنسيق الحقول والعناوين */
 .shift-form label {
   display: block;
-  margin-top: 10px;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 2px;
 }
 
 .shift-form input {
   width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 6px;
+  padding: 5px 6px;
+  border-radius: 4px;
   border: 1px solid #bbb;
+  font-size: 12px;
+  box-sizing: border-box;
 }
+
+/* أزرار */
+.shift-form button {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.shift-form .btn-primary {
+  background-color: #3d775f;
+  color: #fff;
+  border: none;
+}
+
+.shift-form .btn-primary:hover {
+  background-color: #2f5b48;
+}
+
+.shift-form .btn-secondary {
+  background-color: #ccc;
+  color: #000;
+  border: none;
+}
+
+.shift-form .btn-secondary:hover {
+  background-color: #b5b5b5;
+}
+
+/* أزرار في المنتصف */
+.shift-form .button-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* الصندوقين بجانب بعض */
+.instruction-box,
+.shift-form {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.instruction-box {
+  width: 600px;
+  margin-left: 20px;
+}
+
+/* موبايل: رجوع للتكديس العمودي */
+@media (max-width: 768px) {
+  .instruction-box,
+  .shift-form {
+    display: block;
+    width: 95%;
+    margin: 10px auto;
+  }
+  .shift-form .field-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 
 #send-officer-info {
   margin-top: 20px;
@@ -1380,3 +1463,93 @@ h3 {
 .btn-secondary:hover {
   background-color: #545b62;
 }
+/* تنسيق جديد لتعليمات ملفات Word */
+.instruction-box {
+  background: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-right: 5px solid #0b3c6d;
+  padding: 20px;
+  margin: 25px auto;
+  width: 600px;
+  text-align: right;
+  direction: rtl;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+.instruction-box h3 {
+  color: #0b3c6d;
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.instruction-box .note {
+  color: #008000;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.instruction-box ol {
+  margin: 0;
+  padding-right: 20px;
+  font-size: 14px;
+  color: #333;
+}
+
+/* تنسيق مضغوط لحقول بيانات الاستلام */
+.compact-form {
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 15px;
+  width: 80%;
+  max-width: 700px;
+  margin: 20px auto;
+  border-radius: 10px;
+}
+.compact-form h3 {
+  background-color: #c7a33a;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 18px;
+  text-align: center;
+}
+.compact-form .hint {
+  font-size: 13px;
+  color: #555;
+  text-align: center;
+  margin-bottom: 10px;
+}
+.compact-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+.small-input {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+.btn-primary, .btn-secondary {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-primary {
+  background-color: #3d775f;
+  color: white;
+}
+.btn-secondary {
+  background-color: #ccc;
+}
+.btn-primary:hover { background-color: #2f5b48; }
+.btn-secondary:hover { background-color: #bbb; }
