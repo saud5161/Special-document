@@ -43,7 +43,10 @@
             <i class="fa-solid fa-circle-info"></i>
             تم ضبط التاريخ لليوم السابق بسبب التوقيت الاستلام
           </div>
-          
+              <div id="shift-change-note" class="inline-alert orange" style="display:none">
+  <i class="fa-solid fa-triangle-exclamation"></i>
+  يرجى التأكد من التاريخ واليوم — فترة تغيير الشفت
+</div>
           <div class="card__body form-grid">
             <label for="custom-hijri-date"><i class="fas fa-calendar-alt"></i> التاريخ (هجري)</label>
             <input id="custom-hijri-date" class="form-control" placeholder="يُملأ تلقائيًا">
@@ -92,7 +95,8 @@
               <i class="fas fa-info-circle"></i> تم ضبط التاريخ واليوم تلقائيًا
             </span>
           </div>
-          
+      
+
         </section>
         
 <section class="card" id="card-shift-balance" style="display:none">
@@ -190,10 +194,58 @@
 
             <label for="IssuedNumber"><i class="fas fa-barcode"></i> رقم الصادر</label>
             <input id="IssuedNumber" placeholder="رقم الصادر" />
+            
           </div>
+          
         </section>
+        
       </div>
+      
     </div>
+    <div id="moatan-compact" hidden dir="rtl">
+  <div class="mc-line">
+    <label class="mc-check">
+      <input type="checkbox" id="mc-forbidden">
+      <span>مغادر إلى إحدى الدول الممنوع السفر إليها وتم السماح له بالمغادرة بناءً على:</span>
+    </label>
+  </div>
+
+  <div class="mc-sub">
+    <label class="mc-check">
+      <input type="checkbox" id="mc-moi">
+      <span>○ برقية وزارة الداخلية رقم
+        <input class="mc-mini" id="mc-moiNum">
+        وتاريخ
+        <input class="mc-mini" id="mc-moiDate"> هـ والمقيدة بالمديرية بالرقم
+        <input class="mc-mini" id="mc-moiDirNum">
+      </span>
+    </label>
+
+    <label class="mc-check">
+      <input type="checkbox" id="mc-jawazat">
+      <span>○ برقية مدير عام الجوازات رقم
+        <input class="mc-mini" id="mc-jawazatNum">
+        وتاريخ
+        <input class="mc-mini" id="mc-jawazatDate"> هـ
+      </span>
+    </label>
+
+    <label class="mc-check">
+      <input type="checkbox" id="mc-diplomatic">
+      <span>○ يحمل جواز دبلوماسي بصفة (
+        <input class="mc-wide" id="mc-diplomaticDesc">
+        )
+      </span>
+    </label>
+
+    <label class="mc-check">
+      <input type="checkbox" id="mc-under18">
+      <span>○ دون السن 18 عام ومغادر إلى الدول المسموح للأبناء بمرافقة والداتهم</span>
+    </label>
+    
+  </div>
+</div>
+
   </main>
 
   <!-- شريط الأزرار المثبّت بأسفل الشاشة -->
