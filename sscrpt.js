@@ -1087,3 +1087,75 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+// === تنسيق تلقائي لأي input يملك الكلاس h-date إلى: dd/mm/yyyy هـ ===
+// يدعم أرقام عربية/إنجليزية، فواصل/شرطات، وترتيب سنة-شهر-يوم أو يوم-شهر-سنة
+(function attachHijriDateNormalizer(){
+  // تحويل الأرقام العربية -> إنجليزية
+  const toLatinDigits = (s) => s.replace(
+    /[٠-٩]/g,
+    (d) => "0123456789"["٠١٢٣٤٥٦٧٨٩".indexOf(d)]
+  );
+
+  function normalizeHijriDate(raw){
+    if (!raw) return "";
+
+    // 1) توحيد الأرقام وإزالة المسافات الزائدة
+    let s = toLatinDigits(String(raw).trim());
+    // حذف لاحقة هـ إن وُجدت وأي مسافات حولها
+    s = s.replace(/\s*هـ\s*$/u, "");
+    // 2) نفصل بالأحرف غير الرقمية
+    let parts = s.split(/[^\d]+/).filter(Boolean);
+
+    // دعم الإدخال المتصل: ddmmyyyy (8 أرقام)
+    if (parts.length === 1 && /^\d{6,8}$/.test(parts[0])) {
+      const t = parts[0];
+      if (t.length === 8) parts = [t.slice(0,2), t.slice(2,4), t.slice(4)];
+      else if (t.length === 7) parts = [t.slice(0,1), t.slice(1,3), t.slice(3)];
+      else if (t.length === 6) parts = [t.slice(0,2), t.slice(2,4), "14"+t.slice(4)];
+    }
+
+    // الآن نتوقع 3 أجزاء: يوم/شهر/سنة بأي ترتيب
+    if (parts.length !== 3) return "";
+
+    let [a,b,c] = parts.map(x => x.replace(/\D/g,""));
+
+    // إن وُجد جزء بطول 4 نفترضه السنة
+    let y, m, d;
+    if (a.length === 4) { y = a; m = b; d = c; }
+    else if (b.length === 4) { y = b; d = a; m = c; }
+    else if (c.length === 4) { y = c; d = a; m = b; }
+    else {
+      // لا يوجد 4 خانات: نتعامل كـ d/m/yy -> نمدّدها إلى 14yy
+      y = (c.length === 2) ? ("14" + c) : c;
+      d = a; m = b;
+    }
+
+    // تصفير أمامي
+    const pad2 = (n) => (n||"").padStart(2,"0");
+
+    d = pad2(String(parseInt(d||"0",10)));
+    m = pad2(String(parseInt(m||"0",10)));
+    y = String(parseInt(y||"0",10)).padStart(4,"0");
+
+    // تحقّق بسيط
+    if (d === "00" || m === "00" || y.length !== 4) return "";
+
+    return `${d}/${m}/${y} هـ`;
+  }
+
+  function bind(el){
+    const apply = () => {
+      const v = el.value;
+      const out = normalizeHijriDate(v);
+      if (out) el.value = out;
+    };
+    // عند فقدان التركيز أو الضغط Enter أو التغيير
+    el.addEventListener("blur", apply);
+    el.addEventListener("change", apply);
+    el.addEventListener("keydown", (e)=>{ if (e.key === "Enter") { e.preventDefault(); apply(); } });
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    document.querySelectorAll("input.h-date").forEach(bind);
+  });
+})();
