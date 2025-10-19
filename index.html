@@ -202,48 +202,89 @@
       </div>
       
     </div>
-    <div id="moatan-compact" hidden dir="rtl">
-  <div class="mc-line">
-    <label class="mc-check">
-      <input type="checkbox" id="mc-forbidden">
-      <span>مغادر إلى إحدى الدول الممنوع السفر إليها وتم السماح له بالمغادرة بناءً على:</span>
-    </label>
+<div id="moatan-compact" hidden dir="rtl">
+
+  <div class="mc-grid mc-compact">
+
+    <!-- القسم الأول -->
+    <div class="mc-card" id="sec-forbidden">
+      <label class="mc-check mc-one-line" id="mc-forbidden-line">
+        <input type="checkbox" id="mc-forbidden">
+        <span>مغادر الى احدى الدول الممنوع السفر إليها وتم السماح له بالمغادرة بناءً على :</span>
+      </label>
+
+      <div class="mc-options">
+        <label class="mc-check">
+          <input type="checkbox" id="mc-moi">
+          <span>
+            برقية وزارة الداخلية رقم
+            <input class="mc-mini" id="mc-moiNum">
+            وتاريخ
+            <input class="mc-mini" id="mc-moiDate" placeholder="مثال: 01/02/1447هـ">
+            والمقيدة بالمديرية بالرقم
+            <input class="mc-mini" id="mc-moiDirNum">
+          </span>
+        </label>
+
+        <label class="mc-check">
+          <input type="checkbox" id="mc-jawazat">
+          <span>
+            برقية مدير عام الجوازات رقم
+            <input class="mc-mini" id="mc-jawazatNum">
+            وتاريخ
+            <input class="mc-mini" id="mc-jawazatDate" placeholder="مثال: 05/03/1447هـ">
+          </span>
+        </label>
+
+        <label class="mc-check">
+          <input type="checkbox" id="mc-diplomatic">
+          <span>
+            يحمل جواز دبلوماسي بصفة (
+            <input class="mc-wide" id="mc-diplomaticDesc">
+            )
+          </span>
+        </label>
+
+        <label class="mc-check">
+          <input type="checkbox" id="mc-under18">
+          <span>دون السن 18 عام ومغادر الى الدول المسموح للأبناء بمرافقة والداتهم</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- القسم الثاني -->
+    <div class="mc-card" id="sec-military">
+      <label class="mc-check">
+        <input type="checkbox" id="mc-military">
+        <span>من فئة العسكريين</span>
+      </label>
+
+      <div class="mc-options">
+        <label class="mc-check"><input type="checkbox" id="mc-mil-nosdoc"><span>لا يحمل وثيقة سفر</span></label>
+        <label class="mc-check"><input type="checkbox" id="mc-mil-destdiff"><span>وجهة المغادرة مختلفة</span></label>
+        <label class="mc-check"><input type="checkbox" id="mc-mil-leavenotstart"><span>الاجازة لم تبدا</span></label>
+        <label class="mc-check"><input type="checkbox" id="mc-mil-other"><span>اخرى</span></label>
+        <label class="mc-check"><input type="checkbox" id="mc-mil-attach-leave"><span>مرفق نسخة من وثيقة الاجازة</span></label>
+      </div>
+    </div>
+
+    <!-- القسم الثالث -->
+    <div class="mc-card" id="sec-docvalid">
+      <label class="mc-check">
+        <input type="checkbox" id="mc-docless">
+        <span>يحمل وثيقة سفر اقل من المدة النظامية</span>
+      </label>
+
+      <div class="mc-options mc-inline">
+        <label class="mc-check"><input type="checkbox" id="mc-doc-3m"><span>أقل من ثلاثة أشهر</span></label>
+        <label class="mc-check"><input type="checkbox" id="mc-doc-6m"><span>أقل من ستة أشهر</span></label>
+      </div>
+    </div>
+
   </div>
+</div>
 
-  <div class="mc-sub">
-    <label class="mc-check">
-      <input type="checkbox" id="mc-moi">
-      <span>○ برقية وزارة الداخلية رقم
-        <input class="mc-mini" id="mc-moiNum">
-        وتاريخ
-        <input class="mc-mini" id="mc-moiDate"> هـ والمقيدة بالمديرية بالرقم
-        <input class="mc-mini" id="mc-moiDirNum">
-      </span>
-    </label>
-
-    <label class="mc-check">
-      <input type="checkbox" id="mc-jawazat">
-      <span>○ برقية مدير عام الجوازات رقم
-        <input class="mc-mini" id="mc-jawazatNum">
-        وتاريخ
-        <input class="mc-mini" id="mc-jawazatDate"> هـ
-      </span>
-    </label>
-
-    <label class="mc-check">
-      <input type="checkbox" id="mc-diplomatic">
-      <span>○ يحمل جواز دبلوماسي بصفة (
-        <input class="mc-wide" id="mc-diplomaticDesc">
-        )
-      </span>
-    </label>
-
-    <label class="mc-check">
-      <input type="checkbox" id="mc-under18">
-      <span>○ دون السن 18 عام ومغادر إلى الدول المسموح للأبناء بمرافقة والداتهم</span>
-    </label>
-    
-  </div>
+  
 </div>
 
   </main>

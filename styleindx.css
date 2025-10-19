@@ -379,3 +379,119 @@ body{
   #moatan-compact .mc-mini{ width:100px; }
   #moatan-compact .mc-wide{ width:220px; }
 }
+/* شبكة بطاقات صغيرة */
+#moatan-compact .mc-grid.mc-compact{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* بطاقة هاي-لايت خفيفة وصغيرة */
+#moatan-compact .mc-card{
+  background: #fffbe6;
+  border: 1px dashed #e6b21a;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-shadow: 0 1px 5px rgba(0,0,0,.04);
+  font-size: clamp(.80rem, .95vw, .92rem);  /* خط صغير ومرن */
+}
+
+/* صف الاختيار: صندوق أولاً ثم النص، وفي سطر واحد دائمًا */
+#moatan-compact .mc-check{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;      /* سطر واحد */
+  line-height: 1.6;
+}
+
+/* العنوان الرئيسي أيضاً سطر واحد */
+#moatan-compact .mc-one-line{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* مجموعة الخيارات داخل البطاقة */
+#moatan-compact .mc-options{
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+/* خيارات قصيرة بجانب بعض */
+#moatan-compact .mc-options.mc-inline{
+  display: flex;
+  flex-wrap: nowrap;    /* سطر واحد */
+  gap: 10px;
+}
+
+/* الحقول أصغر (أرقام/تواريخ/أوصاف) */
+#moatan-compact .mc-mini{
+  width: 120px;         /* أصغر من قبل */
+  padding: 2px 6px;
+  margin-inline: 3px;
+  font-size: .88rem;
+}
+
+#moatan-compact .mc-wide{
+  width: 170px;         /* أصغر */
+  padding: 2px 6px;
+  margin-inline: 4px;
+  font-size: .88rem;
+}
+
+/* على الشاشات الضيقة: عمود واحد */
+@media (max-width: 920px){
+  #moatan-compact .mc-grid.mc-compact{ grid-template-columns: 1fr; }
+  /* لو المكان ضاق جدًا، قلّل الخط لحفظ سطر واحد */
+  #moatan-compact .mc-card{ font-size: clamp(.76rem, 2.4vw, .9rem); }
+  #moatan-compact .mc-options.mc-inline{ gap: 6px; }
+  #moatan-compact .mc-mini{ width: 110px; }
+  #moatan-compact .mc-wide{ width: 150px; }
+}
+/* تصغير حقول الكتابة القصيرة مثل رقم البرقية */
+/* تنطبق على أي حقل يملك الكلاس mc-mini أو empty-field */
+#moatan-compact .mc-mini,
+#moatan-compact .empty-field,
+#moatan-compact input.mc-mini.empty-field{
+  width: 88px;           /* أصغر ومناسب لنص قصير */
+  max-width: 100px;
+  min-width: 70px;
+  padding: 2px 4px;      /* حواف داخلية أصغر */
+  height: 26px;          /* ارتفاع مدمج */
+  font-size: .82rem;     /* خط صغير وواضح */
+  line-height: 1.2;
+  text-align: center;    /* يسهّل إدخال الأرقام/التواريخ */
+  border: 1px solid #e0c466;
+  border-radius: 6px;
+  background: #fffdf2;   /* خفيف مع الهاي لايت */
+  margin-inline: 3px;    /* مسافة جانبية صغيرة */
+  box-sizing: border-box;
+}
+
+/* تلميح placeholder أصغر */
+#moatan-compact .mc-mini::placeholder,
+#moatan-compact .empty-field::placeholder{
+  font-size: .78rem;
+  opacity: .7;
+}
+
+/* عند التركيز: إبراز خفيف بدون تكبير الحقل */
+#moatan-compact .mc-mini:focus,
+#moatan-compact .empty-field:focus{
+  outline: none;
+  border-color: #d8a81d;
+  box-shadow: 0 0 0 2px rgba(216,168,29,0.12);
+}
+
+/* على الشاشات الضيقة: مزيد من التصغير */
+@media (max-width: 920px){
+  #moatan-compact .mc-mini,
+  #moatan-compact .empty-field,
+  #moatan-compact input.mc-mini.empty-field{
+    width: 80px;
+    font-size: .78rem;
+  }
+}

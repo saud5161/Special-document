@@ -230,27 +230,35 @@ EveningBalanceFrom:     $('EveningBalanceFrom')?.value     || '',
 EveningBalanceTo:       $('EveningBalanceTo')?.value       || '',
 BalanceDateNight:       $('BalanceDateNight')?.value       || '',
 MarkedCheck: document.getElementById("myCheckBox")?.checked ? "True" : "False",
-    // ===== MOATAN: مواطن مغادر (لوح moatan-compact) =====
-    // المربع الرئيسي:
-    MC_Forbidden:        document.getElementById('mc-forbidden')?.checked ? 'True' : 'False',
+// ===== القسم الأول: مغادر إلى إحدى الدول … =====
+MC_Forbidden:           document.getElementById('mc-forbidden')?.checked ? 'True' : 'False',
 
-    // برقية وزارة الداخلية:
-    MC_MOI:              document.getElementById('mc-moi')?.checked ? 'True' : 'False',
-    MC_MOI_Number:       document.getElementById('mc-moiNum')?.value?.trim() || '',
-    MC_MOI_DateH:        document.getElementById('mc-moiDate')?.value?.trim() || '',
-    MC_MOI_DirNumber:    document.getElementById('mc-moiDirNum')?.value?.trim() || '',
+MC_MOI:                 document.getElementById('mc-moi')?.checked ? 'True' : 'False',
+MC_MOI_Num:             (document.getElementById('mc-moiNum')?.value ?? '').trim(),
+MC_MOI_Date:            (document.getElementById('mc-moiDate')?.value ?? '').trim(),
+MC_MOI_DirNum:          (document.getElementById('mc-moiDirNum')?.value ?? '').trim(),
 
-    // برقية مدير عام الجوازات:
-    MC_Jawazat:          document.getElementById('mc-jawazat')?.checked ? 'True' : 'False',
-    MC_Jawazat_Number:   document.getElementById('mc-jawazatNum')?.value?.trim() || '',
-    MC_Jawazat_DateH:    document.getElementById('mc-jawazatDate')?.value?.trim() || '',
+MC_Jawazat:             document.getElementById('mc-jawazat')?.checked ? 'True' : 'False',
+MC_Jawazat_Num:         (document.getElementById('mc-jawazatNum')?.value ?? '').trim(),
+MC_Jawazat_Date:        (document.getElementById('mc-jawazatDate')?.value ?? '').trim(),
 
-    // جواز دبلوماسي:
-    MC_Diplomatic:       document.getElementById('mc-diplomatic')?.checked ? 'True' : 'False',
-    MC_Diplomatic_Desc:  document.getElementById('mc-diplomaticDesc')?.value?.trim() || '',
+MC_Diplomatic:          document.getElementById('mc-diplomatic')?.checked ? 'True' : 'False',
+MC_Diplomatic_Desc:     (document.getElementById('mc-diplomaticDesc')?.value ?? '').trim(),
 
-    // دون السن 18:
-    MC_Under18:          document.getElementById('mc-under18')?.checked ? 'True' : 'False'
+MC_Under18:             document.getElementById('mc-under18')?.checked ? 'True' : 'False',
+
+// ===== القسم الثاني: من فئة العسكريين =====
+MC_Military:            document.getElementById('mc-military')?.checked ? 'True' : 'False',
+MC_Mil_NoDoc:           document.getElementById('mc-mil-nosdoc')?.checked ? 'True' : 'False',
+MC_Mil_DestDiff:        document.getElementById('mc-mil-destdiff')?.checked ? 'True' : 'False',
+MC_Mil_LeaveNotStart:   document.getElementById('mc-mil-leavenotstart')?.checked ? 'True' : 'False',
+MC_Mil_Other:           document.getElementById('mc-mil-other')?.checked ? 'True' : 'False',
+MC_Mil_AttachLeave:     document.getElementById('mc-mil-attach-leave')?.checked ? 'True' : 'False',
+
+// ===== القسم الثالث: يحمل وثيقة أقل من المدة =====
+MC_DocLess:             document.getElementById('mc-docless')?.checked ? 'True' : 'False',
+MC_Doc_3m:              document.getElementById('mc-doc-3m')?.checked ? 'True' : 'False',
+MC_Doc_6m:              document.getElementById('mc-doc-6m')?.checked ? 'True' : 'False',
 
   };
 }
@@ -960,70 +968,122 @@ document.addEventListener('DOMContentLoaded', ()=>{
   scheduleShiftStorageCleaner();
 });
 
-// ===== Auto-check for "moatan-compact" =====
-function initMoatanAutoCheck(){
-  const mc = document.getElementById('moatan-compact');
-  if (!mc) return;
+document.addEventListener('DOMContentLoaded', () => {
+  const root = document.getElementById('moatan-compact');
+  if(!root) return;
 
-  const master = mc.querySelector('#mc-forbidden');
-  const rowCheckboxes = Array.from(mc.querySelectorAll('.mc-check input[type="checkbox"]'))
-    .filter(cb => cb.id !== 'mc-forbidden');
+  const updateMaster = (typeof window.updateMaster === 'function')
+    ? window.updateMaster
+    : function(){};
 
-  // كل حقول النص في اللوح (اعتمدنا على الكلاسات mc-mini/mc-wide)
-  const textInputs = mc.querySelectorAll('input.mc-mini, input.mc-wide');
+  function clearInputs(selectors){
+    selectors.forEach(sel => {
+      const el = root.querySelector(sel);
+      if(el && el.tagName === 'INPUT' && ['text','search','number'].includes(el.type || 'text')){
+        el.value = '';
+      }
+    });
+  }
 
-  // حدّث صحّ السطر بناءً على امتلاء أي حقل نص فيه
-  function updateRowCheckboxFromInput(input){
-    const line = input.closest('.mc-check');
-    if (!line) return;
-    const lineCbs = line.querySelectorAll('input[type="checkbox"]');
-    const lineTextInputs = line.querySelectorAll('input.mc-mini, input.mc-wide');
+  function wireSection(masterSel, subSelList, subInputsMap = {}){
+    const master = root.querySelector(masterSel);
+    const subs   = subSelList.map(s => root.querySelector(s)).filter(Boolean);
+    if(!master || subs.length === 0) return;
 
-    // هل أي حقل نص في السطر غير فارغ؟
-    const anyFilled = Array.from(lineTextInputs).some(i => (i.value || '').trim() !== '');
+    master.addEventListener('change', () => {
+      if(!master.checked){
+        subs.forEach(cb => cb.checked = false);
+        Object.values(subInputsMap).forEach(arr => clearInputs(arr));
+      }
+      updateMaster();
+    });
 
-    // إن وجد checkbox في نفس السطر (عادة واحد)
-    if (lineCbs.length) {
-      lineCbs[0].checked = anyFilled;
-    }
+    subs.forEach(cb => cb.addEventListener('change', () => {
+      if(cb.checked) master.checked = true;
+      updateMaster();
+    }));
+  }
+
+  /* ===== القسم الأول: مغادر إلى… ===== */
+  const forbiddenMaster = '#mc-forbidden';
+  const forbiddenSubs = ['#mc-moi', '#mc-jawazat', '#mc-diplomatic', '#mc-under18'];
+
+  const subInputsMap = {
+    '#mc-moi':      ['#mc-moiNum', '#mc-moiDate', '#mc-moiDirNum'],
+    '#mc-jawazat':  ['#mc-jawazatNum', '#mc-jawazatDate'],
+    '#mc-diplomatic':['#mc-diplomaticDesc']
+  };
+
+  wireSection(forbiddenMaster, forbiddenSubs, subInputsMap);
+
+  function selectSingleBranch(activeSel){
+    forbiddenSubs.forEach(sel => {
+      if(sel !== activeSel){
+        const other = root.querySelector(sel);
+        if(other) other.checked = false;
+        if(subInputsMap[sel]) clearInputs(subInputsMap[sel]);
+      }
+    });
+    const master = root.querySelector(forbiddenMaster);
+    if(master) master.checked = true;
     updateMaster();
   }
 
-  // حدّث صحّ الرئيسي: إذا أي سطر مُفعّل → فعّل الرئيسي
-  function updateMaster(){
-    const anyRowChecked = rowCheckboxes.some(cb => cb.checked);
-    if (master) master.checked = anyRowChecked;
-  }
-
-  // اربط أحداث الكتابة/التغيير لكل حقل نص
-  textInputs.forEach(inp => {
-    ['input','change'].forEach(evt => {
-      inp.addEventListener(evt, () => updateRowCheckboxFromInput(inp));
-    });
-  });
-
-  // إذا المستخدم فعّل/عطّل سطرًا يدويًا، حدّث الرئيسي
-  rowCheckboxes.forEach(cb => {
+  forbiddenSubs.forEach(sel => {
+    const cb = root.querySelector(sel);
+    if(!cb) return;
     cb.addEventListener('change', () => {
-      if (cb.checked && master) master.checked = true;
-      else updateMaster();
+      if(cb.checked) selectSingleBranch(sel);
+      else { if(subInputsMap[sel]) clearInputs(subInputsMap[sel]); updateMaster(); }
     });
   });
 
-  // تهيئة أولية (لو في قيم محفوظة/ملتصقة)
-  textInputs.forEach(inp => updateRowCheckboxFromInput(inp));
-}
+  Object.entries(subInputsMap).forEach(([sel, inputs]) => {
+    inputs.forEach(inpSel => {
+      const inp = root.querySelector(inpSel);
+      if(!inp) return;
+      ['input','change'].forEach(ev => inp.addEventListener(ev, () => {
+        const anyText = inputs.some(s => {
+          const e = root.querySelector(s);
+          return e && typeof e.value === 'string' && e.value.trim() !== '';
+        });
+        const cb = root.querySelector(sel);
+        if(!cb) return;
+        if(anyText){
+          cb.checked = true;
+          selectSingleBranch(sel);
+        }else{
+          cb.checked = false;
+          updateMaster();
+        }
+      }));
+    });
+  });
 
-// فعّل المنطق عندما يكون الاختيار moatan ظاهر
-document.addEventListener('DOMContentLoaded', () => {
-  const choice = localStorage.getItem('wordLinkChoice');
-  if (choice === 'moatan') {
-    // قد تكون عندك أسطر إظهار اللوح هنا
-    // مثال منطقك الحالي لإظهار اللوح:
-    // const mc = document.getElementById('moatan-compact');
-    // if (mc) mc.hidden = false;
+  /* ===== القسم الثاني: العسكريين ===== */
+  wireSection('#mc-military', [
+    '#mc-mil-nosdoc', '#mc-mil-destdiff', '#mc-mil-leavenotstart', '#mc-mil-other', '#mc-mil-attach-leave'
+  ]);
 
-    // ثم فعّل الربط:
-    setTimeout(initMoatanAutoCheck, 0);
-  }
+  /* ===== القسم الثالث: الوثيقة أقل من المدة ===== */
+  wireSection('#mc-docless', ['#mc-doc-3m', '#mc-doc-6m']);
+
+  ['#mc-doc-3m', '#mc-doc-6m'].forEach(sel => {
+    const cb = root.querySelector(sel);
+    if(!cb) return;
+    cb.addEventListener('change', () => {
+      if(cb.checked){
+        ['#mc-doc-3m', '#mc-doc-6m'].forEach(oSel => {
+          if(oSel !== sel){
+            const o = root.querySelector(oSel);
+            if(o) o.checked = false;
+          }
+        });
+        const master = root.querySelector('#mc-docless');
+        if(master) master.checked = true;
+      }
+      updateMaster();
+    });
+  });
+
 });
