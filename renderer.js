@@ -7,18 +7,24 @@ document.addEventListener("DOMContentLoaded", function () {
       const value = shiftInput.value.trim();
       if (value && window.electronAPI) {
         window.electronAPI.saveShiftValue(value);
-        alert("✅ تم حفظ المناوبة: " + value);
-      } else {
-        alert("يرجى كتابة رقم المناوبة أولاً");
       }
     });
   }
+
+  // ⏱️ إرسال التاريخ مباشرة عند فتح الصفحة
+  sendDateNow();
+
+  // 🔁 ثم كل 5 دقائق (300000 مللي ثانية)
+  setInterval(sendDateNow, 300000);
 });
-setInterval(() => {
+
+// 📤 دالة إرسال التاريخ إلى main.js
+function sendDateNow() {
   const date = document.getElementById("custom-hijri-date")?.value || '';
   const day = document.getElementById("custom-weekday")?.value || '';
 
   if (window.electronAPI && date && day) {
     window.electronAPI.sendDateInfo(date, day);
+    console.log("📤 إرسال التاريخ:", date, "اليوم:", day);
   }
-}, 60000);
+}
