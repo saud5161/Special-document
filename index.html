@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+  <!-- =========================
+       إعدادات الصفحة العامة
+       - الترميز
+       - العنوان
+       - توافق الشاشات
+       - الأيقونة والخطوط والأيقونات
+       - استيراد ورقة الأنماط
+  ========================== -->
   <meta charset="UTF-8" />
   <title>بيانات الاستلام لهذا اليوم</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,8 +21,12 @@
 </head>
 
 <body>
-  
-  <!-- الشريط العلوي الثابت -->
+  <!-- =========================
+       الشريط العلوي الثابت (Header)
+       - شعار ونص المنصة (يمين)
+       - تاريخ اليوم (منتصف)
+       - أزرار الطباعة والخروج (يسار)
+  ========================== -->
   <header class="app-topbar">
     <div class="app-topbar__section app-topbar__section--right">
       <!-- مساحة شعار الجهة (اختياري) -->
@@ -23,50 +35,73 @@
         <span>منصة تعبئة البيانات</span>
       </div>
     </div>
+
     <div class="app-topbar__section app-topbar__section--center">
       <span id="header-date" class="today"></span>
     </div>
+
     <div class="app-topbar__section app-topbar__section--left">
       <button id="print-button" class="icon-btn" title="طباعة"><i class="fas fa-print"></i></button>
       <a class="icon-btn" href="Departure.html" title="خروج"><i class="fa-solid fa-power-off"></i></a>
     </div>
   </header>
 
-  <!-- حاوية الصفحة مع هامش سفلي يحمي من شريط الأزرار المثبّت -->
+  <!-- =========================
+       محتوى الصفحة الرئيسي (Main)
+       - غلاف الصفحة ومسافات آمنة للأسفل
+       - شبكة البطاقات (النماذج/الأقسام)
+  ========================== -->
   <main class="page-wrap">
     <div class="shell">
       <div class="cards-grid" id="receipt-page">
-        <!-- بطاقة 1: بيانات التاريخ والمستلم -->
+
+        <!-- =========================================================
+             بطاقة 1: بيانات التاريخ والمستلم
+             - تاريخ هجري + اليوم
+             - اسم ضابط الصالة ورتبته
+             - اسم الآمر المناوب ورتبته
+             - اختيار المناوبة ورقم الصالة (مع أزرار Quick Chips)
+             - تنبيهات تلقائية لضبط التاريخ/الشفت
+        ========================================================== -->
         <section class="card" id="card-receipt">
           <h3 class="card__title"><i class="fas fa-file-signature"></i> بيانات التاريخ والمستلم</h3>
+
+          <!-- تنبيه عند تغيير التاريخ لليوم السابق بسبب وقت الاستلام -->
           <div id="shift-alert" class="inline-alert" style="display:none">
             <i class="fa-solid fa-circle-info"></i>
             تم ضبط التاريخ لليوم السابق بسبب التوقيت الاستلام
           </div>
-              <div id="shift-change-note" class="inline-alert orange" style="display:none">
-  <i class="fa-solid fa-triangle-exclamation"></i>
-  يرجى التأكد من التاريخ واليوم — فترة تغيير الشفت
-</div>
+
+          <!-- تنبيه خاص بفترة تغيير الشفت -->
+          <div id="shift-change-note" class="inline-alert orange" style="display:none">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            يرجى التأكد من التاريخ واليوم — فترة تغيير الشفت
+          </div>
+
           <div class="card__body form-grid">
+            <!-- تاريخ هجري ويوم الأسبوع -->
             <label for="custom-hijri-date"><i class="fas fa-calendar-alt"></i> التاريخ (هجري)</label>
             <input id="custom-hijri-date" class="form-control" placeholder="يُملأ تلقائيًا">
 
             <label for="custom-weekday"><i class="fas fa-calendar-day"></i> اليوم</label>
             <input id="custom-weekday" class="form-control" placeholder="—">
 
+            <!-- بيانات الضابط -->
             <label for="officer-name"><i class="fas fa-user-tie"></i> اسم ضابط الصالة</label>
             <input id="officer-name" list="names" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
 
             <label for="officer-rank"><i class="fas fa-medal"></i> الرتبة</label>
             <input id="officer-rank" list="ranks" placeholder="الرتبة" />
 
+            <!-- بيانات الآمر المناوب -->
             <label for="commander-name"><i class="fas fa-user-shield"></i> اسم الآمر المناوب</label>
             <input id="commander-name" list="commanders" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
             <datalist id="commanders"></datalist>
 
             <label for="commander-rank"><i class="fas fa-medal"></i> رتبته</label>
             <input id="commander-rank" list="ranks" placeholder="الرتبة" />
-            
+
+            <!-- المناوبة مع أزرار اختصار -->
             <label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
             <div class="with-chips">
               <input id="shift-number" list="shifts" placeholder="أ / ب / ج / د" />
@@ -76,9 +111,9 @@
                 <button type="button" class="chip" data-value="ج">ج</button>
                 <button type="button" class="chip" data-value="د">د</button>
               </div>
-              
             </div>
-            
+
+            <!-- رقم الصالة مع أزرار اختصار -->
             <label for="hall-number"><i class="fas fa-building"></i> رقم الصالة</label>
             <div class="with-chips">
               <input id="hall-number" list="halls" placeholder="1 / 2 / 3 / 4" />
@@ -88,53 +123,58 @@
                 <button type="button" class="chip" data-value="3">3</button>
                 <button type="button" class="chip" data-value="4">4</button>
               </div>
-              
             </div>
 
+            <!-- ملاحظة تعبئة تلقائية -->
             <span id="timeNote" class="muted row-span-2" style="display:none">
               <i class="fas fa-info-circle"></i> تم ضبط التاريخ واليوم تلقائيًا
             </span>
           </div>
-      
-
         </section>
-        
-<section class="card" id="card-shift-balance" style="display:none">
-  <h3 class="card__title"><i class="fas fa-business-time"></i> وقت الشفت والموازنة</h3>
-  <div class="card__body form-grid">
-    <!-- وقت الاستلام -->
-    <label for="ReceiveTimeFrom"><i class="fas fa-clock"></i> وقت الاستلام</label>
-    <div class="time-range">
-      <input id="ReceiveTimeFrom" placeholder="من (مثال: 2م)" />
-      <input id="ReceiveTimeTo"   placeholder="إلى (مثال: 10م)" />
-    </div>
 
-    <!-- وقت الموازنة -->
-    <label for="BalanceTimeFrom"><i class="fas fa-balance-scale"></i> وقت الموازنة</label>
-    <div class="time-range">
-      <input id="BalanceTimeFrom" placeholder="من (مثال: 2م)" />
-      <input id="BalanceTimeTo"   placeholder="إلى (مثال: 10م)" />
-    </div>
+        <!-- =========================================================
+             بطاقة 1.1: وقت الشفت والموازنة (تظهر عند الحاجة)
+             - أوقات الاستلام والموازنة (ص/م)
+             - تاريخ/يوم الموازنة تلقائيًا (الغد للهجري/اليوم)
+        ========================================================== -->
+        <section class="card" id="card-shift-balance" style="display:none">
+          <h3 class="card__title"><i class="fas fa-business-time"></i> وقت الشفت والموازنة</h3>
+          <div class="card__body form-grid">
+            <!-- وقت الاستلام -->
+            <label for="ReceiveTimeFrom"><i class="fas fa-clock"></i> وقت الاستلام</label>
+            <div class="time-range">
+              <input id="ReceiveTimeFrom" placeholder="من (مثال: 2م)" />
+              <input id="ReceiveTimeTo"   placeholder="إلى (مثال: 10م)" />
+            </div>
 
-    <!-- وقت الموازنة شفت المساء -->
-    <label for="EveningBalanceFrom"><i class="fas fa-moon"></i> وقت الموازنة (شفت المساء)</label>
-    <div class="time-range">
-      <input id="EveningBalanceFrom" placeholder="من (مثال: 10م)" />
-      <input id="EveningBalanceTo"   placeholder="إلى (مثال: 6ص)" />
-    </div>
+            <!-- وقت الموازنة -->
+            <label for="BalanceTimeFrom"><i class="fas fa-balance-scale"></i> وقت الموازنة</label>
+            <div class="time-range">
+              <input id="BalanceTimeFrom" placeholder="من (مثال: 2م)" />
+              <input id="BalanceTimeTo"   placeholder="إلى (مثال: 10م)" />
+            </div>
 
-    <!-- تاريخ الموازنة -->
-    <!-- تاريخ الموازنة (يمتلئ تلقائيًا = الغد) -->
-<label for="BalanceDateNight"><i class="fas fa-calendar-night"></i> تاريخ الموازنة (ليل فقط)</label>
-<input id="BalanceDateNight" placeholder="يُملأ تلقائيًا: تاريخ الغد (هجري)" />
+            <!-- وقت الموازنة شفت المساء -->
+            <label for="EveningBalanceFrom"><i class="fas fa-moon"></i> وقت الموازنة (شفت المساء)</label>
+            <div class="time-range">
+              <input id="EveningBalanceFrom" placeholder="من (مثال: 10م)" />
+              <input id="EveningBalanceTo"   placeholder="إلى (مثال: 6ص)" />
+            </div>
 
-<!-- يوم الموازنة (يمتلئ تلقائيًا = الغد) -->
-<label for="BalanceWeekday"><i class="fas fa-calendar-day"></i> يوم الموازنة</label>
-<input id="BalanceWeekday" placeholder="يُملأ تلقائيًا: يوم الغد" />
-  </div>
-</section>
+            <!-- تاريخ/يوم الموازنة (يتم توليدهما تلقائيًا) -->
+            <label for="BalanceDateNight"><i class="fas fa-calendar-night"></i> تاريخ الموازنة (ليل فقط)</label>
+            <input id="BalanceDateNight" placeholder="يُملأ تلقائيًا: تاريخ الغد (هجري)" />
 
-        <!-- بطاقة 1.5: بيانات الفرد (ظهور شرطي) -->
+            <label for="BalanceWeekday"><i class="fas fa-calendar-day"></i> يوم الموازنة</label>
+            <input id="BalanceWeekday" placeholder="يُملأ تلقائيًا: يوم الغد" />
+          </div>
+        </section>
+
+        <!-- =========================================================
+             بطاقة 1.5: بيانات الفرد (تظهر بشرط)
+             - اختيار اسم الفرد / المجندة
+             - تعبئة الرتبة تلقائيًا مع إمكانية التعديل
+        ========================================================== -->
         <section class="card" id="card-individual" style="display:none">
           <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الفرد</h3>
           <div class="card__body form-grid">
@@ -147,7 +187,12 @@
           </div>
         </section>
 
-        <!-- بطاقة 2: بيانات المسافر -->
+        <!-- =========================================================
+             بطاقة 2: بيانات المسافر
+             - الاسم والجنسية
+             - رقم الجواز والهوية/الإقامة
+             - نوع التأشيرة
+        ========================================================== -->
         <section class="card" id="card-traveler">
           <h3 class="card__title"><i class="fas fa-user"></i> بيانات المسافر</h3>
           <div class="card__body form-grid">
@@ -170,7 +215,12 @@
           </div>
         </section>
 
-        <!-- بطاقة 3: بيانات الرحلة -->
+        <!-- =========================================================
+             بطاقة 3: بيانات الرحلة
+             - الخطوط الناقلة
+             - رقم الرحلة
+             - وجهة السفر
+        ========================================================== -->
         <section class="card" id="card-flight">
           <h3 class="card__title"><i class="fas fa-plane"></i> بيانات الرحلة</h3>
           <div class="card__body form-grid">
@@ -185,7 +235,11 @@
           </div>
         </section>
 
-        <!-- بطاقة 4: بيانات الصادر -->
+        <!-- =========================================================
+             بطاقة 4: بيانات الصادر
+             - عدد المشفوعات
+             - رقم الصادر
+        ========================================================== -->
         <section class="card" id="card-issued">
           <h3 class="card__title"><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
           <div class="card__body form-grid">
@@ -194,102 +248,111 @@
 
             <label for="IssuedNumber"><i class="fas fa-barcode"></i> رقم الصادر</label>
             <input id="IssuedNumber" placeholder="رقم الصادر" />
-            
           </div>
-          
         </section>
-        
-      </div>
-      
-    </div>
-<div id="moatan-compact" hidden dir="rtl">
 
-  <div class="mc-grid mc-compact">
+      </div> <!-- /cards-grid -->
+    </div> <!-- /shell -->
 
-    <!-- القسم الأول -->
-    <div class="mc-card" id="sec-forbidden">
-      <label class="mc-check mc-one-line" id="mc-forbidden-line">
-        <input type="checkbox" id="mc-forbidden">
-        <span>مغادر الى احدى الدول الممنوع السفر إليها وتم السماح له بالمغادرة بناءً على :</span>
-      </label>
+    <!-- =========================================================
+         نموذج موجز (مواطن) — عرض مضغوط مخفي افتراضيًا
+         - أقسام:
+           1) حالات الدول الممنوع السفر إليها مع مبررات السماح
+           2) من فئة العسكريين مع الحالات الفرعية
+           3) وثيقة سفر أقل من المدة النظامية (3 أشهر/6 أشهر)
+    ========================================================== -->
+    <div id="moatan-compact" hidden dir="rtl">
+      <div class="mc-grid mc-compact">
 
-      <div class="mc-options">
-        <label class="mc-check">
-          <input type="checkbox" id="mc-moi">
-          <span>
-            برقية وزارة الداخلية رقم
-            <input class="mc-mini" id="mc-moiNum">
-            وتاريخ
-            <input class="mc-mini h-date" id="mc-moiDate"    placeholder="مثال: 01/02/1447هـ">
-            والمقيدة بالمديرية بالرقم
-            <input class="mc-mini" id="mc-moiDirNum">
-          </span>
-        </label>
+        <!-- القسم الأول: الممنوعون والسماح بالمغادرة -->
+        <div class="mc-card" id="sec-forbidden">
+          <label class="mc-check mc-one-line" id="mc-forbidden-line">
+            <input type="checkbox" id="mc-forbidden">
+            <span>مغادر الى احدى الدول الممنوع السفر إليها وتم السماح له بالمغادرة بناءً على :</span>
+          </label>
 
-        <label class="mc-check">
-          <input type="checkbox" id="mc-jawazat">
-          <span>
-            برقية مدير عام الجوازات رقم
-            <input class="mc-mini" id="mc-jawazatNum">
-            وتاريخ
-            <input class="mc-mini h-date" id="mc-jawazatDate" placeholder="مثال: 05/03/1447هـ">
-          </span>
-        </label>
+          <div class="mc-options">
+            <label class="mc-check">
+              <input type="checkbox" id="mc-moi">
+              <span>
+                برقية وزارة الداخلية رقم
+                <input class="mc-mini" id="mc-moiNum">
+                وتاريخ
+                <input class="mc-mini h-date" id="mc-moiDate" placeholder="مثال: 01/02/1447هـ">
+                والمقيدة بالمديرية بالرقم
+                <input class="mc-mini" id="mc-moiDirNum">
+              </span>
+            </label>
 
-        <label class="mc-check">
-          <input type="checkbox" id="mc-diplomatic">
-          <span>
-            يحمل جواز دبلوماسي بصفة (
-            <input class="mc-wide" id="mc-diplomaticDesc">
-            )
-          </span>
-        </label>
+            <label class="mc-check">
+              <input type="checkbox" id="mc-jawazat">
+              <span>
+                برقية مدير عام الجوازات رقم
+                <input class="mc-mini" id="mc-jawazatNum">
+                وتاريخ
+                <input class="mc-mini h-date" id="mc-jawazatDate" placeholder="مثال: 05/03/1447هـ">
+              </span>
+            </label>
 
-        <label class="mc-check">
-          <input type="checkbox" id="mc-under18">
-          <span>دون السن 18 عام ومغادر الى الدول المسموح للأبناء بمرافقة والداتهم</span>
-        </label>
-      </div>
-    </div>
+            <label class="mc-check">
+              <input type="checkbox" id="mc-diplomatic">
+              <span>
+                يحمل جواز دبلوماسي بصفة (
+                <input class="mc-wide" id="mc-diplomaticDesc">
+                )
+              </span>
+            </label>
 
-    <!-- القسم الثاني -->
-    <div class="mc-card" id="sec-military">
-      <label class="mc-check">
-        <input type="checkbox" id="mc-military">
-        <span>من فئة العسكريين</span>
-      </label>
+            <label class="mc-check">
+              <input type="checkbox" id="mc-under18">
+              <span>دون السن 18 عام ومغادر الى الدول المسموح للأبناء بمرافقة والداتهم</span>
+            </label>
+          </div>
+        </div>
 
-      <div class="mc-options">
-        <label class="mc-check"><input type="checkbox" id="mc-mil-nosdoc"><span>لا يحمل وثيقة سفر</span></label>
-        <label class="mc-check"><input type="checkbox" id="mc-mil-destdiff"><span>وجهة المغادرة مختلفة</span></label>
-        <label class="mc-check"><input type="checkbox" id="mc-mil-leavenotstart"><span>الاجازة لم تبدا</span></label>
-        <label class="mc-check"><input type="checkbox" id="mc-mil-other"><span>اخرى</span></label>
-        <label class="mc-check"><input type="checkbox" id="mc-mil-attach-leave"><span>مرفق نسخة من وثيقة الاجازة</span></label>
-      </div>
-    </div>
+        <!-- القسم الثاني: فئة العسكريين -->
+        <div class="mc-card" id="sec-military">
+          <label class="mc-check">
+            <input type="checkbox" id="mc-military">
+            <span>من فئة العسكريين</span>
+          </label>
 
-    <!-- القسم الثالث -->
-    <div class="mc-card" id="sec-docvalid">
-      <label class="mc-check">
-        <input type="checkbox" id="mc-docless">
-        <span>يحمل وثيقة سفر اقل من المدة النظامية</span>
-      </label>
+          <div class="mc-options">
+            <label class="mc-check"><input type="checkbox" id="mc-mil-nosdoc"><span>لا يحمل وثيقة سفر</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-destdiff"><span>وجهة المغادرة مختلفة</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-leavenotstart"><span>الاجازة لم تبدا</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-other"><span>اخرى</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-attach-leave"><span>مرفق نسخة من وثيقة الاجازة</span></label>
+          </div>
+        </div>
 
-      <div class="mc-options mc-inline">
-        <label class="mc-check"><input type="checkbox" id="mc-doc-3m"><span>أقل من ثلاثة أشهر</span></label>
-        <label class="mc-check"><input type="checkbox" id="mc-doc-6m"><span>أقل من ستة أشهر</span></label>
-      </div>
-    </div>
+        <!-- القسم الثالث: صلاحية وثيقة السفر -->
+        <div class="mc-card" id="sec-docvalid">
+          <label class="mc-check">
+            <input type="checkbox" id="mc-docless">
+            <span>يحمل وثيقة سفر اقل من المدة النظامية</span>
+          </label>
 
-  </div>
-</div>
+          <div class="mc-options mc-inline">
+            <label class="mc-check"><input type="checkbox" id="mc-doc-3m"><span>أقل من ثلاثة أشهر</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-doc-6m"><span>أقل من ستة أشهر</span></label>
+          </div>
+        </div>
 
-  
-</div>
+      </div> <!-- /mc-grid -->
+    </div> <!-- /moatan-compact -->
+
+    
 
   </main>
 
-  <!-- شريط الأزرار المثبّت بأسفل الشاشة -->
+  <!-- =========================
+       شريط الإجراءات السفلي (Footer)
+       - تنفيذ وحفظ (توليد ملف Word)
+       - تفريغ الخانات
+       - رجوع وإلغاء
+       - رابط مساعد للإصلاح عند فشل التنفيذ
+  ========================== -->
   <footer class="action-bar" role="contentinfo">
     <div class="action-bar__inner">
       <button id="save-btn" class="btn btn--primary" type="button">
@@ -303,20 +366,47 @@
       </button>
       <span id="check-officer-name" class="status-pill" style="display:none">✔ تم التنفيذ</span>
     </div>
+
     <div class="helper-link">
       في حال لم يتم تنفيذ المعطيات في ملف الوورد
       <a href="dic/Doc4.docm">اضغط هنا للإصلاح</a>
     </div>
   </footer>
 
-  <!-- قوائم البيانات -->
+  <!-- =========================
+       قوائم البيانات (Datalists)
+       - أسماء / رتب / شفتات / صالات
+       - تُستخدم للإكمال التلقائي
+  ========================== -->
   <datalist id="names"></datalist>
-  <datalist id="ranks">
-    <option value="ملازم"><option value="ملازم أول"><option value="نقيب"><option value="رائد"><option value="مقدم"><option value="عقيد">
-  </datalist>
-  <datalist id="shifts"><option value="أ"><option value="ب"><option value="ج"><option value="د"></datalist>
-  <datalist id="halls"><option value="1"><option value="2"><option value="3"><option value="4"></datalist>
 
+  <datalist id="ranks">
+    <option value="ملازم">
+    <option value="ملازم أول">
+    <option value="نقيب">
+    <option value="رائد">
+    <option value="مقدم">
+    <option value="عقيد">
+  </datalist>
+
+  <datalist id="shifts">
+    <option value="أ">
+    <option value="ب">
+    <option value="ج">
+    <option value="د">
+  </datalist>
+
+  <datalist id="halls">
+    <option value="1">
+    <option value="2">
+    <option value="3">
+    <option value="4">
+  </datalist>
+
+  <!-- =========================
+       استيراد ملف الجافاسكربت
+       - يحتوي منطق التعبئة والطباعة والحفظ والتنبيهات
+  ========================== -->
   <script src="sscrpt.js"></script>
 </body>
 </html>

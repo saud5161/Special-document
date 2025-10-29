@@ -337,6 +337,8 @@ if (ENABLE_SHIFT_FILE && window.electronAPI?.saveShift) {
     wordLink.href = "dic/خطابات جاهزة لتعديل/عدم قبول الخصائص الحيوية.docm";
   }else if (choice === "FINGERCON") {
     wordLink.href = "dic/خطابات جاهزة لتعديل/ارتباط بصمات.docm"
+    }else if (choice === "tazwar") {
+    wordLink.href = "dic/نــماذج  اليومية/تزوير فحص.docm"
   } else {
     wordLink.href = "default.docm"; // أو رابط افتراضي إن أردت
   }
