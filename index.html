@@ -105,24 +105,14 @@
             <label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
             <div class="with-chips">
               <input id="shift-number" list="shifts" placeholder="أ / ب / ج / د" />
-              <div class="chips" data-target="#shift-number">
-                <button type="button" class="chip" data-value="أ">أ</button>
-                <button type="button" class="chip" data-value="ب">ب</button>
-                <button type="button" class="chip" data-value="ج">ج</button>
-                <button type="button" class="chip" data-value="د">د</button>
-              </div>
+              
             </div>
 
             <!-- رقم الصالة مع أزرار اختصار -->
             <label for="hall-number"><i class="fas fa-building"></i> رقم الصالة</label>
             <div class="with-chips">
               <input id="hall-number" list="halls" placeholder="1 / 2 / 3 / 4" />
-              <div class="chips" data-target="#hall-number">
-                <button type="button" class="chip" data-value="1">1</button>
-                <button type="button" class="chip" data-value="2">2</button>
-                <button type="button" class="chip" data-value="3">3</button>
-                <button type="button" class="chip" data-value="4">4</button>
-              </div>
+             
             </div>
 
             <!-- ملاحظة تعبئة تلقائية -->
@@ -205,7 +195,19 @@
 
             <label for="PassportNumber"><i class="fas fa-passport"></i> رقم الجواز</label>
             <input id="PassportNumber" placeholder="مثال: P1234567 / 1234567890" />
+             
+            <label for="PassportIssueDate" style="display:none"><i class="fas fa-calendar-alt"></i> تاريخ الإصدار</label>
+<input id="PassportIssueDate" placeholder="YYYY/MM/DD" style="display:none" />
 
+<label for="PassportSource" style="display:none"><i class="fas fa-building"></i> مصدر الجواز</label>
+<input id="PassportSource" placeholder="جهة الإصدار" style="display:none" />
+
+<!-- في نهاية بطاقة بيانات المسافر: مكان الميلاد + تاريخ الميلاد (مخفية مبدئيًا) -->
+<label for="BirthPlace" style="display:none"><i class="fas fa-map-marker-alt"></i> مكان الميلاد</label>
+<input id="BirthPlace" placeholder="المدينة - الدولة" style="display:none" />
+
+<label for="BirthDate" style="display:none"><i class="fas fa-calendar"></i> تاريخ الميلاد</label>
+<input id="BirthDate" placeholder="YYYY/MM/DD" style="display:none" />
             <label for="id"><i class="fas fa-address-card"></i> رقم الهوية - إقامة</label>
             <input id="id" placeholder="مثال: 1234567890" />
 
@@ -251,6 +253,60 @@
           </div>
         </section>
 
+
+        <section class="card" id="card-command" style="display:none">
+  <h3 class="card__title"><i class="fas fa-file-alt"></i> معلومات الأمر وجهة الطالبة</h3>
+  <div class="card__body form-grid">
+    <!-- جهة طالبة -->
+    <label for="RequestingAgency"><i class="fas fa-building"></i> جهة الخطاب</label>
+    <input id="RequestingAgency" list="requestingAgencyList" placeholder="مثال: مباحث / شرطة / جمارك">
+    <datalist id="requestingAgencyList">
+      <option value="مباحث"></option>
+      <option value="شرطة"></option>
+      <option value="جمارك"></option>
+      <option value="جوازات"></option>
+      <option value="مرور"></option>
+      <option value="مكافحة المخدرات"></option>
+      <option value="التحريات الادارية"></option>
+    </datalist>
+
+    <!-- بيانات الأمر -->
+    <label for="RegistrationNumber"><i class="fas fa-file-alt"></i> رقم السجل</label>
+    <input id="RegistrationNumber" placeholder="مثال: 12345/ق">
+
+    <label for="CommandNumber"><i class="fas fa-hashtag"></i> رقم الأمر</label>
+    <input id="CommandNumber" placeholder="رقم الأمر">
+
+    <label for="CommandDate"><i class="fas fa-calendar-check"></i> تاريخ الأمر</label>
+    <input id="CommandDate" placeholder="YYYY/MM/DD">
+
+    <label for="CommandBody"><i class="fas fa-building"></i> جهة الأمر</label>
+    <input id="CommandBody" placeholder="مثال: النيابة العامة">
+
+    <label for="CommandSystem"><i class="fas fa-shield-alt"></i> نظام</label>
+    <select id="CommandSystem">
+      <option value=""></option>
+      <option value="الممنوعين">الممنوعين</option>
+      <option value="المطلوبين">المطلوبين</option>
+      <option value="منع الخروج">منع الخروج</option>
+      <option value="ممنوعين ترقب عند المغادرة والقدوم">الممنوعين ترقب عند المغادرة والقدوم</option>
+    </select>
+
+    <!-- الإجراء المطلوب (نُقل من القسم المحذوف) -->
+    <label for="ActionType"><i class="fas fa-list"></i> الإجراء المطلوب</label>
+    <input id="ActionType" list="actionTypeList" placeholder="اختر أو اكتب الإجراء">
+    <datalist id="actionTypeList">
+      <option value="اشعار اقرب ادارة (مباحث)"></option>
+      <option value="اشعار اقرب ادارة"></option>
+      <option value="منع من السفر"></option>
+      <option value="يقبض علية"></option>
+      <option value="القبض عند المغادرة والقدوم"></option>
+    </datalist>
+  </div>
+</section>
+
+
+        
       </div> <!-- /cards-grid -->
     </div> <!-- /shell -->
 

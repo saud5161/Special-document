@@ -260,6 +260,28 @@ MC_DocLess:             document.getElementById('mc-docless')?.checked ? 'True' 
 MC_Doc_3m:              document.getElementById('mc-doc-3m')?.checked ? 'True' : 'False',
 MC_Doc_6m:              document.getElementById('mc-doc-6m')?.checked ? 'True' : 'False',
 
+
+// ===== معلومات الجهة الطالبة =====
+RequestingAgency:      $('RequestingAgency')?.value || '',
+
+// ===== معلومات الجواز (إضافية) =====
+PassportIssueDate:     $('PassportIssueDate')?.value || '',
+PassportSource:        $('PassportSource')?.value || '',
+
+// ===== معلومات الميلاد =====
+BirthPlace:            $('BirthPlace')?.value || '',
+BirthDate:             $('BirthDate')?.value || '',
+
+// ===== معلومات الأمر =====
+RegistrationNumber:    $('RegistrationNumber')?.value || '',
+CommandNumber:         $('CommandNumber')?.value || '',
+CommandDate:           $('CommandDate')?.value || '',
+CommandBody:           $('CommandBody')?.value || '',
+CommandSystem:         $('CommandSystem')?.value || '',
+
+// ===== الإجراء المطلوب =====
+ActionType:            $('ActionType')?.value || '',
+
   };
 }
 
@@ -339,6 +361,12 @@ if (ENABLE_SHIFT_FILE && window.electronAPI?.saveShift) {
     wordLink.href = "dic/خطابات جاهزة لتعديل/ارتباط بصمات.docm"
     }else if (choice === "tazwar") {
     wordLink.href = "dic/نــماذج  اليومية/تزوير فحص.docm"
+  }else if (choice === "اشعار") {
+    wordLink.href = "dic/نماذج الممنوعين/اشعار مباحث.docm"
+  }else if (choice === "قبض") {
+    wordLink.href = "dic/نماذج الممنوعين/قبض.docm"
+  }else if (choice === "اشعار-منع") {
+    wordLink.href = "dic/نماذج الممنوعين/منع سفر مباحث.docm"
   } else {
     wordLink.href = "default.docm"; // أو رابط افتراضي إن أردت
   }
@@ -392,6 +420,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const travelerCard = document.getElementById("card-traveler");
     if (travelerCard) travelerCard.style.display = "none";
   }
+// ===== وضع matlopan =====
+if (
+  choice === "اشعار" ||
+  choice === "قبض" ||
+  choice === "اشعار-منع"
+) {
+  // 1) إظهار بطاقة "معلومات الأمر وجهة الطالبة"
+  const cmdCard = document.getElementById("card-command");
+  if (cmdCard) cmdCard.style.display = "block";
+
+  // 2) إظهار الحقول المنقولة داخل "بيانات المسافر": (مكان/تاريخ الميلاد + تاريخ/مصدر الجواز)
+  const showIds = ["PassportIssueDate","PassportSource","BirthPlace","BirthDate"];
+  showIds.forEach(id => {
+    const input = document.getElementById(id);
+    const label = document.querySelector(`label[for='${id}']`);
+    if (input) input.style.display = "block";
+    if (label) label.style.display = "block";
+  });
+
+  // 3) إخفاء "نوع التأشيرة"
+  (function hideVisa(){
+    const visaField = document.getElementById("VisaType");
+    const visaLabel = document.querySelector("label[for='VisaType']");
+    if (visaField) visaField.style.display = "none";
+    if (visaLabel) visaLabel.style.display = "none";
+  })();
+
+  // 4) إخفاء اسم الآمر المناوب ورتبته (مع الملصقات)
+  [
+    "#commander-name",
+    "label[for='commander-name']",
+    "#commander-rank",
+    "label[for='commander-rank']"
+  ].forEach(sel => {
+    const el = document.querySelector(sel);
+    if (el) el.style.display = "none";
+  });
+
+  // (اختياري) تمرير إلى أول جزء
+  setTimeout(() => {
+    const anchor = document.getElementById("card-command") || document.getElementById("card-traveler");
+    anchor?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 250);
+}
 
 
 // ===== moatan: إظهار اللوح المستقل فقط وإخفاء "نوع التأشيرة" كالسابق =====
