@@ -97,10 +97,39 @@
             <label for="commander-name"><i class="fas fa-user-shield"></i> اسم الآمر المناوب</label>
             <input id="commander-name" list="commanders" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
             <datalist id="commanders"></datalist>
-
+           
             <label for="commander-rank"><i class="fas fa-medal"></i> رتبته</label>
             <input id="commander-rank" list="ranks" placeholder="الرتبة" />
 
+            <label for="ForgeryOfficerName" style="display:none">
+  <i class="fas fa-user-secret"></i> اسم موظف التزوير
+</label>
+<input id="ForgeryOfficerName" list="forgeryOfficers"
+       placeholder="اختر اسم موظف التزوير" style="display:none" />
+
+<datalist id="forgeryOfficers">
+  <option value="محمد عجمي الشمري"></option>
+  <option value="بدر مطلق العتيبي"></option>
+  <option value="سالم الشهري"></option>
+  <option value="سعد ناصر الدوسري"></option>
+</datalist>
+
+<label for="ForgeryOfficerRank" style="display:none">
+  <i class="fas fa-medal"></i> رتبته
+</label>
+<input id="ForgeryOfficerRank" list="rankOptions"
+       placeholder="الرتبة" style="display:none" />
+
+<!-- قائمة رتب قابلة للتعديل -->
+<datalist id="rankOptions">
+  <option value="جندي"></option>
+  <option value="جندي اول"></option>
+  <option value="عريف"></option>
+  <option value="وكيل رقيب"></option>
+  <option value="رقيب"></option>
+  <option value="رقيب اول"></option>
+  <option value="رئيس رقباء"></option>
+</datalist>
             <!-- المناوبة مع أزرار اختصار -->
             <label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
             <div class="with-chips">
@@ -210,9 +239,30 @@
 <input id="BirthDate" placeholder="YYYY/MM/DD" style="display:none" />
             <label for="id"><i class="fas fa-address-card"></i> رقم الهوية - إقامة</label>
             <input id="id" placeholder="مثال: 1234567890" />
+            <!-- الاشتباه في (قابل للتعديل + غير إجباري) -->
+<label for="SuspectIn" style="display:none">
+  <i class="fas fa-exclamation-triangle"></i> الاشتباه في
+</label>
+<input id="SuspectIn" list="suspectOptions" placeholder="اكتب أو اختر سبب الاشتباه" style="display:none" />
+<datalist id="suspectOptions">
+  <option value="جواز السفر"></option>
+  <option value="الجنسية المسجلة في النظام مختلفه"></option>
+  <option value="التأشيرة"></option>
+</datalist>
+
+<!-- تبيّن بعد الفحص (قابل للتعديل + غير إجباري) -->
+<label for="AfterCheck" style="display:none">
+  <i class="fas fa-search"></i> تبيّن بعد الفحص
+</label>
+<input id="AfterCheck" list="afterCheckOptions" placeholder="اكتب أو اختر نتيجة الفحص" style="display:none" />
+<datalist id="afterCheckOptions">
+  <option value="الجواز سليم"></option>
+  <option value="الجواز مزور"></option>
+</datalist>
 
             <label for="VisaType"><i class="fas fa-stamp"></i> نوع التأشيرة</label>
             <input id="VisaType" list="visaTypes" placeholder="زيارة / نهائي / عمرة / ..." />
+            
             <datalist id="visaTypes"></datalist>
           </div>
         </section>

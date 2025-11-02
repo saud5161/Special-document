@@ -1,3 +1,4 @@
+
 // طباعة
 document.getElementById('print-button')?.addEventListener('click', ()=>window.print());
 
@@ -281,6 +282,12 @@ CommandSystem:         $('CommandSystem')?.value || '',
 
 // ===== الإجراء المطلوب =====
 ActionType:            $('ActionType')?.value || '',
+// داخل return في collect():
+ForgeryOfficerName: $('ForgeryOfficerName')?.value || '',
+ForgeryOfficerRank: $('ForgeryOfficerRank')?.value || '',
+
+SuspectIn:          $('SuspectIn')?.value || '',
+AfterCheck:         $('AfterCheck')?.value || '',
 
   };
 }
@@ -464,6 +471,44 @@ if (
     anchor?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, 250);
 }
+
+// ===== وضع tazwar =====
+if (choice === 'tazwar') {
+    // إظهار موظف التزوير + رتبته
+    const fo = document.getElementById('ForgeryOfficerName');
+    const fr = document.getElementById('ForgeryOfficerRank');
+    const foL = document.querySelector("label[for='ForgeryOfficerName']");
+    const frL = document.querySelector("label[for='ForgeryOfficerRank']");
+    if (fo) fo.style.display = 'block';
+    if (fr) fr.style.display = 'block';
+    if (foL) foL.style.display = 'block';
+    if (frL) frL.style.display = 'block';
+
+    // إظهار حقول الاشتباه/النتيجة
+    const si = document.getElementById('SuspectIn');
+    const ac = document.getElementById('AfterCheck');
+    const siL = document.querySelector("label[for='SuspectIn']");
+    const acL = document.querySelector("label[for='AfterCheck']");
+    if (si) si.style.display = 'block';
+    if (ac) ac.style.display = 'block';
+    if (siL) siL.style.display = 'block';
+    if (acL) acL.style.display = 'block';
+
+    // إخفاء نوع التأشيرة + الآمر المناوب ورتبته
+    const visa = document.getElementById('VisaType');
+    const visaL = document.querySelector("label[for='VisaType']");
+    const cmdN = document.getElementById('commander-name');
+    const cmdNL = document.querySelector("label[for='commander-name']");
+    const cmdR = document.getElementById('commander-rank');
+    const cmdRL = document.querySelector("label[for='commander-rank']");
+    if (visa) visa.style.display = 'none';
+    if (visaL) visaL.style.display = 'none';
+    if (cmdN) cmdN.style.display = 'none';
+    if (cmdNL) cmdNL.style.display = 'none';
+    if (cmdR) cmdR.style.display = 'none';
+    if (cmdRL) cmdRL.style.display = 'none';
+  }
+
 
 
 // ===== moatan: إظهار اللوح المستقل فقط وإخفاء "نوع التأشيرة" كالسابق =====
@@ -1233,3 +1278,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll("input.h-date").forEach(bind);
   });
 })();
+
+
