@@ -1,19 +1,23 @@
-/* =========================
-   أسلوب رسمي متجاوب (CSS فقط)
-   تغييرات مطلوبة:
-   - رفع شريط الأزرار للأعلى قليلًا وجعله ثابتًا.
-   - تحديد أقصى عرض للصفحة وعدم تجاوز حجم معيّن.
-   - إصلاح تداخل حقول "اسم ضابط الصالة" وما تحته.
-   - جعل "بيانات الصادر" بجانب "بيانات الرحلة" على الشاشات الكبيرة.
-   ========================= */
+/* =========================================================
+   Theme: Official, Clean & Responsive
+   File: styleindx.css (Full Redesign)
+   Notes:
+   - Keep the same color palette (variables preserved)
+   - Modern spacing, layout, and components
+   - Clear forms, stronger hierarchy, improved helpers/links
+   ========================================================= */
 
+/* =========== Root & Tokens =========== */
 :root{
+  /* Brand (same as your palette) */
   --brand-700:#0a4a3c;
   --brand-600:#0e5c4b;
   --brand-500:#11745f;
   --brand-50:#e9f3f0;
 
   --gold-500:#c3a76d;
+
+  /* Base */
   --ink:#101418;
   --muted:#6b7280;
   --card:#ffffff;
@@ -21,78 +25,112 @@
   --bd:#e5e7eb;
   --danger:#c0392b;
 
-  --radius:14px;
+  /* Layout & Motion */
+  --radius:16px;
   --radius-sm:10px;
-  --shadow:0 8px 22px rgba(0,0,0,.06);
-  --shadow-sm:0 3px 10px rgba(0,0,0,.05);
+  --shadow:0 10px 28px rgba(0,0,0,.08);
+  --shadow-sm:0 4px 14px rgba(0,0,0,.06);
 
-  /* قيود الحجم العامة */
-  --page-max: 1200px;   /* أقصى عرض */
-  --page-pad: clamp(10px, 2vw, 18px);
+  /* Container */
+  --page-max: 1200px;
+  --page-pad: clamp(12px, 2.2vw, 20px);
+
+  /* Typography scale */
+  --fs-2xl: clamp(1.35rem, 1.35rem + 0.6vw, 1.9rem);
+  --fs-xl: 1.25rem;
+  --fs-lg: 1.05rem;
+  --fs-md: .95rem;
+  --fs-sm: .86rem;
+
+  /* Transitions */
+  --t-fast:.15s ease;
+  --t-med:.25s ease;
 }
 
-/* الأساس */
-*{box-sizing:border-box}
-html,body{height:100%}
+/* =========== Base =========== */
+*{ box-sizing: border-box; }
+html,body{ height: 100%; }
 body{
-  margin:0;
-  font-family:"Tajawal", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-  color:var(--ink);
-  background:var(--bg);
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
+  margin: 0;
+  font-family: "Tajawal", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* الشريط العلوي (إن وُجد) */
+/* Focus Ring (Accessible) */
+:where(a,button,input,select,textarea):focus{
+  outline: 0;
+  box-shadow: 0 0 0 3px var(--brand-50), 0 0 0 1px var(--brand-500) inset;
+  border-radius: 10px;
+}
+
+/* =========== Topbar =========== */
 .app-topbar{
   position: sticky;
   top: 0;
   inset-inline: 0;
-  z-index: 2000; /* أعلى لضمان النقر */
+  z-index: 2000;
   background: linear-gradient(90deg, var(--brand-700), var(--brand-600));
   color: #fff;
-  display: flex;                 /* بدلاً من grid */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px var(--page-pad);
+  padding: 12px var(--page-pad);
   box-shadow: var(--shadow);
-  max-width: 100vw;
 }
 .app-topbar__section{
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: .5rem;
-  min-width: 0;       /* يمنع الانضغاط الغريب */
-  flex: 1 1 0;        /* توزيع متساوٍ */
+  gap: .6rem;
+  min-width: 0;
 }
 .app-topbar__section--right{ justify-content: flex-start; }
 .app-topbar__section--center{
   justify-content: center;
   text-align: center;
+  font-size: var(--fs-lg);
+  font-weight: 700;
 }
 .app-topbar__section--left{ justify-content: flex-end; }
-/* الحاويات العامة */
+
+/* Icon-only buttons in topbar */
+.icon-btn{
+  appearance: none;
+  border: 0;
+  background: rgba(255,255,255,.15);
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.icon-btn:hover{ background: rgba(255,255,255,.25); }
+.icon-btn:active{ transform: translateY(1px) scale(.98); }
+.icon-btn i{ font-size: .98rem; }
+
+/* =========== Page Shell =========== */
 .page-wrap{
-  min-height:100%;
-  /* مسافة سفلية كبيرة لأن الشريط ثابت ومرفوع للأعلى */
-  padding-bottom: 140px;
+  min-height: 100%;
+  padding-bottom: 148px; /* room for floating action bar */
 }
 .shell{
-  width:100%;
+  width: 100%;
   max-width: var(--page-max);
-  margin: clamp(16px, 2.5vw, 28px) auto 24px;
+  margin: clamp(16px, 2.2vw, 28px) auto 22px;
   padding: 0 var(--page-pad);
 }
 
-/* شبكة البطاقات العامة */
+/* =========== Grid =========== */
 .cards-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap:16px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
 }
 
-/* ترتيب مخصّص ليكون "الصادر" بجانب "الرحلة" على الشاشات الكبيرة */
+/* Smart areas on wide screens */
 @media (min-width: 1200px){
   .cards-grid{
     grid-template-columns: repeat(3, 1fr);
@@ -100,385 +138,348 @@ body{
       "receipt receipt receipt"
       "traveler flight issued";
   }
-  /* ربط المعرّفات الموجودة بالمناطق */
   #card-receipt{ grid-area: receipt; }
   #card-traveler{ grid-area: traveler; }
   #card-flight{ grid-area: flight; }
   #card-issued{ grid-area: issued; }
-  /* إن ظهر كارت الفرد، سيوضع تلقائياً بالسطر التالي */
 }
 
-/* البطاقات */
+/* =========== Card =========== */
 .card{
-  background:var(--card);
-  border:1px solid var(--bd);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  overflow:hidden;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 .card__title{
-  margin:0;
-  padding:12px 14px;
-  font-size:1rem;
-  font-weight:700;
-  color:#1b1f24;
-  background:linear-gradient(180deg, #fff 0%, #fff 45%, #fafafa 100%);
-  border-bottom:1px solid var(--bd);
+  margin: 0;
+  padding: 14px 16px;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: #1b1f24;
+  background: linear-gradient(180deg, #fff 0%, #fff 55%, #fafafa 100%);
+  border-bottom: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
 }
-.card__title i{color:var(--gold-500); margin-inline-start:4px}
-.card__body{padding:14px 14px 16px}
+.card__title i{ color: var(--gold-500); }
+.card__body{ padding: 16px; }
 
-/* شبكة الحقول: إصلاح التداخل + محاذاة أنيقة */
+/* =========== Forms =========== */
 .form-grid{
-  display:grid;
-  grid-template-columns: 170px 1fr; /* Label | Input */
-  gap:10px 14px;
-  align-items:start;              /* إصلاح محاذاة عمودية */
-  grid-auto-flow: row dense;     /* تعبئة ذكية لمنع الفراغات والتداخل */
-  min-width: 0;
+  display: grid;
+  grid-template-columns: 180px 1fr;  /* Label | Control */
+  gap: 12px 14px;
+  align-items: start;
 }
-/* الحقول لا تتخطى حدودها */
-.form-grid > *{ min-width:0; }
-.form-grid .row-span-2{ grid-row: auto !important; } /* إلغاء الامتداد الذي سبب تداخلًا */
-#officer-name,
-#commander-name{ grid-row: auto !important; }       /* تأكيد خاص لمشكلتك */
+@media (max-width: 760px){
+  .form-grid{ grid-template-columns: 1fr; }
+}
 
-/* الملصقات والحقول */
 .form-grid > label{
-  font-weight:700; color:#24343a; font-size:.92rem;
-  background:#fff; border-radius:var(--radius-sm);
-  padding:7px 10px; border:1px solid var(--bd);
-  display:flex; align-items:center; gap:.5rem;
+  font-weight: 800;
+  color: #24343a;
+  font-size: var(--fs-md);
+  background: #fff;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  border: 1px solid var(--bd);
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
 }
-.form-grid > label i{color:var(--brand-600)}
-.form-grid input, .form-grid select, .form-grid textarea{
-  width:100%;
-  height:38px;
-  border:1px solid var(--bd);
-  border-radius:var(--radius-sm);
-  padding:8px 10px;
-  font-size:.95rem;
-  transition:border-color .15s, box-shadow .15s, background .15s;
-  background:#fff;
+.form-grid > label i{ color: var(--brand-600); }
+
+.form-grid :where(input, select, textarea){
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--bd);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: var(--fs-md);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
+  background: #fff;
 }
-.form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus{
-  outline:0;
-  border-color:var(--brand-500);
-  box-shadow:0 0 0 3px var(--brand-50);
+.form-grid textarea{
+  height: auto;
+  min-height: 84px;
+  resize: vertical;
 }
 
-/* شارة/تنبيه صغير */
-.inline-alert{
-  display:flex; align-items:center; gap:.5rem;
-  margin:10px 14px -6px; padding:8px 10px;
-  background:#fff5e5; color:#7a4a00; border:1px solid #ffe0a6;
-  border-radius:var(--radius-sm);
-  font-size:.9rem;
-}
-
-/* Chips (اختصارات) */
-.with-chips{display:grid; gap:8px}
-.chips{display:flex; flex-wrap:wrap; gap:8px}
-.chip{
-  padding:6px 12px; border-radius:999px;
-  background:#fff; border:1px solid var(--bd);
-  font-weight:600; font-size:.85rem;
-  cursor:pointer; transition:.15s;
-}
-.chip:hover{border-color:var(--brand-500)}
-.chip.active{background:var(--brand-50); border-color:var(--brand-500); color:#0b3f35}
-
-/* تمييز الحقول الفارغة (يدار عبر JS) */
+/* Empties highlighter (driven by JS) */
 .empty-field{
   background:#fcfcf9;
   border-color:#e7c7c7!important;
   box-shadow:0 0 0 2px #fde2e2 inset;
 }
 
-/* =========================
-   شريط الأزرار (مرفوع وثابت)
-   ========================= */
-.action-bar{
-  position: fixed;          /* بدلاً من sticky */
-  left: 0; right: 0;
-  bottom: 18px;             /* مرفوع عن الحافة */
-  z-index: 1100;
-  pointer-events: none;     /* حتى لا يمنع التمرير خارج المنطقة الداخلية */
-}
-.action-bar__inner{
-  pointer-events: auto;     /* التفاعل داخل الشريط */
-  max-width: var(--page-max);
-  margin: 0 auto;
-  padding: 10px var(--page-pad);
-  display:flex;
-  gap:10px;
-  align-items:center;
-  justify-content:center;
-  flex-wrap:wrap;
-
-  background: rgba(255,255,255,.92);
-  backdrop-filter: saturate(140%) blur(10px);
-  border:1px solid var(--bd);
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-}
-.helper-link{
-  text-align:center;
-  font-size:.9rem;
-  color:var(--muted);
-  padding:6px 12px 0;
-}
-
-/* أزرار عامة */
-.btn{
-  appearance:none;
-  border:none;
-  border-radius:12px;
-  padding:10px 16px;
-  font-size:.97rem;
-  font-weight:700;
-  cursor:pointer;
-  display:inline-flex;
-  gap:.6rem; align-items:center; justify-content:center;
-  min-width:160px;
-  transition:transform .05s ease, box-shadow .15s ease, background .2s ease;
-  box-shadow:var(--shadow-sm);
-}
-.btn:active{transform:translateY(1px)}
-.btn i{font-size:.95rem}
-.btn--primary{background:var(--brand-600); color:#fff}
-.btn--primary:hover{background:var(--brand-700)}
-.btn--secondary{background:#eceff1; color:#22303a}
-.btn--secondary:hover{background:#e4e8eb}
-.btn--danger{background:#fef2f2; color:#9a1b12; border:1px solid #fbd5d5}
-.btn--danger:hover{background:#fde8e8}
-
-.status-pill{
-  margin-inline-start:auto;
-  background:#ecfdf5; color:#065f46;
-  border:1px solid #a7f3d0;
-  border-radius:999px;
-  padding:6px 10px; font-weight:700; font-size:.9rem;
-}
-
-/* أحجام صغيرة */
-@media (max-width: 720px){
-  .form-grid{grid-template-columns: 1fr}
-  .page-wrap{padding-bottom: 160px;} /* زيادة هامش أسفل لسلامة العرض مع الشريط الثابت */
-}
-
-/* الطباعة */
-@media print{
-  .app-topbar, .action-bar { display:none !important; }
-  body{background:#fff}
-  .card{box-shadow:none; border:1px solid #bbb}
-}
-@media (max-width: 640px){
-  .app-topbar{ flex-wrap: wrap; row-gap: 8px; }
-  .app-topbar__section--right,
-  .app-topbar__section--left{ flex: 1 1 auto; }
-  .app-topbar__section--center{
-    order: 3;
-    width: 100%;
-    flex: 0 0 100%;
-  }
-}
-.time-range {
+/* Inline alert (info/warning) */
+.inline-alert{
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: .6rem;
+  margin: 10px 16px -6px;
+  padding: 10px 12px;
+  background: #fff5e5;
+  color: #7a4a00;
+  border: 1px solid #ffe0a6;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
 }
-.time-range input {
-  flex: 1;
-}
-/* إبراز التاريخ/اليوم عند 5–6 صباحاً */
-.orange-highlight {
-  background: #fff4e5 !important;
-  border-color: #ffb74d !important;
-  box-shadow: 0 0 0 3px rgba(255, 165, 0, .25) inset;
-}
-
-/* تلوين نص التاريخ في الهيدر */
-.today.orange-text {
-  color: #ff9800 !important;
-  font-weight: 700;
-}
-
-/* نسخة برتقالية لصندوق التنبيه */
-.inline-alert.orange {
+.inline-alert.orange{
   background: #fff4e5;
   border-color: #ffd08a;
   color: #7a4a00;
 }
-/* لوح مواطن مغادر — عرضي ومُلتف */
-#moatan-compact{
+
+/* Chips (shortcuts) */
+.with-chips{ display:grid; gap:8px; }
+.chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{
+  padding: 7px 14px;
+  border-radius: 999px;
   background:#fff;
   border:1px solid var(--bd);
-  border-radius:12px;
+  font-weight: 700;
+  font-size: .88rem;
+  cursor:pointer;
+  transition: border-color var(--t-fast), transform var(--t-fast), background var(--t-fast);
   box-shadow: var(--shadow-sm);
-  padding:10px 12px;
-  margin-top:10px;
-  max-width: var(--page-max);
-  font-size:.9rem;
-  line-height:1.55;
-  margin-right: 100px;
+}
+.chip:hover{ border-color: var(--brand-500); transform: translateY(-1px); }
+.chip.active{
+  background: var(--brand-50);
+  border-color: var(--brand-500);
+  color: #0b3f35;
 }
 
-/* كل سطر “اختيار” يكون صفّي ويلتف عند الحاجة */
+/* Time range rows */
+.time-range{ display:flex; gap:10px; }
+.time-range input{ flex:1; }
+
+/* Morning shift highlight */
+.orange-highlight{
+  background:#fff4e5!important;
+  border-color:#ffb74d!important;
+  box-shadow:0 0 0 3px rgba(255,165,0,.25) inset;
+}
+.today.orange-text{ color:#ff9800!important; font-weight: 800; }
+
+/* =========== Helper Link (Fix) =========== */
+.helper-link{
+  text-align: center;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  padding: 8px 12px 0;
+}
+.helper-link a{
+  color: #0b5ed7;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 700;
+}
+.helper-link a:hover{ color:#094aa9; }
+.helper-link i{ color: var(--brand-600); }
+
+/* =========== Action Bar =========== */
+.action-bar{
+  position: fixed;
+  left: 0; right: 0;
+  bottom: 18px;
+  z-index: 1500;
+  pointer-events: none;
+}
+.action-bar__inner{
+  pointer-events: auto;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 10px var(--page-pad);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  background: rgba(255,255,255,.94);
+  backdrop-filter: saturate(140%) blur(10px);
+  border: 1px solid var(--bd);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* Buttons */
+.btn{
+  appearance:none;
+  border:none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: .98rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  gap: .6rem;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  transition: transform var(--t-fast), box-shadow var(--t-med), background var(--t-med);
+  box-shadow: var(--shadow-sm);
+}
+.btn i{ font-size: .98rem; }
+.btn:active{ transform: translateY(1px); }
+
+.btn--primary{ background: var(--brand-600); color:#fff; }
+.btn--primary:hover{ background: var(--brand-700); }
+.btn--secondary{ background:#eceff1; color:#22303a; }
+.btn--secondary:hover{ background:#e4e8eb; }
+.btn--danger{ background:#fef2f2; color:#9a1b12; border:1px solid #fbd5d5; }
+.btn--danger:hover{ background:#fde8e8; }
+
+.status-pill{
+  margin-inline-start:auto;
+  background:#ecfdf5;
+  color:#065f46;
+  border:1px solid #a7f3d0;
+  border-radius:999px;
+  padding:6px 10px;
+  font-weight: 800;
+  font-size: .9rem;
+}
+
+/* =========== “Moatan compact” Board (kept & refined) =========== */
+#moatan-compact{
+  background: #fff;
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  padding: 10px 12px;
+  margin-top: 10px;
+  max-width: var(--page-max);
+  font-size: .9rem;
+  line-height: 1.55;
+  margin-right: 100px; /* as you had */
+}
+
+/* Flexible lines */
 #moatan-compact .mc-line,
 #moatan-compact .mc-check{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  flex-wrap:wrap;              /* يلتف تلقائيًا لو ضاق العرض */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
-
-/* مجموعة الخيارات الفرعية تصبح صفوف ملتفّة أيضًا */
 #moatan-compact .mc-sub{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-  margin-inline-start: 6px;    /* مسافة بسيطة فقط */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-inline-start: 6px;
+}
+#moatan-compact .mc-check>span{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
-/* النص بعد الـ checkbox يظل مرنًا ويلف */
-#moatan-compact .mc-check > span{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  flex-wrap:wrap;
-}
-
-/* مربعات التواريخ/الأرقام عرضية قصيرة ومتماسكة */
+/* Mini inputs (dates/numbers) */
 #moatan-compact .mc-mini{
-  width:110px;
-  border:1px solid var(--bd);
-  border-radius:8px;
-  padding:3px 6px;
-  font-size:.86rem;
-  text-align:center;
+  width: 110px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 3px 6px;
+  font-size: .86rem;
+  text-align: center;
 }
-
 #moatan-compact .mc-wide{
-  width:260px;
-  border:1px solid var(--bd);
-  border-radius:8px;
-  padding:3px 6px;
-  font-size:.86rem;
+  width: 260px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 3px 6px;
+  font-size: .86rem;
 }
 
-/* حجم المربعات قبل النص */
+/* Checkbox visuals */
 #moatan-compact input[type="checkbox"]{
   accent-color: var(--brand-600);
   transform: scale(1.05);
   margin-inline-end: 4px;
 }
 
-/* تحسين استجابة أصغر الشاشات: تصغير بسيط وترك التفاف أكبر */
-@media (max-width: 720px){
-  #moatan-compact{ font-size:.88rem; }
-  #moatan-compact .mc-mini{ width:100px; }
-  #moatan-compact .mc-wide{ width:220px; }
-}
-/* شبكة بطاقات صغيرة */
+/* Grid cards */
 #moatan-compact .mc-grid.mc-compact{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-
-/* بطاقة هاي-لايت خفيفة وصغيرة */
 #moatan-compact .mc-card{
   background: #fffbe6;
   border: 1px dashed #e6b21a;
   border-radius: 10px;
   padding: 8px 10px;
   box-shadow: 0 1px 5px rgba(0,0,0,.04);
-  font-size: clamp(.80rem, .95vw, .92rem);  /* خط صغير ومرن */
+  font-size: clamp(.80rem, .95vw, .92rem);
 }
-
-/* صف الاختيار: صندوق أولاً ثم النص، وفي سطر واحد دائمًا */
-#moatan-compact .mc-check{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;      /* سطر واحد */
-  line-height: 1.6;
-}
-
-/* العنوان الرئيسي أيضاً سطر واحد */
 #moatan-compact .mc-one-line{
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-/* مجموعة الخيارات داخل البطاقة */
 #moatan-compact .mc-options{
   margin-top: 6px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 4px;
 }
-
-/* خيارات قصيرة بجانب بعض */
 #moatan-compact .mc-options.mc-inline{
   display: flex;
-  flex-wrap: nowrap;    /* سطر واحد */
+  flex-wrap: nowrap;
   gap: 10px;
 }
 
-/* الحقول أصغر (أرقام/تواريخ/أوصاف) */
+/* Smaller controls */
 #moatan-compact .mc-mini{
-  width: 120px;         /* أصغر من قبل */
+  width: 120px;
   padding: 2px 6px;
   margin-inline: 3px;
   font-size: .88rem;
 }
-
 #moatan-compact .mc-wide{
-  width: 170px;         /* أصغر */
+  width: 170px;
   padding: 2px 6px;
   margin-inline: 4px;
   font-size: .88rem;
 }
 
-/* على الشاشات الضيقة: عمود واحد */
+/* Tight phones */
 @media (max-width: 920px){
   #moatan-compact .mc-grid.mc-compact{ grid-template-columns: 1fr; }
-  /* لو المكان ضاق جدًا، قلّل الخط لحفظ سطر واحد */
   #moatan-compact .mc-card{ font-size: clamp(.76rem, 2.4vw, .9rem); }
   #moatan-compact .mc-options.mc-inline{ gap: 6px; }
   #moatan-compact .mc-mini{ width: 110px; }
   #moatan-compact .mc-wide{ width: 150px; }
 }
-/* تصغير حقول الكتابة القصيرة مثل رقم البرقية */
-/* تنطبق على أي حقل يملك الكلاس mc-mini أو empty-field */
+
+/* Extra mini & empty visuals */
 #moatan-compact .mc-mini,
 #moatan-compact .empty-field,
 #moatan-compact input.mc-mini.empty-field{
-  width: 88px;           /* أصغر ومناسب لنص قصير */
+  width: 88px;
   max-width: 100px;
   min-width: 70px;
-  padding: 2px 4px;      /* حواف داخلية أصغر */
-  height: 26px;          /* ارتفاع مدمج */
-  font-size: .82rem;     /* خط صغير وواضح */
+  height: 26px;
+  padding: 2px 4px;
+  font-size: .82rem;
   line-height: 1.2;
-  text-align: center;    /* يسهّل إدخال الأرقام/التواريخ */
+  text-align: center;
   border: 1px solid #e0c466;
   border-radius: 6px;
-  background: #fffdf2;   /* خفيف مع الهاي لايت */
-  margin-inline: 3px;    /* مسافة جانبية صغيرة */
+  background: #fffdf2;
+  margin-inline: 3px;
   box-sizing: border-box;
 }
-
-/* تلميح placeholder أصغر */
 #moatan-compact .mc-mini::placeholder,
-#moatan-compact .empty-field::placeholder{
-  font-size: .78rem;
-  opacity: .7;
-}
-
-/* عند التركيز: إبراز خفيف بدون تكبير الحقل */
+#moatan-compact .empty-field::placeholder{ font-size: .78rem; opacity: .7; }
 #moatan-compact .mc-mini:focus,
 #moatan-compact .empty-field:focus{
   outline: none;
@@ -486,12 +487,62 @@ body{
   box-shadow: 0 0 0 2px rgba(216,168,29,0.12);
 }
 
-/* على الشاشات الضيقة: مزيد من التصغير */
-@media (max-width: 920px){
-  #moatan-compact .mc-mini,
-  #moatan-compact .empty-field,
-  #moatan-compact input.mc-mini.empty-field{
-    width: 80px;
-    font-size: .78rem;
-  }
+/* =========== Print =========== */
+@media print{
+  .app-topbar, .action-bar { display: none !important; }
+  body{ background: #fff; }
+  .card{ box-shadow: none; border: 1px solid #bbb; }
+}
+
+/* =========== Compact Header on narrow phones =========== */
+@media (max-width: 640px){
+  .app-topbar{ grid-template-columns: 1fr; row-gap: 8px; }
+  .app-topbar__section--center{ order: 3; }
+}
+
+/* =========== Utilities =========== */
+.hide{ display: none !important; }
+.muted{ color: var(--muted); }
+.badge{
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding: 4px 8px; border-radius: 999px;
+  background: var(--brand-50); color: var(--brand-700);
+  font-size: var(--fs-sm); font-weight: 700;
+  border: 1px solid #cfe7df;
+}
+/* لون خط كافة حقول الإدخال */
+input {
+  color: #0d6efd; /* أزرق جميل */
+}
+
+/* (اختياري) لون نص الـ placeholder */
+input::placeholder {
+  color: #acafb3b9; /* درجة أفتح للـ placeholder */
+}
+
+/* (اختياري) لو تبغى اللون الأزرق يظهر أيضًا أثناء التركيز */
+input:focus {
+  color: #0d6efd;
+}
+/* 1) تصفير أي خلفيات قديمة + ترك مساحة يسار للأيقونة */
+.form-grid input,
+.form-grid textarea,
+.form-grid select,
+input.form-control,
+textarea.form-control,
+select.form-control {
+  background: none !important;
+  padding-inline-start: 28px;  /* مساحة للأيقونة يسار */
+  padding-inline-end: 0;
+}
+
+/* 2) أيقونة صح عندما يكون الحقل غير فارغ (يعتمد على placeholder) — جهة اليسار */
+.form-grid input[placeholder]:not(:placeholder-shown),
+input.form-control[placeholder]:not(:placeholder-shown) {
+  background: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+  <circle cx='12' cy='12' r='10' fill='%2300A86B'/>\
+  <path d='M9.2 16.2 L5.8 12.8 L4.4 14.2 L9.2 19 L20 8.2 L18.6 6.8 Z' fill='white'/>\
+</svg>") no-repeat left 8px center / 16px 16px !important;
+  /*                         ^^^^^ الموضع يسار */
 }
