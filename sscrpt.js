@@ -1280,3 +1280,14 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 
+
+
+function hideHelpBox(){
+  document.getElementById("helpBox").style.display = "none";
+  document.getElementById("showHelpBtn").style.display = "block";
+}
+
+function showHelpBox(){
+  document.getElementById("helpBox").style.display = "block";
+  document.getElementById("showHelpBtn").style.display = "none";
+}

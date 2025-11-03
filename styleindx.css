@@ -546,3 +546,109 @@ input.form-control[placeholder]:not(:placeholder-shown) {
 </svg>") no-repeat left 8px center / 16px 16px !important;
   /*                         ^^^^^ الموضع يسار */
 }
+
+.help-box{
+  position: fixed;
+  top: 80px;
+  left: 10px;
+  width: clamp(180px, 22vw, 260px); /* مرن يتغير حسب الشاشة */
+  background: #fff;
+  border: 2px solid #0e5c4b;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12);
+  font-size: clamp(.72rem, .85vw, .9rem); /* الخط يتغير حسب الحجم */
+  z-index: 3000;
+  max-height: 85vh; /* يمنع التغطية الكاملة */
+  overflow-y: auto; /* يُظهر تمرير لو المحتوى كبير */
+}
+
+.help-box h4{
+  margin: 0 0 10px;
+  font-size: clamp(.85rem, 1vw, 1rem);
+  color: #0e5c4b;
+  text-align: center;
+}
+
+.help-box img{
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  max-height: 140px; 
+  object-fit: cover;
+}
+
+/* ✅ تحسين أكثر للشاشات جداً الصغيرة */
+@media (max-width: 480px){
+  .help-box{
+    width: clamp(150px, 40vw, 200px);
+    padding: 8px;
+  }
+  .help-box img{
+    max-height: 100px;
+  }
+}
+.help-box{
+  position: fixed;
+  top: 80px;
+  left: 10px;
+  width: clamp(180px, 22vw, 260px);
+  background: #fff;
+  border: 2px solid #0e5c4b;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12);
+  font-size: clamp(.72rem, .85vw, .9rem);
+  z-index: 3000;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.help-box h4{
+  margin: 0 0 10px;
+  font-size: clamp(.85rem, 1vw, 1rem);
+  color: #0e5c4b;
+  text-align: center;
+}
+
+.help-box img{
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  max-height: 140px;
+  object-fit: cover;
+}
+
+.hide-help-btn{
+  background:#c0392b;
+  color:#fff;
+  border:0;
+  padding:6px 10px;
+  font-size:.8rem;
+  border-radius:6px;
+  cursor:pointer;
+  float:left;
+}
+.hide-help-btn:hover{
+  background:#a83226;
+}
+
+.show-help-floating{
+  position: fixed;
+  left: 10px;
+  bottom: 20px;
+  background:#0e5c4b;
+  color:#fff;
+  padding:10px 14px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:.9rem;
+  z-index:4000;
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+}
+.show-help-floating:hover{
+  background:#0a4a3c;
+}

@@ -24,39 +24,92 @@ ipcMain.on('open-font-folder', () => {
     }
   });
 });
-// === Word Fixer ===
-// يفتح Doc4.docm مخفياً ليشغّل الماكرو ثم يغلقه
-const runWordFixer = () => {
-  // منع التداخل لو استدعاء سابق ما خلص
-  if (global.__wfRunning) return;
-  global.__wfRunning = true;
 
-  const fixerPath = path.join(__dirname, 'dic', 'Doc4.docm'); // نفس ملف الإصلاح المشار له في صفحتك
-  // PowerShell: افتح Word مخفي، افتح الملف قراءة فقط، انتظر 3 ثواني، أغلق الملف وWord
-  const psCmd = `
-    $ErrorActionPreference='SilentlyContinue';
-    $w=New-Object -ComObject Word.Application;
-    $w.Visible=$false;
-    $doc=$w.Documents.Open('${fixerPath.replace(/\\/g,'\\\\')}', $false, $true);
-    Start-Sleep -Seconds 3;
-    try{$doc.Close($false)}catch{};
-    try{$w.Quit()}catch{};
-  `.replace(/\r?\n/g,' ');
 
-  exec(`powershell -NoProfile -ExecutionPolicy Bypass -Command "${psCmd}"`, (err) => {
-    if (err) console.error('❌ runWordFixer error:', err);
-    global.__wfRunning = false;
+
+// --- دالة تشغيل الماكرو على ملف محدد (خفي) ---
+function runExcelAutoOpenOnFile(filePath, timeoutSec = 2) {
+  // تأكد من تحويل المسار إلى مسار Windows مهيأ للاستخدام في نص PowerShell
+  const p = filePath.replace(/\\/g, '\\\\');
+
+  // نص PowerShell مفصّل:
+  const ps = `
+    $ErrorActionPreference = 'SilentlyContinue';
+
+    $createdNew = $false;
+    try {
+      # حاول الربط بمثيل Excel موجود
+      $xl = [Runtime.InteropServices.Marshal]::GetActiveObject("Excel.Application");
+    } catch {
+      # إن لم يوجد، أنشئ مثيلاً جديدًا (سنغلّقه لاحقًا)
+      $xl = New-Object -ComObject Excel.Application;
+      $createdNew = $true;
+    }
+
+    $xl.Visible = $false;
+    $xl.DisplayAlerts = $false;
+
+    try {
+      $wb = $xl.Workbooks.Open('${p}', $false, $true); # Open(path, UpdateLinks, ReadOnly)
+    } catch {
+      $wb = $null;
+    }
+
+    if ($wb -ne $null) {
+      try { $xl.Run('AutoOpen') } catch {}
+      Start-Sleep -Seconds ${timeoutSec};
+      try { $wb.Close($false) } catch {}
+    }
+
+    if ($createdNew) {
+      try { $xl.Quit() } catch {}
+      # تنظيف COM
+      [System.Runtime.InteropServices.Marshal]::ReleaseComObject($xl) | Out-Null
+    }
+  `.replace(/\r?\n/g, ' ');
+
+  // نفّذ الأمر بصمت
+  exec(`powershell -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -Command "${ps}"`, (err) => {
+    if (err) {
+      console.error(`[ExcelCleaner] فشل التنفيذ على ${filePath}:`, err);
+    } else {
+      console.log(`[ExcelCleaner] تم تشغيل AutoOpen على ${filePath} بنجاح.`);
+    }
   });
-};
-// === /Word Fixer ===
-app.on('ready', () => {
-  createWindow();
-  // ... أي تهيئة أخرى عندك هنا
+}
 
-  // استدعاء المؤقت هنا أيضاً
- runWordFixer();
-setInterval(runWordFixer, 5 * 60 * 1000);
-});
+// --- دالة لبدء التكرار كل 10 دقائق ---
+let excelCleanerIntervalId = null;
+
+function startExcelCleanerInterval(filePath, minutes = 10) {
+  // تشغيل لمرة واحدة فورًا
+  runExcelAutoOpenOnFile(filePath);
+
+  // ضبط التكرار (تحويل دقائق إلى ملّلي ثانية)
+  const ms = minutes * 60 * 1000;
+  // إذا كانت تعمل بالفعل، نظفها أولا
+  if (excelCleanerIntervalId) clearInterval(excelCleanerIntervalId);
+
+  excelCleanerIntervalId = setInterval(() => {
+    runExcelAutoOpenOnFile(filePath);
+  }, ms);
+
+  console.log(`[ExcelCleaner] بدأ التكرار كل ${minutes} دقيقة على: ${filePath}`);
+}
+
+function stopExcelCleanerInterval() {
+  if (excelCleanerIntervalId) {
+    clearInterval(excelCleanerIntervalId);
+    excelCleanerIntervalId = null;
+    console.log('[ExcelCleaner] أوقف التكرار.');
+  }
+}
+
+
+
+
+
+
 
 let mainWindow;
 const MAX_FILES = 5; // الحد الأقصى لعدد النسخ المسموح بها (بما في ذلك النسخة الأصلية)
@@ -723,4 +776,8 @@ function clearShiftIfMatchedTime() {
 
 // استدعاء الوظيفة عند بدء التشغيل
 clearShiftIfMatchedTime();
+
+
+
+
 
