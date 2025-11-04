@@ -507,6 +507,16 @@ if (choice === 'tazwar') {
     if (cmdNL) cmdNL.style.display = 'none';
     if (cmdR) cmdR.style.display = 'none';
     if (cmdRL) cmdRL.style.display = 'none';
+    // 2) إخفاء اسم شركة الطيران
+    const visaField = document.getElementById("AirlineName");
+    const visaLabel = document.querySelector("label[for='AirlineName']");
+    if (visaField) visaField.style.display = "none";
+    if (visaLabel) visaLabel.style.display = "none";
+
+    const idField = document.getElementById("id");
+    const idLabel = document.querySelector("label[for='id']");
+    if (idField) idField.style.display = "none";
+    if (idLabel) idLabel.style.display = "none";
   }
 
 
