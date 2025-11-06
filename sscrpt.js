@@ -1,4 +1,6 @@
 
+const ALLOW_AUTO_SCROLL_ON_OPEN = false;
+
 // طباعة
 document.getElementById('print-button')?.addEventListener('click', ()=>window.print());
 
@@ -213,6 +215,9 @@ function collect(){
     FlightNumber:     $('FlightNumber')?.value      || '',
     TravelDestination:$('TravelDestination')?.value || '',
     IssuedNumber:     $('IssuedNumber')?.value      || '',
+        // الرحلة مواصلة 
+    TravelRoute: $('TravelRoute')?.value || '',
+
     // ✅ جديد: عدد المشفوعات
     AttachedCount:    $('AttachedCount')?.value     || '', 
     // الآمر المناوب
@@ -288,6 +293,15 @@ ForgeryOfficerRank: $('ForgeryOfficerRank')?.value || '',
 
 SuspectIn:          $('SuspectIn')?.value || '',
 AfterCheck:         $('AfterCheck')?.value || '',
+// تعقب مغادرة رحلة ():
+
+AirlineNameNow:       $('AirlineNameNow')?.value || '',
+FlightNumberNow:      $('FlightNumberNow')?.value || '',
+TravelDestinationNow: $('TravelDestinationNow')?.value || '',
+ChiefIssuedNum:  $('mc-issuedNum')?.value || '',
+ChiefDate:       $('mc-chiefDate')?.value || '',
+ChiefShiftCopy:  $('mc-shift')?.value || '',
+ChiefHallCopy:   $('mc-hall')?.value || '',
 
   };
 }
@@ -346,55 +360,68 @@ if (ENABLE_SHIFT_FILE && window.electronAPI?.saveShift) {
  try {
   const wordLink = document.createElement("a");
 
-  // ✅ اختيار الرابط بناءً على القيمة المخزنة في localStorage
-  const choice = localStorage.getItem("wordLinkChoice");
+// ✅ اختيار الرابط بناءً على القيمة المخزنة في localStorage
+const choice = localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice");
 
-  if (choice === "refused") {
-    wordLink.href = "dic/نــماذج  اليومية/خطاب باسم .docm";
-  } else if (choice === "canceled") {
-    wordLink.href = "dic/نــماذج  اليومية/خطاب بدون اسم.docm";
-    } else if (choice === "moatan") {
-    wordLink.href = "dic/السعودين/مواطن مغادر.docm";
-    } else if (choice === "Unable") {
-    wordLink.href = "dic/نــماذج  اليومية/تعذر مغادرة.docm";
-     }else if (choice === "absence") {
-    // ✅ غياب أفراد
-    wordLink.href = "dic/نماذج الافراد/غياب افراد.docm";
-    }else if (choice === "absence2") {
-    wordLink.href = "dic/نماذج الافراد/غياب مجندات.docm";
-    }else if (choice === "FINGER") {
-    wordLink.href = "dic/خطابات جاهزة لتعديل/عدم قبول الخصائص الحيوية.docm";
-  }else if (choice === "FINGERCON") {
-    wordLink.href = "dic/خطابات جاهزة لتعديل/ارتباط بصمات.docm"
-    }else if (choice === "tazwar") {
-    wordLink.href = "dic/نــماذج  اليومية/تزوير فحص.docm"
-  }else if (choice === "اشعار") {
-    wordLink.href = "dic/نماذج الممنوعين/اشعار مباحث.docm"
-  }else if (choice === "قبض") {
-    wordLink.href = "dic/نماذج الممنوعين/قبض.docm"
-  }else if (choice === "اشعار-منع") {
-    wordLink.href = "dic/نماذج الممنوعين/منع سفر مباحث.docm"
-  } else {
-    wordLink.href = "default.docm"; // أو رابط افتراضي إن أردت
-  }
+if (choice === "خطاب-باسم") {
+  wordLink.href = "dic/نــماذج  اليومية/خطاب باسم .docm";
+} else if (choice === "خطاب-بدون") {
+  wordLink.href = "dic/نــماذج  اليومية/خطاب بدون اسم.docm";
+} else if (choice === "مغادرة-مواطن") {
+  wordLink.href = "dic/السعودين/مواطن مغادر.docm";
+} else if (choice === "تعذر-مغادرة") {
+  wordLink.href = "dic/نــماذج  اليومية/تعذر مغادرة.docm";
+} else if (choice === "غياب-افراد") {
+  wordLink.href = "dic/نماذج الافراد/غياب افراد.docm";
+} else if (choice === "غياب-مجندات") {
+  wordLink.href = "dic/نماذج الافراد/غياب مجندات.docm";
+} else if (choice === "عدم-قبول-بصمات") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/عدم قبول الخصائص الحيوية.docm";
+} else if (choice === "ارتباط-بصمات") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/ارتباط بصمات.docm";
+} else if (choice === "التزوير") {
+  wordLink.href = "dic/نــماذج  اليومية/تزوير فحص.docm";
+} else if (choice === "اشعار") {
+  wordLink.href = "dic/نماذج الممنوعين/اشعار مباحث.docm";
+} else if (choice === "قبض") {
+  wordLink.href = "dic/نماذج الممنوعين/قبض.docm";
+} else if (choice === "اشعار-منع") {
+  wordLink.href = "dic/نماذج الممنوعين/منع سفر مباحث.docm";
+} else if (choice === "عسكري-رحلة-مواصلة") {
+  wordLink.href = "dic/نــماذج  اليومية/رحلة مواصلة عسكري.docm";
+} else if (choice === "تأشيرات-منتهية-سياحية") {
+  wordLink.href = "dic/نــماذج  اليومية/الزيارة المنتهية.docm";
+} else if (choice === "حذف-السجلات") {
+  wordLink.href = "dic/نــماذج  اليومية/حذف السجلات.docm";
+  } else if (choice === "مواليد") {
+  wordLink.href = "dic/نــماذج  اليومية/مواليد.docm";
+  } else if (choice === "تخلف-مغادرة") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/تخلف على الرحلة فقط.docm";
+  } else if (choice === "تعقب-مغادرة") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/خطاب اشارة الى تخلف.docm";
+} else if (choice === "تاشيرات-المشاريع") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/تاشيرات حكومية لمكتب المشاريع .docm";
 
-  
+} else {
+  wordLink.href = "default.docm";
+}
 
-  wordLink.target = "_top";
-  wordLink.click();
-  console.log(`✔ تم فتح ${wordLink.href} بعد حفظ form.txt`);
+wordLink.target = "_top";
+wordLink.click();
+console.log(`✔ تم فتح ${wordLink.href} بعد حفظ form.txt`);
+
 } catch (e) {
   console.error("❌ فشل في فتح الملف:", e);
 }
 
-
- setTimeout(() => {
+setTimeout(() => {
   try {
     localStorage.removeItem('wordLinkChoice');
-    localStorage.removeItem('lastWordLinkChoice'); // إن كنت ستستخدم نسخة احتياطية
+    localStorage.removeItem('lastWordLinkChoice');
   } catch(e){}
   window.history.back();
 }, 2 * 60 * 1000);
+
 
 }
 
@@ -465,15 +492,96 @@ if (
     if (el) el.style.display = "none";
   });
 
-  // (اختياري) تمرير إلى أول جزء
-  setTimeout(() => {
-    const anchor = document.getElementById("card-command") || document.getElementById("card-traveler");
-    anchor?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, 250);
+
+}
+if (choice === "مواليد") {
+  ["id", "VisaType", "AirlineName"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
+}
+
+if (choice === "تعقب-مغادرة") {
+  const note = document.getElementById("prev-flight-note");
+  if (note) note.hidden = false;
+
+  const nowSec = document.getElementById("card-flight-now");
+  if (nowSec) nowSec.style.display = "";
+
+  const chiefSignal = document.getElementById("mc-chief-signal");
+  if (chiefSignal) chiefSignal.hidden = false;
+
+  const cmdName  = document.getElementById("commander-name");
+  const cmdRank  = document.getElementById("commander-rank");
+  const cmdNameL = document.querySelector("label[for='commander-name']");
+  const cmdRankL = document.querySelector("label[for='commander-rank']");
+  if (cmdName)  cmdName.style.display = "none";
+  if (cmdRank)  cmdRank.style.display = "none";
+  if (cmdNameL) cmdNameL.style.display = "none";
+  if (cmdRankL) cmdRankL.style.display = "none";
+
+  const visaEl  = document.getElementById("VisaType");
+  const visaLbl = document.querySelector("label[for='VisaType']");
+  if (visaEl)  visaEl.style.display = "none";
+  if (visaLbl) visaLbl.style.display = "none";
+
+  // إظهار تنبيه الإشارة بأسفل المقطع بنفس الستايل
+  const chiefAlert = document.getElementById("chief-signal-alert");
+  if (chiefAlert) chiefAlert.hidden = false;
+}
+
+
+
+
+if (choice === "تخلف-مغادرة") {
+  // إخفاء اسم الآمر المناوب ورتبته
+  const cmdName  = document.getElementById("commander-name");
+  const cmdRank  = document.getElementById("commander-rank");
+  const cmdNameL = document.querySelector("label[for='commander-name']");
+  const cmdRankL = document.querySelector("label[for='commander-rank']");
+  if (cmdName)  cmdName.style.display = "none";
+  if (cmdRank)  cmdRank.style.display = "none";
+  if (cmdNameL) cmdNameL.style.display = "none";
+  if (cmdRankL) cmdRankL.style.display = "none";
+
+  // إخفاء نوع التأشيرة فقط
+  const visaEl  = document.getElementById("VisaType");
+  const visaLbl = document.querySelector("label[for='VisaType']");
+  if (visaEl)  visaEl.style.display = "none";
+  if (visaLbl) visaLbl.style.display = "none";
+}
+
+
+if (
+  choice === "تأشيرات-منتهية-سياحية" ||
+  choice === "حذف-السجلات"
+) {
+
+  // إخفاء قسم بيانات المسافر
+  const travelerSec = document.getElementById("card-traveler");
+  if (travelerSec) travelerSec.style.display = "none";
+
+  // إخفاء قسم بيانات الرحلة
+  const flightSec = document.getElementById("card-flight");
+  if (flightSec) flightSec.style.display = "none";
+
+  // إبقاء قسم بيانات الصادر ظاهر
+  const issuedSec = document.getElementById("card-issued");
+  if (issuedSec) issuedSec.style.display = "";
+
+  // إخفاء "خط سير الرحلة" إن وُجد
+  const trRow   = document.getElementById("travel-route-row");
+  const trLbl   = document.querySelector("label[for='TravelRoute']");
+  const trInput = document.getElementById("TravelRoute");
+  if (trRow)   trRow.hidden = true;
+  if (trLbl)   trLbl.style.display = "none";
+  if (trInput) trInput.style.display = "none";
 }
 
 // ===== وضع tazwar =====
-if (choice === 'tazwar') {
+if (choice === 'التزوير') {
     // إظهار موظف التزوير + رتبته
     const fo = document.getElementById('ForgeryOfficerName');
     const fr = document.getElementById('ForgeryOfficerRank');
@@ -522,7 +630,7 @@ if (choice === 'tazwar') {
 
 
 // ===== moatan: إظهار اللوح المستقل فقط وإخفاء "نوع التأشيرة" كالسابق =====
-if (choice === "moatan") {
+if (choice === "مغادرة-مواطن") {
   // إخفاء نوع التأشيرة فقط (كما كنت تفعل)
   const visaField = document.getElementById("VisaType");
   const visaLabel = document.querySelector("label[for='VisaType']");
@@ -533,15 +641,50 @@ if (choice === "moatan") {
   const mc = document.getElementById("moatan-compact");
   if (mc) {
     mc.hidden = false;
-    setTimeout(()=> mc.scrollIntoView({ behavior: "smooth", block: "center" }), 250);
+   
   }
+}
+if (choice === "عسكري-رحلة-مواصلة") {
+  // إخفاء اسم الآمر المناوب ورتبته
+  const cmdName  = document.getElementById("commander-name");
+  const cmdRank  = document.getElementById("commander-rank");
+  const cmdNameL = document.querySelector("label[for='commander-name']");
+  const cmdRankL = document.querySelector("label[for='commander-rank']");
+  if (cmdName)  cmdName.style.display = "none";
+  if (cmdRank)  cmdRank.style.display = "none";
+  if (cmdNameL) cmdNameL.style.display = "none";
+  if (cmdRankL) cmdRankL.style.display = "none";
+
+  // إخفاء رقم الهوية والجنسية ونوع التأشيرة
+  ["id","Nationality","VisaType"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
+
+  // إخفاء الخطوط الناقلة ورقم الرحلة وجهة السفر
+  ["AirlineName","FlightNumber","TravelDestination"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
+
+  // إظهار "خط سير الرحلة"
+  const trRow  = document.getElementById("travel-route-row");
+  const trLbl  = document.querySelector("label[for='TravelRoute']");
+  const trInput= document.getElementById("TravelRoute");
+  if (trRow)   trRow.hidden = false;        // إظهار الصف
+  if (trLbl)   trLbl.style.display = "";    // إظهار التسمية
+  if (trInput) trInput.style.display = "";  // إظهار الحقل
 }
 
 
 
   
 
-if (choice === "Unable") {
+if (choice === "تعذر-مغادرة") {
     
 
     // 2) إخفاء نوع التأشيرة
@@ -555,7 +698,7 @@ if (choice === "Unable") {
 // ===================
 // وضع absence
 // ===================
-if (choice === "absence") {
+if (choice === "غياب-افراد") {
   // 1) إظهار بطاقة "بيانات الفرد"
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
@@ -586,7 +729,7 @@ if (choice === "absence") {
 // ===================
 // وضع absence2
 // ===================
-if (choice === "absence2") {
+if (choice === "غياب-مجندات") {
   // 1) إظهار بطاقة "بيانات الفرد"
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
@@ -1301,3 +1444,129 @@ function showHelpBox(){
   document.getElementById("helpBox").style.display = "block";
   document.getElementById("showHelpBtn").style.display = "none";
 }
+
+
+//معطيات التارياخ 
+// === تنسيق تواريخ: dd/mm/yyyy + لاحقة (هـ أو م) حسب السنة ===
+(function normalizeDatesHM(){
+  const TARGET_IDS = ['PassportIssueDate','BirthDate','CommandDate'];
+
+  // تحويل أرقام عربية -> إنجليزية
+  const toLatin = s => String(s||'').replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]);
+
+  function formatAnyDate(raw){
+    if(!raw) return '';
+    // 1) تنظيف
+    let s = toLatin(raw).trim();
+    s = s.replace(/\s*[هـم]\s*$/u, '');      // احذف لاحقة هـ/م إن كُتبت يدويًا
+    const parts = s.split(/[^\d]+/).filter(Boolean);
+    if(parts.length < 3) return '';
+
+    // 2) تحديد اليوم/الشهر/السنة تلقائيًا
+    let [a,b,c] = parts.slice(0,3).map(x => x.replace(/\D/g,''));
+    let y,m,d;
+    if (a.length === 4) { y=a; m=b; d=c; }       // yyyy/mm/dd
+    else if (b.length === 4) { y=b; d=a; m=c; }  // dd/mm/yyyy
+    else { y=c; d=a; m=b; }                      // dd/mm/yyyy (أو مشابه)
+
+    const pad2 = n => String(parseInt(n||'0',10)).padStart(2,'0');
+    d = pad2(d); m = pad2(m); y = String(parseInt(y||'0',10)).padStart(4,'0');
+    if (d==='00' || m==='00' || y.length!==4) return '';
+
+    // 3) تحديد هجرية/ميلادية من السنة
+    const yr = parseInt(y,10);
+    // نفترض الهجري بين 1300–1600 تقريبًا، وغير ذلك ميلادي
+    const suffix = (yr >= 1300 && yr <= 1600) ? 'هـ' : 'م';
+
+    return `${d}/${m}/${y} ${suffix}`;
+  }
+
+  function bind(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    const apply = () => {
+      const out = formatAnyDate(el.value);
+      if(out) el.value = out;
+    };
+    ['blur','change'].forEach(ev => el.addEventListener(ev, apply));
+    el.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); apply(); } });
+    // طبّق مباشرة لو فيه قيمة مسبقًا
+    if (el.value) apply();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => TARGET_IDS.forEach(bind));
+})();
+// بدءًا من التحميل: يظهر الصندوق مصغّرًا مع الأزرار داخله
+document.addEventListener('DOMContentLoaded', () => {
+  const box = document.getElementById('helpBox');
+  const btnHide = document.getElementById('helpHideBtn');
+  const btnRestore = document.getElementById('helpRestoreBtn');
+  const btnDetails = document.getElementById('helpDetailsBtn');
+  const overlay = document.getElementById('helpOverlay');
+  const overlayClose = document.getElementById('helpOverlayClose');
+
+  if (!box) return;
+
+  // يبدأ "ظاهر"
+  box.classList.remove('is-collapsed');
+  if (btnRestore) btnRestore.hidden = true;
+
+  // إخفاء (تحويل إلى شريحة صغيرة داخل نفس المكان)
+  if (btnHide) btnHide.addEventListener('click', () => {
+    box.classList.add('is-collapsed');
+    if (btnRestore) btnRestore.hidden = false;
+    box.setAttribute('aria-label', 'صندوق تعليمات (مخفي، اضغط لإظهار)');
+  });
+
+  // إظهار بعد الإخفاء
+  if (btnRestore) btnRestore.addEventListener('click', () => {
+    box.classList.remove('is-collapsed');
+    btnRestore.hidden = true;
+    box.setAttribute('aria-label', 'مربع التعليمات');
+  });
+
+  // فتح اللوحة الكاملة بالصور
+  if (btnDetails) btnDetails.addEventListener('click', () => {
+    if (!overlay) return;
+    overlay.hidden = false;
+    overlay.setAttribute('aria-hidden', 'false');
+
+    // إغلاق عند النقر على الخلفية
+    const onBackdrop = (e) => { if (e.target === overlay) { hideHelpOverlay(); } };
+    overlay.addEventListener('click', onBackdrop, { once: true });
+
+    function hideHelpOverlay(){
+      overlay.hidden = true;
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+    if (overlayClose) {
+      overlayClose.onclick = hideHelpOverlay;
+    }
+  });
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const banner = document.getElementById('selected-template');
+  const nameEl = document.getElementById('selected-template-name');
+  if (!banner || !nameEl) return;
+
+  const getChoice = () =>
+    localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '';
+
+  const renderChoice = () => {
+    const choice = (getChoice() || '').trim();
+    if (choice) {
+      nameEl.textContent = choice;  // مثال: "تعقب-مغادرة"
+      banner.hidden = false;
+    } else {
+      banner.hidden = true;
+      nameEl.textContent = '';
+    }
+  };
+
+  renderChoice();
+
+  // في حال تغيّرت التخزينة أثناء الجلسة
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'wordLinkChoice' || e.key === 'lastWordLinkChoice') renderChoice();
+  });
+});

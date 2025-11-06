@@ -21,19 +21,28 @@
 </head>
 
 <body>
+     <div class="page-background-logo"></div>
+
   <!-- =========================
        الشريط العلوي الثابت (Header)
        - شعار ونص المنصة (يمين)
        - تاريخ اليوم (منتصف)
        - أزرار الطباعة والخروج (يسار)
   ========================== -->
-  <header class="app-topbar">
+   <header class="app-topbar">
     <div class="app-topbar__section app-topbar__section--right">
       <!-- مساحة شعار الجهة (اختياري) -->
       <div class="brand">
         <i class="fa-solid fa-shield-halved"></i>
         <span>منصة تعبئة البيانات</span>
+        <div id="selected-template" class="selected-banner" hidden>
+  <i class="fas fa-bookmark"></i>
+  <span>اسم الخطاب:</span>
+  <strong id="selected-template-name"></strong>
+</div>
+
       </div>
+      
     </div>
 
     <div class="app-topbar__section app-topbar__section--center">
@@ -45,33 +54,54 @@
       <a class="icon-btn" href="Departure.html" title="خروج"><i class="fa-solid fa-power-off"></i></a>
     </div>
   </header>
-<div class="help-box" id="helpBox">
+<!-- صندوق التعليمات المصغّر (أسفل يسار) -->
+<div id="helpBox" class="help-box" role="region" aria-label="مربع التعليمات" aria-live="polite">
+  <div class="help-head">
+    <strong class="help-title">مربع التعليمات</strong>
+    <div class="help-actions">
+      <button type="button" class="help-btn" id="helpHideBtn" aria-label="إخفاء التعليمات">إخفاء</button>
+      <button type="button" class="help-btn" id="helpDetailsBtn" aria-label="عرض التفاصيل">شرح بالصور</button>
+    </div>
+  </div>
 
-  <button class="hide-help-btn" onclick="hideHelpBox()">إخفاء ✖</button>
-  <h4>مربع التعليمات</h4>
+  <div class="help-body">
+    <ol>
+      <li>إذا لم تظهر المعطيات في ملف الوورد، أغلق الملف فورًا.</li>
+      <li>انقر <strong>اضغط هنا للإصلاح</strong>.</li>
+      <li>انقر <strong>تنفيذ</strong> ثم احفظ مرة أخرى.</li>
+    </ol>
+  </div>
 
-  <ol>
-    <li>
-      في حال عدم ظهور المعطيات في ملف الوورد  
-      <br>قم بإغلاق الملف فورًا
-      <br>
-      <img src="page/ttt.jpg" alt="إغلاق الملف">
-    </li>
-
-    <li>
-      قم بالنقر على <strong>اضغط هنا للإصلاح</strong>
-      <br>
-      <img src="page/ttt1.jpg" alt="الإصلاح">
-    </li>
-
-    <li>
-      انقر على <strong>تنفيذ</strong> وحفظ مرة أخرى
-      <br>
-      <img src="page/ttt2.jpg" alt="تنفيذ وحفظ">
-    </li>
-  </ol>
-
+  <!-- يظهر فقط عند الإخفاء (شريحة صغيرة لاسترجاع الصندوق) -->
+  <button type="button" class="help-restore" id="helpRestoreBtn" aria-label="إظهار التعليمات" hidden>إظهار التعليمات</button>
 </div>
+
+<!-- اللوحة الكاملة بالصور (تظهر عند الضغط على "عرض التفاصيل") -->
+<div id="helpOverlay" class="help-overlay" hidden aria-hidden="true">
+  <div class="help-overlay__panel" role="dialog" aria-labelledby="helpBoxTitleFull" aria-modal="true">
+    <button class="overlay-close" type="button" id="helpOverlayClose" aria-label="إغلاق">✖</button>
+    <h4 id="helpBoxTitleFull">مربع التعليمات</h4>
+    <ol>
+      <li>
+        في حال عدم ظهور المعطيات في ملف الوورد  
+        <br>قم بإغلاق الملف فورًا
+        <br>
+        <img src="page/ttt.jpg" alt="إغلاق الملف">
+      </li>
+      <li>
+        قم بالنقر على <strong>اضغط هنا للإصلاح</strong>
+        <br>
+        <img src="page/ttt1.jpg" alt="الإصلاح">
+      </li>
+      <li>
+        انقر على <strong>تنفيذ</strong>  مرة أخرى
+        <br>
+        <img src="page/ttt2.jpg" alt="تنفيذ وحفظ">
+      </li>
+    </ol>
+  </div>
+</div>
+
 
 <!-- زر إظهار مربع المساعدة -->
 <button class="show-help-floating" id="showHelpBtn" onclick="showHelpBox()" style="display:none;">
@@ -254,9 +284,10 @@
             <label for="Nationality"><i class="fas fa-flag"></i> الجنسية</label>
             <input id="Nationality" list="nationalities" placeholder="الجنسية" />
             <datalist id="nationalities"></datalist>
-
+            <label for="id"><i class="fas fa-address-card"></i> رقم الهوية - إقامة</label>
+            <input id="id" placeholder="مثال: 2000000000" />
             <label for="PassportNumber"><i class="fas fa-passport"></i> رقم الجواز</label>
-            <input id="PassportNumber" placeholder="مثال: P1234567 / 1234567890" />
+            <input id="PassportNumber" placeholder="ادخل رقم الجواز " />
              
             <label for="PassportIssueDate" style="display:none"><i class="fas fa-calendar-alt"></i> تاريخ الإصدار</label>
 <input id="PassportIssueDate" placeholder="YYYY/MM/DD" style="display:none" />
@@ -270,8 +301,7 @@
 
 <label for="BirthDate" style="display:none"><i class="fas fa-calendar"></i> تاريخ الميلاد</label>
 <input id="BirthDate" placeholder="YYYY/MM/DD" style="display:none" />
-            <label for="id"><i class="fas fa-address-card"></i> رقم الهوية - إقامة</label>
-            <input id="id" placeholder="مثال: 1234567890" />
+            
             <!-- الاشتباه في (قابل للتعديل + غير إجباري) -->
 <label for="SuspectIn" style="display:none">
   <i class="fas fa-exclamation-triangle"></i> الاشتباه في
@@ -299,45 +329,7 @@
             <datalist id="visaTypes"></datalist>
           </div>
         </section>
-
-        <!-- =========================================================
-             بطاقة 3: بيانات الرحلة
-             - الخطوط الناقلة
-             - رقم الرحلة
-             - وجهة السفر
-        ========================================================== -->
-        <section class="card" id="card-flight">
-          <h3 class="card__title"><i class="fas fa-plane"></i> بيانات الرحلة</h3>
-          <div class="card__body form-grid">
-            <label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
-            <input id="AirlineName" placeholder="مثال: السعودية" />
-
-            <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
-            <input id="FlightNumber" placeholder="مثال: SV225" />
-
-            <label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
-            <input id="TravelDestination" placeholder="مثال: دبي" />
-          </div>
-        </section>
-
-        <!-- =========================================================
-             بطاقة 4: بيانات الصادر
-             - عدد المشفوعات
-             - رقم الصادر
-        ========================================================== -->
-        <section class="card" id="card-issued">
-          <h3 class="card__title"><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
-          <div class="card__body form-grid">
-            <label for="AttachedCount"><i class="fas fa-copy"></i> عدد المشفوعات</label>
-            <input id="AttachedCount" type="number" placeholder="مثال: 2" />
-
-            <label for="IssuedNumber"><i class="fas fa-barcode"></i> رقم الصادر</label>
-            <input id="IssuedNumber" placeholder="رقم الصادر" />
-          </div>
-        </section>
-
-
-        <section class="card" id="card-command" style="display:none">
+<section class="card" id="card-command" style="display:none">
   <h3 class="card__title"><i class="fas fa-file-alt"></i> معلومات الأمر وجهة الطالبة</h3>
   <div class="card__body form-grid">
     <!-- جهة طالبة -->
@@ -369,10 +361,10 @@
     <label for="CommandSystem"><i class="fas fa-shield-alt"></i> نظام</label>
     <select id="CommandSystem">
       <option value=""></option>
+      <option value="الممنوعين ترقب عند المغادرة والقدوم">الممنوعين ترقب عند المغادرة والقدوم</option>
       <option value="الممنوعين">الممنوعين</option>
       <option value="المطلوبين">المطلوبين</option>
       <option value="منع الخروج">منع الخروج</option>
-      <option value="ممنوعين ترقب عند المغادرة والقدوم">الممنوعين ترقب عند المغادرة والقدوم</option>
     </select>
 
     <!-- الإجراء المطلوب (نُقل من القسم المحذوف) -->
@@ -387,6 +379,66 @@
     </datalist>
   </div>
 </section>
+        <!-- =========================================================
+             بطاقة 3: بيانات الرحلة
+             - الخطوط الناقلة
+             - رقم الرحلة
+             - وجهة السفر
+        ========================================================== -->
+        <section class="card" id="card-flight">
+<h3 class="card__title"><i class="fas fa-plane"></i> بيانات الرحلة
+  <span id="prev-flight-note" style="font-size:12px; margin-inline-start:8px; color:#6b7280;" hidden>السابقة</span>
+</h3>
+          <div class="card__body form-grid">
+            <label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
+            <input id="AirlineName" placeholder="مثال: السعودية" />
+
+            <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
+            <input id="FlightNumber" placeholder="مثال: SV225" />
+
+            <label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
+            <input id="TravelDestination" placeholder="مثال: دبي" />
+            <div id="travel-route-row" class="form-row" hidden>
+            <label for="TravelRoute"><i class="fas fa-route"></i> خط سير الرحلة</label>
+            <input id="TravelRoute" placeholder="مثال: الرياض → دبي → لندن">
+          </div>
+
+          </div>
+        </section>
+        <section class="card" id="card-flight-now" style="display:none">
+          <h3 class="card__title"><i class="fas fa-plane-departure"></i> بيانات الرحلة المغادر عليها الآن</h3>
+          <div class="card__body form-grid">
+            <label for="AirlineNameNow"><i class="fas fa-building"></i> الخطوط الناقلة</label>
+            <input id="AirlineNameNow" placeholder="اسم شركة الطيران">
+
+            <label for="FlightNumberNow"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
+            <input id="FlightNumberNow" placeholder="مثال: XY123">
+
+            <label for="TravelDestinationNow"><i class="fas fa-location-dot"></i> وجهة السفر</label>
+            <input id="TravelDestinationNow" placeholder="المدينة / الدولة">
+          </div>
+          
+        </section>
+
+        <!-- =========================================================
+             بطاقة 4: بيانات الصادر
+             - عدد المشفوعات
+             - رقم الصادر
+        ========================================================== -->
+        <section class="card" id="card-issued">
+          <h3 class="card__title"><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
+          <div class="card__body form-grid">
+            <label for="IssuedNumber"><i class="fas fa-barcode"></i> رقم الصادر</label>
+            <input id="IssuedNumber" placeholder="رقم الصادر" />
+            <label for="AttachedCount"><i class="fas fa-copy"></i> عدد المشفوعات</label>
+            <input id="AttachedCount" type="number" placeholder="مثال: 2" />
+
+
+          </div>
+        </section>
+
+
+        
 
 
         
@@ -481,7 +533,23 @@
       </div> <!-- /mc-grid -->
     </div> <!-- /moatan-compact -->
 
-    
+
+  <div id="chief-signal-alert" class="inline-alert" hidden>
+  <label class="mc-check" style="display:block">
+    <span style="white-space:nowrap; display:inline-block;">
+      الإشارة خطاب: مناوبة (
+      <input class="mc-mini" id="mc-shift" list="shifts" placeholder="أ / ب / ج / د">
+      ) صالة (
+      <input class="mc-mini" id="mc-hall" list="halls" placeholder="1 / 2 / 3 / 4">
+      ) صادر رقم
+      <input class="mc-mini" id="mc-issuedNum" placeholder="صادر رقم">
+      وتاريخ
+      <input class="mc-mini h-date" id="mc-chiefDate" placeholder="مثال: 01/02/1447هـ">
+    </span>
+  </label>
+</div>
+
+</div>
 
   </main>
 
