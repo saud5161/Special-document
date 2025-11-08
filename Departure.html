@@ -165,11 +165,12 @@
     <i class="fas fa-plane-departure"></i>
     <a href="#content-carrier-lines"><span>الخطوط الناقلة</span></a>
   </li>
+  
 </ul>
            <div class="update-button-container">
-  <a href="#" onclick="updateDocuments()" class="sidebar-refresh-btn">
-    <i class="fas fa-arrows-rotate"></i> <span>تحديث النماذج</span>
-  </a>
+  <a href="#" onclick="location.reload()" class="sidebar-refresh-btn">
+  <i class="fas fa-arrows-rotate"></i> <span>تحديث النماذج</span>
+</a>
   <div id="messageBox" style="margin-top: 10px; font-weight: bold;"></div>
 </div>
 
@@ -240,13 +241,11 @@
     </ol>
   </div>
 </div>
-
+<div id="officer-section" class="visually-hidden">
 <div class="shift-form">
- 
-
     <h3>بيانات الاستلام لهذا اليوم</h3>
     <p class="hint">بعد تعبئة الخانات، سيتم اعتماد المعطيات تلقائيًا داخل ملفات Word</p>
-<div class="officer-date-info" style="margin-bottom: 15px;">
+  <div class="officer-date-info" style="margin-bottom: 15px;">
   <label for="custom-hijri-date">التاريخ (هجري):</label>
   <input type="text" id="custom-hijri-date" class="form-control">
   
@@ -256,98 +255,18 @@
   <span id="timeNote" style="color: green; font-size: small; display: none;">التاريخ وقت الاستلام</span>
 </div>
 
-    <label for="officer-name">اسم ضابط الصالة:</label>
-    <span class="saved-check" id="check-officer-name" style="display:none; color:green;">✔ تم الحفظ</span>
-    <input list="names" id="officer-name" placeholder="اختر أو اكتب الاسم" />
-    <datalist id="names">
-<option value="أحمد عادل الزهراني">أحمد عادل الزهراني</option>
-<option value="أحمد علي العمري">أحمد علي العمري</option>
-<option value="اسامه راشد المشوح">اسامه راشد المشوح</option>
-<option value="الريان عبدالله الهويمل">الريان عبدالله الهويمل</option>
-<option value="تركي عبدالله الزهراني">تركي عبدالله الزهراني</option>
-<option value="تركي عبدالله الشبيلي">تركي عبدالله الشبيلي</option>
-<option value="جابر فتنان الحربي">جابر فتنان الحربي</option>
-<option value="حمود علي الباهلي">حمود علي الباهلي</option>
-<option value="خالد عبدالله الحسين">خالد عبدالله الحسين</option>
-<option value="سعد عبدالعزيز الخشلان">سعد عبدالعزيز الخشلان</option>
-<option value="سعود فراج السهلي">سعود فراج السهلي</option>
-<option value="سعود محمد ال جبل">سعود محمد ال جبل</option>
-<option value="صالح إبراهيم السالم">صالح إبراهيم السالم</option>
-<option value="صالح محمد الحميدان">صالح محمد الحميدان</option>
-<option value="عبدالإله ضيف الله بن غميض">عبدالإله ضيف الله بن غميض</option>
-<option value="عبدالرحمن راشد البنيه">عبدالرحمن راشد البنيه</option>
-<option value="عبدالعزيز عبدالله آل مطلق">عبدالعزيز عبدالله آل مطلق</option>
-<option value="عبدالعزيز عبدالله الحارثي">عبدالعزيز عبدالله الحارثي</option>
-<option value="عبدالله سعد المطيري">عبدالله سعد المطيري</option>
-<option value="عبدالله مازن المطيري">عبدالله مازن المطيري</option>
-<option value="عبدالله محمد البقمي">عبدالله محمد البقمي</option>
-<option value="عبدالمجيد دحيم العتيبي">عبدالمجيد دحيم العتيبي</option>
-<option value="عمر سعد المطيري">عمر سعد المطيري</option>
-<option value="فايز سعيد الشهراني">فايز سعيد الشهراني</option>
-<option value="فهد حامد القحطاني">فهد حامد القحطاني</option>
-<option value="فهد علي المالكي">فهد علي المالكي</option>
-<option value="فواز عبدالعزيز الخليفة">فواز عبدالعزيز الخليفة</option>
-<option value="فيصل سعد الضفيان">فيصل سعد الضفيان</option>
-<option value="فيصل عبدالإله الهرف">فيصل عبدالإله الهرف</option>
-<option value="فيصل عبدالله الكريديس">فيصل عبدالله الكريديس</option>
-<option value="فيصل منصور السعيد">فيصل منصور السعيد</option>
-<option value="فيصل موسى المطيري">فيصل موسى المطيري</option>
-<option value="ماجد عبدالعزيز السحيم">ماجد عبدالعزيز السحيم</option>
-<option value="مالك أحمد العنقري">مالك أحمد العنقري</option>
-<option value="محمد عبدالله الرفاع">محمد عبدالله الرفاع</option>
-<option value="معاذ ظفر آل دريس">معاذ ظفر آل دريس</option>
-<option value="مهند فهد ال جلده">مهند فهد ال جلده</option>
-<option value="ناصر دغش السبيعي">ناصر دغش السبيعي</option>
-<option value="نايف سلمان المطيري">نايف سلمان المطيري</option>
-<option value="عيد سلمان العتيبي">عيد سلمان العتيبي</option>
-<option value="عبدالله احمد حلل">عبدالله احمد حلل</option>
-<option value="يزيد مشعل العتيبي">يزيد مشعل العتيبي</option>
-
-</datalist>
-
-
-    <label for="officer-rank">رتبة الضابط:</label>
-    <input list="ranks" id="officer-rank" placeholder="اختر أو اكتب الرتبة" />
-    <datalist id="ranks">
-  <option value="ملازم">
-  <option value="ملازم اول">
-  <option value="نقيب">
-  <option value="رائد">
-  <option value="مقدم">
-  <option value="عقيد">
-</datalist>
-
-
-    <label for="shift-number">المناوبة:</label>
-    <input list="shifts" id="shift-number" placeholder="اختر أو اكتب رقم المناوبة" />
-<datalist id="shifts">
-  <option value="أ">
-  <option value="ب">
-  <option value="ج">
-  <option value="د">
-</datalist>
-
-
-    <label for="hall-number">رقم الصالة:</label>
-    <input list="halls" id="hall-number" placeholder="اختر أو اكتب رقم الصالة" />
-    <datalist id="halls">
-        <option value="1">
-        <option value="2">
-        <option value="3">
-        <option value="4">
-    </datalist>
-
+   
 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
   
   <button id="send-officer-info" class="btn-primary">حفظ</button>
   
   <button id="clear-officer-info" class="btn-secondary">تفريغ الخانات</button>
-  
 
 </div>
 </div>
-      
 
+
+</div>
             
            <div class="section-header highlight-style">
     <h2><i class="fas fa-calendar-check"></i> الحضور والانصراف</h2>

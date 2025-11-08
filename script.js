@@ -95,11 +95,7 @@ window.addEventListener("load", function () {
     });
 });
 document.addEventListener("DOMContentLoaded", () => {
-  const name = document.getElementById("officer-name");
-  const rank = document.getElementById("officer-rank");
-  const shift = document.getElementById("shift-number");
-  const hall = document.getElementById("hall-number");
-  const button = document.getElementById("send-officer-info");
+ 
 autoFillOfficerDetails();
 
   if (!button) {
@@ -156,26 +152,9 @@ function changeFile(event, viewLinkId) {
         reader.readAsDataURL(file);
     }
 }
-//تفريغ الخانات
-document.addEventListener('DOMContentLoaded', () => {
-  const clearBtn = document.getElementById('clear-officer-info');
-  const form = document.querySelector('.shift-form');
-
-  if (clearBtn && form) {
-    clearBtn.addEventListener('click', () => {
-      form.querySelectorAll('input').forEach(input => {
-        if (
-          input.id !== 'custom-hijri-date' &&
-          input.id !== 'custom-weekday'
-        ) {
-          input.value = '';
-        }
-      });
-    });
-  }
 
   clearShiftFormAtSpecificTimes(); // ← يستمر عمل التفريغ التلقائي أيضًا
-});
+
 
 
 // دالة لإعداد التاريخ الحالي وعرضه في العنصر الذي يحتوي على المعرف "date"
