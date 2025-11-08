@@ -127,12 +127,13 @@
              - تنبيهات تلقائية لضبط التاريخ/الشفت
         ========================================================== -->
         <section class="card" id="card-receipt">
+          
           <h3 class="card__title"><i class="fas fa-file-signature"></i> بيانات التاريخ والمستلم</h3>
 
           <!-- تنبيه عند تغيير التاريخ لليوم السابق بسبب وقت الاستلام -->
           <div id="shift-alert" class="inline-alert" style="display:none">
             <i class="fa-solid fa-circle-info"></i>
-            تم ضبط التاريخ لليوم السابق بسبب التوقيت الاستلام
+            تم ضبط التاريخ لليوم السابق بسبب توقيت الاستلام
           </div>
 
           <!-- تنبيه خاص بفترة تغيير الشفت -->
@@ -155,7 +156,7 @@
 
             <label for="officer-rank"><i class="fas fa-medal"></i> الرتبة</label>
             <input id="officer-rank" list="ranks" placeholder="الرتبة" />
-
+            
             <!-- بيانات الآمر المناوب -->
             <label for="commander-name"><i class="fas fa-user-shield"></i> اسم الآمر المناوب</label>
             <input id="commander-name" list="commanders" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
@@ -164,35 +165,39 @@
             <label for="commander-rank"><i class="fas fa-medal"></i> رتبته</label>
             <input id="commander-rank" list="ranks" placeholder="الرتبة" />
 
+
+
+
+
             <label for="ForgeryOfficerName" style="display:none">
-  <i class="fas fa-user-tie"></i> اسم موظف التزوير
-</label>
-<input id="ForgeryOfficerName" list="forgeryOfficers"
-       placeholder="اختر اسم موظف التزوير" style="display:none" />
+              <i class="fas fa-user-tie"></i> اسم موظف التزوير
+            </label>
+            <input id="ForgeryOfficerName" list="forgeryOfficers"
+                  placeholder="اختر اسم موظف التزوير" style="display:none" />
 
-<datalist id="forgeryOfficers">
-  <option value="محمد عجمي الشمري"></option>
-  <option value="بدر مطلق العتيبي"></option>
-  <option value="سالم الشهري"></option>
-  <option value="سعد ناصر الدوسري"></option>
-</datalist>
+            <datalist id="forgeryOfficers">
+              <option value="محمد عجمي الشمري"></option>
+              <option value="بدر مطلق العتيبي"></option>
+              <option value="سالم الشهري"></option>
+              <option value="سعد ناصر الدوسري"></option>
+            </datalist>
 
-<label for="ForgeryOfficerRank" style="display:none">
-  <i class="fas fa-medal"></i> رتبته
-</label>
-<input id="ForgeryOfficerRank" list="rankOptions"
-       placeholder="الرتبة" style="display:none" />
+            <label for="ForgeryOfficerRank" style="display:none">
+              <i class="fas fa-medal"></i> رتبته
+            </label>
+            <input id="ForgeryOfficerRank" list="rankOptions"
+                  placeholder="الرتبة" style="display:none" />
 
-<!-- قائمة رتب قابلة للتعديل -->
-<datalist id="rankOptions">
-  <option value="جندي"></option>
-  <option value="جندي اول"></option>
-  <option value="عريف"></option>
-  <option value="وكيل رقيب"></option>
-  <option value="رقيب"></option>
-  <option value="رقيب اول"></option>
-  <option value="رئيس رقباء"></option>
-</datalist>
+            <!-- قائمة رتب قابلة للتعديل -->
+            <datalist id="rankOptions">
+              <option value="جندي"></option>
+              <option value="جندي اول"></option>
+              <option value="عريف"></option>
+              <option value="وكيل رقيب"></option>
+              <option value="رقيب"></option>
+              <option value="رقيب اول"></option>
+              <option value="رئيس رقباء"></option>
+            </datalist>
             <!-- المناوبة مع أزرار اختصار -->
             <label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
             <div class="with-chips">
@@ -214,43 +219,59 @@
           </div>
         </section>
 
-        <!-- =========================================================
-             بطاقة 1.1: وقت الشفت والموازنة (تظهر عند الحاجة)
-             - أوقات الاستلام والموازنة (ص/م)
-             - تاريخ/يوم الموازنة تلقائيًا (الغد للهجري/اليوم)
-        ========================================================== -->
-        <section class="card" id="card-shift-balance" style="display:none">
-          <h3 class="card__title"><i class="fas fa-business-time"></i> وقت الشفت والموازنة</h3>
-          <div class="card__body form-grid">
-            <!-- وقت الاستلام -->
-            <label for="ReceiveTimeFrom"><i class="fas fa-clock"></i> وقت الاستلام</label>
-            <div class="time-range">
-              <input id="ReceiveTimeFrom" placeholder="من (مثال: 2م)" />
-              <input id="ReceiveTimeTo"   placeholder="إلى (مثال: 10م)" />
-            </div>
 
-            <!-- وقت الموازنة -->
-            <label for="BalanceTimeFrom"><i class="fas fa-balance-scale"></i> وقت الموازنة</label>
-            <div class="time-range">
-              <input id="BalanceTimeFrom" placeholder="من (مثال: 2م)" />
-              <input id="BalanceTimeTo"   placeholder="إلى (مثال: 10م)" />
-            </div>
+<section class="card" id="card-lists-admin" style="display:none">
 
-            <!-- وقت الموازنة شفت المساء -->
-            <label for="EveningBalanceFrom"><i class="fas fa-moon"></i> وقت الموازنة (شفت المساء)</label>
-            <div class="time-range">
-              <input id="EveningBalanceFrom" placeholder="من (مثال: 10م)" />
-              <input id="EveningBalanceTo"   placeholder="إلى (مثال: 6ص)" />
-            </div>
+  <h3 class="card__title"><i class="fas fa-clipboard-list"></i> أسماء القوائم والأعمال الإدارية</h3>
+  <div class="card__body form-grid">
+    <!-- أسماء القوائم -->
+    <label for="ListOfficerName"><i class="fas fa-list"></i> اسم القائمة</label>
+    <input id="ListOfficerName" list="names" placeholder="اختر أو اكتب الاسم">
 
-            <!-- تاريخ/يوم الموازنة (يتم توليدهما تلقائيًا) -->
-            <label for="BalanceDateNight"><i class="fas fa-calendar-night"></i> تاريخ الموازنة (ليل فقط)</label>
-            <input id="BalanceDateNight" placeholder="يُملأ تلقائيًا: تاريخ الغد (هجري)" />
+    <label for="ListOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
+    <input id="ListOfficerRank" list="ranks" placeholder="الرتبة">
 
-            <label for="BalanceWeekday"><i class="fas fa-calendar-day"></i> يوم الموازنة</label>
-            <input id="BalanceWeekday" placeholder="يُملأ تلقائيًا: يوم الغد" />
-          </div>
-        </section>
+    <!-- الأعمال الإدارية -->
+    <label for="AdminOfficerName"><i class="fas fa-briefcase"></i> اسم الأعمال الإدارية</label>
+    <input id="AdminOfficerName" list="names" placeholder="اختر أو اكتب الاسم">
+
+    <label for="AdminOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
+    <input id="AdminOfficerRank" list="ranks" placeholder="الرتبة">
+  </div>
+</section>
+<!-- =========================================================
+     بطاقة: بيانات الصادر (نفس أسلوب بطاقة أسماء القوائم والأعمال الإدارية)
+========================================================= -->
+<section class="card" id="card-issued-data" style="display:none">
+  <h3 class="card__title"><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
+  <div class="card__body form-grid">
+    <!-- ملاحظة (مخفية بدون حذف) -->
+    <label style="display:none"></label>
+    <div class="muted" style="display:none">سيتم توزيع ارقــام الصادر تلقائيا بعد التعبئة</div>
+
+    <label for="IssuedAttendance"><i class="fas fa-user-check"></i> الحضور والانصراف</label>
+    <input id="IssuedAttendance"
+       class="sm-num att-green att-tall"
+       inputmode="numeric" pattern="\d*"
+       oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+       type="text"
+       placeholder="ادخل رقم الصادر">
+    <label for="IssuedBalance"><i class="fas fa-scale-balanced"></i> الموازنة</label>
+    <input id="IssuedBalance" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedManifests"><i class="fas fa-list"></i> المنفستات</label>
+    <input id="IssuedManifests" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedReports"><i class="fas fa-file-lines"></i> التقارير</label>
+    <input id="IssuedReports" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedGates"><i class="fas fa-door-open"></i> البوابات</label>
+    <input id="IssuedGates" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedExtra1"><i class="fas fa-plus"></i> صادر إضافي</label>
+    <input id="IssuedExtra1" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+        <label for="IssuedTitle">عنوان الصادر</label>
+    <input id="IssuedTitle" type="text" placeholder="= / م (المناوبة) مغادرة (الصالة) /">
+
+  </div>
+</section>
+     
 
         <!-- =========================================================
              بطاقة 1.5: بيانات الفرد (تظهر بشرط)
@@ -258,6 +279,7 @@
              - تعبئة الرتبة تلقائيًا مع إمكانية التعديل
         ========================================================== -->
         <section class="card" id="card-individual" style="display:none">
+          
           <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الفرد</h3>
           <div class="card__body form-grid">
             <label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد / المجندة</label>
@@ -268,6 +290,52 @@
             <input id="IndividualRank" placeholder="تظهر تلقائيًا عند اختيار الاسم، ويمكن تعديلها">
           </div>
         </section>
+        
+        <!-- =========================================================
+             بطاقة 1.1: وقت الشفت والموازنة (تظهر عند الحاجة)
+             - أوقات الاستلام والموازنة (ص/م)
+             - تاريخ/يوم الموازنة تلقائيًا (الغد للهجري/اليوم)
+        ========================================================== -->
+              <!-- بطاقة وقت الشفت والموازنة (داخل shell + cards-grid) -->
+<h3 class="card__title">
+  <i class="fas fa-business-time"></i>
+  وقت الشفت والموازنة
+  <span id="note-shift-balance-now" class="note-inline">
+    (تلقائياً )
+  </span>
+</h3>
+        
+        <div class="card__body form-grid">
+          <!-- وقت الاستلام -->
+          <label for="ReceiveTimeFrom"><i class="fas fa-clock"></i> وقت الاستلام (من)</label>
+          <input id="ReceiveTimeFrom" placeholder="مثال: 2م" />
+
+          <label for="ReceiveTimeTo"><i class="fas fa-clock"></i> وقت الاستلام (إلى)</label>
+          <input id="ReceiveTimeTo" placeholder="مثال: 10م" />
+
+          <!-- وقت الموازنة -->
+          <label for="BalanceTimeFrom"><i class=""></i> وقت الموازنة (من)</label>
+          <input id="BalanceTimeFrom" placeholder="مثال: 2م" />
+
+          <label for="BalanceTimeTo"><i class=""></i> وقت الموازنة (إلى)</label>
+          <input id="BalanceTimeTo" placeholder="مثال: 10م" />
+
+          <!-- وقت الموازنة شفت المساء -->
+          <label for="EveningBalanceFrom"><i class="fas fa-moon"></i> الموازنة (المساء) من</label>
+          <input id="EveningBalanceFrom" placeholder="مثال: 10م" />
+
+          <label for="EveningBalanceTo"><i class="fas fa-moon"></i> الموازنة (المساء) إلى</label>
+          <input id="EveningBalanceTo" placeholder="مثال: 6ص" />
+
+          <!-- تاريخ/يوم الموازنة -->
+          <label for="BalanceDateNight"><i class="fas fa-calendar-night"></i> تاريخ الموازنة (ليل فقط)</label>
+          <input id="BalanceDateNight" placeholder="يُملأ تلقائيًا: تاريخ الغد (هجري)" />
+
+          <label for="BalanceWeekday"><i class="fas fa-calendar-day"></i> يوم الموازنة</label>
+          <input id="BalanceWeekday" placeholder="يُملأ تلقائيًا: يوم الغد" />
+        </div>
+      </section>
+
 
         <!-- =========================================================
              بطاقة 2: بيانات المسافر
@@ -572,10 +640,16 @@
       <button id="close-btn" class="btn btn--danger" type="button">
         رجوع وإلغاء
       </button>
-       <div class="helper-link">
-      في حال لم يتم تنفيذ المعطيات في ملف الوورد
-      <a href="dic/Doc4.docm">اضغط هنا للإصلاح</a>
-    </div>
+   <form class="helper-link" action="dic/Doc4.docm" method="get">
+  <button type="submit" id="fix-word-btn" class="btn btn--secondary" title="إصلاح ملف Word" aria-label="إصلاح ملف Word">
+    <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i>
+    <span class="btn-text">إصلاح</span>
+    <img class="word-img" src="img\Microsoft_Word-Logo.wine.png" alt="Word" />
+  </button>
+</form>
+
+</a>
+
       <span id="check-officer-name" class="status-pill" style="display:none">✔ تم التنفيذ</span>
     </div>
 

@@ -680,12 +680,14 @@
 
   <div class="model-card">
     <div class="card-content">
+              <span class="badge-new">اضاافات</span>
+
       <img src="img/icon-g.png" class="model-icon" alt="">
       <h3>جميع النماذج اليومية</h3>
       <p>صادر + تاشيرات + حذف سجلات + تعديل + موازنة + بوابات+ التقارير</p>
       <p style="font-size: 10px; color: red; margin-top: 5px;">
-    ⚠️  تنبيه: عدم فتح الملف قبل وقت الاستلام ( التوقيت )
-  </p>
+    ⚠️  تنبيه: عدم فتح الملف قبل وقت الاستلام  
+      </p>
     </div>
     <div class="card-actions">
       <!-- عرض PDF -->
@@ -697,13 +699,14 @@
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
       <!-- تعديل Word -->
-      <a
-        href="dic/نــماذج  اليومية/نموذج استلام.docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
+      <a 
+        href="index.html" 
+        class="btn-icon word-icon" 
+        target="_top" 
+        title="تعديل Word"
+        onclick="localStorage.setItem('wordLinkChoice', 'استلام-اليوم')">
       </a>
-             
+   
       <!-- طباعة -->
       <a
         href="javascript:void(0);"
@@ -717,46 +720,13 @@
     
   </div>
 
-  <div class="model-card">
-    <div class="card-content">
-      
-      <img src="img/icon-g.png" class="model-icon" alt="">
-      <h3>احصائية البوابات الذاتية</h3>
-      <p>احصائي عن المسافرين من الخدمة الذاتية</p>
-      <p style="font-size: 10px; color: green; margin-top: 5px;">
-    🔗 المرفقات المطلوبة: شرائح الحاسب الآلي
-     </p>
-
-    </div>
-    <div class="card-actions">
-      <a
-        href="dic/نــماذج  اليومية/نموذج احصائية البوابات الإلكترونية.pdf"
-        class="btn-icon pdf-icon"
-        target="_blank"
-        title="عرض PDF"
-        onclick="window.open(this.href,'popup','width=800,height=600');return false;">
-      </a>
-      <a
-        href="dic/نــماذج  اليومية/احصائية البوابات .docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
-      </a>
-      <a
-        href="javascript:void(0);"
-        class="btn-icon print-icon"
-        title="طباعة"
-        onclick="printFile('dic/نــماذج  اليومية/نموذج احصائية البوابات الإلكترونية.pdf');">
-        <i class="fa-solid fa-print"></i>
-      </a>
-    </div>
-  </div>
+  
 <div class="model-card">
     <div class="card-content">
         <span class="badge-new">جديد</span>
 
       <img src="img/icon-g.png" class="model-icon" alt="">
-      <h3>احصائية الكونتر المتنقل</h3>
+      <h3>احصائية الكونتر المتنقل والذاتيه</h3>
       <p>احصائي عن المسافرين من الخدمة الذاتية</p>
       <p style="font-size: 10px; color: green; margin-top: 5px;">
     🔗 المرفقات المطلوبة: شرائح الحاسب الآلي

@@ -541,3 +541,58 @@ body.help-open #helpBox{ display:block; }
   margin:10px 0 14px;
 }
 .selected-banner[hidden]{ display:none !important; }
+
+/* ملاحظة بجانب عنوان "وقت الشفت والموازنة" */
+.note-shift-balance-now{
+  display: none;           /* تُظهَر عبر السكربت عند تفعيل شرط الليل */
+  color: #16a34a;          /* أخضر واضح */
+  font-weight: 600;        /* بارز قليلاً */
+  font-size: 0.72rem;      /* صغير جدًا ~ 11.5px */
+  letter-spacing: .2px;    /* تباعد خفيف */
+  margin-inline-start: .5ch; /* مسافة صغيرة بعد العنوان */
+  white-space: nowrap;     /* تبقى في سطر واحد */
+}
+#card-shift-balance .note-inline{
+  color: #16a34a;       /* أخضر */
+  font-weight: 600;
+  font-size: 0.7rem;    /* أصغر من قبل */
+  line-height: 1;       /* ينسجم مع العنوان */
+  margin-inline-start: .25rem;
+  white-space: nowrap;
+}
+
+
+/* حقل صغير للأرقام فقط (قسم بيانات الصادر) */
+.sm-num{
+  max-width: 120px;
+  min-width: 90px;
+  height: 30px;
+  padding: 4px 6px;
+  font-size: .9rem;
+  text-align: center;
+}
+/* تمييز أخضر */
+.att-green{
+  background:#dcfce7; border-color:#16a34a; color:#166534; font-weight:700;
+}
+.att-green::placeholder{ color:#15803d; opacity:.8; }
+
+/* جعل الحقل طولي (أطول من العادي) */
+/* طول مناسب لحقل الحضور والانصراف */
+.att-tall{
+  height: 38px;        /* كان 56px */
+  padding: 6px 8px;    /* راحة بسيطة */
+  line-height: normal; /* أزلنا 56px حتى لا يكبر النص */
+  font-size: .95rem;   /* حجم نص معتدل */
+  box-sizing: border-box;
+}
+#fix-word-btn i.fa-screwdriver-wrench{ color:#16a34a; }       /* أخضر للمفك */
+#fix-word-btn .btn-text{ margin-inline:2px; }
+
+#fix-word-btn .word-img{
+  width:18px;      /* كان 14px — الآن أكبر قليلاً */
+  height:auto;
+  display:inline-block;
+  vertical-align:middle;
+  margin-inline-start:4px; /* مسافة بسيطة بعد النص */
+}

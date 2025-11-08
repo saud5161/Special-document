@@ -197,6 +197,22 @@ async function loadCommander() {
 
 // جمع القيم المراد حفظها
 function collect(){
+    // --- حساب صادر إضافي تلقائيًا اعتمادًا على IssuedExtra1 ---
+  const ex1Raw = $('IssuedExtra1')?.value ?? '';
+  const ex1Num = (() => {
+    const s = String(ex1Raw).trim();
+    if (!s) return NaN;
+    const n = parseInt(s.replace(/[^0-9]/g,''), 10);
+    return isNaN(n) ? NaN : n;
+  })();
+
+  const ex2 = isNaN(ex1Num) ? '' : String(ex1Num + 1);
+  const ex3 = isNaN(ex1Num) ? '' : String(ex1Num + 2);
+  const ex4 = isNaN(ex1Num) ? '' : String(ex1Num + 3);
+  const ex5 = isNaN(ex1Num) ? '' : String(ex1Num + 4);
+  const ex6 = isNaN(ex1Num) ? '' : String(ex1Num + 5);
+  const ex7 = isNaN(ex1Num) ? '' : String(ex1Num + 6);
+
   return {
     TodayDate:        $('custom-hijri-date')?.value || '',
     Day:              $('custom-weekday')?.value    || '',
@@ -230,11 +246,9 @@ function collect(){
     ReceiveTimeFrom: $('ReceiveTimeFrom')?.value || '',
 ReceiveTimeTo:   $('ReceiveTimeTo')?.value   || '',
 
-BalanceTimeFrom:        $('BalanceTimeFrom')?.value        || '',
-BalanceTimeTo:          $('BalanceTimeTo')?.value          || '',
-EveningBalanceFrom:     $('EveningBalanceFrom')?.value     || '',
-EveningBalanceTo:       $('EveningBalanceTo')?.value       || '',
-BalanceDateNight:       $('BalanceDateNight')?.value       || '',
+//الصادر الاضافي
+
+
 MarkedCheck: document.getElementById("myCheckBox")?.checked ? "True" : "False",
 // ===== القسم الأول: مغادر إلى إحدى الدول … =====
 MC_Forbidden:           document.getElementById('mc-forbidden')?.checked ? 'True' : 'False',
@@ -303,6 +317,46 @@ ChiefDate:       $('mc-chiefDate')?.value || '',
 ChiefShiftCopy:  $('mc-shift')?.value || '',
 ChiefHallCopy:   $('mc-hall')?.value || '',
 
+ListOfficerName:  $('ListOfficerName')?.value  || '',
+ListOfficerRank:  $('ListOfficerRank')?.value  || '',
+AdminOfficerName: $('AdminOfficerName')?.value || '',
+AdminOfficerRank: $('AdminOfficerRank')?.value || '',
+// ——— أسماء القوائم والأعمال الإدارية ———
+ListOfficerName:  $('ListOfficerName')?.value  || '',
+ListOfficerRank:  $('ListOfficerRank')?.value  || '',
+AdminOfficerName: $('AdminOfficerName')?.value || '',
+AdminOfficerRank: $('AdminOfficerRank')?.value || '',
+
+// ——— يوم الموازنة ———
+BalanceWeekday:   $('BalanceWeekday')?.value   || '',
+BalanceTimeFrom:    $('BalanceTimeFrom')?.value    || '', // وقت الموازنة (من) — الفترة الأساسية
+BalanceTimeTo:      $('BalanceTimeTo')?.value      || '', // وقت الموازنة (إلى) — الفترة الأساسية
+EveningBalanceFrom: $('EveningBalanceFrom')?.value || '', // وقت الموازنة المسائية (من)
+EveningBalanceTo:   $('EveningBalanceTo')?.value   || '', // وقت الموازنة المسائية (إلى)
+BalanceDateNight:   $('BalanceDateNight')?.value   || '', // تاريخ الموازنة (اليوم/التاريخ)
+//صادر
+IssuedAttendance: $('IssuedAttendance')?.value || '', // الحضور والانصراف (رقم الصادر الأساسي)
+IssuedBalance:    $('IssuedBalance')?.value    || '', // الموازنة (يزيد تلقائياً عن الحضور +1 أو حسب إدخالك)
+IssuedManifests:  $('IssuedManifests')?.value  || '', // المنفستات (يزيد تلقائياً عن الحضور +2)
+IssuedReports:    $('IssuedReports')?.value    || '', // التقارير (يزيد تلقائياً عن الحضور +3)
+IssuedGates:      $('IssuedGates')?.value      || '', // البوابات (يزيد تلقائياً عن الحضور +4)
+IssuedExtra1:     $('IssuedExtra1')?.value     || '', // صادر إضافي 1 (يزيد تلقائياً عن الحضور +5)
+    //صادر
+    IssuedAttendance: $('IssuedAttendance')?.value || '', // الحضور والانصراف (رقم الصادر الأساسي)
+    IssuedBalance:    $('IssuedBalance')?.value    || '', // الموازنة
+    IssuedManifests:  $('IssuedManifests')?.value  || '', // المنفستات
+    IssuedReports:    $('IssuedReports')?.value    || '', // التقارير
+    IssuedGates:      $('IssuedGates')?.value      || '', // البوابات
+    IssuedTitle: $('IssuedTitle')?.value || '', // عنوان الصادر
+    // صادر إضافي — يُحسب تلقائيًا من IssuedExtra1 بدون حقول إضافية
+    IssuedExtra1:     ex1Raw, // من الحقل الوحيد الموجود
+    IssuedExtra2:     ex2,
+    IssuedExtra3:     ex3,
+    IssuedExtra4:     ex4,
+    IssuedExtra5:     ex5,
+    IssuedExtra6:     ex6,
+    IssuedExtra7:     ex7,
+
   };
 }
 
@@ -322,9 +376,22 @@ function payloadToIni(obj){
 async function saveAll() {
   const data = collect();
   const ini  = payloadToIni(data);
+// === حل مشكلة بقاء "بيانات الصادر" ظاهرة بعد تنفيذ وحفظ ===
+// تحديد الاختيار الحالي
+const choice =
+  (localStorage.getItem('wordLinkChoice') ||
+   localStorage.getItem('lastWordLinkChoice') || '').trim();
 
-  // حفظ نسخة في المتصفح + تنبيه مصغر
-  localStorage.setItem('receipt_today_payload', JSON.stringify(data));
+// إن لم تكن استلام-اليوم نحذف التخزين ونخفي القسم، وإلا نخزّن ونُظهره
+const issuedCard = document.getElementById('card-issued-data');
+
+
+
+
+
+
+// فرض الإخفاء/الإظهار النهائي لبطاقة "بيانات الصادر" مباشرة بعد الحفظ
+try { if (typeof __issued_enforceVisibility === 'function') __issued_enforceVisibility(); } catch {}
   const ok = $('check-officer-name');
   if (ok) { ok.style.display = 'inline'; setTimeout(() => ok.style.display = 'none', 1500); }
 
@@ -401,7 +468,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/خطاب اشارة الى تخلف.docm";
 } else if (choice === "تاشيرات-المشاريع") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تاشيرات حكومية لمكتب المشاريع .docm";
-
+} else if (choice === "استلام-اليوم") {
+  wordLink.href = "dic/نــماذج  اليومية/نموذج استلام.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -432,6 +500,109 @@ setTimeout(() => {
 // إخفاء حقول وبطاقات عندما تكون wordLinkChoice = "canceled"
 document.addEventListener("DOMContentLoaded", () => {
   const choice = localStorage.getItem("wordLinkChoice");
+// === نفس أسلوبك تمامًا: if (choice === "...") مع forEach ===
+(function(){
+  // نحسب choice بناءً على التخزين: إذا ReceiveTimeFrom محفوظة نعدّه "استلام-اليوم"
+  let computedChoice = choice;
+  try {
+    const raw = localStorage.getItem("receipt_today_payload");
+    if (raw) {
+      const obj = JSON.parse(raw);
+      if ((obj?.ReceiveTimeFrom || "").trim() !== "") {
+        computedChoice = "استلام-اليوم";
+      }
+    }
+  } catch {}
+
+  if (computedChoice === "استلام-اليوم") {
+    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+      const el  = document.getElementById(id);
+      const lbl = document.querySelector(`label[for='${id}']`);
+      if (el)  el.style.display  = "block";
+      if (lbl) lbl.style.display = "block";
+    });
+  } else {
+    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+      const el  = document.getElementById(id);
+      const lbl = document.querySelector(`label[for='${id}']`);
+      if (el)  el.style.display  = "none";
+      if (lbl) lbl.style.display = "none";
+    });
+  }
+  // [FIX] "بيانات الصادر" مربوطة بالاختيار الحالي فقط
+(() => {
+  const issuedCard = document.getElementById('card-issued-data');
+  if (!issuedCard) return;
+  const currentChoice =
+    (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+  issuedCard.style.display = (currentChoice === 'استلام-اليوم') ? 'block' : 'none';
+})();
+
+})();
+// ================== قاعدة بيانات الأسماء والرتب ==================
+const nameDB = {
+  lists: new Map(),   // أسماء القوائم
+  admin: new Map()    // أسماء الأعمال الإدارية
+};
+
+async function loadNameDB() {
+  try {
+    const res = await fetch('namecont.json', {cache: 'no-cache'});
+    const data = await res.json();
+
+    // املأ الخرائط
+    (data.lists || []).forEach(item => nameDB.lists.set(item.name, item.rank));
+    (data.admin || []).forEach(item => nameDB.admin.set(item.name, item.rank));
+
+    // دمج كل الأسماء لإضافتها لقائمة الإكمال التلقائي الحالية (إن وُجدت)
+    const dl = document.getElementById('names');
+    if (dl) {
+      const existing = new Set(Array.from(dl.querySelectorAll('option')).map(o => o.value));
+      [...nameDB.lists.keys(), ...nameDB.admin.keys()].forEach(n => {
+        if (!existing.has(n)) {
+          const opt = document.createElement('option');
+          opt.value = n;
+          dl.appendChild(opt);
+        }
+      });
+    }
+  } catch (e) {
+    console.error('فشل تحميل قاعدة الأسماء namecont.json:', e);
+  }
+}
+// يظهر "بيانات الصادر" فقط إذا كان الاختيار الحالي = استلام-اليوم
+function __issued_enforceVisibility(){
+  const card = document.getElementById('card-issued-data');
+  if (!card) return;
+
+  const choice = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+
+  // إن أردت تجاهل أي تخزين قديم، لا تعتمد على receipt_today_payload هنا
+  card.style.display = (choice === 'استلام-اليوم') ? 'block' : 'none';
+}
+
+// ربط إدخال الاسم بتعبئة الرتبة تلقائيًا
+function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) {
+  const nameInput = document.getElementById(nameInputId);
+  const rankInput = document.getElementById(rankInputId);
+  if (!nameInput || !rankInput) return;
+
+  const fill = () => {
+    const v = nameInput.value.trim();
+    // أولاً من المصدر المحدد، ثم من أي مصدر آخر كاحتياط
+    const r =
+      nameDB[source]?.get(v) ||
+      nameDB.lists.get(v) ||
+      nameDB.admin.get(v) || '';
+    if (r) rankInput.value = r;
+  };
+
+  // عند الاختيار من القائمة/التغيير/الخروج من الحقل
+  nameInput.addEventListener('change', fill);
+  nameInput.addEventListener('blur',   fill);
+  // ولو أردت أن يعمل أثناء الكتابة:
+  // nameInput.addEventListener('input', fill);
+}
 
   if (choice === "canceled") {
     // 1) إخفاء رقم الهوية
@@ -502,6 +673,8 @@ if (choice === "مواليد") {
     if (lbl) lbl.style.display = "none";
   });
 }
+
+
 
 if (choice === "تعقب-مغادرة") {
   const note = document.getElementById("prev-flight-note");
@@ -757,7 +930,7 @@ if (choice === "غياب-مجندات") {
   }
 }
 // ===== وضع shafttime =====
-if (choice === "shafttime") {
+if (choice === "استلام-اليوم") {
   // 1) إظهار بطاقة وقت الشفت والموازنة
   const shiftBalanceCard = document.getElementById("card-shift-balance");
   if (shiftBalanceCard) shiftBalanceCard.style.display = "block";
@@ -772,21 +945,22 @@ if (choice === "shafttime") {
 
   // 4) إخفاء اسم/رتبة الآمر المناوب + ملصقاتها
   const hideSelectors = [
-    "#commander-name",
-    "label[for='commander-name']",
-    "#commander-rank",
-    "label[for='commander-rank']"
-  ];
-  hideSelectors.forEach(sel => {
-    const el = document.querySelector(sel);
-    if (el) el.style.display = "none";
-  });
+  "#commander-name",
+  "label[for='commander-name']",
+  "#commander-rank",
+  "label[for='commander-rank']"
+].forEach(sel => {
+  const el = document.querySelector(sel);
+  if (el) el.style.display = ""; // أو 'block' إذا احتجت عرضًا كتليًا
+});
 
   // 5) إظهار فقط البطاقات: التاريخ/المستلم + وقت الشفت + الصادر الخاص بالشفت
-  const keep = new Set(["card-receipt","card-shift-balance","card-issued-shaft"]);
-  document.querySelectorAll(".card").forEach(card => {
-    card.style.display = keep.has(card.id) ? "block" : "none";
-  });
+// داخل if (choice === 'استلام-اليوم') { ... }
+const keep = new Set(['card-receipt','card-shift-balance','card-issued-shaft','card-lists-admin']);
+document.querySelectorAll('.card').forEach(card => {
+  if (card.id) card.style.display = keep.has(card.id) ? 'block' : 'none';
+});
+
 }
 
 
@@ -1568,5 +1742,400 @@ document.addEventListener('DOMContentLoaded', () => {
   // في حال تغيّرت التخزينة أثناء الجلسة
   window.addEventListener('storage', (e) => {
     if (e.key === 'wordLinkChoice' || e.key === 'lastWordLinkChoice') renderChoice();
+  });
+});
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) إخفِ عنوان وحقول "وقت الشفت والموازنة" افتراضيًا
+  const titleIcon = document.querySelector('h3.card__title i.fa-business-time');
+  const titleH3   = titleIcon?.parentElement;
+  const body      = titleH3?.nextElementSibling;
+
+  if (titleH3) titleH3.style.display = 'none';
+  if (body && body.classList.contains('card__body')) body.style.display = 'none';
+
+const ids = [
+  'ReceiveTimeFrom','ReceiveTimeTo',
+  'BalanceTimeFrom','BalanceTimeTo',
+  'EveningBalanceFrom','EveningBalanceTo',
+  'BalanceDateNight','BalanceWeekday',
+  // ✨ أضف الحقول هنا لربطها بشرط الشفت
+  'ListOfficerName','ListOfficerRank',
+  'AdminOfficerName','AdminOfficerRank'
+];
+
+  ids.forEach(id => {
+    const inputEl = document.getElementById(id);
+    const labelEl = document.querySelector(`label[for='${id}']`);
+    if (inputEl) inputEl.style.display = 'none';
+    if (labelEl) labelEl.style.display = 'none';
+  });
+
+  // 2) اقرأ الاختيار المخزن
+  const choice = localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice');
+
+  // 3) إذا كان "استلام" -> أظهر البطاقة وكل حقولها
+  if (choice === 'استلام-اليوم') {
+    // إن وُجدت بطاقة مخصصة للشفت
+    const shiftCard = document.getElementById('card-shift-balance');
+    if (shiftCard) shiftCard.style.display = 'block';
+
+    // إن وُجدت بطاقة الصادر الخاصة بالشفت
+    const issuedShaftCard = document.getElementById('card-issued-shaft');
+    if (issuedShaftCard) issuedShaftCard.style.display = 'block';
+
+    // أظهر العنوان والجسم
+    if (titleH3) titleH3.style.display = 'flex';
+    if (body) body.style.display = 'grid';
+
+    // أظهر الحقول والليبلز فرديًا (ضمانًا)
+    ids.forEach(id => {
+      const inputEl = document.getElementById(id);
+      const labelEl = document.querySelector(`label[for='${id}']`);
+      if (inputEl) inputEl.style.display = '';
+      if (labelEl) labelEl.style.display = '';
+    });
+    selectEl.addEventListener('change', () => {
+  const choice = selectEl.value.trim();
+  if (choice !== 'استلام-اليوم') {
+    localStorage.removeItem('receipt_today_payload');     // نظّف أي بقايا
+  }
+  enforceIssuedCard();                                    // طبّق العرض فورًا
+});
+
+    // إن أردت الاقتصار على بطاقات محددة عند هذا الوضع:
+    // (هذا منطق موجود أصلًا في ملفك)
+const keep = new Set(['card-receipt','card-shift-balance','card-issued-shaft','card-lists-admin','card-issued-data']);
+    document.querySelectorAll('.card').forEach(card => {
+      if (card.id) card.style.display = keep.has(card.id) ? 'block' : 'none';
+    });
+  }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  // نفس أسلوبك: نقرأ choice الأصلي
+  const choice = localStorage.getItem("wordLinkChoice");
+
+  // هل "استلام-اليوم" محفوظ فعلاً في localStorage؟
+  function hasSavedReceiveTime(){
+    try{
+      const raw = localStorage.getItem("receipt_today_payload"); // تُحفظ هنا بعد saveAll()
+      if(!raw) return false;
+      const obj = JSON.parse(raw);
+      return (obj?.ReceiveTimeFrom || "").trim() !== "";
+    }catch{ return false; }
+  }
+
+  // نحسب choice وفق التخزين، حتى نستخدم نفس أسلوبك تمامًا
+  const computedChoice = hasSavedReceiveTime() ? "استلام-اليوم" : choice;
+const issuedCard = document.getElementById('card-issued-data');
+if (issuedCard) issuedCard.style.display = (computedChoice === "استلام-اليوم") ? "block" : "none";
+
+
+  // ✅ نفس الأسلوب بالضبط
+  if (computedChoice === "استلام-اليوم") {
+    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+      const el  = document.getElementById(id);
+      const lbl = document.querySelector(`label[for='${id}']`);
+      if (el)  el.style.display = "block";
+      if (lbl) lbl.style.display = "block";
+    });
+  } else {
+    // إبقاءها مخفية إن لم يتحقق الشرط
+    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+      const el  = document.getElementById(id);
+      const lbl = document.querySelector(`label[for='${id}']`);
+      if (el)  el.style.display = "none";
+      if (lbl) lbl.style.display = "none";
+    });
+  }
+});
+document.addEventListener('DOMContentLoaded', async () => {
+  // ... كودك الحالي ...
+
+  // حمّل قاعدة الأسماء ثم اربط حقولك
+  await loadNameDB();
+
+  // أسماء القوائم → ListOfficerName يملأ ListOfficerRank
+  bindAutoRank('ListOfficerName',  'ListOfficerRank',  'lists');
+
+  // الأعمال الإدارية → AdminOfficerName يملأ AdminOfficerRank
+  bindAutoRank('AdminOfficerName', 'AdminOfficerRank', 'admin');
+
+  // ... بقية كودك الحالي ...
+});
+// خرائط الأسماء والرتب
+const nameDB = { lists: new Map(), admin: new Map() };
+
+// دالة مساعدة: إنشاء/جلب datalist
+function ensureDatalist(id) {
+  let dl = document.getElementById(id);
+  if (!dl) {
+    dl = document.createElement('datalist');
+    dl.id = id;
+    document.body.appendChild(dl);
+  }
+  return dl;
+}
+
+// تعبئة datalist من مصفوفة أسماء
+function fillDatalist(datalistEl, namesArray) {
+  datalistEl.innerHTML = ''; // مهم: امسح أي أسماء قديمة
+  namesArray.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    datalistEl.appendChild(opt);
+  });
+}
+
+// تحميل القاعدة وربط الحقول بقوائمها الخاصة
+async function loadNameDB() {
+  try {
+    // جرّب من الملف الخارجي أولاً
+    const res = await fetch('./namecont.json', { cache: 'no-cache' });
+    const data = await res.json();
+
+    (data.lists || []).forEach(item => nameDB.lists.set(item.name, item.rank));
+    (data.admin || []).forEach(item => nameDB.admin.set(item.name, item.rank));
+  } catch (e) {
+    // بديل: لو تضمّنت القاعدة داخل الصفحة <script type="application/json" id="namecont-data">
+    const embed = document.getElementById('namecont-data');
+    if (embed?.textContent) {
+      const data = JSON.parse(embed.textContent);
+      (data.lists || []).forEach(item => nameDB.lists.set(item.name, item.rank));
+      (data.admin || []).forEach(item => nameDB.admin.set(item.name, item.rank));
+    } else {
+      console.error('تعذّر تحميل namecont.json ولا يوجد بديل مضمّن');
+    }
+  }
+
+  // أنشئ قوائم منفصلة ولا تدمج مع #names
+  const dlLists = ensureDatalist('names-lists');
+  const dlAdmin = ensureDatalist('names-admin');
+
+  fillDatalist(dlLists, [...nameDB.lists.keys()]);
+  fillDatalist(dlAdmin, [...nameDB.admin.keys()]);
+
+  // اربط الحقول بقوائمها (بدون تعديل HTML)
+  const listNameInput  = document.getElementById('ListOfficerName');
+  const adminNameInput = document.getElementById('AdminOfficerName');
+
+  if (listNameInput) {
+    listNameInput.setAttribute('list', 'names-lists');
+    listNameInput.setAttribute('autocomplete', 'off'); // لمنع اقتراحات المتصفح
+  }
+  if (adminNameInput) {
+    adminNameInput.setAttribute('list', 'names-admin');
+    adminNameInput.setAttribute('autocomplete', 'off');
+  }
+
+  // (اختياري) توليد قائمة رتب موحّدة من القاعدة ودمجها مع الموجود
+  const ranksSet = new Set([...nameDB.lists.values(), ...nameDB.admin.values()]);
+  const ranksDL = ensureDatalist('ranks');
+  // لا نمسح الموجود إذا عندك رتب إضافية يدوية؛ لو تبغى مسحها استبدل التالي بـ ranksDL.innerHTML=''
+  const existing = new Set(Array.from(ranksDL.querySelectorAll('option')).map(o => o.value));
+  ranksSet.forEach(r => {
+    if (!existing.has(r)) {
+      const opt = document.createElement('option');
+      opt.value = r;
+      ranksDL.appendChild(opt);
+    }
+  });
+}
+
+// تعبئة الرتبة تلقائيًا حسب الاسم
+function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) {
+  const nameInput = document.getElementById(nameInputId);
+  const rankInput = document.getElementById(rankInputId);
+  if (!nameInput || !rankInput) return;
+
+  const fill = () => {
+    const v = nameInput.value.trim();
+    const r = nameDB[source].get(v) || ''; // لا نبحث في المصدر الآخر حتى لا تختلط القواعد
+    if (r) rankInput.value = r;
+  };
+  nameInput.addEventListener('change', fill);
+  nameInput.addEventListener('blur', fill);
+  // لو تحب أثناء الكتابة:
+  // nameInput.addEventListener('input', fill);
+}
+
+// فعِّل عند تحميل الصفحة (أضِف داخل DOMContentLoaded لديك أو غيّر المستمع الحالي)
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadNameDB();
+
+  // أسماء القوائم ↔ رتبها من قسم lists
+  bindAutoRank('ListOfficerName',  'ListOfficerRank',  'lists');
+
+  // أسماء الأعمال الإدارية ↔ رتبها من قسم admin
+  bindAutoRank('AdminOfficerName', 'AdminOfficerRank', 'admin');
+});
+//وقت الموازنة 
+/* ============================================================
+   منطق وقت الموازنة بناءً على "الوقت الحالي"
+   - إذا الآن بين 21:40 و 05:40 ⇒ نطبّق القيم الخاصة.
+   - غير ذلك ⇒ الموازنة = الاستلام.
+============================================================ */
+(function () {
+  // غيّر هذه المعرّفات إذا كانت مختلفة في صفحتك:
+  const ID_RECEIVE_FROM = 'ReceiveTimeFrom';
+  const ID_RECEIVE_TO   = 'ReceiveTimeTo';
+  const ID_BAL_FROM     = 'BalanceTimeFrom';
+  const ID_BAL_TO       = 'BalanceTimeTo';
+  const ID_EBAL_FROM    = 'EveningBalanceFrom';
+  const ID_EBAL_TO      = 'EveningBalanceTo';
+
+  // أدوات مساعدة
+  function isTimeInput(el) {
+    return el && el.tagName === 'INPUT' && el.type === 'time';
+  }
+  function setTime(el, as24h /* "HH:MM" */, asAr /* مثل "10م" */) {
+    if (!el) return;
+    if (isTimeInput(el)) el.value = as24h;
+    else el.value = asAr;
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  // هل "الوقت الحالي" داخل المدى الخاص (21:40 ↔ 05:40)؟
+  function inSpecialRangeNow() {
+    const now = new Date();
+    const t = now.getHours() * 60 + now.getMinutes(); // دقائق منذ منتصف الليل
+    const start = 21 * 60 + 40; // 21:40 = 1300
+    const end   = 5  * 60 + 40; // 05:40 = 340
+    // المدى عابر لمنتصف الليل: [21:40 .. 23:59] ∪ [00:00 .. 05:40]
+    return (t >= start) || (t <= end);
+  }
+
+  function syncBalanceTimesByNow() {
+    const rf = document.getElementById(ID_RECEIVE_FROM);
+    const rt = document.getElementById(ID_RECEIVE_TO);
+    const bf = document.getElementById(ID_BAL_FROM);
+    const bt = document.getElementById(ID_BAL_TO);
+    const ef = document.getElementById(ID_EBAL_FROM);
+    const et = document.getElementById(ID_EBAL_TO);
+    if (!bf || !bt || !ef || !et) return;
+
+    if (inSpecialRangeNow()) {
+      // القيم الخاصة المطلوبة في المدى الليلي:
+      // BalanceTimeFrom = 10م  -> 22:00
+      // BalanceTimeTo   = 11:59م -> 23:59
+      // EveningBalanceFrom = 12م  -> 12:00
+      // EveningBalanceTo   = 6م   -> 18:00
+      setTime(bf, '22:00', '10م');
+      setTime(bt, '23:59', '11:59م');
+      setTime(ef, '12:00', '12ص');
+      setTime(et, '18:00', '6ص');
+    } else {
+      // خارج المدى الليلي → الموازنة = الاستلام
+      if (rf && bf) {
+        if (isTimeInput(bf) && isTimeInput(rf)) bf.value = rf.value;
+        else bf.value = (rf?.value || '').trim();
+      }
+      if (rt && bt) {
+        if (isTimeInput(bt) && isTimeInput(rt)) bt.value = rt.value;
+        else bt.value = (rt?.value || '').trim();
+      }
+      [bf, bt].forEach(el => el && el.dispatchEvent(new Event('change', { bubbles: true })));
+    }
+  }
+
+  function bind() {
+    const rf = document.getElementById(ID_RECEIVE_FROM);
+    const rt = document.getElementById(ID_RECEIVE_TO);
+
+    // عند تغيّر وقت الاستلام نعيد المزامنة (بحيث يُنسخ في وضع النهار)
+    if (rf) {
+      rf.addEventListener('change', syncBalanceTimesByNow);
+      rf.addEventListener('blur',   syncBalanceTimesByNow);
+      // لو تحب أثناء الكتابة:
+      // rf.addEventListener('input',  syncBalanceTimesByNow);
+    }
+    if (rt) {
+      rt.addEventListener('change', syncBalanceTimesByNow);
+      rt.addEventListener('blur',   syncBalanceTimesByNow);
+      // rt.addEventListener('input',  syncBalanceTimesByNow);
+    }
+
+    // شغّلها فور التحميل
+    syncBalanceTimesByNow();
+
+    // (اختياري) أعد الحساب كل دقيقة عشان لو الوقت عبر الحدّ يتحدّث تلقائيًا
+    setInterval(syncBalanceTimesByNow, 60 * 1000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bind);
+  } else {
+    bind();
+  }
+})();
+// تحويل آمن إلى عدد صحيح
+function toInt(v){
+  const n = parseInt(String(v||'').replace(/\D/g,''), 10);
+  return isNaN(n) ? 0 : n;
+}
+
+// مزامنة قيم المخرجات عند إدخال "الحضور والانصراف"
+// كل خانة تأخذ (قيمة الحضور) + تعويض متزايد: +1 ثم +2 ثم +3 ...
+function syncIssuedFromAttendance(){
+  const a = document.getElementById('IssuedAttendance');
+  if(!a) return;
+
+  const base = toInt(a.value);
+
+  const targetsWithOffsets = [
+    ['IssuedBalance',   1], // الموازنة  = base + 1
+    ['IssuedManifests', 2], // المنفستات = base + 2
+    ['IssuedReports',   3], // التقارير  = base + 3
+    ['IssuedGates',     4], // البوابات  = base + 4
+    ['IssuedExtra1',    5], // إضافي     = base + 5
+    ['IssuedExtra2',    6], // إضافي     = base + 6
+  ];
+
+  targetsWithOffsets.forEach(([id, off])=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(a.value.trim()===''){   // لو فاضي، نظفها
+      el.value = '';
+    }else{
+      el.value = String(base + off);
+    }
+  });
+}
+
+// اربط الحدث (لو لم تكن ربطته من قبل)
+document.addEventListener('DOMContentLoaded', function(){
+  const a = document.getElementById('IssuedAttendance');
+  if(a){
+    a.addEventListener('input', syncIssuedFromAttendance);
+    syncIssuedFromAttendance();
+  }
+});
+
+
+//عنوان الصادر
+// يبني العنوان: /م {shift} مغادرة {hall}
+function updateIssuedTitle(){
+  const field = document.getElementById('IssuedTitle');
+  if (!field) return;
+
+  const shift = (document.getElementById('shift-number')?.value || '').trim();
+  const hall  = (document.getElementById('hall-number')?.value  || '').trim();
+
+  if (shift || hall){
+    const parts = ['/م'];
+    if (shift) parts.push(shift);
+    if (hall)  parts.push('مغادرة', hall);
+    field.value = parts.join(' ').replace(/\s+/g,' ').trim();
+  } else {
+    // فارغ إذا ما في معطيات
+    field.value = '';
+  }
+}
+
+// استدعاء عند التحميل والكتابة
+document.addEventListener('DOMContentLoaded', () => {
+  updateIssuedTitle();
+  ['shift-number','hall-number'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateIssuedTitle);
   });
 });
