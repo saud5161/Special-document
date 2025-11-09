@@ -604,7 +604,7 @@ function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) 
   // nameInput.addEventListener('input', fill);
 }
 
-  if (choice === "canceled") {
+  if (choice === "خطاب-بدون") {
     // 1) إخفاء رقم الهوية
     const idField = document.getElementById("id");
     const idLabel = document.querySelector("label[for='id']");
