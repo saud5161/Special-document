@@ -625,6 +625,8 @@ function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) 
     const travelerCard = document.getElementById("card-traveler");
     if (travelerCard) travelerCard.style.display = "none";
   }
+
+  
 // ===== وضع matlopan =====
 if (
   choice === "اشعار" ||
@@ -671,6 +673,23 @@ if (choice === "مواليد") {
     const lbl = document.querySelector(`label[for='${id}']`);
     if (el)  el.style.display = "none";
     if (lbl) lbl.style.display = "none";
+  });
+}
+// ===== وضع حذف-السجلات: أظهر «أسماء القوائم والأعمال الإدارية» كاملة =====
+if (choice === "حذف-السجلات") {
+  // 1) أظهر البطاقة نفسها
+  const card = document.getElementById("card-lists-admin");
+  if (card) card.style.display = "block"; // يزيل display:none الموجود في HTML
+
+  // 2) أظهر حقول أسماء القوائم + الأعمال الإدارية (مع الملصقات)
+  [
+    "ListOfficerName","ListOfficerRank",
+    "AdminOfficerName","AdminOfficerRank"
+  ].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  { el.style.display = ""; el.hidden = false; }
+    if (lbl) { lbl.style.display = ""; lbl.hidden = false; }
   });
 }
 
@@ -961,6 +980,38 @@ document.querySelectorAll('.card').forEach(card => {
   if (card.id) card.style.display = keep.has(card.id) ? 'block' : 'none';
 });
 
+}
+// ===== وضع حذف-السجلات =====
+if (choice === "حذف-السجلات") {
+  // 1) إظهار بطاقة أسماء القوائم (القسم كاملًا)
+  const listsCard = document.getElementById("card-lists-admin");
+  if (listsCard) listsCard.style.display = "block";
+
+  // 2) إظهار: اسم القائمة + رتبته
+  ["ListOfficerName", "ListOfficerRank"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.display = "block";
+    if (lbl) lbl.style.display = "block";
+  });
+
+  // 3) (اختياري) إبقاء حقول الأعمال الإدارية مخفية
+  ["AdminOfficerName", "AdminOfficerRank"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
+
+  // 4) إخفاء الآمر المناوب + رتبته (مع الـ labels)
+  const cmdN  = document.getElementById("commander-name");
+  const cmdNL = document.querySelector(`label[for='commander-name']`);
+  const cmdR  = document.getElementById("commander-rank");
+  const cmdRL = document.querySelector(`label[for='commander-rank']`);
+  if (cmdN)  cmdN.style.display  = "none";
+  if (cmdNL) cmdNL.style.display = "none";
+  if (cmdR)  cmdR.style.display  = "none";
+  if (cmdRL) cmdRL.style.display = "none";
 }
 
 
@@ -1831,7 +1882,7 @@ if (issuedCard) issuedCard.style.display = (computedChoice === "استلام-ا�
 
 
   // ✅ نفس الأسلوب بالضبط
-  if (computedChoice === "استلام-اليوم") {
+if (computedChoice === "استلام-اليوم" || computedChoice === "حذف-السجلات") {
     ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
       const el  = document.getElementById(id);
       const lbl = document.querySelector(`label[for='${id}']`);
