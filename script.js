@@ -1,48 +1,4 @@
 const storedHash = "96cae35ce8a9b0244178bf28e4966c2ce1b8385723a96a6b838858cdd6ca0a1e"; 
-// خريطة المسارات (مطابقة لمساراتك)
-const ATTENDANCE_PATHS = {
-  "1": {
-    "ا": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةا.docm" },
-    "ب": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةب.docm" },
-    "ج": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةج.docm" },
-    "د": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةد.docm" },
-  },
-  "3": {
-    "ا": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةا.docm" },
-    "ب": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةب.docm" },
-    "ج": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةج.docm" },
-    "د": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةد.docm" },
-  },
-  "4": {
-    "ا": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةا.docm" },
-    "ب": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةب.docm" },
-    "ج": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةج.docm" },
-    "د": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةد.docm" },
-  }
-};
-
-function attxUpdateLinks(){
-  const hall  = document.getElementById('attxHall')?.value;
-  const shift = document.getElementById('attxShift')?.value;
-  if(!hall || !shift) return;
-
-  const cfg = ATTENDANCE_PATHS[hall]?.[shift];
-  if(!cfg) return;
-
-  const pdfA   = document.getElementById('attxPdf');
-  const wordA  = document.getElementById('attxWord');
-  const printA = document.getElementById('attxPrint');
-
-  if(pdfA)  pdfA.href  = cfg.pdf;      // نافذة منبثقة تستخدم this.href كما هو
-  if(wordA) wordA.href = cfg.doc;
-  if(printA) printA.setAttribute('onclick', `printFile('${cfg.pdf}')`);
-}
-
-// تشغيل عند التغيير والتحميل
-document.addEventListener('change', (e)=>{
-  if(e.target && (e.target.id === 'attxHall' || e.target.id === 'attxShift')) attxUpdateLinks();
-});
-document.addEventListener('DOMContentLoaded', attxUpdateLinks);
 
 // دالة تُرجع SHA-256 للنص المُدخل بصيغة hex
 async function sha256Hex(text) {
@@ -139,7 +95,11 @@ window.addEventListener("load", function () {
     });
 });
 document.addEventListener("DOMContentLoaded", () => {
- 
+  const name = document.getElementById("officer-name");
+  const rank = document.getElementById("officer-rank");
+  const shift = document.getElementById("shift-number");
+  const hall = document.getElementById("hall-number");
+  const button = document.getElementById("send-officer-info");
 autoFillOfficerDetails();
 
   if (!button) {
@@ -196,9 +156,26 @@ function changeFile(event, viewLinkId) {
         reader.readAsDataURL(file);
     }
 }
+//تفريغ الخانات
+document.addEventListener('DOMContentLoaded', () => {
+  const clearBtn = document.getElementById('clear-officer-info');
+  const form = document.querySelector('.shift-form');
+
+  if (clearBtn && form) {
+    clearBtn.addEventListener('click', () => {
+      form.querySelectorAll('input').forEach(input => {
+        if (
+          input.id !== 'custom-hijri-date' &&
+          input.id !== 'custom-weekday'
+        ) {
+          input.value = '';
+        }
+      });
+    });
+  }
 
   clearShiftFormAtSpecificTimes(); // ← يستمر عمل التفريغ التلقائي أيضًا
-
+});
 
 
 // دالة لإعداد التاريخ الحالي وعرضه في العنصر الذي يحتوي على المعرف "date"
