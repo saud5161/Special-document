@@ -470,6 +470,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تاشيرات حكومية لمكتب المشاريع .docm";
 } else if (choice === "استلام-اليوم") {
   wordLink.href = "dic/نــماذج  اليومية/نموذج استلام.docm";
+  } else if (choice === "تبليغ-مراجعة") {
+  wordLink.href = "dic/نماذج الممنوعين/مطلوبين تبليغ مراجعة.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -482,13 +484,7 @@ console.log(`✔ تم فتح ${wordLink.href} بعد حفظ form.txt`);
   console.error("❌ فشل في فتح الملف:", e);
 }
 
-setTimeout(() => {
-  try {
-    localStorage.removeItem('wordLinkChoice');
-    localStorage.removeItem('lastWordLinkChoice');
-  } catch(e){}
-  window.history.back();
-}, 2 * 60 * 1000);
+scheduleAutoBack(AUTO_BACK_MS);
 
 
 }
@@ -631,7 +627,8 @@ function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) 
 if (
   choice === "اشعار" ||
   choice === "قبض" ||
-  choice === "اشعار-منع"
+  choice === "اشعار-منع" ||
+  choice === "تبليغ-مراجعة"
 ) {
   // 1) إظهار بطاقة "معلومات الأمر وجهة الطالبة"
   const cmdCard = document.getElementById("card-command");
@@ -667,6 +664,62 @@ if (
 
 
 }
+// (2) إخفاءات دقيقة عند اختيار "تبليغ-مراجعة"
+if (choice === "تبليغ-مراجعة") {
+  // دالة تخفي الحقل وملصقه وأي تغليف بسيط حوله
+  function hidePair(id) {
+    const input = document.getElementById(id);
+    const label = document.querySelector(`label[for='${id}']`);
+
+    // أخفِ المدخل
+    if (input) {
+      input.style.display = "none";
+      // إن كان هناك تغليف قريب (اختياري)
+      const wrap = input.closest(".form-group, .field, .mb-3, .row");
+      if (wrap) wrap.style.display = "none";
+    }
+
+    // أخفِ اللِـيبل
+    if (label) label.style.display = "none";
+
+    // احتياطي: لو ما فيه تغليف، أخفِ العنصر السابق مباشرةً إذا كان Label
+    if (input && !label && input.previousElementSibling?.tagName === "LABEL") {
+      input.previousElementSibling.style.display = "none";
+    }
+  }
+
+  // الحقول المطلوب إخفاؤها تحديدًا:
+  const idsToHide = [
+    // من "بيانات المسافر":
+    "PassportIssueDate",   // تاريخ الإصدار
+    "PassportSource",      // مصدر الجواز
+    "BirthPlace",          // مكان الميلاد
+
+    // من "معلومات الأمر وجهة الطالبة":
+    "RequestingAgency",    // جهة الخطاب
+    "RegistrationNumber",  // رقم السجل
+    "ActionType"           // الإجراء المطلوب
+  ];
+
+  idsToHide.forEach(hidePair);
+
+  // فallback قوي عبر CSS لمنع أي سكربت آخر من إعادة إظهارها لاحقًا
+  const css = `
+    #PassportIssueDate, label[for="PassportIssueDate"],
+    #PassportSource, label[for="PassportSource"],
+    #BirthPlace, label[for="BirthPlace"],
+    #RequestingAgency, label[for="RequestingAgency"],
+    #RegistrationNumber, label[for="RegistrationNumber"],
+    #ActionType, label[for="ActionType"] { display: none !important; }
+  `;
+  if (!document.getElementById("hide-for-review-style")) {
+    const styleEl = document.createElement("style");
+    styleEl.id = "hide-for-review-style";
+    styleEl.textContent = css;
+    document.head.appendChild(styleEl);
+  }
+}
+
 if (choice === "مواليد") {
   ["id", "VisaType", "AirlineName"].forEach(id => {
     const el  = document.getElementById(id);
@@ -2189,4 +2242,81 @@ document.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', updateIssuedTitle);
   });
+});
+// ===== مؤقت الرجوع التلقائي + إيقافه =====
+const AUTO_BACK_MS = 2 * 60 * 1000; // نفس المدّة الحالية (دقيقتان). غيّرها إن رغبت.
+
+const AutoBack = {
+  timerId: null,
+  tickId: null,
+  remainingMs: 0,
+  active: false
+};
+
+function fmtMMSS(ms){
+  const total = Math.max(0, Math.ceil(ms/1000));
+  const m = Math.floor(total/60);
+  const s = total % 60;
+  return `${String(m).padStart(1,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function updateAutoBackUI(){
+  const wrap = document.getElementById('auto-back-timer');
+  const val  = document.getElementById('auto-back-timer-value');
+  const btn  = document.getElementById('cancel-auto-back');
+  if (!wrap || !val || !btn) return;
+
+  if (AutoBack.active){
+    val.textContent = fmtMMSS(AutoBack.remainingMs);
+    wrap.hidden = false;
+    btn.hidden  = false;
+  } else {
+    wrap.hidden = true;
+    btn.hidden  = true;
+  }
+}
+
+function cleanupAutoBack(){
+  if (AutoBack.timerId){ clearTimeout(AutoBack.timerId); AutoBack.timerId = null; }
+  if (AutoBack.tickId){  clearInterval(AutoBack.tickId);  AutoBack.tickId  = null; }
+  AutoBack.active = false;
+  updateAutoBackUI();
+}
+
+function scheduleAutoBack(ms){
+  cleanupAutoBack();
+  AutoBack.remainingMs = ms;
+  AutoBack.active = true;
+  updateAutoBackUI();
+
+  // عدّ تنازلي مرئي كل ثانية
+  AutoBack.tickId = setInterval(()=>{
+    AutoBack.remainingMs -= 1000;
+    updateAutoBackUI();
+    if (AutoBack.remainingMs <= 0){
+      clearInterval(AutoBack.tickId); AutoBack.tickId = null;
+    }
+  }, 1000);
+
+  // عند انتهاء المهلة: امسح القيم ثم ارجع للصفحة السابقة
+  AutoBack.timerId = setTimeout(()=>{
+    try {
+      localStorage.removeItem('wordLinkChoice');
+      localStorage.removeItem('lastWordLinkChoice');
+    } catch(e){}
+    AutoBack.active = false;
+    updateAutoBackUI();
+    window.history.back();
+  }, ms);
+}
+
+// زر "إيقاف العودة"
+document.getElementById('cancel-auto-back')?.addEventListener('click', ()=>{
+  cleanupAutoBack();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // إخفاء عناصر العدّاد والزر عند التحميل
+  document.getElementById('auto-back-timer')?.setAttribute('hidden', '');
+  document.getElementById('cancel-auto-back')?.setAttribute('hidden', '');
 });

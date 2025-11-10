@@ -264,7 +264,7 @@
     <input id="IssuedReports" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
     <label for="IssuedGates"><i class="fas fa-door-open"></i> البوابات</label>
     <input id="IssuedGates" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
-    <label for="IssuedExtra1"><i class="fas fa-plus"></i> صادر إضافي</label>
+    <label for="IssuedExtra1"><i class="fas fa-plus"></i>الخدمة الذاتية</label>
     <input id="IssuedExtra1" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
         <label for="IssuedTitle">عنوان الصادر</label>
     <input id="IssuedTitle" type="text" placeholder="= / م (المناوبة) مغادرة (الصالة) /">
@@ -634,6 +634,13 @@
       <button id="save-btn" class="btn btn--primary" type="button">
         <i class="fas fa-file-word"></i> تنفيذ وحفظ
       </button>
+      <span id="auto-back-timer" class="auto-back-timer" hidden>
+  سيتم العودة خلال <b id="auto-back-timer-value">00:00</b> او انقر على رجوع للعودة الان
+</span>
+<button id="cancel-auto-back" class="btn-cancel-auto-back" hidden type="button">
+  إيقاف العودة
+</button>
+
       <button id="clear-btn" class="btn btn--secondary" type="button">
         تفريغ الخانات
       </button>

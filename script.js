@@ -95,11 +95,7 @@ window.addEventListener("load", function () {
     });
 });
 document.addEventListener("DOMContentLoaded", () => {
-  const name = document.getElementById("officer-name");
-  const rank = document.getElementById("officer-rank");
-  const shift = document.getElementById("shift-number");
-  const hall = document.getElementById("hall-number");
-  const button = document.getElementById("send-officer-info");
+ 
 autoFillOfficerDetails();
 
   if (!button) {

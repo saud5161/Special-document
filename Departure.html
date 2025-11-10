@@ -2093,7 +2093,7 @@
       <h3>تبليغ مراجعة</h3>
       <p>مسافر يبلغ بالمراجعة</p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
-  🔗 المرفقات المطلوبة:نموذج العرض + اقرار المراجعة 
+  🔗 المرفقات المطلوبة:نموذج العرض + اقرار المراجعةو جواز السفر
       </p>
     </div>
     <div class="card-actions">
@@ -2104,12 +2104,15 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <a
-        href="dic/نماذج الممنوعين/مطلوبين تبليغ مراجعة.docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
-      </a>
+     
+        <a 
+          href="index.html" 
+          class="btn-icon word-icon" 
+          target="_top" 
+          title="تعديل Word"
+          onclick="localStorage.setItem('wordLinkChoice', 'تبليغ-مراجعة')">
+        </a>
+
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
