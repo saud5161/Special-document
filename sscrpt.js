@@ -2406,7 +2406,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setCode(dst, code){
     // حروف فقط
-    const letters = String(code||'').toUpperCase().replace(/[^A-Z]/g,'');
+    const letters = String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
     dst.value = letters;                 // لا نُبقي أرقام قديمة
     dst.dir = 'ltr';                     // كتابة أرقام أسهل
     dst.style.textAlign = 'left';
@@ -2438,7 +2438,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fly = await getFly();
     const index = new Map();
     (fly.airlines||[]).forEach(a=>{
-      const iata = String(a.iata||'').toUpperCase().replace(/[^A-Z]/g,'');
+    const iata = String(a.iata||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
       if (!iata) return;
       const ar = cleanArAirline(a.name_ar||'');
       const en = String(a.name_en||'').toLowerCase().trim();
