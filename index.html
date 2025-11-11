@@ -458,14 +458,18 @@
   <span id="prev-flight-note" style="font-size:12px; margin-inline-start:8px; color:#6b7280;" hidden>السابقة</span>
 </h3>
           <div class="card__body form-grid">
-            <label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
-            <input id="AirlineName" placeholder="مثال: السعودية" />
+            <!-- الخطوط الناقلة -->
+<label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
+<input id="AirlineName" list="airlines" placeholder="مثال: السعودية" />
+<datalist id="airlines"></datalist>
 
             <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
             <input id="FlightNumber" placeholder="مثال: SV225" />
 
-            <label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
-            <input id="TravelDestination" placeholder="مثال: دبي" />
+            <!-- وجهة السفر -->
+<label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
+<input id="TravelDestination" list="destinations" placeholder="مثال: دبي" />
+<datalist id="destinations"></datalist>
             <div id="travel-route-row" class="form-row" hidden>
             <label for="TravelRoute"><i class="fas fa-route"></i> خط سير الرحلة</label>
             <input id="TravelRoute" placeholder="مثال: الرياض → دبي → لندن">

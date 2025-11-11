@@ -472,6 +472,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/نموذج استلام.docm";
   } else if (choice === "تبليغ-مراجعة") {
   wordLink.href = "dic/نماذج الممنوعين/مطلوبين تبليغ مراجعة.docm";
+   } else if (choice === "مخالفة") {
+  wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -621,7 +623,33 @@ function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) 
     const travelerCard = document.getElementById("card-traveler");
     if (travelerCard) travelerCard.style.display = "none";
   }
+if (choice === "مخالفة") {
+    // 1) إخفاء رقم الهوية
+    const idField = document.getElementById("id");
+    const idLabel = document.querySelector("label[for='id']");
+    if (idField) idField.style.display = "none";
+    if (idLabel) idLabel.style.display = "none";
 
+    // 2) إخفاء نوع التأشيرة
+    const visaField = document.getElementById("VisaType");
+    const visaLabel = document.querySelector("label[for='VisaType']");
+    if (visaField) visaField.style.display = "none";
+    if (visaLabel) visaLabel.style.display = "none";
+ // إخفاء اسم الآمر المناوب ورتبته
+  const cmdName  = document.getElementById("commander-name");
+  const cmdRank  = document.getElementById("commander-rank");
+  const cmdNameL = document.querySelector("label[for='commander-name']");
+  const cmdRankL = document.querySelector("label[for='commander-rank']");
+  if (cmdName)  cmdName.style.display = "none";
+  if (cmdRank)  cmdRank.style.display = "none";
+  if (cmdNameL) cmdNameL.style.display = "none";
+  if (cmdRankL) cmdRankL.style.display = "none";
+    
+
+    // 4) إخفاء بطاقة بيانات المسافر كاملة
+    const travelerCard = document.getElementById("card-traveler");
+    if (travelerCard) travelerCard.style.display = "none";
+  }
   
 // ===== وضع matlopan =====
 if (
@@ -1159,6 +1187,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadVisaTypes();
   loadOfficers();
   loadCommander();
+  loadFlyData();
 
   // === وقت الاستلام التلقائي ===
   bindReceiveTimeEditGuards();
@@ -2319,4 +2348,104 @@ document.addEventListener('DOMContentLoaded', () => {
   // إخفاء عناصر العدّاد والزر عند التحميل
   document.getElementById('auto-back-timer')?.setAttribute('hidden', '');
   document.getElementById('cancel-auto-back')?.setAttribute('hidden', '');
+});
+
+// تحميل شركات الطيران والوجهات من fly.json
+async function loadFlyData() {
+  try {
+    const res = await fetch('fly.json', { cache: 'no-store' });
+    const data = await res.json();
+
+    // تعبئة شركات الطيران
+    const dlAir = document.getElementById('airlines');
+    if (dlAir) {
+      dlAir.innerHTML = '';
+      (data.airlines || [])
+        .sort((a,b)=> (a.priority||999)-(b.priority||999))
+        .forEach(a => {
+          const opt = document.createElement('option');
+          opt.value = a.name_ar || a.name_en || '';
+          if (a.name_en) opt.label = a.name_en; // يظهر ترجمة إن توفرت
+          dlAir.appendChild(opt);
+        });
+    }
+
+    // تعبئة الوجهات
+    const dlDest = document.getElementById('destinations');
+    if (dlDest) {
+      dlDest.innerHTML = '';
+      (data.destinations || [])
+        .sort((a,b)=> (a.priority||999)-(b.priority||999))
+        .forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.city_ar || d.city_en || '';
+          if (d.city_en) opt.label = d.city_en;
+          dlDest.appendChild(opt);
+        });
+    }
+  } catch (e) {
+    console.error('❌ خطأ في تحميل fly.json:', e);
+  }
+}
+// مبسّط: يضيف رمز IATA (حروف فقط) في رقم الرحلة ويضع المؤشر يسار الحقل للكتابة
+document.addEventListener('DOMContentLoaded', () => {
+  const AR_DIAC = /[\u064B-\u0652\u0670\u0640]/g;
+  const normalizeAr = s => (s||'')
+    .replace(/[أإآ]/g,'ا').replace(/ؤ/g,'و').replace(/ئ/g,'ي')
+    .replace(AR_DIAC,'').replace(/\s+/g,' ').trim();
+  const cleanArAirline = s => normalizeAr(s)
+    .replace(/\bالخطوط\b/g,'').replace(/\bطيران\b/g,'').replace(/ ل?لطيران/g,'').trim();
+
+  let flyCache = null;
+  const getFly = async () => flyCache || (flyCache = await (await fetch('fly.json',{cache:'no-store'})).json());
+
+  const pairs = [
+    ['AirlineName',    'FlightNumber'],
+    ['AirlineNameNow', 'FlightNumberNow']
+  ];
+
+  function setCode(dst, code){
+    // حروف فقط
+    const letters = String(code||'').toUpperCase().replace(/[^A-Z]/g,'');
+    dst.value = letters;                 // لا نُبقي أرقام قديمة
+    dst.dir = 'ltr';                     // كتابة أرقام أسهل
+    dst.style.textAlign = 'left';
+    dst.focus();                         // ضع المؤشر في نهاية الحروف
+    try { dst.setSelectionRange(letters.length, letters.length); } catch(e){}
+    // مثال placeholder
+    const digits = (dst.placeholder && /\d+/.test(dst.placeholder)) ? dst.placeholder.match(/\d+/)[0] : '123';
+    dst.placeholder = `مثال: ${letters}${digits}`;
+  }
+
+  function attachHandler(index, srcId, dstId){
+    const src = document.getElementById(srcId);
+    const dst = document.getElementById(dstId);
+    if (!src || !dst) return;
+
+    const run = () => {
+      const raw = src.value||'';
+      const kAr = cleanArAirline(raw);
+      const kEn = String(raw).toLowerCase().trim();
+      const code = index.get(kAr) || index.get(kEn);
+      if (code) setCode(dst, code);
+    };
+
+    ['change','blur'].forEach(ev => src.addEventListener(ev, run));
+    setTimeout(run, 0); // لو كان معبأ مسبقًا
+  }
+
+  (async () => {
+    const fly = await getFly();
+    const index = new Map();
+    (fly.airlines||[]).forEach(a=>{
+      const iata = String(a.iata||'').toUpperCase().replace(/[^A-Z]/g,'');
+      if (!iata) return;
+      const ar = cleanArAirline(a.name_ar||'');
+      const en = String(a.name_en||'').toLowerCase().trim();
+      if (ar) index.set(ar, iata);
+      if (en) index.set(en, iata);
+    });
+
+    pairs.forEach(([s,d])=> attachHandler(index, s, d));
+  })();
 });
