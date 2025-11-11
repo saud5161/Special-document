@@ -2449,3 +2449,57 @@ document.addEventListener('DOMContentLoaded', () => {
     pairs.forEach(([s,d])=> attachHandler(index, s, d));
   })();
 });
+/* ===== تعبئة الوجهة تلقائياً من fly.json:extra_routes بناءً على رقم الرحلة ===== */
+(function () {
+  // توحيد رقم الرحلة: أحرف كبيرة + إزالة الفراغات والرموز، مع إبقاء A-Z و 0-9 فقط
+  const normNo = s => String(s || '')
+    .toUpperCase()
+    .replace(/\s+/g, '')
+    .replace(/[^A-Z0-9]/g, '');
+
+  // تحميل extra_routes وبناء خريطة: رقم الرحلة ← الوجهة
+  async function loadRouteMap() {
+    try {
+      const res = await fetch('fly.json', { cache: 'no-store' });
+      const data = await res.json();
+      const rows = Array.isArray(data) ? data : (data.extra_routes || data.routes || []);
+      const map = new Map();
+      (rows || []).forEach(r => {
+        const key = normNo(r?.no);
+        const dest = r?.dest || r?.destination || r?.city_ar || r?.city_en || '';
+        if (key && dest) map.set(key, dest);
+      });
+      return map;
+    } catch (e) {
+      console.error('❌ فشل تحميل أو قراءة fly.json:', e);
+      return new Map();
+    }
+  }
+
+  // ربط حقل رقم الرحلة بحقل الوجهة (تعبئة عند التطابق الكامل)
+  function bindAutoDest(map, srcId, destId) {
+    const src = document.getElementById(srcId);
+    const dst = document.getElementById(destId);
+    if (!src || !dst) return;
+
+    const apply = () => {
+      const key = normNo(src.value);
+      const dest = map.get(key);
+      if (dest) dst.value = dest; // يكتب فقط عند وجود تطابق كامل
+    };
+
+    // مباشرة أثناء الكتابة + عند التبديل/الخروج من الحقل
+    src.addEventListener('input', apply);
+    src.addEventListener('change', apply);
+
+    // لو كان الحقل مُعبَّأ مسبقًا
+    setTimeout(apply, 0);
+  }
+
+  // تفعيل الربط بعد تحميل الصفحة
+  document.addEventListener('DOMContentLoaded', async () => {
+    const routeMap = await loadRouteMap();
+    bindAutoDest(routeMap, 'FlightNumber',     'TravelDestination');
+    bindAutoDest(routeMap, 'FlightNumberNow',  'TravelDestinationNow');
+  });
+})();
