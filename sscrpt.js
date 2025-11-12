@@ -2666,6 +2666,15 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.scrollTop = 0; // ابدأ من الأعلى
   }
 
+
+// بعد إنشاء panel مباشرة
+panel.addEventListener('mousedown', (e)=> {
+  // يمنع انتقال التركيز من خانة رقم الرحلة أثناء الضغط داخل اللوحة
+  e.preventDefault();
+});
+
+
+
   function computeSuggestions(){
     const chosen = (inpAir.value||'').trim();
     if (!chosen){ hidePanel(); panel.innerHTML = ''; return; }
