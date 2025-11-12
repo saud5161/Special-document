@@ -2503,3 +2503,234 @@ document.addEventListener('DOMContentLoaded', () => {
     bindAutoDest(routeMap, 'FlightNumberNow',  'TravelDestinationNow');
   });
 })();
+// ==== اقتراحات أرقام الرحلات (قائمة بيضاء معزولة + حد أقصى 5 عناصر مرئية) ====
+// - تظهر ملاصقة لحقل "رقم الرحلة" بدون اختيار تلقائي
+// - تعمل مع fly.json (يدعم flights أو extra_routes)
+// - التنسيق معزول عبر Shadow DOM ولا يؤثر على بقية الصفحة
+// - عند تعبئة الوجهة تلقائيًا: تظهر رسالة خضراء "تم اقتراح الوجهة" أسفل خانة الوجهة
+
+(function(){
+  const $ = (id)=>document.getElementById(id);
+  const inpAir  = $('AirlineName');
+  const inpNo   = $('FlightNumber');
+  const inpDest = $('TravelDestination');
+  if (!inpAir || !inpNo) return;
+
+  // ====== تحميل قاعدة البيانات ======
+  let flyDB = { airlines:[], extra_routes:[] };
+  let nameToIata = new Map();
+  let routes = [];
+  let noToRoute = new Map();
+
+  async function loadFly(){
+    try{
+      const res = await fetch('fly.json', { cache:'no-store' });
+      flyDB = await res.json();
+
+      (flyDB.airlines||[]).forEach(a=>{
+        if (a?.name_ar && a?.iata) nameToIata.set(a.name_ar.trim(), a.iata.trim());
+      });
+
+      routes = flyDB.flights ?? flyDB.extra_routes ?? [];
+      indexRoutes();
+    }catch(e){
+      console.error('فشل تحميل fly.json:', e);
+    }
+  }
+
+  function indexRoutes(){
+    noToRoute.clear();
+    (routes||[]).forEach(r=>{
+      if (r?.no) noToRoute.set(String(r.no).trim().toUpperCase(), r);
+    });
+  }
+
+  // ====== رسالة "تم اقتراح الوجهة" ======
+  let suggestMsgEl = null;
+  let hideMsgTimer = null;
+  function showSuggestedDestMessage(){
+    if (!inpDest) return;
+    if (!suggestMsgEl){
+      suggestMsgEl = document.createElement('div');
+      suggestMsgEl.id = 'dest-suggest-msg';
+      suggestMsgEl.textContent = 'تم اقتراح الوجهة';
+      suggestMsgEl.setAttribute('aria-live','polite');
+      // تنسيق معزول inline حتى لا يؤثر على شيء:
+      suggestMsgEl.style.marginTop = '6px';
+      suggestMsgEl.style.fontSize = '12px';
+      suggestMsgEl.style.color = '#0f766e';                  // أخضر داكن
+      suggestMsgEl.style.background = 'rgba(16,185,129,.10)';// أخضر فاتح شفاف
+      suggestMsgEl.style.border = '1px solid rgba(16,185,129,.25)';
+      suggestMsgEl.style.padding = '6px 8px';
+      suggestMsgEl.style.borderRadius = '8px';
+      suggestMsgEl.style.display = 'none';
+      // ضعها مباشرة بعد خانة الوجهة
+      inpDest.insertAdjacentElement('afterend', suggestMsgEl);
+    }
+    // أظهر الرسالة لمدة 3 ثوانٍ
+    suggestMsgEl.style.display = 'block';
+    clearTimeout(hideMsgTimer);
+    hideMsgTimer = setTimeout(()=>{ 
+      if (suggestMsgEl) suggestMsgEl.style.display = 'none';
+    }, 3000);
+  }
+
+  // ====== قائمة منسدلة مخصّصة ومعزولة ======
+  const host = document.createElement('div');
+  host.style.position = 'fixed';
+  host.style.zIndex = '99999';
+  host.style.top = '-9999px';
+  host.style.left = '-9999px';
+  host.style.width = '0px';
+  host.style.pointerEvents = 'auto'; // مهم: اسمح بتمرير النقرات للداخل
+  document.body.appendChild(host);
+
+  const root = host.attachShadow({ mode:'open' });
+  const style = document.createElement('style');
+  style.textContent = `
+    :host{ all:initial; }
+    .panel{
+      all:initial;
+      display:none;
+      position:relative;
+      border:1px solid rgba(0,0,0,.12);
+      background:#ffffff;         /* أبيض */
+      border-radius:10px;
+      box-shadow:0 10px 24px rgba(0,0,0,.10);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      font-size:12px;
+      color:#111;
+      overflow:auto;              /* Scroll للباقي */
+      padding:4px;
+      pointer-events:auto;
+    }
+    .row{
+      all:initial;
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      padding:8px 10px; border-radius:8px; cursor:pointer;
+      font-family:inherit; font-size:12px; color:#111;
+      white-space:nowrap;
+    }
+    .row:hover{ background:rgba(0,0,0,.05); }
+    .no{ all:initial; font-family:inherit; font-weight:700; font-size:12px; color:#0c3e84; }
+    .dest{ all:initial; font-family:inherit; font-size:12px; color:#333; opacity:.85; }
+    .empty{ all:initial; display:block; padding:8px 10px; font-family:inherit; font-size:12px; color:#555; opacity:.8; }
+  `;
+  const panel = document.createElement('div');
+  panel.className = 'panel';
+  root.append(style, panel);
+
+  // حد أقصى 5 عناصر مرئية تقريبًا
+  const ROW_H = 36;
+  function updateMaxHeight(){ panel.style.maxHeight = (ROW_H * 5) + 'px'; }
+  updateMaxHeight();
+
+  function positionPanel(){
+    const r = inpNo.getBoundingClientRect();
+    host.style.left = Math.round(r.left) + 'px';
+    host.style.top  = Math.round(r.bottom + 4) + 'px';
+    host.style.width = Math.round(r.width) + 'px';
+    panel.style.width = '100%';
+  }
+  function showPanel(){ positionPanel(); panel.style.display = 'block'; }
+  function hidePanel(){ panel.style.display = 'none'; }
+
+  function renderList(list){
+    panel.innerHTML = '';
+    if (!list.length){
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'لا توجد اقتراحات لرقم الرحلة.';
+      panel.appendChild(empty);
+      return;
+    }
+    list.forEach(item=>{
+      const row = document.createElement('div');
+      row.className = 'row';
+      const no  = document.createElement('span'); no.className='no';   no.textContent = item.no || '';
+      const dst = document.createElement('span'); dst.className='dest'; dst.textContent = item.dest ? `→ ${item.dest}` : '';
+      row.append(no, dst);
+      row.addEventListener('click', ()=>{
+        // عند النقر نعبّي القيم
+        inpNo.value = String(item.no || '').trim();
+        if (inpDest && !inpDest.value && item.dest){
+          inpDest.value = item.dest;
+          showSuggestedDestMessage(); // ✅ أظهر رسالة "تم اقتراح الوجهة"
+        }
+        hidePanel();
+        inpNo.focus();
+        inpNo.select();
+      });
+      panel.appendChild(row);
+    });
+    panel.scrollTop = 0; // ابدأ من الأعلى
+  }
+
+  function computeSuggestions(){
+    const chosen = (inpAir.value||'').trim();
+    if (!chosen){ hidePanel(); panel.innerHTML = ''; return; }
+
+    const iata = (nameToIata.get(chosen) || '').toUpperCase();
+
+    // جميع الاقتراحات المطابقة لكود الشركة
+    const list = (routes||[])
+      .filter(f => (String(f.no||'').toUpperCase()).startsWith(iata));
+
+    // لا تعبئة تلقائية: فقط اعرض القائمة
+    renderList(list);
+    if (list.length) {
+      showPanel();
+    } else {
+      hidePanel();
+    }
+  }
+
+  // تصفية أثناء الكتابة يدويًا
+  inpNo.addEventListener('input', ()=>{
+    const q = (inpNo.value||'').trim().toUpperCase();
+    const chosen = (inpAir.value||'').trim();
+    const iata = (nameToIata.get(chosen) || '').toUpperCase();
+    let list = (routes||[]).filter(f=>{
+      const no = String(f.no||'').toUpperCase();
+      if (iata && !no.startsWith(iata)) return false;
+      return q ? no.includes(q) : true;
+    });
+    renderList(list);
+    if (list.length) { showPanel(); } else { hidePanel(); }
+  });
+
+  // لو كتب المستخدم رقمًا مطابقًا كاملًا، عبّي الوجهة فقط (بدون اختيار تلقائي) + رسالة
+  inpNo.addEventListener('change', ()=>{
+    const val = (inpNo.value||'').trim().toUpperCase();
+    const route = noToRoute.get(val);
+    if (route && inpDest && !inpDest.value && route.dest){
+      inpDest.value = route.dest;
+      showSuggestedDestMessage(); // ✅ أظهر الرسالة
+    }
+  });
+
+  // إظهار عند التركيز إن كان هناك محتوى
+  inpNo.addEventListener('focus', ()=>{
+    if (panel.innerHTML.trim()) showPanel();
+  });
+
+  // إخفاء بعد فقدان التركيز (مهلة للسماح بالنقر داخل اللوحة)
+  inpNo.addEventListener('blur', ()=>{ setTimeout(()=> hidePanel(), 120); });
+
+  // النقر خارج اللوحة/الحقول → إخفاء (يشمل النقر داخل الشادو)
+  document.addEventListener('click', (e)=>{
+    const insideShadow = root.contains(e.target);
+    const targetIsInput = (e.target === inpNo || e.target === inpAir);
+    if (!insideShadow && !targetIsInput){
+      hidePanel();
+    }
+  });
+
+  window.addEventListener('resize', positionPanel);
+  window.addEventListener('scroll', positionPanel, { passive:true });
+
+  inpAir.addEventListener('change', computeSuggestions);
+  inpAir.addEventListener('input',  computeSuggestions);
+
+  loadFly();
+})();
