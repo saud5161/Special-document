@@ -262,7 +262,123 @@
       "iata": "CZ",
       "icao": "CSN",
       "priority": 42
-    }
+    },
+
+  {
+    "name_ar": "تاركو",
+    "name_en": "Tarco",
+    "iata": "3T",
+    "icao": "TQQ",
+    "priority": 43
+  },
+  {
+    "name_ar": "بيمان بنغلادش",
+    "name_en": "Biman Bangladesh",
+    "iata": "BG",
+    "icao": "BBC",
+    "priority": 44
+  },
+  {
+    "name_ar": "يو إس بنغلا",
+    "name_en": "US-Bangla",
+    "iata": "BS",
+    "icao": "UBG",
+    "priority": 45
+  },
+  {
+    "name_ar": "العربية مصر",
+    "name_en": "Air Arabia Egypt",
+    "iata": "E5",
+    "icao": "RBG",
+    "priority": 46
+  },
+  {
+    "name_ar": "أديل",
+    "name_en": "flyadeal",
+    "iata": "F3",
+    "icao": "FAD",
+    "priority": 47
+  },
+  {
+    "name_ar": "العربية",
+    "name_en": "Air Arabia",
+    "iata": "G9",
+    "icao": "ABY",
+    "priority": 48
+  },
+  {
+    "name_ar": "اليمنية",
+    "name_en": "Yemenia",
+    "iata": "IY",
+    "icao": "IYE",
+    "priority": 49
+  },
+  {
+    "name_ar": "بدر",
+    "name_en": "Badr",
+    "iata": "J4",
+    "icao": "BDR",
+    "priority": 50
+  },
+  {
+    "name_ar": "الجزيرة",
+    "name_en": "Jazeera",
+    "iata": "J9",
+    "icao": "JZR",
+    "priority": 51
+  },
+  {
+    "name_ar": "الشرق الأوسط",
+    "name_en": "Middle East",
+    "iata": "ME",
+    "icao": "MEA",
+    "priority": 52
+  },
+  {
+    "name_ar": "تشاينا إيسترن",
+    "name_en": "China Eastern",
+    "iata": "MU",
+    "icao": "CES",
+    "priority": 53
+  },
+  {
+    "name_ar": "النيل",
+    "name_en": "Nile",
+    "iata": "NP",
+    "icao": "NIA",
+    "priority": 54
+  },
+  {
+    "name_ar": "إيربلو",
+    "name_en": "Airblue",
+    "iata": "PA",
+    "icao": "ABQ",
+    "priority": 55
+  },
+  {
+    "name_ar": "السورية",
+    "name_en": "SyrianAir",
+    "iata": "RB",
+    "icao": "SYR",
+    "priority": 56
+  },
+  {
+    "name_ar": "كام",
+    "name_en": "Kam",
+    "iata": "RQ",
+    "icao": "KMF",
+    "priority": 57
+  },
+  {
+    "name_ar": "الرياض",
+    "name_en": "Riyadh",
+    "iata": "RX",
+    "icao": "RXI",
+    "priority": 58
+  }
+
+
+
   ],
   "destinations": [
     {
