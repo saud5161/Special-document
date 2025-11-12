@@ -2687,27 +2687,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // تصفية أثناء الكتابة يدويًا
   inpNo.addEventListener('input', ()=>{
-    const q = (inpNo.value||'').trim().toUpperCase();
-    const chosen = (inpAir.value||'').trim();
-    const iata = (nameToIata.get(chosen) || '').toUpperCase();
-    let list = (routes||[]).filter(f=>{
-      const no = String(f.no||'').toUpperCase();
-      if (iata && !no.startsWith(iata)) return false;
-      return q ? no.includes(q) : true;
-    });
-    renderList(list);
-    if (list.length) { showPanel(); } else { hidePanel(); }
-  });
+  const q = (inpNo.value||'').trim().toUpperCase();
 
-  // لو كتب المستخدم رقمًا مطابقًا كاملًا، عبّي الوجهة فقط (بدون اختيار تلقائي) + رسالة
-  inpNo.addEventListener('change', ()=>{
-    const val = (inpNo.value||'').trim().toUpperCase();
-    const route = noToRoute.get(val);
-    if (route && inpDest && !inpDest.value && route.dest){
-      inpDest.value = route.dest;
-      showSuggestedDestMessage(); // ✅ أظهر الرسالة
-    }
+  // فلترة القائمة كما هو (ابقِ على منطقك الحالي إن كان موجودًا)
+  const chosen = (inpAir.value||'').trim();
+  const iata = (nameToIata.get(chosen) || '').toUpperCase();
+  let list = (routes||[]).filter(f=>{
+    const no = String(f.no||'').toUpperCase();
+    if (iata && !no.startsWith(iata)) return false;
+    return q ? no.includes(q) : true;
   });
+  renderList(list);
+  if (list.length) { showPanel(); } else { hidePanel(); }
+
+  // إن كان الحقل فارغًا تمامًا → فرّغ الوجهة وأخفِ الرسالة (إن وُجدت)
+  if (!q && inpDest){
+    inpDest.value = '';
+    if (typeof suggestMsgEl !== 'undefined' && suggestMsgEl) {
+      suggestMsgEl.style.display = 'none';
+    }
+  }
+});
+
+// عند إنهاء التعديل (change/blur): لو لا يوجد أي رحلة مطابقة → فرّغ الوجهة حتمًا
+inpNo.addEventListener('change', ()=>{
+  const val = (inpNo.value||'').trim().toUpperCase();
+  const route = noToRoute.get(val);
+
+  if (route && inpDest && route.dest){
+    // يوجد تطابق → عبّي الوجهة وأظهر الرسالة (إن كنت تستخدمها)
+    inpDest.value = route.dest;
+    if (typeof showSuggestedDestMessage === 'function') {
+      showSuggestedDestMessage();
+    }
+  } else {
+    // لا يوجد تطابق → فرّغ الوجهة دائمًا
+    if (inpDest){
+      inpDest.value = '';
+      if (typeof suggestMsgEl !== 'undefined' && suggestMsgEl) {
+        suggestMsgEl.style.display = 'none';
+      }
+    }
+  }
+});
 
   // إظهار عند التركيز إن كان هناك محتوى
   inpNo.addEventListener('focus', ()=>{
