@@ -537,6 +537,9 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نماذج الممنوعين/مطلوبين تبليغ مراجعة.docm";
    } else if (choice === "تطبيق") {
   wordLink.href = "dic/نماذج الافراد/تطبيق.docm";
+  } else if (choice === "منع-سفر") {
+  wordLink.href = "dic/نماذج الممنوعين/منع سفر جوازات جديد.docm";
+  
    } else if (choice === "مخالفة") {
   wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
 } else {
@@ -725,6 +728,7 @@ if (
   choice === "اشعار" ||
   choice === "قبض" ||
   choice === "اشعار-منع" ||
+    choice === "منع-سفر" ||
   choice === "تبليغ-مراجعة"
 ) {
   // 1) إظهار بطاقة "معلومات الأمر وجهة الطالبة"
@@ -757,6 +761,20 @@ if (
   ].forEach(sel => {
     const el = document.querySelector(sel);
     if (el) el.style.display = "none";
+      // إذا كان النموذج الحالي "منع-سفر" نضبط القيم تلقائياً
+  if (choice === "منع-سفر") {
+    const actionTypeEl = document.getElementById("ActionType");
+    const agencyEl     = document.getElementById("RequestingAgency");
+
+    if (actionTypeEl && !actionTypeEl.value) {
+      actionTypeEl.value = "منع من السفر";
+    }
+
+    if (agencyEl && !agencyEl.value) {
+      agencyEl.value = "جوازات";
+    }
+  }
+
   });
 
 
