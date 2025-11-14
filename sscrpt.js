@@ -226,6 +226,7 @@ function collect(){
     PassportNumber:   $('PassportNumber')?.value    || '',
     TravelerID:       $('id')?.value                || '', // جديد: رقم (الحدود/الإقامة/الهوية) - مفتاح واضح بدل id
     VisaType:         $('VisaType')?.value          || '', // جديد: نوع التأشيرة
+    Gender:           $('Gender')?.value            || '',
     // الرحلة
     AirlineName:      $('AirlineName')?.value       || '',
     FlightNumber:     $('FlightNumber')?.value      || '',
@@ -774,6 +775,46 @@ if (
       agencyEl.value = "جوازات";
     }
   }
+    if (choice === "تبليغ-مراجعة") {
+      
+    const genderField = document.getElementById("Gender");
+    const genderLabel = document.querySelector('label[for="Gender"]');
+      
+    if (genderField) {
+      genderField.style.display = "block";   // إظهار القائمة
+      genderField.disabled = false;          // للتأكد أنها قابلة للاختيار
+    }
+    if (genderLabel) {
+      genderLabel.style.display = "block";   // إظهار الليبل
+      
+    }
+  } else {
+    // في باقي الحالات يبقى مخفي
+    const genderField = document.getElementById("Gender");
+    const genderLabel = document.querySelector('label[for="Gender"]');
+    if (genderField) genderField.style.display = "none";
+    if (genderLabel) genderLabel.style.display = "none";
+    
+  }
+  // ✅ إذا كان الاختيار "تبليغ-مراجعة" خلي CommandSystem = "المطلوبين" فقط
+  (function () {
+    const cmdSystem = document.getElementById("CommandSystem");
+    if (!cmdSystem) return;
+
+    if (choice === "تبليغ-مراجعة") {
+      const wantedVal = "المطلوبين";
+
+      // تأكد أن الخيار موجود ضمن القائمة
+      const hasOption = Array.from(cmdSystem.options)
+        .some(opt => (opt.value || opt.textContent.trim()) === wantedVal);
+
+      if (hasOption) {
+        cmdSystem.value = wantedVal;   // يضعها تلقائياً
+        // إذا حاب تمنع التعديل تماماً، فكّ التعليق عن السطر التالي:
+        // cmdSystem.disabled = true;
+      }
+    }
+  })();
 
   });
 
@@ -800,6 +841,7 @@ if (choice === "تبليغ-مراجعة") {
     // احتياطي: لو ما فيه تغليف، أخفِ العنصر السابق مباشرةً إذا كان Label
     if (input && !label && input.previousElementSibling?.tagName === "LABEL") {
       input.previousElementSibling.style.display = "none";
+      
     }
   }
 
