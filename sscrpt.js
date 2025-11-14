@@ -239,9 +239,30 @@ function collect(){
     // الآمر المناوب
     CommanderName:    $('commander-name')?.value    || '', // جديد
     CommanderRank:    $('commander-rank')?.value    || '',  // جديد
-      // بيانات الفرد (تظهر فقط عند absence)
-    IndividualName:    $('IndividualName')?.value    || '',
-    IndividualRank:    $('IndividualRank')?.value    || '',
+     // بيانات الفرد (تظهر فقط عند absence)
+
+// الفرد رقم 1
+IndividualName:  $('IndividualName')?.value  || '',
+IndividualRank:  $('IndividualRank')?.value  || '',
+
+// الفرد رقم 2
+IndividualNameo: $('IndividualName2')?.value || '',
+IndividualRanko: $('IndividualRank2')?.value || '',
+
+// الفرد رقم 3
+IndividualNamet: $('IndividualName3')?.value || '',
+IndividualRankt: $('IndividualRank3')?.value || '',
+
+// مدة التطبيق
+ApplicationDuration:  $('ApplyDuration')?.value  || '',  // الأول
+ApplicationDurationo: $('ApplyDuration2')?.value || '',  // الثاني
+ApplicationDurationt: $('ApplyDuration3')?.value || '',  // الثالث
+
+// سبب التطبيق
+ApplicationReason:   $('ApplyReason')?.value  || '',     // الأول
+ApplicationReasono:  $('ApplyReason2')?.value || '',     // الثاني
+ApplicationReasont:  $('ApplyReason3')?.value || '',     // الثالث
+
           // وقت الاستلام
     ReceiveTimeFrom: $('ReceiveTimeFrom')?.value || '',
 ReceiveTimeTo:   $('ReceiveTimeTo')?.value   || '',
@@ -372,10 +393,52 @@ function payloadToIni(obj){
   return lines.join('\r\n');
 }
 
+
+
+//دالة تفريغ نوع المحضر
+function clearIndividualFields() {
+  const recordType   = document.getElementById("RecordType");
+  const indName      = document.getElementById("IndividualName");
+  const indRank      = document.getElementById("IndividualRank");
+  const issuedNumber = document.getElementById("IssuedNumber"); // رقم الصادر
+
+  // إعادة نوع المحضر إلى الوضع الافتراضي
+  if (recordType) {
+    const firstOption = recordType.querySelector("option[disabled]");
+    if (firstOption) {
+      firstOption.selected = true;
+    } else {
+      recordType.value = "";
+    }
+  }
+
+  // تفريغ وإقفال اسم الفرد
+  if (indName) {
+    indName.value = "";
+    indName.disabled = true;
+    indName.placeholder = "اختر نوع المحضر أولاً";
+  }
+
+  // تفريغ وإقفال رتبة الفرد
+  if (indRank) {
+    indRank.value = "";
+    indRank.disabled = true;
+    indRank.placeholder = "اختر نوع المحضر أولاً";
+  }
+
+  // تفريغ رقم الصادر
+  if (issuedNumber) {
+    issuedNumber.value = "";
+    issuedNumber.placeholder = "ادخل رقم الصادر";
+  }
+}
+
 // حفظ/تنفيذ
 async function saveAll() {
   const data = collect();
   const ini  = payloadToIni(data);
+    clearIndividualFields();
+
 // === حل مشكلة بقاء "بيانات الصادر" ظاهرة بعد تنفيذ وحفظ ===
 // تحديد الاختيار الحالي
 const choice =
@@ -472,6 +535,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/نموذج استلام.docm";
   } else if (choice === "تبليغ-مراجعة") {
   wordLink.href = "dic/نماذج الممنوعين/مطلوبين تبليغ مراجعة.docm";
+   } else if (choice === "تطبيق") {
+  wordLink.href = "dic/نماذج الافراد/تطبيق.docm";
    } else if (choice === "مخالفة") {
   wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
 } else {
@@ -486,7 +551,11 @@ console.log(`✔ تم فتح ${wordLink.href} بعد حفظ form.txt`);
   console.error("❌ فشل في فتح الملف:", e);
 }
 
-scheduleAutoBack(AUTO_BACK_MS);
+const keepOpen = document.getElementById("KeepPageOpen");
+
+if (!keepOpen || !keepOpen.checked) {
+  scheduleAutoBack(AUTO_BACK_MS);
+}
 
 
 }
@@ -997,8 +1066,73 @@ if (choice === "غياب-افراد") {
     const labelRank = document.querySelector('label[for="commander-rank"]');
     if (labelRank) labelRank.style.display = "none";
   }
+  
 }
+if (choice === "تطبيق") {
+ // 1) إظهار بطاقة "بيانات الفرد"
+  const individualCard = document.getElementById("card-individual");
+  if (individualCard) individualCard.style.display = "block";
 
+  // 2) إخفاء كل البطاقات ما عدا: التاريخ/المستلم + بيانات الفرد + بيانات الصادر
+  // (مراعاة أن بطاقة الصادر قد تكون id=card-issued أو card-issued-data)
+  const keepIds = new Set(["card-receipt", "card-individual", "card-issued", "card-issued-data"]);
+  document.querySelectorAll(".card").forEach(card => {
+    if (!keepIds.has(card.id)) card.style.display = "none";
+  });
+
+  // 3) إخفاء اسم/رتبة الآمر المناوب مع الـ labels
+  const commanderName = document.getElementById("commander-name");
+  const commanderRank = document.getElementById("commander-rank");
+  if (commanderName) {
+    commanderName.style.display = "none";
+    const labelName = document.querySelector('label[for="commander-name"]');
+    if (labelName) labelName.style.display = "none";
+  }
+  if (commanderRank) {
+    commanderRank.style.display = "none";
+    const labelRank = document.querySelector('label[for="commander-rank"]');
+    if (labelRank) labelRank.style.display = "none";
+  }
+
+  // 4) إخفاء نوع المحضر (RecordType) وتلميح إبقاء الصفحة مفتوحة إن وُجد
+  const recType    = document.getElementById("RecordType");
+  const recTypeLbl = document.querySelector('label[for="RecordType"]');
+  if (recType)    recType.style.display = "none";
+  if (recTypeLbl) recTypeLbl.style.display = "none";
+  const keepOpenWrap = document.querySelector(".keep-open-label");
+  if (keepOpenWrap) keepOpenWrap.style.display = "none";
+
+  // 5) إظهار حقول "مدة التطبيق" و"سبب التطبيق" (تأكد من إضافتها في HTML)
+  ["ApplyDurationLabel","ApplyDuration","ApplyReasonLabel","ApplyReason"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "block";
+  });
+
+  // 6) تعديل "تقفيلة" اسم الفرد ورتبته: فتحها وجعلها إلزامية في وضع "تطبيق"
+  const indName = document.getElementById("IndividualName");
+  const indRank = document.getElementById("IndividualRank");
+  if (indName) {
+    indName.disabled = false;
+    indName.required = true;
+    indName.placeholder = "اكتب اسم الفرد / المجندة";
+  }
+  if (indRank) {
+    indRank.disabled = false;
+    indRank.required = true;
+    indRank.placeholder = "اكتب رتبة الفرد / المجندة";
+  }
+
+  // 7) منع أي منطق لاحق من إعادة قفل الحقول بناءً على RecordType في هذا الوضع
+  //    (لو لديك مستمع change على RecordType سيقرأ هذا الشرط ويتجاهل نفسه)
+  document.addEventListener("change", (e) => {
+    if (e.target && e.target.id === "RecordType") {
+      if (choice === "تطبيق") {
+        if (indName) { indName.disabled = false; indName.required = true; }
+        if (indRank) { indRank.disabled = false; indRank.required = true; }
+      }
+    }
+  }, { once: true });
+}
 // ===================
 // وضع absence2
 // ===================
@@ -1218,6 +1352,7 @@ document.addEventListener('DOMContentLoaded', () => {
 "use strict";
 
 // قاعدة الأسماء
+// قاعدة الأسماء
 let NAME_DB = null;
 
 // توحيد قيمة المناوبة
@@ -1225,10 +1360,10 @@ function normalizeShift(val) {
   if (!val) return null;
   val = String(val).trim();
   const map = {
-    "ا":"ا","أ":"ا","أ":"ا","A":"ا","a":"ا",
-    "ب":"ب","B":"ب","b":"ب",
-    "ج":"ج","J":"ج","j":"ج","C":"ج","c":"ج",
-    "د":"د","D":"د","d":"د"
+    "ا": "ا", "أ": "ا", "أ": "ا", "A": "ا", "a": "ا",
+    "ب": "ب", "B": "ب", "b": "ب",
+    "ج": "ج", "J": "ج", "j": "ج", "C": "ج", "c": "ج",
+    "د": "د", "D": "د", "d": "د"
   };
   return map[val] || val;
 }
@@ -1244,8 +1379,9 @@ function getShiftHall() {
 
 // تعبئة اقتراحات الأسماء (datalist) حسب المناوبة والصالة
 function populateNamesForCurrentSelection() {
-  const dataList   = document.getElementById("individual-list");
-  const nameInput  = document.getElementById("IndividualName");
+  const dataList  = document.getElementById("individual-list");
+  // نستخدم أول حقل فقط كشرط وجود، لأن نفس القائمة تُخدم 1 و 2 و 3
+  const nameInput = document.getElementById("IndividualName");
   if (!dataList || !nameInput || !NAME_DB) return;
 
   dataList.innerHTML = ""; // تنظيف
@@ -1261,10 +1397,36 @@ function populateNamesForCurrentSelection() {
   });
 }
 
-// تعبئة الرتبة تلقائيًا عند مطابقة الاسم المختار/المكتوب
-function autoFillRankByName() {
-  const nameInput = document.getElementById("IndividualName");
-  const rankInput = document.getElementById("IndividualRank");
+// دالة عامة لتعبئة الرتبة لأي فرد (1 / 2 / 3)
+function autoFillRankByNameFor(suffix) {
+  let nameId, rankId;
+
+  if (suffix === "") {
+    // الفرد الأول
+    nameId = "IndividualName";
+    rankId = "IndividualRank";
+  } else if (suffix === "2") {
+    // الفرد الثاني: جرّب IndividualName2 ثم IndividualNameo
+    nameId = document.getElementById("IndividualName2")
+      ? "IndividualName2"
+      : "IndividualNameo";
+    rankId = document.getElementById("IndividualRank2")
+      ? "IndividualRank2"
+      : "IndividualRanko";
+  } else if (suffix === "3") {
+    // الفرد الثالث: جرّب IndividualName3 ثم IndividualNamet
+    nameId = document.getElementById("IndividualName3")
+      ? "IndividualName3"
+      : "IndividualNamet";
+    rankId = document.getElementById("IndividualRank3")
+      ? "IndividualRank3"
+      : "IndividualRankt";
+  } else {
+    return;
+  }
+
+  const nameInput = document.getElementById(nameId);
+  const rankInput = document.getElementById(rankId);
   if (!nameInput || !rankInput || !NAME_DB) return;
 
   const { shift, hall } = getShiftHall();
@@ -1274,8 +1436,15 @@ function autoFillRankByName() {
   if (!name) return;
 
   const hit = NAME_DB[shift][hall].find(e => e.name === name);
-  // نملأ الرتبة إن وجدنا الاسم، مع إبقاء إمكانية تعديلها يدويًا
-  rankInput.value = hit ? (hit.rank || "") : rankInput.value;
+  if (hit && hit.rank) {
+    // نملأ الرتبة مع إبقاء إمكانية التعديل اليدوي
+    rankInput.value = hit.rank;
+  }
+}
+
+// دالة قديمة تبقى فقط للتوافق إن ناديتها من مكان آخر
+function autoFillRankByName() {
+  autoFillRankByNameFor("");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -1289,19 +1458,40 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => console.error("فشل تحميل name.json", err));
 
-  // 2) تحديث الاقتراحات عند تغيير المناوبة أو الصالة
+  // 2) تحديث اقتراحات الأسماء عند تغيير المناوبة أو الصالة
   const shiftEl = document.getElementById("shift-number");
   const hallEl  = document.getElementById("hall-number");
   if (shiftEl) shiftEl.addEventListener("change", populateNamesForCurrentSelection);
   if (hallEl)  hallEl.addEventListener("change",  populateNamesForCurrentSelection);
 
-  // 3) تعبئة الرتبة تلقائيًا عند اختيار/كتابة الاسم
-  const nameInput = document.getElementById("IndividualName");
-  if (nameInput) {
-    nameInput.addEventListener("change",  autoFillRankByName);
-    nameInput.addEventListener("input",   autoFillRankByName);
-    nameInput.addEventListener("blur",    autoFillRankByName);
-  }
+  // 3) ربط تعبئة الرتبة تلقائيًا لكل فرد (1 / 2 / 3)
+  ["", "2", "3"].forEach(suffix => {
+    let nameId;
+
+    if (suffix === "") {
+      nameId = "IndividualName";
+    } else if (suffix === "2") {
+      nameId = document.getElementById("IndividualName2")
+        ? "IndividualName2"
+        : "IndividualNameo";
+    } else if (suffix === "3") {
+      nameId = document.getElementById("IndividualName3")
+        ? "IndividualName3"
+        : "IndividualNamet";
+    }
+
+    const input = document.getElementById(nameId);
+    if (!input) return;
+
+    const handler = () => autoFillRankByNameFor(suffix);
+    input.addEventListener("change", handler);
+    input.addEventListener("input",  handler);
+    input.addEventListener("blur",   handler);
+  });
+
+
+
+
 
   // 4) منطق حالة absence (اختياري لكن مُفَعَّل هنا كما طلبت سابقًا)
   //    - إظهار بطاقة "بيانات الفرد"
@@ -2764,4 +2954,115 @@ inpNo.addEventListener('change', ()=>{
   inpAir.addEventListener('input',  computeSuggestions);
 
   loadFly();
+})();
+const recordType = document.getElementById("RecordType");
+const indName    = document.getElementById("IndividualName");
+const indRank    = document.getElementById("IndividualRank");
+
+recordType.addEventListener("change", () => {
+  const type = recordType.value;
+
+  if (type !== "") {
+    indName.disabled = false;
+    indRank.disabled = false;
+    indName.placeholder = "اكتب اسم الفرد / المجندة";
+    indRank.placeholder = "تظهر تلقائيًا بعد اختيار الاسم";
+  }
+
+  if (type === "افراد") {
+    localStorage.setItem("wordLinkChoice", "غياب-افراد");
+  } else if (type === "مجندات") {
+    localStorage.setItem("wordLinkChoice", "غياب-مجندات");
+  }
+});
+(function(){
+  const $ = (id)=>document.getElementById(id);
+
+  // فحص وضع "تطبيق"
+  function isApplyMode() {
+    const choice =
+      (localStorage.getItem('wordLinkChoice') ||
+       localStorage.getItem('lastWordLinkChoice') ||
+       '').trim();
+    return choice === 'تطبيق';
+  }
+
+  // إظهار/إخفاء وفتح حقول المجموعة 2 و3 فقط
+  function setupApplyPairs23(){
+    const on = isApplyMode();
+
+    // فتح الاسم/الرتبة للمجموعة 2 و3 إذا كان تطبيق، وإلا إبقائها كما هي
+    [2,3].forEach(i=>{
+      const nm = $(`IndividualName${i}`);
+      const rk = $(`IndividualRank${i}`);
+      const dur= $(`ApplyDuration${i}`);
+      const rsn= $(`ApplyReason${i}`);
+
+      // الظهور يكون طبيعيًا ضمن .form-grid (لا نعدّل display)
+      // فقط نتحكم بتفعيل/تعطيل الاسم والرتبة حسب الوضع
+      if (nm) {
+        nm.disabled = !on ? nm.disabled : false;
+        if (on && !nm.placeholder) nm.placeholder = 'اكتب اسم الفرد';
+      }
+      if (rk) {
+        rk.disabled = !on ? rk.disabled : false;
+        if (on && !rk.placeholder) rk.placeholder = 'اكتب الرتبة';
+      }
+
+      // المدة/السبب تبقى ظاهرة مثل بقية الحقول (لا تنسيق إضافي)
+      // فقط نتأكد من وجود placeholder إن لزم
+      if (dur && !dur.placeholder) dur.placeholder = 'ساعة … 6 ساعات';
+      if (rsn && !rsn.placeholder) rsn.placeholder = 'اختر أو اكتب السبب';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupApplyPairs23);
+  // لو تغيّرت قيمة التخزين لاحقًا، يمكنك استدعاء setupApplyPairs23() يدويًا
+})();
+(function(){
+  const $ = (id)=>document.getElementById(id);
+
+  function isApplyMode() {
+    const choice =
+      (localStorage.getItem('wordLinkChoice') ||
+       localStorage.getItem('lastWordLinkChoice') ||
+       '').trim();
+    return choice === 'تطبيق';
+  }
+
+  // إظهار/إخفاء عنصر مع الليبل الخاص به
+  function showPair(id, show){
+    const el   = $(id);
+    const lbl  = document.querySelector(`label[for="${id}"]`);
+    const disp = show ? '' : 'none';
+    if (el)  el.style.display  = disp;
+    if (lbl) lbl.style.display = disp;
+  }
+
+  function applyVisibilityForGroup(i, show){
+    showPair(`IndividualName${i}`, show);
+    showPair(`IndividualRank${i}`, show);
+    showPair(`ApplyDuration${i}`, show);
+    showPair(`ApplyReason${i}`, show);
+
+    // عند الظهور في وضع تطبيق: افتح الاسم/الرتبة واجعل الـ placeholder مناسب
+    if (show && isApplyMode()) {
+      const nm = $(`IndividualName${i}`);
+      const rk = $(`IndividualRank${i}`);
+      if (nm) { nm.disabled = false; if (!nm.placeholder) nm.placeholder = 'اكتب اسم الفرد'; }
+      if (rk) { rk.disabled = false; if (!rk.placeholder) rk.placeholder = 'اكتب الرتبة'; }
+    }
+  }
+
+  function updateApplyGroups23Visibility(){
+    const on = isApplyMode();
+    // المجموعة 2 و 3 فقط
+    applyVisibilityForGroup(2, on);
+    applyVisibilityForGroup(3, on);
+  }
+
+  document.addEventListener('DOMContentLoaded', updateApplyGroups23Visibility);
+
+  // لو عدّلت قيمة التخزين إلى "تطبيق" أثناء العمل، أعد الاستدعاء يدويًا:
+  // window.addEventListener('storage', updateApplyGroups23Visibility);
 })();

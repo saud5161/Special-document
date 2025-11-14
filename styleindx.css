@@ -596,3 +596,64 @@ body.help-open #helpBox{ display:block; }
   vertical-align:middle;
   margin-inline-start:4px; /* مسافة بسيطة بعد النص */
 }
+/* لون نوع المحضر (أسود) */
+#RecordType {
+  background: #ffffff;
+  border: 1px solid #c8d6ff;
+   color: #000000;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+/* لون التلميح (أحمر فاتح) */
+#IndividualName::placeholder,
+#IndividualRank::placeholder {
+  color: #b8a0a0 !important;
+  font-weight: bold;
+}
+
+/* لون التلميح داخل الخيارات */
+#RecordType:invalid {
+  color: #000000;
+  font-weight: bold;
+}
+#RecordType option {
+  color: #000000; /* أسود */
+}
+.keep-open-label {
+  grid-column: 1 / -1;               /* يمتد على عرض النموذج */
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f9fafb;
+  border: 1px dashed #c8d6ff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.keep-open-label input[type="checkbox"] {
+  margin-top: 3px;
+}
+
+.keep-open-label span strong {
+  color: var(--blue-700);
+}
+/* إبراز لطيف لحقول التطبيق عند الظهور */
+#ApplyDuration, #ApplyReason {
+  background: #fff;
+  border: 1px solid #c8d6ff;
+  color: var(--blue-700);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+/* أيقونة التحذير داخل التسمية */
+#ApplyReasonLabel i { color: #b9b1aa; } /* عنبري */
+#ApplyDurationLabel i { color: #0d6efd; } /* أزرق */
+.individual-separator {
+  grid-column: 1 / -1;          /* يخلي الفاصل يمتد على عرض الـ form-grid كامل */
+  border-bottom: 1px solid #c8d6ff;
+  margin: 8px 0;
+}

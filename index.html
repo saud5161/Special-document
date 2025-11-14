@@ -278,18 +278,94 @@
              - اختيار اسم الفرد / المجندة
              - تعبئة الرتبة تلقائيًا مع إمكانية التعديل
         ========================================================== -->
-        <section class="card" id="card-individual" style="display:none">
-          
-          <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الفرد</h3>
-          <div class="card__body form-grid">
-            <label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد / المجندة</label>
-            <input id="IndividualName" list="individual-list" placeholder="اكتب اسم الفرد / المجندة">
-            <datalist id="individual-list"></datalist>
+       <section class="card" id="card-individual" style="display:none">
+  <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الفرد</h3>
 
-            <label for="IndividualRank"><i class="fas fa-medal"></i> رتبة الفرد / المجندة</label>
-            <input id="IndividualRank" placeholder="تظهر تلقائيًا عند اختيار الاسم، ويمكن تعديلها">
-          </div>
-        </section>
+  <div class="card__body form-grid">
+
+    <!-- نوع المحضر في صف مستقل -->
+    <label for="RecordType"><i class="fas fa-list"></i> نوع المحضر</label>
+    <select id="RecordType" class="record-type-select" style="grid-column: span 3;">
+      <option value="" disabled selected>اختر نوع المحضر أولاً</option>
+      <option value="افراد">أفراد</option>
+      <option value="مجندات">مجندات</option>
+    </select>
+
+    <!-- اسم الفرد / المجندة -->
+    <label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد / المجندة</label>
+    <input id="IndividualName" list="individual-list" placeholder="اختر نوع المحضر أولاً" disabled>
+    <datalist id="individual-list"></datalist>
+
+    <!-- رتبة الفرد / المجندة -->
+    <label for="IndividualRank"><i class="fas fa-medal"></i> رتبة الفرد / المجندة</label>
+    <input id="IndividualRank" placeholder="اختر نوع المحضر أولاً" disabled>
+    <label for="ApplyDuration" id="ApplyDurationLabel" style="display:none">
+  <i class="fas fa-hourglass-half"></i> مدة التطبيق
+</label>
+<input id="ApplyDuration" list="apply-durations" placeholder="ساعة … 6 ساعات" style="display:none">
+<datalist id="apply-durations">
+  <option value="ساعة"></option>
+  <option value="ساعتين"></option>
+  <option value="3 ساعات"></option>
+  <option value="4 ساعات"></option>
+  <option value="5 ساعات"></option>
+  <option value="6 ساعات"></option>
+</datalist>
+
+<!-- سبب التطبيق (مخفي افتراضيًا) -->
+<label for="ApplyReason" id="ApplyReasonLabel" style="display:none">
+  <i class="fas fa-circle-exclamation"></i> سبب التطبيق
+</label>
+<input id="ApplyReason" list="apply-reasons" placeholder="اختر أو اكتب السبب" style="display:none">
+<datalist id="apply-reasons">
+  <option value="عدم التقيد بالتعليمات"></option>
+  <option value="عدم التواجد في الموقع"></option>
+</datalist>
+<!-- === مجموعة 2 === -->
+<!-- === مجموعة 2 === -->
+<div class="individual-separator"></div>
+
+<!-- === مجموعة 2 === -->
+<label for="IndividualName2"><i class="fas fa-user"></i> اسم الفرد (2)</label>
+<input id="IndividualName2" list="individual-list" placeholder="اكتب اسم الفرد" disabled>
+
+<label for="IndividualRank2"><i class="fas fa-medal"></i> رتبته (2)</label>
+<input id="IndividualRank2" placeholder="اكتب الرتبة" disabled>
+
+<label for="ApplyDuration2"><i class="fas fa-hourglass-half"></i> مدة التطبيق (2)</label>
+<input id="ApplyDuration2" list="apply-durations" placeholder="ساعة … 6 ساعات">
+
+<label for="ApplyReason2"><i class="fas fa-circle-exclamation"></i> سبب التطبيق (2)</label>
+<input id="ApplyReason2" list="apply-reasons" placeholder="اختر أو اكتب السبب">
+
+<!-- ✅ فاصل بين الفرد 2 و 3 -->
+<div class="individual-separator"></div>
+
+<!-- === مجموعة 3 === -->
+<label for="IndividualName3"><i class="fas fa-user"></i> اسم الفرد (3)</label>
+<input id="IndividualName3" list="individual-list" placeholder="اكتب اسم الفرد" disabled>
+
+<label for="IndividualRank3"><i class="fas fa-medal"></i> رتبته (3)</label>
+<input id="IndividualRank3" placeholder="اكتب الرتبة" disabled>
+
+<label for="ApplyDuration3"><i class="fas fa-hourglass-half"></i> مدة التطبيق (3)</label>
+<input id="ApplyDuration3" list="apply-durations" placeholder="ساعة … 6 ساعات">
+
+<label for="ApplyReason3"><i class="fas fa-circle-exclamation"></i> سبب التطبيق (3)</label>
+<input id="ApplyReason3" list="apply-reasons" placeholder="اختر أو اكتب السبب">
+
+    <!-- ✅ مربع خيار: إبقاء الصفحة مفتوحة (بعد الرتبة) -->
+    <label for="KeepPageOpen" class="keep-open-label">
+      <input type="checkbox" id="KeepPageOpen">
+      <span>
+        في حال كان لديك أكثر من محضر غياب، فعِّل هذا الخيار ليبقى النموذج مفتوحًا بعد الضغط على
+        <strong>تنفيذ وحفظ</strong>.
+      </span>
+    </label>
+
+  </div>
+</section>
+
         
         <!-- =========================================================
              بطاقة 1.1: وقت الشفت والموازنة (تظهر عند الحاجة)
@@ -297,13 +373,13 @@
              - تاريخ/يوم الموازنة تلقائيًا (الغد للهجري/اليوم)
         ========================================================== -->
               <!-- بطاقة وقت الشفت والموازنة (داخل shell + cards-grid) -->
-<h3 class="card__title">
-  <i class="fas fa-business-time"></i>
-  وقت الشفت والموازنة
-  <span id="note-shift-balance-now" class="note-inline">
-    (تلقائياً )
-  </span>
-</h3>
+          <h3 class="card__title">
+            <i class="fas fa-business-time"></i>
+            وقت الشفت والموازنة
+            <span id="note-shift-balance-now" class="note-inline">
+              (تلقائياً )
+            </span>
+          </h3>
         
         <div class="card__body form-grid">
           <!-- وقت الاستلام -->
@@ -454,23 +530,23 @@
              - وجهة السفر
         ========================================================== -->
         <section class="card" id="card-flight">
-<h3 class="card__title"><i class="fas fa-plane"></i> بيانات الرحلة
-  <span id="prev-flight-note" style="font-size:12px; margin-inline-start:8px; color:#6b7280;" hidden>السابقة</span>
-</h3>
-          <div class="card__body form-grid">
-            <!-- الخطوط الناقلة -->
-<label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
-<input id="AirlineName" list="airlines" placeholder="مثال: السعودية" />
-<datalist id="airlines"></datalist>
+            <h3 class="card__title"><i class="fas fa-plane"></i> بيانات الرحلة
+              <span id="prev-flight-note" style="font-size:12px; margin-inline-start:8px; color:#6b7280;" hidden>السابقة</span>
+            </h3>
+                      <div class="card__body form-grid">
+                        <!-- الخطوط الناقلة -->
+            <label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
+            <input id="AirlineName" list="airlines" placeholder="مثال: السعودية" />
+            <datalist id="airlines"></datalist>
 
-            <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
-            <input id="FlightNumber" placeholder="مثال: SV225" />
-<div id="flight-suggestions" class="flight-suggestions" hidden></div>
+                        <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
+                        <input id="FlightNumber" placeholder="مثال: SV225" />
+            <div id="flight-suggestions" class="flight-suggestions" hidden></div>
 
-            <!-- وجهة السفر -->
-<label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
-<input id="TravelDestination" list="destinations" placeholder="مثال: دبي" />
-<datalist id="destinations"></datalist>
+                        <!-- وجهة السفر -->
+            <label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
+            <input id="TravelDestination" list="destinations" placeholder="مثال: دبي" />
+            <datalist id="destinations"></datalist>
             <div id="travel-route-row" class="form-row" hidden>
             <label for="TravelRoute"><i class="fas fa-route"></i> خط سير الرحلة</label>
             <input id="TravelRoute" placeholder="مثال: الرياض → دبي → لندن">
@@ -482,13 +558,13 @@
           <h3 class="card__title"><i class="fas fa-plane-departure"></i> بيانات الرحلة المغادر عليها الآن</h3>
           <div class="card__body form-grid">
             <label for="AirlineNameNow"><i class="fas fa-building"></i> الخطوط الناقلة</label>
-            <input id="AirlineNameNow" placeholder="اسم شركة الطيران">
+            <input id="AirlineNameNow" list="airlines" placeholder="اسم شركة الطيران">
 
             <label for="FlightNumberNow"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
             <input id="FlightNumberNow" placeholder="مثال: XY123">
 
             <label for="TravelDestinationNow"><i class="fas fa-location-dot"></i> وجهة السفر</label>
-            <input id="TravelDestinationNow" placeholder="المدينة / الدولة">
+            <input id="TravelDestinationNow" list="destinations" placeholder="المدينة / الدولة">
           </div>
           
         </section>
@@ -650,7 +726,7 @@
         تفريغ الخانات
       </button>
       <button id="close-btn" class="btn btn--danger" type="button">
-        رجوع وإلغاء
+        رجوع
       </button>
    <form class="helper-link" action="dic/Doc4.docm" method="get">
   <button type="submit" id="fix-word-btn" class="btn btn--secondary" title="إصلاح ملف Word" aria-label="إصلاح ملف Word">
