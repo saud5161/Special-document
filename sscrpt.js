@@ -245,6 +245,7 @@ function collect(){
 // الفرد رقم 1
 IndividualName:  $('IndividualName')?.value  || '',
 IndividualRank:  $('IndividualRank')?.value  || '',
+IndividualJobNature: $('IndividualJobNature')?.value   || '',  // ✅ طبيعة العمل
 
 // الفرد رقم 2
 IndividualNameo: $('IndividualName2')?.value || '',
@@ -540,7 +541,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نماذج الافراد/تطبيق.docm";
   } else if (choice === "منع-سفر") {
   wordLink.href = "dic/نماذج الممنوعين/منع سفر جوازات جديد.docm";
-  
+  } else if (choice === "خطاب-فرد") {
+  wordLink.href = "dic/نــماذج  اليومية/خطاب فرد.docm";
    } else if (choice === "مخالفة") {
   wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
 } else {
@@ -1288,6 +1290,84 @@ if (choice === "حذف-السجلات") {
   if (cmdR)  cmdR.style.display  = "none";
   if (cmdRL) cmdRL.style.display = "none";
 }
+
+  // ===== وضع "خطاب-فرد" =====
+  if (choice === "خطاب-فرد") {
+    // 1) إظهار فقط البطاقات المطلوبة
+    const cardsToShow = ["card-receipt", "card-individual", "card-issued-data"];
+    document.querySelectorAll(".card").forEach(card => {
+      if (cardsToShow.includes(card.id)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+       // 6) تعديل "تقفيلة" اسم الفرد ورتبته: فتحها وجعلها إلزامية في وضع "تطبيق"
+  const indName = document.getElementById("IndividualName");
+  const indRank = document.getElementById("IndividualRank");
+  if (indName) {
+    indName.disabled = false;
+    indName.required = true;
+    indName.placeholder = "اكتب اسم الفرد / المجندة";
+  }
+  if (indRank) {
+    indRank.disabled = false;
+    indRank.required = true;
+    indRank.placeholder = "اكتب رتبة الفرد / المجندة";
+  }
+  // إخفاء اسم/رتبة الآمر المناوب إن وُجدت عناصرها (بما فيها الـ label)
+    ["#commander-name","label[for='commander-name']",
+     "#commander-rank","label[for='commander-rank']"
+    ].forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = "none";
+    });
+    });
+
+    // 2) إخفاء "نوع المحضر" (اللي هو RecordType)
+    const recordType = document.getElementById("RecordType");
+    const recordTypeLabel = document.querySelector("label[for='RecordType']");
+    if (recordType) recordType.style.display = "none";
+    if (recordTypeLabel) recordTypeLabel.style.display = "none";
+
+    // 3) تفعيل اسم الفرد ورتبته
+    const indName = document.getElementById("IndividualName");
+    const indRank = document.getElementById("IndividualRank");
+    if (indName) {
+      indName.disabled = false;
+      indName.placeholder = "اكتب اسم الفرد";
+    }
+    if (indRank) {
+      indRank.disabled = false;
+      indRank.placeholder = "اكتب رتبة الفرد";
+    }
+
+    // 4) إظهار حقل طبيعة العمل (اللي عملناه اختيار/قائمة)
+    const jobField = document.getElementById("IndividualJobNature");
+    const jobLabel = document.getElementById("IndividualJobNatureLabel");
+    if (jobField) jobField.style.display = "block";
+    if (jobLabel) jobLabel.style.display = "block";
+
+    // 5) إخفاء المجموعات (2) و (3) داخل بطاقة الفرد
+    [
+      "IndividualName2","IndividualRank2","ApplyDuration2","ApplyReason2",
+      "IndividualName3","IndividualRank3","ApplyDuration3","ApplyReason3"
+    ].forEach(id => {
+      const el  = document.getElementById(id);
+      const lbl = document.querySelector(`label[for='${id}']`);
+      if (el)  el.style.display  = "none";
+      if (lbl) lbl.style.display = "none";
+    });
+
+    // 6) إظهار بطاقة الصادر لرقم الصادر + عدد المشفوعات
+    const issuedCard = document.getElementById("card-issued-data");
+    if (issuedCard) issuedCard.style.display = "block";
+
+    // 7) (اختياري) إخفاء خيار إبقاء النموذج مفتوح لأنه خاص بمحاضر أخرى
+    const keepOpen = document.getElementById("KeepPageOpen");
+    const keepOpenLabel = document.querySelector('label[for="KeepPageOpen"]');
+    if (keepOpen) keepOpen.style.display = "none";
+    if (keepOpenLabel) keepOpenLabel.style.display = "none";
+  }
 
 
   

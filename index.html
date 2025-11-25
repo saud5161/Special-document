@@ -289,8 +289,9 @@
       <option value="" disabled selected>اختر نوع المحضر أولاً</option>
       <option value="افراد">أفراد</option>
       <option value="مجندات">مجندات</option>
+      
     </select>
-
+    
     <!-- اسم الفرد / المجندة -->
     <label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد / المجندة</label>
     <input id="IndividualName" list="individual-list" placeholder="اختر نوع المحضر أولاً" disabled>
@@ -300,8 +301,23 @@
     <label for="IndividualRank"><i class="fas fa-medal"></i> رتبة الفرد / المجندة</label>
     <input id="IndividualRank" placeholder="اختر نوع المحضر أولاً" disabled>
     <label for="ApplyDuration" id="ApplyDurationLabel" style="display:none">
+      
   <i class="fas fa-hourglass-half"></i> مدة التطبيق
 </label>
+<!-- ✅ جديد: طبيعة عمل الفرد (مخفية افتراضيًا) -->
+<label for="IndividualJobNature" id="IndividualJobNatureLabel" style="display:none">
+  <i class="fas fa-briefcase"></i> طبيعة العمل
+</label>
+<input id="IndividualJobNature"
+       list="jobNatureOptions"
+       placeholder="اختر أو اكتب طبيعة العمل"
+       style="display:none">
+
+<!-- قائمة اقتراحات لطبيعة العمل (قابلة للتعديل) -->
+<datalist id="jobNatureOptions">
+  <option value="مشغل كاونتر"></option>
+  <option value="قائمة"></option>
+</datalist>
 <input id="ApplyDuration" list="apply-durations" placeholder="ساعة … 6 ساعات" style="display:none">
 <datalist id="apply-durations">
   <option value="ساعة"></option>
