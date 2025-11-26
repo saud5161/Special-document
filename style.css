@@ -1740,3 +1740,234 @@ h3 {
     width:36px; height:36px;
   }
 }
+
+
+
+/* ==========================================
+   🔥 شريط جانبي حديث — أخضر فاتح (Override)
+   Hover Expand Sidebar - Responsive
+   ========================================== */
+
+.sidebar {
+    width: 80px;
+    background: #325e4b;
+    padding: 12px 8px;
+    position: fixed;
+    top: 100px;
+    right: 0;
+    height: calc(100vh - 120px);
+    border-left: 3px solid #238b60;
+    box-shadow: 0 0 10px rgba(0,0,0,0.10);
+    overflow: hidden;
+    transition: width 0.35s ease;
+    z-index: 999;
+    border-radius: 12px 0 0 12px;
+}
+
+/* عند تمرير الماوس يتوسع الشريط */
+.sidebar:hover {
+    width: 260px;
+}
+
+/* قائمة العناصر داخل الشريط */
+.sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* العنصر */
+.sidebar li {
+    display: flex;
+    align-items: center;
+    padding: 12px 10px;
+    margin-bottom: 6px;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+}
+
+.sidebar li:hover {
+    background: #d2efe4;
+}
+
+/* الأيقونة */
+.sidebar li i {
+    font-size: 22px;
+    color: #ffffff;
+    min-width: 38px;
+    text-align: center;
+    transition: color 0.2s ease, transform 0.3s ease;
+}
+
+.sidebar li:hover i {
+    color: #04442d;
+    transform: scale(1.12);
+}
+
+/* النص بجوار الأيقونة – مخفي افتراضياً */
+.sidebar li span {
+    opacity: 0;
+    visibility: hidden;
+    white-space: nowrap;
+    margin-right: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fcfbfb;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+/* إظهار النص عند تمرير الماوس على الشريط */
+.sidebar:hover li span {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* الروابط داخل القائمة */
+.sidebar li a {
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* العنصر النشط */
+.sidebar li.active {
+    background: #3d775f;
+}
+
+.sidebar li.active i,
+.sidebar li.active span,
+.sidebar li.active a {
+    color: #ffffff !important;
+}
+
+/* زر القائمة الجانبية */
+.toggle-sidebar {
+    background: transparent;
+    border: none;
+    color: #2b4c3d;
+    font-size: 22px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+/* حاوية زر التحديث أسفل الشريط */
+.update-button-container {
+    position: absolute;
+    bottom: 20px;
+    right: 10px;
+    left: 10px;
+    text-align: center;
+}
+
+.sidebar-refresh-btn {
+    background-color: #3d775f;
+    color: #ffffff;
+    padding: 9px 8px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sidebar-refresh-btn i {
+    font-size: 15px;
+}
+
+.sidebar-refresh-btn:hover {
+    background-color: #2f5b48;
+    transform: translateY(-1px);
+}
+
+/* عند استخدام كلاس hidden من الجافاسكربت */
+.sidebar.hidden {
+    width: 70px;
+}
+
+.sidebar.hidden li span {
+    display: none !important;
+}
+
+/* إخفاء نص زر التحديث عند التصغير بالـ JS */
+.sidebar.hidden .sidebar-refresh-btn span {
+    display: none;
+}
+
+.sidebar.hidden .sidebar-refresh-btn {
+    justify-content: center;
+}
+
+/* تحكم في المحتوى مع الشريط الجانبي */
+.content {
+    flex: 1;
+    padding: 20px;
+    margin-top: 150px;
+    margin-right: 110px;
+    box-sizing: border-box;
+    transition: margin-right 0.35s ease;
+}
+
+/* عندما يكون الشريط في حالة توسع (Hover) */
+.sidebar:hover ~ .content {
+    margin-right: 260px;
+}
+
+/* ===================== Responsive ===================== */
+
+/* شاشات المتوسطة والصغيرة */
+@media (max-width: 992px) {
+  .sidebar {
+      top: 90px;
+      height: auto;
+      width: 70px;
+  }
+  .sidebar:hover {
+      width: 220px;
+  }
+  .content {
+      margin-right: 90px;
+      margin-top: 140px;
+  }
+  .sidebar:hover ~ .content {
+      margin-right: 230px;
+  }
+}
+
+/* شاشات الجوال */
+@media (max-width: 576px) {
+  .sidebar {
+      top: 95px;
+      height: auto;
+      width: 60px;
+      padding: 10px 6px;
+  }
+  .sidebar:hover {
+      width: 210px;
+  }
+  .sidebar li {
+      padding: 10px 6px;
+  }
+  .sidebar li i {
+      font-size: 20px;
+      min-width: 32px;
+  }
+  .sidebar li span {
+      font-size: 14px;
+  }
+  .content {
+      margin-right: 75px;
+      margin-top: 145px;
+  }
+  .sidebar:hover ~ .content {
+      margin-right: 215px;
+  }
+}
