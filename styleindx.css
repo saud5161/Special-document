@@ -657,3 +657,10 @@ body.help-open #helpBox{ display:block; }
   border-bottom: 1px solid #c8d6ff;
   margin: 8px 0;
 }
+input,
+textarea,
+select,
+label {
+  font-family: "AL-Mohanad Bold", "Tajawal", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-weight: bold;
+}
