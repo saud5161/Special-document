@@ -131,40 +131,65 @@
             </button>
             
             <ul class="sidebar-nav">
-          <li onclick="setActive(this)" title="الحضور والانصراف">
-            <i class="fas fa-calendar-check"></i>
-            <a href="#content-attendance"><span>الحضور والانصراف</span></a>
-          </li>
-          <li onclick="setActive(this)" title="نماذج يومية">
-            <i class="fas fa-file-signature"></i>
-            <a href="#content-daily-forms"><span>نماذج اليومية</span></a>
-          </li>
-          <li onclick="setActive(this)" title="خطابات العرض">
-            <i class="fas fa-envelope-open-text"></i>
-            <a href="#content-offer-letter"><span>خطابات العرض</span></a>
-          </li>
-          <li onclick="setActive(this)" title="نماذج الأفراد">
-            <i class="fas fa-id-card-alt"></i>
-            <a href="#content-individuals"><span>نماذج الأفراد</span></a>
-          </li>
-          <li onclick="setActive(this)" title="خطابات جاهزة">
-            <i class="fas fa-edit"></i>
-            <a href="#content-ready-letters"><span>خطابات جاهزة</span></a>
-          </li>
-          <li onclick="setActive(this)" title="الممنوعين">
-            <i class="fas fa-user-lock"></i>
-            <a href="#content-banned-forms"><span>الممنوعين</span></a>
-          </li>
-          <li onclick="setActive(this)" title="السعوديين">
-            <i class="fas fa-flag"></i>
-            <a href="#content-saudi-forms"><span>السعوديين</span></a>
-          </li>
-          <li onclick="setActive(this)" title="الخطوط الناقلة">
-            <i class="fas fa-plane-departure"></i>
-            <a href="#content-carrier-lines"><span>الخطوط الناقلة</span></a>
-          </li>
+
+  <li onclick="setActive(this)" title="الحضور والانصراف">
+    <a href="#content-attendance">
+      <i class="fas fa-calendar-check"></i>
+      <span>الحضور والانصراف</span>
+    </a>
+  </li>
+
+  <li onclick="setActive(this)" title="نماذج يومية">
+    <a href="#content-daily-forms">
+      <i class="fas fa-file-signature"></i>
+      <span>نماذج اليومية</span>
+    </a>
+  </li>
+
+  <li onclick="setActive(this)" title="خطابات العرض">
+    <a href="#content-offer-letter">
+      <i class="fas fa-envelope-open-text"></i>
+      <span>خطابات العرض</span>
+    </a>
+  </li>
+
+  <li onclick="setActive(this)" title="نماذج الأفراد">
+    <a href="#content-individuals">
+      <i class="fas fa-id-card-alt"></i>
+      <span>نماذج الأفراد</span>
+    </a>
+  </li>
+
+  <li onclick="setActive(this)" title="خطابات جاهزة">
+    <a href="#content-ready-letters">
+      <i class="fas fa-edit"></i>
+      <span>خطابات جاهزة</span>
+    </a>
+  </li>
+
+  <li onclick="setActive(this)" title="الممنوعين">
+    <a href="#content-banned-forms">
+      <i class="fas fa-user-lock"></i>
+      <span>الممنوعين</span>
+    </a>
+  </li>
+
+  <li onclick="setActive(this)" title="السعوديين">
+    <a href="#content-saudi-forms">
+      <i class="fas fa-flag"></i>
+      <span>السعوديين</span>
+    </a>
+  </li>
+
+  <li onclick="setActive(this)" title="الخطوط الناقلة">
+    <a href="#content-carrier-lines">
+      <i class="fas fa-plane-departure"></i>
+      <span>الخطوط الناقلة</span>
+    </a>
+  </li>
   
         </ul>
+         <div id="messageBox" style="margin-top: 10px; font-weight: bold;"></div>
            <div class="update-button-container">
             <a href="#" onclick="location.reload()" class="sidebar-refresh-btn">
             <i class="fas fa-arrows-rotate"></i> <span>تحديث النماذج</span>
