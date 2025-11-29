@@ -37,6 +37,32 @@ async function checkPassword() {
     errorMsg.style.display = "block";
   }
 }
+// تأخير توسّع الـ sidebar لمدة 3 ثواني
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar");
+    const content = document.querySelector(".content");
+    let expandTimeout = null;
+
+    // عند دخول الماوس على الشريط
+    sidebar.addEventListener("mouseenter", function () {
+        // لو كان مخفي بواسطة زر toggle لا توسّع
+        if (sidebar.classList.contains("hidden")) return;
+
+        // نضبط تايمر 3 ثواني
+        expandTimeout = setTimeout(function () {
+            sidebar.classList.add("expanded");
+        }, 1000);
+    });
+
+    // عند خروج الماوس من الشريط
+    sidebar.addEventListener("mouseleave", function () {
+        if (expandTimeout) {
+            clearTimeout(expandTimeout);
+            expandTimeout = null;
+        }
+        sidebar.classList.remove("expanded");
+    });
+});
 
 
   function redirectToExit() {

@@ -1765,7 +1765,7 @@ h3 {
 }
 
 /* عند تمرير الماوس يتوسع الشريط */
-.sidebar:hover {
+.sidebar.expanded {
     width: 260px;
 }
 
@@ -1819,7 +1819,7 @@ h3 {
 }
 
 /* إظهار النص عند تمرير الماوس على الشريط */
-.sidebar:hover li span {
+.sidebar.expanded li span {
     opacity: 1;
     visibility: visible;
 }
@@ -1917,7 +1917,7 @@ h3 {
 }
 
 /* عندما يكون الشريط في حالة توسع (Hover) */
-.sidebar:hover ~ .content {
+.sidebar.expanded ~ .content {
     margin-right: 260px;
 }
 
@@ -1930,9 +1930,9 @@ h3 {
       height: auto;
       width: 70px;
   }
-  .sidebar:hover {
-      width: 220px;
-  }
+  .sidebar.expanded {
+    width: 260px;
+}
   .content {
       margin-right: 90px;
       margin-top: 140px;
