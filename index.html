@@ -143,10 +143,17 @@
           </div>
 
           <div class="card__body form-grid">
+            
             <!-- تاريخ هجري ويوم الأسبوع -->
             <label for="custom-hijri-date"><i class="fas fa-calendar-alt"></i> التاريخ (هجري)</label>
-            <input id="custom-hijri-date" class="form-control" placeholder="يُملأ تلقائيًا">
+            
+            <div class="date-wrapper">
+              
+    <input id="custom-hijri-date" class="form-control" placeholder="يُملأ تلقائيًا">
+    <span id="toggle-date-format" class="date-icon">🔄صيغة التاريخ </span>
+</div>
 
+              
             <label for="custom-weekday"><i class="fas fa-calendar-day"></i> اليوم</label>
             <input id="custom-weekday" class="form-control" placeholder="—">
 

@@ -3206,3 +3206,61 @@ recordType.addEventListener("change", () => {
   // لو عدّلت قيمة التخزين إلى "تطبيق" أثناء العمل، أعد الاستدعاء يدويًا:
   // window.addEventListener('storage', updateApplyGroups23Visibility);
 })();
+document.addEventListener("DOMContentLoaded", function () {
+  const dateInput = document.getElementById("custom-hijri-date");
+  const btn = document.getElementById("toggle-date-format");
+
+  if (!dateInput || !btn) return;
+
+  btn.addEventListener("click", () => {
+    let v = dateInput.value.replace("هـ", "").trim();
+
+    const months = [
+      "", "محرم", "صفر", "ربيع الأول", "ربيع الآخر",
+      "جمادى الأولى", "جمادى الآخرة", "رجب",
+      "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"
+    ];
+
+    const monthNumbers = {
+      "محرم": "01",
+      "صفر": "02",
+      "ربيع الأول": "03",
+      "ربيع الآخر": "04",
+      "جمادى الأولى": "05",
+      "جمادى الآخرة": "06",
+      "رجب": "07",
+      "شعبان": "08",
+      "رمضان": "09",
+      "شوال": "10",
+      "ذو القعدة": "11",
+      "ذو الحجة": "12"
+    };
+
+    // ---------- إذا كانت الصيغة رقمية ----------
+    if (v.includes("/")) {
+      const parts = v.split("/");
+      const d = parts[0];
+      const m = parts[1];
+      const y = parts[2];
+
+      const monthName = months[parseInt(m)];
+      dateInput.value = `${d} ${monthName} ${y}هـ`;
+    }
+
+    // ---------- إذا كانت الصيغة نصية ----------
+    else {
+      // يفصل كل شيء عن طريق المسافات وينظّف
+      const parts = v.trim().split(" ").filter(x => x);
+
+      const d = parts[0];
+      const y = parts[parts.length - 1];
+
+      // الشهر هو كل ما بينهما
+      const monthName = parts.slice(1, parts.length - 1).join(" ").trim();
+
+      const m = monthNumbers[monthName] || "01";
+
+      dateInput.value = `${d}/${m}/${y} هـ`;
+    }
+  });
+});
