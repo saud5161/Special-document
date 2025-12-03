@@ -37,32 +37,58 @@ async function checkPassword() {
     errorMsg.style.display = "block";
   }
 }
-// تأخير توسّع الـ sidebar لمدة 3 ثواني
+// توسّع الشريط الجانبي عند المرور بالماوس وهو مخفي (hidden)
+// جعل الشريط الجانبي يبدأ كأيقونات فقط + توسع عند الـ hover
 document.addEventListener("DOMContentLoaded", function () {
-    const sidebar = document.getElementById("sidebar");
-    const content = document.querySelector(".content");
-    let expandTimeout = null;
+  const sidebar = document.getElementById("sidebar");
+  if (!sidebar) return;
 
-    // عند دخول الماوس على الشريط
-    sidebar.addEventListener("mouseenter", function () {
-        // لو كان مخفي بواسطة زر toggle لا توسّع
-        if (sidebar.classList.contains("hidden")) return;
+  // ✅ عند فتح الصفحة: أيقونات فقط
+  sidebar.classList.add("hidden");
+  sidebar.classList.remove("expanded");
 
-        // نضبط تايمر 3 ثواني
-        expandTimeout = setTimeout(function () {
-            sidebar.classList.add("expanded");
-        }, 1000);
-    });
+  let hoverTimer = null;
 
-    // عند خروج الماوس من الشريط
-    sidebar.addEventListener("mouseleave", function () {
-        if (expandTimeout) {
-            clearTimeout(expandTimeout);
-            expandTimeout = null;
-        }
-        sidebar.classList.remove("expanded");
-    });
+  // عند دخول الماوس على الشريط
+  sidebar.addEventListener("mouseenter", function () {
+    if (hoverTimer) clearTimeout(hoverTimer);
+
+    hoverTimer = setTimeout(() => {
+      // نزيل hidden ونفعّل expanded ليظهر النص ويكبر الشريط
+      sidebar.classList.remove("hidden");
+      sidebar.classList.add("expanded");
+    }, 120); // تأخير بسيط فقط لتفادي الوميض
+  });
+
+  // عند خروج الماوس من الشريط
+  sidebar.addEventListener("mouseleave", function () {
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+      hoverTimer = null;
+    }
+
+    // نرجع للوضع المصغّر (أيقونات فقط)
+    sidebar.classList.remove("expanded");
+    sidebar.classList.add("hidden");
+  });
+
+  // عندما يخرج الماوس من الشريط
+  sidebar.addEventListener("mouseleave", function () {
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+      hoverTimer = null;
+    }
+
+    // شيل التوسيع دائماً
+    sidebar.classList.remove("expanded");
+
+    // لو كان الشريط hidden قبل دخول الماوس → رجّعه hidden
+    if (wasHiddenOnEnter) {
+      sidebar.classList.add("hidden");
+    }
+  });
 });
+
 
 
   function redirectToExit() {
