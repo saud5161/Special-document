@@ -246,7 +246,7 @@ function collect(){
 IndividualName:  $('IndividualName')?.value  || '',
 IndividualRank:  $('IndividualRank')?.value  || '',
 IndividualJobNature: $('IndividualJobNature')?.value   || '',  // ✅ طبيعة العمل
-
+IndividualID:  $('IndividualID')?.value  || '',
 // الفرد رقم 2
 IndividualNameo: $('IndividualName2')?.value || '',
 IndividualRanko: $('IndividualRank2')?.value || '',
@@ -349,6 +349,12 @@ ListOfficerName:  $('ListOfficerName')?.value  || '',
 ListOfficerRank:  $('ListOfficerRank')?.value  || '',
 AdminOfficerName: $('AdminOfficerName')?.value || '',
 AdminOfficerRank: $('AdminOfficerRank')?.value || '',
+    // بيانات الاستئذان
+    PermitDate:     $('PermitDate')?.value     || '',
+    PermitDay:      $('PermitDay')?.value      || '',
+    PermitReason:   $('PermitReason')?.value   || '',
+    PermitDuration: $('PermitDuration')?.value || '',
+    ShiftPower:     $('ShiftPower')?.value     || '',
 
 // ——— يوم الموازنة ———
 BalanceWeekday:   $('BalanceWeekday')?.value   || '',
@@ -545,6 +551,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/خطاب فرد.docm";
    } else if (choice === "مخالفة") {
   wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
+  } else if (choice === "استاذان") {
+  wordLink.href = "dic/نماذج الافراد/استاذان.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -608,8 +616,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!issuedCard) return;
   const currentChoice =
     (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
-  issuedCard.style.display = (currentChoice === 'استلام-اليوم') ? 'block' : 'none';
+
+  // السماح بظهور "بيانات الصادر" مع استلام-اليوم و استاذان
+  const allowedChoices = ['استلام-اليوم', 'استاذان'];
+  issuedCard.style.display = allowedChoices.includes(currentChoice) ? 'block' : 'none';
 })();
+
 
 })();
 // ================== قاعدة بيانات الأسماء والرتب ==================
@@ -650,9 +662,11 @@ function __issued_enforceVisibility(){
 
   const choice = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
 
-  // إن أردت تجاهل أي تخزين قديم، لا تعتمد على receipt_today_payload هنا
-  card.style.display = (choice === 'استلام-اليوم') ? 'block' : 'none';
+  // السماح بالظهور مع استلام-اليوم و استاذان
+  const allowedChoices = ['استلام-اليوم', 'استاذان'];
+  card.style.display = allowedChoices.includes(choice) ? 'block' : 'none';
 }
+
 
 // ربط إدخال الاسم بتعبئة الرتبة تلقائيًا
 function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) {
@@ -936,6 +950,84 @@ if (choice === "تعقب-مغادرة") {
   if (chiefAlert) chiefAlert.hidden = false;
 }
 
+ if (choice === "استاذان") {
+
+  // 1) إخفاء جميع الكروت
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = "none";
+  });
+
+  // 2) إظهار بطاقة التاريخ والمستلم
+  const receipt = document.getElementById("card-receipt");
+  if (receipt) receipt.style.display = "block";
+
+  // 3) إظهار بطاقة بيانات الفرد
+  const indivCard = document.getElementById("card-individual");
+  if (indivCard) indivCard.style.display = "block";
+
+  // 4) فتح الحقول (إلغاء التعطيل)
+  const indivName = document.getElementById("IndividualName");
+  const indivRank = document.getElementById("IndividualRank");
+  if (indivName) indivName.disabled = false;
+  if (indivRank) indivRank.disabled = false;
+
+  // 5) الحقول المطلوب إظهارها داخل بطاقة الفرد
+  const showFields = [
+    "IndividualName",
+    "IndividualRank",
+    "IndividualID"
+  ];
+
+  // إظهار الحقول + عناوينها
+  showFields.forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+
+    if (el)  el.style.display  = "block";
+    if (lbl) lbl.style.display = "block";
+  });
+
+  // 6) إخفاء باقي عناصر بطاقة الفرد (inputs + selects + labels)
+  document
+    .querySelectorAll("#card-individual input, #card-individual select, #card-individual label")
+    .forEach(el => {
+      if (el.tagName === "LABEL") {
+        const f = el.getAttribute("for");
+        if (!showFields.includes(f)) {
+          el.style.display = "none";
+        }
+      } else {
+        if (!showFields.includes(el.id)) {
+          el.style.display = "none";
+        }
+      }
+    });
+
+  // 7) إخفاء الآمر المناوب (الاسم والرتبة + العناوين)
+  const cmdName  = document.getElementById("commander-name");
+  const cmdRank  = document.getElementById("commander-rank");
+  const cmdNameL = document.querySelector("label[for='commander-name']");
+  const cmdRankL = document.querySelector("label[for='commander-rank']");
+
+  if (cmdName)  cmdName.style.display = "none";
+  if (cmdRank)  cmdRank.style.display = "none";
+  if (cmdNameL) cmdNameL.style.display = "none";
+  if (cmdRankL) cmdRankL.style.display = "none";
+
+  // 8) إظهار بطاقة الاستئذان
+  const permit = document.getElementById("card-permit");
+  if (permit) permit.style.display = "block";
+
+  // 9) إظهار بطاقة بيانات الصادر
+  const issued = document.getElementById("card-issued-data");
+  if (issued) issued.style.display = "block";
+}
+
+    // إظهار بطاقة الاستئذان
+    document.getElementById("card-permit").style.display = "block";
+
+    // إظهار بطاقة بيانات الصادر
+    document.getElementById("card-issued-data").style.display = "block";
 
 
 
@@ -1225,6 +1317,7 @@ if (choice === "غياب-مجندات") {
     if (labelRank) labelRank.style.display = "none";
   }
 }
+
 // ===== وضع shafttime =====
 if (choice === "استلام-اليوم") {
   // 1) إظهار بطاقة وقت الشفت والموازنة
@@ -1456,7 +1549,7 @@ $('close-btn')?.addEventListener('click', ()=>{
 document.addEventListener("DOMContentLoaded", () => {
   setHijriAndDayNow();
   setInterval(setHijriAndDayNow, 60000);
-
+    loadIndividualsWithID();
   loadNationalities();
   loadVisaTypes();
   loadOfficers();
@@ -3261,6 +3354,155 @@ document.addEventListener("DOMContentLoaded", function () {
       const m = monthNumbers[monthName] || "01";
 
       dateInput.value = `${d}/${m}/${y} هـ`;
+    }
+  });
+});
+
+async function loadIndividualsWithID() {
+  try {
+    const res = await fetch("name.json", { cache: "no-store" });
+    const data = await res.json();
+
+    const list = document.getElementById("individual-list");
+    const nameInput = document.getElementById("IndividualName");
+    const rankInput = document.getElementById("IndividualRank");
+    const idInput   = document.getElementById("IndividualID");
+
+    const allIndividuals = [];
+
+    // تحويل جميع الشفتات والحروف إلى مصفوفة واحدة
+    for (const letter in data) {
+      if (letter === "officers") continue;
+      for (const shift in data[letter]) {
+        data[letter][shift].forEach(person => {
+          allIndividuals.push(person);
+        });
+      }
+    }
+
+    // تعبئة datalist
+    list.innerHTML = "";
+    allIndividuals.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p.name;
+      list.appendChild(opt);
+    });
+
+    // عند اختيار الاسم
+    nameInput.addEventListener("change", () => {
+      const selected = allIndividuals.find(p => p.name === nameInput.value.trim());
+
+      rankInput.value = selected ? selected.rank || "" : "";
+      idInput.value   = selected ? selected.id   || "" : "";
+    });
+
+  } catch (e) {
+    console.error("خطأ في تحميل الأفراد:", e);
+  }
+}
+//تقويم تاريخ الاستاذان
+// ===== تقويم هجري مصغّر لتاريخ الاستئذان (5 أيام هجري فقط) =====
+
+// نفس منطق التاريخ الأساسي المستخدم في setHijriAndDayNow (اليوم / اليوم السابق قبل 05:40)
+function getShiftBaseDateForHijri() {
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+
+  // بين 00:00 و 05:40 نرجع لليوم السابق
+  if (hour < 5 || (hour === 5 && minute < 40)) {
+    now.setDate(now.getDate() - 1);
+  }
+  return now;
+}
+
+// بناء قائمة الأيام الخمسة (اليوم + ٤ أيام) هجريًا
+function buildPermitHijriCalendarOptions() {
+  const list = document.getElementById('permit-hijri-calendar-list');
+  if (!list) return;
+
+  list.innerHTML = '';
+
+  const base = getShiftBaseDateForHijri();
+
+  const fmtHijri = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+  const fmtWeekday = new Intl.DateTimeFormat('ar-SA', {
+    weekday: 'long',
+    numberingSystem: 'arab'
+  });
+
+  const RLM = "\u200F";
+
+for (let i = 0; i < 8; i++) {
+    const d = new Date(base);
+    d.setDate(base.getDate() + i);
+
+    const parts = fmtHijri.formatToParts(d);
+    const y = parts.find(p => p.type === 'year')?.value || '';
+    const m = parts.find(p => p.type === 'month')?.value || '';
+    const day = parts.find(p => p.type === 'day')?.value || '';
+
+    const hijri = `${RLM}${day}/${m}/${y} هـ`;
+    const weekday = fmtWeekday.format(d);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mini-hijri-calendar__item';
+    btn.textContent = `${weekday} - ${hijri}`;
+    btn.dataset.hijri = hijri;
+    btn.dataset.weekday = weekday;
+
+    btn.addEventListener('click', () => {
+      const dateInput = document.getElementById('PermitDate');
+      const daySelect = document.getElementById('PermitDay');
+
+      if (dateInput) dateInput.value = hijri;
+      if (daySelect) daySelect.value = weekday;
+
+      const popup = document.getElementById('permit-hijri-calendar');
+      if (popup) popup.hidden = true;
+    });
+
+    list.appendChild(btn);
+  }
+}
+
+// ربط التقويم بحقل/زر تاريخ الاستئذان
+document.addEventListener('DOMContentLoaded', () => {
+  const trigger = document.getElementById('permit-date-picker');
+  const popup   = document.getElementById('permit-hijri-calendar');
+  const dateInput = document.getElementById('PermitDate');
+
+  if (!trigger || !popup || !dateInput) return;
+
+  // فتح/إغلاق التقويم عند الضغط على الأيقونة
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (popup.hidden) {
+      buildPermitHijriCalendarOptions();
+      popup.hidden = false;
+    } else {
+      popup.hidden = true;
+    }
+  });
+
+  // فتح التقويم أيضًا عند تركيز المستخدم على حقل التاريخ
+  dateInput.addEventListener('focus', () => {
+    buildPermitHijriCalendarOptions();
+    popup.hidden = false;
+  });
+
+  // إغلاق التقويم عند الضغط خارجَه
+  document.addEventListener('click', (e) => {
+    if (popup.hidden) return;
+
+    const path = e.composedPath ? e.composedPath() : [];
+    if (!path.includes(popup) && !path.includes(trigger) && !path.includes(dateInput)) {
+      popup.hidden = true;
     }
   });
 });

@@ -666,7 +666,9 @@ label {
 }
 .date-wrapper {
   position: relative;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0;              /* إزالة المسافة بين input والأيقونة */
 }
 
 .date-wrapper input {
@@ -678,14 +680,64 @@ label {
   top: 50%;
   left: 60px;
   transform: translateY(-50%);
+    margin-right: -28px;   /* تقريب الأيقونة داخل حواف الـ input */
   font-size: 16px;
   cursor: pointer;
   opacity: 0.7;
   transition: 0.2s;
   line-height: 1;
+    z-index: 5;
+
 }
 
 .date-icon:hover {
   opacity: 1;
   transform: translateY(-50%) scale(1.1);
+}
+/* تقويم هجري مصغّر لحقل تاريخ الاستئذان */
+#permit-hijri-calendar {
+  grid-column: 2 / 3;           /* يظهر تحت حقل التاريخ في العمود الثاني من form-grid */
+  background: #ffffff;
+  border: 1px solid #c8d6ff;
+  border-radius: 12px;
+  padding: 6px 8px;
+  box-shadow: var(--shadow-sm);
+  margin-top: 4px;
+  max-width: 100%;
+  z-index: 2500;
+}
+
+.mini-hijri-calendar__head {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.mini-hijri-calendar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mini-hijri-calendar__item {
+  width: 100%;
+  text-align: right;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+}
+
+.mini-hijri-calendar__item:hover {
+  background: #eef4ff;
+  border-color: #c8d6ff;
+  transform: translateY(-1px);
+}
+
+.mini-hijri-calendar__item:active {
+  transform: translateY(0);
 }
