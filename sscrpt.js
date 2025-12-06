@@ -1017,17 +1017,12 @@ if (choice === "تعقب-مغادرة") {
   // 8) إظهار بطاقة الاستئذان
   const permit = document.getElementById("card-permit");
   if (permit) permit.style.display = "block";
-
-  // 9) إظهار بطاقة بيانات الصادر
-  const issued = document.getElementById("card-issued-data");
-  if (issued) issued.style.display = "block";
+const issuedSimple = document.getElementById("card-issued");
+  if (issuedSimple) issuedSimple.style.display = "block";
+  
 }
 
-    // إظهار بطاقة الاستئذان
-    document.getElementById("card-permit").style.display = "block";
-
-    // إظهار بطاقة بيانات الصادر
-    document.getElementById("card-issued-data").style.display = "block";
+    
 
 
 
