@@ -408,7 +408,14 @@ function clearIndividualFields() {
   const recordType   = document.getElementById("RecordType");
   const indName      = document.getElementById("IndividualName");
   const indRank      = document.getElementById("IndividualRank");
-  const issuedNumber = document.getElementById("IssuedNumber"); // رقم الصادر
+  const issuedNumber = document.getElementById("IssuedNumber");
+
+  // ✅ قراءة الاختيار الحالي من التخزين
+  const choice =
+    (localStorage.getItem('wordLinkChoice') ||
+     localStorage.getItem('lastWordLinkChoice') || '').trim();
+
+  const hidePlaceholders = (choice === "استاذان");
 
   // إعادة نوع المحضر إلى الوضع الافتراضي
   if (recordType) {
@@ -424,14 +431,14 @@ function clearIndividualFields() {
   if (indName) {
     indName.value = "";
     indName.disabled = true;
-    indName.placeholder = "اختر نوع المحضر أولاً";
+    indName.placeholder = hidePlaceholders ? "" : "اختر نوع المحضر أولاً";
   }
 
   // تفريغ وإقفال رتبة الفرد
   if (indRank) {
     indRank.value = "";
     indRank.disabled = true;
-    indRank.placeholder = "اختر نوع المحضر أولاً";
+    indRank.placeholder = hidePlaceholders ? "" : "اختر نوع المحضر أولاً";
   }
 
   // تفريغ رقم الصادر
@@ -440,6 +447,21 @@ function clearIndividualFields() {
     issuedNumber.placeholder = "ادخل رقم الصادر";
   }
 }
+function hideIndividualPlaceholdersIfEstithan() {
+  const choice =
+    (localStorage.getItem('wordLinkChoice') ||
+     localStorage.getItem('lastWordLinkChoice') || '').trim();
+
+  if (choice !== "استاذان") return;
+
+  ["IndividualName", "IndividualRank"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.placeholder = "";
+  });
+}
+
+document.addEventListener("DOMContentLoaded", hideIndividualPlaceholdersIfEstithan);
+
 
 // حفظ/تنفيذ
 async function saveAll() {
@@ -1122,7 +1144,7 @@ if (choice === 'التزوير') {
 
 // ===== moatan: إظهار اللوح المستقل فقط وإخفاء "نوع التأشيرة" كالسابق =====
 if (choice === "مغادرة-مواطن") {
-  // إخفاء نوع التأشيرة فقط (كما كنت تفعل)
+  // إخفاء نوع التأشيرة فقط
   const visaField = document.getElementById("VisaType");
   const visaLabel = document.querySelector("label[for='VisaType']");
   if (visaField) visaField.style.display = "none";
@@ -1132,8 +1154,15 @@ if (choice === "مغادرة-مواطن") {
   const mc = document.getElementById("moatan-compact");
   if (mc) {
     mc.hidden = false;
-   
   }
+
+  // تعبئة الجنسية تلقائيًا بالسعودية
+  const nat = document.getElementById("Nationality");
+  if (nat && !nat.value.trim()) {
+    nat.value = "السعودية";
+  }
+
+
 }
 if (choice === "عسكري-رحلة-مواصلة") {
   // إخفاء اسم الآمر المناوب ورتبته

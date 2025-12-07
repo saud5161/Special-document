@@ -611,6 +611,13 @@ body.help-open #helpBox{ display:block; }
   color: #b8a0a0 !important;
   font-weight: bold;
 }
+#IndividualName:invalid,
+#IndividualRank:invalid{
+  background: #ffffff !important;
+  border-color: #c8d6ff !important;
+  color: var(--blue-700) !important;
+  box-shadow: none !important;
+}
 
 /* لون التلميح داخل الخيارات */
 #RecordType:invalid {
