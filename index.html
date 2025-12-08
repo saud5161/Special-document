@@ -750,6 +750,19 @@
             </label>
           </div>
         </div>
+        <!-- خيار: لديه تصريح سفر للدول الممنوعة -->
+<label class="mc-check">
+  <input type="checkbox" id="mc-permit">
+  <span>
+    لديه تصريح سفر للدول الممنوعة منعكس في نظام المسافرين ساري من تاريخ
+    <input class="mc-mini h-date" id="mc-permitFrom" placeholder="مثال: 01/01/1447هـ">
+    إلى تاريخ
+    <input class="mc-mini h-date" id="mc-permitTo" placeholder="مثال: 30/01/1447هـ">
+    ويحق له السفر إلى (
+    <input class="mc-wide" id="mc-permitDest" placeholder="الدولة المصرح بها">
+    )
+  </span>
+</label>
 
         <!-- القسم الثاني: فئة العسكريين -->
         <div class="mc-card" id="sec-military">

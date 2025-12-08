@@ -290,6 +290,11 @@ MC_Diplomatic_Desc:     (document.getElementById('mc-diplomaticDesc')?.value ?? 
 
 MC_Under18:             document.getElementById('mc-under18')?.checked ? 'True' : 'False',
 
+MC_Permit:              document.getElementById('mc-permit')?.checked ? 'True' : 'False',
+MC_Permit_From:         (document.getElementById('mc-permitFrom')?.value ?? '').trim(),
+MC_Permit_To:           (document.getElementById('mc-permitTo')?.value ?? '').trim(),
+MC_Permit_Dest:         (document.getElementById('mc-permitDest')?.value ?? '').trim(),
+
 // ===== القسم الثاني: من فئة العسكريين =====
 MC_Military:            document.getElementById('mc-military')?.checked ? 'True' : 'False',
 MC_Mil_NoDoc:           document.getElementById('mc-mil-nosdoc')?.checked ? 'True' : 'False',
@@ -2030,15 +2035,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
   }
 
-  /* ===== القسم الأول: مغادر إلى… ===== */
-  const forbiddenMaster = '#mc-forbidden';
-  const forbiddenSubs = ['#mc-moi', '#mc-jawazat', '#mc-diplomatic', '#mc-under18'];
+/* ===== القسم الأول: مغادر إلى… ===== */
+const forbiddenMaster = '#mc-forbidden';
+const forbiddenSubs = [
+  '#mc-moi',
+  '#mc-jawazat',
+  '#mc-diplomatic',
+  '#mc-under18',
+  '#mc-permit'          // ✅ الفرع الجديد: لديه تصريح سفر
+];
 
-  const subInputsMap = {
-    '#mc-moi':      ['#mc-moiNum', '#mc-moiDate', '#mc-moiDirNum'],
-    '#mc-jawazat':  ['#mc-jawazatNum', '#mc-jawazatDate'],
-    '#mc-diplomatic':['#mc-diplomaticDesc']
-  };
+const subInputsMap = {
+  '#mc-moi':       ['#mc-moiNum', '#mc-moiDate', '#mc-moiDirNum'],
+  '#mc-jawazat':   ['#mc-jawazatNum', '#mc-jawazatDate'],
+  '#mc-diplomatic':['#mc-diplomaticDesc'],
+  '#mc-permit':    ['#mc-permitFrom', '#mc-permitTo', '#mc-permitDest'] // ✅ مدخلات التصريح
+};
+
 
   wireSection(forbiddenMaster, forbiddenSubs, subInputsMap);
 
