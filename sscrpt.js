@@ -580,6 +580,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
   } else if (choice === "استاذان") {
   wordLink.href = "dic/نماذج الافراد/استاذان.docm";
+   } else if (choice === "منفستات") {
+  wordLink.href = "dic/خطوط/ملاحظة على المنفست.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -739,7 +741,10 @@ function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) 
     const travelerCard = document.getElementById("card-traveler");
     if (travelerCard) travelerCard.style.display = "none";
   }
-if (choice === "مخالفة") {
+if (
+  choice === "مخالفة" ||
+  choice === "منفستات"
+) {
     // 1) إخفاء رقم الهوية
     const idField = document.getElementById("id");
     const idLabel = document.querySelector("label[for='id']");
@@ -787,7 +792,14 @@ if (
     if (input) input.style.display = "block";
     if (label) label.style.display = "block";
   });
-
+// ✅ جديد: إذا كانت قيمة التخزين "اشعار" اختر CommandSystem تلقائياً
+if (choice === "اشعار") {
+  const cs = document.getElementById("CommandSystem");
+  if (cs && !cs.value) {
+    cs.value = "الممنوعين ترقب عند المغادرة والقدوم";
+    cs.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
   // 3) إخفاء "نوع التأشيرة"
   (function hideVisa(){
     const visaField = document.getElementById("VisaType");
@@ -856,6 +868,7 @@ if (
         // إذا حاب تمنع التعديل تماماً، فكّ التعليق عن السطر التالي:
         // cmdSystem.disabled = true;
       }
+      
     }
   })();
 
