@@ -15,6 +15,109 @@ async function sha256Hex(text) {
       document.getElementById("password-container").style.display = "none";
     }
   });
+// ======================== الوضع الداكن (Theme Toggle - Time Based) ===========================
+(function () {
+  const STORAGE_KEY = "uiTheme"; // نخزن فقط "dark" (ليلي)
+  const DARK_CLASS = "theme-dark";
+
+  // نافذة الليل: من 18:00 إلى 05:00
+  function isNight(now = new Date()) {
+    const h = now.getHours();
+    return h >= 18 || h < 5;
+  }
+
+  function updateToggleButton() {
+    const btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+
+    const isDark = document.body.classList.contains(DARK_CLASS);
+    btn.setAttribute("aria-pressed", String(isDark));
+
+    btn.innerHTML = isDark
+      ? '<i class="fas fa-sun"></i><span class="theme-toggle-text">الوضع الفاتح</span>'
+      : '<i class="fas fa-moon"></i><span class="theme-toggle-text">الوضع الداكن</span>';
+  }
+
+  // تطبيق الثيم مع خيار الحفظ أو عدمه
+  function setTheme(mode, { persist = false } = {}) {
+    const isDark = mode === "dark";
+    document.body.classList.toggle(DARK_CLASS, isDark);
+
+    if (persist && isDark) {
+      localStorage.setItem(STORAGE_KEY, "dark");
+    } else {
+      // أي وضع غير "داكن محفوظ" نحذف التخزين
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    updateToggleButton();
+  }
+
+  // يرجّع للوضع الفاتح عند 05:00 بالضبط
+  function scheduleAutoReturnToLight() {
+    // لا نحتاج مؤقت لو ما فيه داكن
+    if (!document.body.classList.contains(DARK_CLASS)) return;
+
+    const now = new Date();
+    const nextFiveAM = new Date(now);
+
+    // إذا الآن قبل 05:00 → نفس اليوم 05:00، وإذا بعد/يساوي 05:00 → بكرة 05:00
+    if (now.getHours() < 5) {
+      nextFiveAM.setHours(5, 0, 0, 0);
+    } else {
+      nextFiveAM.setDate(nextFiveAM.getDate() + 1);
+      nextFiveAM.setHours(5, 0, 0, 0);
+    }
+
+    const ms = nextFiveAM.getTime() - now.getTime();
+    if (ms <= 0) return;
+
+    setTimeout(() => {
+      // عند 05:00 نرجع فاتح ونحذف التخزين
+      setTheme("light", { persist: false });
+    }, ms);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const now = new Date();
+
+    // ✅ على التحميل: الداكن فقط إذا كان مخزن + نحن داخل وقت الليل
+    if (saved === "dark" && isNight(now)) {
+      setTheme("dark", { persist: true });
+      scheduleAutoReturnToLight();
+    } else {
+      // خارج وقت الليل أو لا يوجد تخزين → فاتح + امسح أي تخزين قديم
+      setTheme("light", { persist: false });
+    }
+
+    const btn = document.getElementById("theme-toggle");
+    if (!btn) return;
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+
+      const currentlyDark = document.body.classList.contains(DARK_CLASS);
+      const nowClick = new Date();
+
+      if (!currentlyDark) {
+        // طلب تفعيل الداكن
+        if (isNight(nowClick)) {
+          // ✅ داخل 18:00-05:00: فعّل + احفظ
+          setTheme("dark", { persist: true });
+          scheduleAutoReturnToLight();
+        } else {
+          // خارج الوقت: فعّل بدون حفظ
+          setTheme("dark", { persist: false });
+        }
+      } else {
+        // رجوع للوضع الفاتح (دائمًا بدون حفظ)
+        setTheme("light", { persist: false });
+      }
+    });
+  });
+})();
+
 
 async function checkPassword() {
   const password = document.getElementById("page-password").value;
@@ -470,6 +573,7 @@ setInterval(() => {
 document.addEventListener("DOMContentLoaded", () => {
     updateDocuments();
 });
+
 //معطيات الرتبة
 function autoFillOfficerDetails() {
   const officerMap = {
