@@ -147,11 +147,18 @@
             <!-- تاريخ هجري ويوم الأسبوع -->
             <label for="custom-hijri-date"><i class="fas fa-calendar-alt"></i> التاريخ (هجري)</label>
             
-            <div class="date-wrapper">
-              
-    <input id="custom-hijri-date" class="form-control" placeholder="يُملأ تلقائيًا">
-    <span id="toggle-date-format" class="date-icon">🔄صيغة التاريخ </span>
+   <div class="date-wrapper">
+  <input id="custom-hijri-date" class="form-control" placeholder="يُملأ تلقائيًا">
+
+  <span id="toggle-date-format" class="date-btn" title="تغيير صيغة التاريخ">
+    🔄صيغة الرسمية
+  </span>
+
+  <span id="fix-date-btn" class="date-btn" title="تصحيح التاريخ لليوم الحالي">
+    📅التاريخ الفعلي
+  </span>
 </div>
+
 
               
             <label for="custom-weekday"><i class="fas fa-calendar-day"></i> اليوم</label>
@@ -234,7 +241,7 @@
     <!-- أسماء القوائم -->
     <label for="ListOfficerName"><i class="fas fa-list"></i> اسم القائمة</label>
     <input id="ListOfficerName" list="names" placeholder="اختر أو اكتب الاسم">
-
+    
     <label for="ListOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
     <input id="ListOfficerRank" list="ranks" placeholder="الرتبة">
 

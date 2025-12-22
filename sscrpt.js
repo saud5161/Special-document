@@ -3556,3 +3556,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+// زر تصحيح التاريخ لليوم الفعلي بعد منتصف الليل
+document.addEventListener("DOMContentLoaded", () => {
+  const fixBtn = document.getElementById("fix-date-btn");
+  if (!fixBtn) return;
+
+  fixBtn.addEventListener("click", () => {
+    const now = new Date(); // التاريخ الحالي الحقيقي بدون إنقاص يوم
+    const fmt = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', {
+      day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+
+    const parts = fmt.formatToParts(now);
+    const y = parts.find(p => p.type === 'year')?.value || '';
+    const m = parts.find(p => p.type === 'month')?.value || '';
+    const d = parts.find(p => p.type === 'day')?.value || '';
+    const hijri = `${d}/${m}/${y} هـ`;
+
+    const weekday = new Intl.DateTimeFormat('ar-SA', { weekday: 'long' }).format(now);
+
+    // تعبئة القيم الجديدة
+    document.getElementById('custom-hijri-date').value = hijri;
+    document.getElementById('custom-weekday').value = weekday;
+    const hdr = document.getElementById('header-date');
+    if (hdr) hdr.textContent = `${weekday} - ${hijri}`;
+
+    // إخفاء التنبيه الخاص باليوم السابق
+    const alertBox = document.getElementById('shift-alert');
+    if (alertBox) alertBox.style.display = 'none';
+
+    // ملاحظة للمستخدم
+    alert("تم تحديث التاريخ لليوم الفعلي ✅");
+  });
+});
