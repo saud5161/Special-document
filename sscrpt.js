@@ -625,14 +625,14 @@ document.addEventListener("DOMContentLoaded", () => {
   } catch {}
 
   if (computedChoice === "استلام-اليوم") {
-    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+    ["ListOfficerName","ListOfficerRank","ListOfficerSuggestions","AdminOfficerName","AdminOfficerRank"].forEach(id => {
       const el  = document.getElementById(id);
       const lbl = document.querySelector(`label[for='${id}']`);
       if (el)  el.style.display  = "block";
       if (lbl) lbl.style.display = "block";
     });
   } else {
-    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+    ["ListOfficerName","ListOfficerRank","ListOfficerSuggestions","AdminOfficerName","AdminOfficerRank"].forEach(id => {
       const el  = document.getElementById(id);
       const lbl = document.querySelector(`label[for='${id}']`);
       if (el)  el.style.display  = "none";
@@ -663,6 +663,8 @@ async function loadNameDB() {
   try {
     const res = await fetch('namecont.json', {cache: 'no-cache'});
     const data = await res.json();
+    nameDB.rawLists = Array.isArray(data.lists) ? data.lists : [];
+nameDB.rawAdmin = Array.isArray(data.admin) ? data.admin : [];
 
     // املأ الخرائط
     (data.lists || []).forEach(item => nameDB.lists.set(item.name, item.rank));
@@ -949,7 +951,7 @@ if (choice === "حذف-السجلات") {
 
   // 2) أظهر حقول أسماء القوائم + الأعمال الإدارية (مع الملصقات)
   [
-    "ListOfficerName","ListOfficerRank",
+    "ListOfficerName","ListOfficerRank","ListOfficerSuggestions",
     "AdminOfficerName","AdminOfficerRank"
   ].forEach(id => {
     const el  = document.getElementById(id);
@@ -2438,7 +2440,7 @@ if (issuedCard) issuedCard.style.display = (computedChoice === "استلام-ا�
 
   // ✅ نفس الأسلوب بالضبط
 if (computedChoice === "استلام-اليوم" || computedChoice === "حذف-السجلات") {
-    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+    ["ListOfficerName","ListOfficerRank","ListOfficerSuggestions","AdminOfficerName","AdminOfficerRank"].forEach(id => {
       const el  = document.getElementById(id);
       const lbl = document.querySelector(`label[for='${id}']`);
       if (el)  el.style.display = "block";
@@ -2446,7 +2448,7 @@ if (computedChoice === "استلام-اليوم" || computedChoice === "حذف-�
     });
   } else {
     // إبقاءها مخفية إن لم يتحقق الشرط
-    ["ListOfficerName","ListOfficerRank","AdminOfficerName","AdminOfficerRank"].forEach(id => {
+    ["ListOfficerName","ListOfficerRank","ListOfficerSuggestions","AdminOfficerName","AdminOfficerRank"].forEach(id => {
       const el  = document.getElementById(id);
       const lbl = document.querySelector(`label[for='${id}']`);
       if (el)  el.style.display = "none";
@@ -2459,7 +2461,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // حمّل قاعدة الأسماء ثم اربط حقولك
   await loadNameDB();
+  const adminSug = setupAdminOfficerSuggestions();
 
+  // ✅ اعرض الاقتراحات فورًا إذا الشفت/الصالة محفوظين والحقل فاضي
+  adminSug?.refresh?.();
   // أسماء القوائم → ListOfficerName يملأ ListOfficerRank
   bindAutoRank('ListOfficerName',  'ListOfficerRank',  'lists');
 
@@ -2469,7 +2474,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ... بقية كودك الحالي ...
 });
 // خرائط الأسماء والرتب
-const nameDB = { lists: new Map(), admin: new Map() };
+const nameDB = { lists: new Map(), admin: new Map(), rawLists: [], rawAdmin: [] };
 
 // دالة مساعدة: إنشاء/جلب datalist
 function ensureDatalist(id) {
@@ -2499,15 +2504,39 @@ async function loadNameDB() {
     const res = await fetch('./namecont.json', { cache: 'no-cache' });
     const data = await res.json();
 
-    (data.lists || []).forEach(item => nameDB.lists.set(item.name, item.rank));
-    (data.admin || []).forEach(item => nameDB.admin.set(item.name, item.rank));
+    // إعادة تهيئة القاعدة (حتى لا تتكرر الأسماء عند إعادة التحميل)
+    nameDB.lists.clear();
+    nameDB.admin.clear();
+
+    // نخزّن البيانات الخام (لاستخدام الاقتراحات حسب الشفت/الصالة)
+    // ✅ يدعم شكلين للملف:
+    // 1) { lists: [...], admin: [...] }
+    // 2) [ {...}, {...} ]  ← يُعتبر كله ضمن lists
+    const listsArr = Array.isArray(data) ? data : (Array.isArray(data.lists) ? data.lists : []);
+    const adminArr = (!Array.isArray(data) && Array.isArray(data.admin)) ? data.admin : [];
+
+    nameDB.rawLists = listsArr;
+    nameDB.rawAdmin = adminArr;
+
+    // املأ الخرائط (الاسم → الرتبة)
+    nameDB.rawLists.forEach(item => nameDB.lists.set(item.name, item.rank));
+    nameDB.rawAdmin.forEach(item => nameDB.admin.set(item.name, item.rank));
   } catch (e) {
     // بديل: لو تضمّنت القاعدة داخل الصفحة <script type="application/json" id="namecont-data">
     const embed = document.getElementById('namecont-data');
     if (embed?.textContent) {
       const data = JSON.parse(embed.textContent);
-      (data.lists || []).forEach(item => nameDB.lists.set(item.name, item.rank));
-      (data.admin || []).forEach(item => nameDB.admin.set(item.name, item.rank));
+
+      nameDB.lists.clear();
+      nameDB.admin.clear();
+
+      const listsArr = Array.isArray(data) ? data : (Array.isArray(data.lists) ? data.lists : []);
+      const adminArr = (!Array.isArray(data) && Array.isArray(data.admin)) ? data.admin : [];
+
+      nameDB.rawLists = listsArr;
+      nameDB.rawAdmin = adminArr;
+      nameDB.rawLists.forEach(item => nameDB.lists.set(item.name, item.rank));
+      nameDB.rawAdmin.forEach(item => nameDB.admin.set(item.name, item.rank));
     } else {
       console.error('تعذّر تحميل namecont.json ولا يوجد بديل مضمّن');
     }
@@ -2564,15 +2593,193 @@ function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) 
   // nameInput.addEventListener('input', fill);
 }
 
+// ================== اقتراحات اسم القائمة (حسب الشفت + رقم الصالة) ==================
+function _toEnglishDigits(str){
+  // يحوّل الأرقام العربية/الفارسية إلى إنجليزية لتوحيد المقارنة
+  return String(str ?? '')
+    .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+    .replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)));
+}
+function _normShift(str){
+  return String(str ?? '').trim(); // نُبقيها كما هي (مثل: أ/ب/ج)
+}
+function _normHall(str){
+  return _toEnglishDigits(String(str ?? '').trim());
+}
+
+function setupListOfficerSuggestions(){
+  const nameInput = document.getElementById('ListOfficerName');
+  const shiftEl   = document.getElementById('shift-number');
+  const hallEl    = document.getElementById('hall-number');
+
+  const box   = document.getElementById('ListOfficerSuggestions');
+  const items = document.getElementById('ListOfficerSuggestionsItems');
+
+  if (!nameInput || !shiftEl || !hallEl || !box || !items) return;
+
+  // ✅ الصندوق ظاهر دائمًا
+  box.hidden = false;
+  box.style.display = 'flex';
+
+  const render = (suggestions, noteText = '') => {
+    items.innerHTML = '';
+
+    if (!Array.isArray(suggestions) || suggestions.length === 0) {
+      const msg = document.createElement('div');
+      msg.className = 'name-suggest__empty';
+      msg.textContent = noteText || 'لا توجد اقتراحات لهذه المناوبة والصالة';
+      items.appendChild(msg);
+      return;
+    }
+
+    suggestions.slice(0, 3).forEach(it => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'name-suggest__btn';
+      btn.textContent = it.name || '';
+
+      btn.addEventListener('click', () => {
+        nameInput.value = it.name || '';
+        nameInput.dispatchEvent(new Event('change', { bubbles: true })); // لتعبئة الرتبة تلقائيًا
+        nameInput.focus();
+        // ❌ لا يوجد hide
+      });
+
+      items.appendChild(btn);
+    });
+  };
+
+  const refresh = () => {
+    const shift = _normShift(shiftEl.value || '');
+    const hall  = _normHall(hallEl.value || '');
+
+    if (!shift || !hall) {
+      render([], 'اختر الشفت والصالة لعرض الاقتراحات');
+      return;
+    }
+
+    // ✅ مصدر القوائم الصحيح
+    const src = Array.isArray(nameDB.rawLists) ? nameDB.rawLists : [];
+
+    const matches = src.filter(it =>
+      _normShift(it.shift || '') === shift &&
+      _normHall(it.hall  || '') === hall
+    );
+
+    render(matches);
+  };
+
+  shiftEl.addEventListener('input', refresh);
+  shiftEl.addEventListener('change', refresh);
+  hallEl.addEventListener('input', refresh);
+  hallEl.addEventListener('change', refresh);
+
+  nameInput.addEventListener('focus', refresh);
+
+  refresh();
+  return { refresh };
+}
+
+// ✅ اقترحات "اسم الأعمال الإدارية"
+// ✅ اقتراحات "اسم الأعمال الإدارية" — بدون أي إخفاء
+function setupAdminOfficerSuggestions(){
+  const nameInput = document.getElementById('AdminOfficerName');
+  const shiftEl   = document.getElementById('shift-number');
+  const hallEl    = document.getElementById('hall-number');
+
+  const box   = document.getElementById('AdminOfficerSuggestions');
+  const items = document.getElementById('AdminOfficerSuggestionsItems');
+
+  if (!nameInput || !shiftEl || !hallEl || !box || !items) return;
+
+  // ✅ اجعل الصندوق ظاهر دائمًا
+  box.hidden = false;
+  box.style.display = 'flex';
+
+  const render = (suggestions, noteText = '') => {
+    items.innerHTML = '';
+
+    // إذا ما فيه شفت/صالة أو ما فيه نتائج، نعرض رسالة بدل الإخفاء
+    if (!Array.isArray(suggestions) || suggestions.length === 0) {
+      const msg = document.createElement('div');
+      msg.className = 'name-suggest__empty';
+      msg.textContent = noteText || 'لا توجد اقتراحات لهذه المناوبة والصالة';
+      items.appendChild(msg);
+      return;
+    }
+
+    suggestions.slice(0, 3).forEach(it => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'name-suggest__btn';
+      btn.textContent = it.name || '';
+
+      btn.addEventListener('click', () => {
+        nameInput.value = it.name || '';
+        // لو تحتاج تعبئة الرتبة تلقائيًا اترك change
+        nameInput.dispatchEvent(new Event('change', { bubbles: true }));
+        nameInput.focus();
+        // ❌ لا يوجد hide هنا
+      });
+
+      items.appendChild(btn);
+    });
+  };
+
+  const refresh = () => {
+    const shift = _normShift(shiftEl.value || '');
+    const hall  = _normHall(hallEl.value || '');
+
+    // ✅ إذا الشفت/الصالة غير مكتملة: اعرض رسالة بدل الإخفاء
+    if (!shift || !hall) {
+      render([], 'اختر الشفت والصالة لعرض الاقتراحات');
+      return;
+    }
+
+    // ✅ المصدر الصحيح للأعمال الإدارية
+    const src = Array.isArray(nameDB.rawAdmin) ? nameDB.rawAdmin : [];
+
+    const matches = src.filter(it =>
+      _normShift(it.shift || '') === shift &&
+      _normHall(it.hall  || '') === hall
+    );
+
+    render(matches);
+  };
+
+  // تحديث عند تغيير الشفت/الصالة
+  shiftEl.addEventListener('input', refresh);
+  shiftEl.addEventListener('change', refresh);
+  hallEl.addEventListener('input', refresh);
+  hallEl.addEventListener('change', refresh);
+
+  // (اختياري) تحديث عند فتح الصفحة/تركيز الحقل
+  nameInput.addEventListener('focus', refresh);
+
+  // تشغيل أولي
+  refresh();
+
+  // حتى تقدر تناديها من الخارج إن احتجت
+  return { refresh };
+}
+
+
+
 // فعِّل عند تحميل الصفحة (أضِف داخل DOMContentLoaded لديك أو غيّر المستمع الحالي)
 document.addEventListener('DOMContentLoaded', async () => {
   await loadNameDB();
-
+  const adminSug = setupAdminOfficerSuggestions();
+  adminSug?.refresh?.();
   // أسماء القوائم ↔ رتبها من قسم lists
   bindAutoRank('ListOfficerName',  'ListOfficerRank',  'lists');
 
   // أسماء الأعمال الإدارية ↔ رتبها من قسم admin
   bindAutoRank('AdminOfficerName', 'AdminOfficerRank', 'admin');
+
+  // ✅ اقتراحات اسم القائمة حسب الشفت/الصالة
+  setupListOfficerSuggestions();
+  setupAdminOfficerSuggestions();
+
 });
 //وقت الموازنة 
 /* ============================================================

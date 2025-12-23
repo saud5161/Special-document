@@ -775,3 +775,52 @@ label {
 .date-btn:hover {
   background: #e7f0ff;
 }
+
+/* ====================== اقتراحات اسم القائمة ====================== */
+/* حاوية input + الاقتراح */
+.input-with-suggest{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* صندوق الاقتراحات (ملتصق بالـ input) */
+.input-with-suggest .name-suggest{
+  margin-top: 2px;
+  padding: 4px 6px;
+  border-top: 1px dashed #e5e7eb;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+/* عنوان الاقتراح */
+.name-suggest__title{
+  color: #374151;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* الأسماء بجانبه */
+.name-suggest__items{
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* الأزرار بدون أي شكل input */
+.name-suggest__btn{
+  background: none;
+  border: none;
+  padding: 0 4px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #0852f1;
+}
+
+.name-suggest__btn:hover{
+  text-decoration: underline;
+}
+.name-suggest__btn:active{ transform: translateY(1px); }

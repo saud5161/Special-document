@@ -238,16 +238,54 @@
 
   <h3 class="card__title"><i class="fas fa-clipboard-list"></i> أسماء القوائم والأعمال الإدارية</h3>
   <div class="card__body form-grid">
-    <!-- أسماء القوائم -->
-    <label for="ListOfficerName"><i class="fas fa-list"></i> اسم القائمة</label>
-    <input id="ListOfficerName" list="names" placeholder="اختر أو اكتب الاسم">
-    
+    <label for="ListOfficerName">
+  <i class="fas fa-list"></i> اسم القائمة
+</label>
+
+<div class="input-with-suggest">
+  <input
+    id="ListOfficerName"
+    placeholder="اختر أو اكتب الاسم"
+    autocomplete="off"
+  >
+
+  <div id="ListOfficerSuggestions" class="name-suggest" hidden>
+    <span class="name-suggest__title"> اقتراح  :</span>
+    <div
+      id="ListOfficerSuggestionsItems"
+      class="name-suggest__items"
+      role="listbox"
+      aria-label="اقتراحات اسم القائمة">
+    </div>
+  </div>
+</div>
+
+
     <label for="ListOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
     <input id="ListOfficerRank" list="ranks" placeholder="الرتبة">
 
     <!-- الأعمال الإدارية -->
-    <label for="AdminOfficerName"><i class="fas fa-briefcase"></i> اسم الأعمال الإدارية</label>
-    <input id="AdminOfficerName" list="names" placeholder="اختر أو اكتب الاسم">
+    <label for="AdminOfficerName">
+  <i class="fas fa-user-cog"></i> اسم الأعمال الإدارية
+</label>
+
+<div class="input-with-suggest">
+  <input
+    id="AdminOfficerName"
+    placeholder="اختر أو اكتب الاسم"
+    autocomplete="off"
+  >
+
+  <div id="AdminOfficerSuggestions" class="name-suggest" hidden>
+    <span class="name-suggest__title">تم اقتراح :</span>
+    <div
+      id="AdminOfficerSuggestionsItems"
+      class="name-suggest__items"
+      role="listbox"
+      aria-label="اقتراحات اسم الأعمال الإدارية">
+    </div>
+  </div>
+</div>
 
     <label for="AdminOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
     <input id="AdminOfficerRank" list="ranks" placeholder="الرتبة">
