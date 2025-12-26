@@ -2304,3 +2304,50 @@ body.theme-dark .toggle-sidebar{
 body.theme-dark .toggle-sidebar:hover{
   background: rgba(255,255,255,0.12);
 }
+/* رسالة البحث (عند عدم وجود نتائج) */
+.search-feedback{
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+
+    width: fit-content;
+    max-width: 100%;
+
+    padding: 6px 12px;
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.92);
+    color: #b42318;
+
+    border: 1px solid rgba(0,0,0,0.08);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+
+    display: none;
+    z-index: 1200; /* فوق المحتوى */
+}
+body.theme-dark .search-feedback{
+    background: rgba(11, 18, 32, 0.92);
+    color: #fda4af;
+    border-color: rgba(255,255,255,0.14);
+}
+/* تنسيق عبارة تحديث الكشف */
+.update-note{
+  margin-top: 6px;
+  font-size: 12px;
+  color: #1e6fd9;          /* أزرق هادئ */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.update-note i{
+  color: #1e6fd9;
+  font-size: 13px;
+}

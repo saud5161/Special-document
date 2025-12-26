@@ -777,23 +777,18 @@ label {
 }
 
 /* ====================== اقتراحات اسم القائمة ====================== */
-/* حاوية input + الاقتراح */
-.input-with-suggest{
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-/* صندوق الاقتراحات (ملتصق بالـ input) */
-.input-with-suggest .name-suggest{
-  margin-top: 2px;
-  padding: 4px 6px;
-  border-top: 1px dashed #e5e7eb;
-  background: transparent;
+.name-suggest{
+  grid-column: 1 / span 2;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 0;
+  border: none;                 /* ❌ لا إطار أزرق */
+  background: transparent;      /* ❌ لا خلفية ملونة */
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;              /* حجم صغير */
 }
 
 /* عنوان الاقتراح */
@@ -817,10 +812,31 @@ label {
   padding: 0 4px;
   font-size: 12px;
   cursor: pointer;
-  color: #0852f1;
+  color: #111827;
 }
 
 .name-suggest__btn:hover{
   text-decoration: underline;
 }
 .name-suggest__btn:active{ transform: translateY(1px); }
+/* تنبيه ملاحظات الكشف */
+.kashf-note{
+  margin: 14px auto 0;
+  max-width: 1200px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, #eef6ff, #f7fbff);
+  border: 1px solid #cfe3ff;
+  border-radius: 12px;
+  color: #0b5ed7;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(13,110,253,.08);
+}
+
+.kashf-note i{
+  font-size: 18px;
+  color: #25d366; /* لون واتساب */
+}

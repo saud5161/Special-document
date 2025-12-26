@@ -7,6 +7,19 @@ document.getElementById('print-button')?.addEventListener('click', ()=>window.pr
 // مُختصر لجلب العناصر
 const $ = (id)=>document.getElementById(id);
 
+
+// === helper: هل الاختيار الحالي = "كشف" ؟ (يعتمد على التخزين) ===
+function _isKashfChoice(){
+  try {
+    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+    return c === 'كشف';
+  } catch { return false; }
+}
+// حد الدقيقة الفاصل لاعتبار "اليوم السابق" (05:40 افتراضيًا، و05:20 في كشف)
+function _cutMinuteForShift(){
+  return _isKashfChoice() ? 20 : 40;
+}
+
 // ضبط التاريخ الهجري + اليوم تلقائيًا + إرسالها للباك إن توفّر Electron
 function setHijriAndDayNow(){
   const now = new Date();
@@ -15,8 +28,8 @@ function setHijriAndDayNow(){
   const hour = now.getHours();
   const minute = now.getMinutes();
 
-  // بين 00:00 و 05:40 نرجع لليوم السابق
-  if (hour < 5 || (hour === 5 && minute < 40)) {
+  // بين 00:00 و 05:40 (أو 05:20 في كشف) نرجع لليوم السابق
+  if (hour < 5 || (hour === 5 && minute < _cutMinuteForShift())) {
     now.setDate(now.getDate() - 1);
     useYesterday = true;
   }
@@ -467,7 +480,111 @@ function hideIndividualPlaceholdersIfEstithan() {
 
 document.addEventListener("DOMContentLoaded", hideIndividualPlaceholdersIfEstithan);
 
+// ===== مسارات "كشف الحضور والانصراف" حسب الصالة + المناوبة =====
+const KASHF_FILES = {
+  "1": {
+    "ا": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةا.docm" },
+    "ب": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةب.docm" },
+    "ج": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةج.docm" },
+    "د": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةد.docm" },
+  },
+  "3": {
+    "ا": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةا.docm" },
+    "ب": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةب.docm" },
+    "ج": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةج.docm" },
+    "د": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةد.docm" },
+  },
+  "4": {
+    "ا": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةا.docm" },
+    "ب": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةب.docm" },
+    "ج": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةج.docm" },
+    "د": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةد.docm" },
+  }
+};
 
+function normalizeShiftKey(v){
+  return (v || "").trim().replace(/أ/g, "ا"); // تحويل "أ" إلى "ا" لأن المفاتيح عندك "ا"
+}
+
+function storeKashfSelection(){
+  const hall = document.getElementById('hall-number')?.value?.trim() || "";
+  const shift = normalizeShiftKey(document.getElementById('shift-number')?.value || "");
+  if (!hall || !shift) return;
+  localStorage.setItem('kashf_selection', JSON.stringify({ hall, shift }));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('hall-number')?.addEventListener('change', storeKashfSelection);
+  document.getElementById('shift-number')?.addEventListener('change', storeKashfSelection);
+
+  // ===== واجهة "كشف": عناصر تظهر فقط إذا كان الاختيار = كشف =====
+  const currentChoice = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+  const isKashf = currentChoice === 'كشف';
+
+  // (1) إضافة خيار "فتح PDF" بجانب زر تنفيذ وحفظ — مخفي دائمًا إلا في وضع كشف
+  if (!document.getElementById('open-kashf-pdf')) {
+    const saveBtn = document.getElementById('save-btn');
+    if (saveBtn) {
+      const wrap = document.createElement('label');
+      wrap.id = 'open-kashf-pdf-wrap';
+      wrap.className = 'open-pdf-toggle';
+      wrap.style.cssText = 'display:none;align-items:center;gap:8px;margin-inline-start:12px;user-select:none;';
+      wrap.innerHTML = '<input type="checkbox" id="open-kashf-pdf"><span>فتح PDF</span>';
+      saveBtn.insertAdjacentElement('afterend', wrap);
+    }
+  }
+  const pdfWrap = document.getElementById('open-kashf-pdf-wrap');
+  if (pdfWrap) pdfWrap.style.display = isKashf ? 'inline-flex' : 'none';
+
+  // (2) إضافة عبارة "إلزامي لعرض الكشف" بجانب (المناوبة + رقم الصالة) — تظهر فقط في كشف
+  const ensureReqNote = (forId) => {
+    const label = document.querySelector(`label[for='${forId}']`);
+    if (!label) return;
+    let note = label.querySelector('.kashf-required-note');
+    if (!note) {
+      note = document.createElement('span');
+      note.className = 'kashf-required-note';
+      note.textContent = ' الزامي  ';
+      note.style.cssText = 'color:#d11;font-size:11px;font-weight:700;margin-inline-start:6px;display:none;';
+      label.appendChild(note);
+    }
+    note.style.display = isKashf ? 'inline' : 'none';
+  };
+  ensureReqNote('shift-number');
+  ensureReqNote('hall-number');
+
+  // (3) أيقونة تفريغ بجانب المناوبة (تفريغ shift-number) — تظهر فقط في كشف
+  (function ensureShiftClear(){
+    const shiftInput = document.getElementById('shift-number');
+    if (!shiftInput) return;
+
+    const host = shiftInput.closest('.with-chips') || shiftInput.parentElement;
+    if (!host) return;
+
+    let btn = document.getElementById('shift-clear-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.id = 'shift-clear-btn';
+      btn.title = 'تفريغ المناوبة';
+      btn.setAttribute('aria-label','تفريغ المناوبة');
+      btn.innerHTML = '🧹';
+      btn.style.cssText = 'margin-inline-start:8px;border:1px solid #e5e7eb;background:#fff;border-radius:10px;height:34px;width:40px;cursor:pointer;display:none;line-height:1;';
+      btn.addEventListener('click', () => {
+        shiftInput.value = '';
+        try { shiftInput.dispatchEvent(new Event('change', { bubbles: true })); } catch {}
+        // تحديث التخزين إن وُجد
+        try {
+          const hall = (document.getElementById('hall-number')?.value || '').trim();
+          localStorage.removeItem('kashf_selection');
+          if (hall) localStorage.setItem('kashf_selection', JSON.stringify({ hall, shift: '' }));
+        } catch {}
+      });
+      host.appendChild(btn);
+    }
+    btn.style.display = isKashf ? 'inline-flex' : 'none';
+  })();
+});
 // حفظ/تنفيذ
 async function saveAll() {
   const data = collect();
@@ -526,8 +643,56 @@ if (ENABLE_SHIFT_FILE && window.electronAPI?.saveShift) {
   const wordLink = document.createElement("a");
 
 // ✅ اختيار الرابط بناءً على القيمة المخزنة في localStorage
-const choice = localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice");
+const choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
 
+// ✅ كشف الحضور والانصراف: فتح المسار حسب الصالة + المناوبة (Doc/PDF)
+if (choice === "كشف") {
+  const hall = (document.getElementById("hall-number")?.value || "").trim();
+  const shiftRaw = (document.getElementById("shift-number")?.value || "").trim();
+  const shift = normalizeShiftKey(shiftRaw);
+
+  // خزّن الاختيار (للاحتياط)
+  try {
+    if (hall && shift) localStorage.setItem("kashf_selection", JSON.stringify({ hall, shift }));
+  } catch {}
+
+  // خيار فتح PDF (إن وُجدت الخانة)
+  const openPdf = !!document.getElementById("open-kashf-pdf")?.checked;
+
+  const file = (KASHF_FILES && hall && shift) ? (KASHF_FILES[hall]?.[shift]) : null;
+
+  // لا تعرض أي رسالة عند فتح الصفحة — الرسالة فقط عند الضغط على تنفيذ وحفظ داخل saveAll
+  if (!file) {
+    // إذا لم يحدد المستخدم الصالة/المناوبة أو لا يوجد مسار مطابق
+    // نوقف الفتح بدل الذهاب إلى default.docm
+    if (!hall || !shift) {
+      alert("حدد رقم الصالة والمناوبة أولاً لفتح كشف الحضور والانصراف.");
+    } else {
+      alert(`لا يوجد مسار مطابق للكشف.\nالصالة: ${hall}\nالمناوبة: ${shiftRaw || shift}`);
+    }
+    return;
+  }
+
+  // ✅ فتح PDF في نافذة منبثقة (Popup) بدل نفس الصفحة
+  if (openPdf) {
+    try {
+      const w = window.open(
+        file.pdf,
+        'kashf_pdf',
+        'width=1100,height=800,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes,resizable=yes'
+      );
+      if (w) w.focus();
+    } catch (e) {
+      // كحل احتياطي لو تم منع النافذة المنبثقة
+      window.open(file.pdf, '_blank');
+    }
+    return; // لا نفتح ملف الـ Word عند اختيار PDF
+  }
+
+  // افتراضيًا: افتح ملف Word
+  wordLink.href = file.doc;
+  // نكمل بدون الدخول في بقية الشروط
+} else
 if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/خطاب باسم .docm";
 } else if (choice === "خطاب-بدون") {
@@ -576,6 +741,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نماذج الممنوعين/منع سفر جوازات جديد.docm";
   } else if (choice === "خطاب-فرد") {
   wordLink.href = "dic/نــماذج  اليومية/خطاب فرد.docm";
+  } else if (choice === "خطاب-المناوبات") {
+  wordLink.href = "dic/نــماذج  اليومية/خطاب مناوبات.docm";
    } else if (choice === "مخالفة") {
   wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
   } else if (choice === "استاذان") {
@@ -721,6 +888,58 @@ function bindAutoRank(nameInputId, rankInputId, source /* 'lists' | 'admin' */) 
   // ولو أردت أن يعمل أثناء الكتابة:
   // nameInput.addEventListener('input', fill);
 }
+
+
+  // ===== وضع "كشف": إظهار وقت الاستلام فقط + إخفاءات خاصة =====
+  // ===== وضع "كشف": إخفاء المطلوب + إبقاء "وقت الاستلام" فقط =====
+if (choice === "كشف") {
+
+  // ✅ قفل الإخفاء بـ CSS قوي (حتى لو سكربت ثاني أعاد إظهارها)
+  if (!document.getElementById("kashf-hide-balance-style")) {
+    const st = document.createElement("style");
+    st.id = "kashf-hide-balance-style";
+    st.textContent = `
+      /* إخفاء حقول الموازنة نهائياً في وضع "كشف" */
+      #BalanceTimeFrom, label[for="BalanceTimeFrom"],
+      #BalanceTimeTo,   label[for="BalanceTimeTo"],
+      #EveningBalanceFrom, label[for="EveningBalanceFrom"],
+      #EveningBalanceTo,   label[for="EveningBalanceTo"],
+      #BalanceDateNight, label[for="BalanceDateNight"],
+      #BalanceWeekday,   label[for="BalanceWeekday"]{
+        display:none !important;
+      }
+    `;
+    document.head.appendChild(st);
+  }
+
+  // 1) إخفاء الآمر المناوب (الحقل + الليبل)
+  ["commander-name","commander-rank"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.display  = "none";
+    if (lbl) lbl.style.display = "none";
+  });
+
+  // 2) إخفاء بطاقات: بيانات المسافر + بيانات الرحلة + بيانات الصادر
+  ["card-traveler","card-flight","card-issued-data"].forEach(cardId => {
+    const card = document.getElementById(cardId);
+    if (card) card.style.display = "none";
+  });
+
+  // 3) إبقاء وقت الاستلام فقط ظاهر
+  ["ReceiveTimeFrom","ReceiveTimeTo"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.display  = "";
+    if (lbl) lbl.style.display = "";
+  });
+
+  // (اختياري) إخفاء الملاحظة الخضراء بجانب عنوان وقت الشفت إن رغبت
+  const note = document.getElementById("note-shift-balance-now");
+  if (note) note.style.display = "none";
+  
+}
+
 
   if (choice === "خطاب-بدون") {
     // 1) إخفاء رقم الهوية
@@ -1388,7 +1607,7 @@ if (choice === "استلام-اليوم") {
 });
 
   // 5) إظهار فقط البطاقات: التاريخ/المستلم + وقت الشفت + الصادر الخاص بالشفت
-// داخل if (choice === 'استلام-اليوم') { ... }
+// داخل if (choice === 'استلام-اليوم' || choice === 'كشف') { ... }
 const keep = new Set(['card-receipt','card-shift-balance','card-issued-shaft','card-lists-admin']);
 document.querySelectorAll('.card').forEach(card => {
   if (card.id) card.style.display = keep.has(card.id) ? 'block' : 'none';
@@ -1429,7 +1648,10 @@ if (choice === "حذف-السجلات") {
 }
 
   // ===== وضع "خطاب-فرد" =====
-  if (choice === "خطاب-فرد") {
+  if (
+  choice === "خطاب-فرد" ||
+  choice === "خطاب-المناوبات"
+) {
     // 1) إظهار فقط البطاقات المطلوبة
     const cardsToShow = ["card-receipt", "card-individual", "card-issued-data"];
     document.querySelectorAll(".card").forEach(card => {
@@ -1869,28 +2091,40 @@ function _minutesNow(){
 
 // يحسب القيم الافتراضية بناءً على الوقت الحالي
 function computeReceiveDefaults(mins = _minutesNow()){
-  // الحدود بالدقائق
-  const M_13_40 = 13*60 + 40; // 820
-  const M_21_40 = 21*60 + 40; // 1300
-  const M_21_41 = 21*60 + 41; // 1301
-  const M_05_40 = 5*60 + 40;  // 340
-  const M_05_41 = 5*60 + 41;  // 341
+  // ✅ جديد: إذا التخزين "كشف" نخلي الحد 20 بدل 40/41
+  const choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
+  const isKashf = (choice === "كشف");
 
-  // 13:40 - 21:40
+  // كل حدود 40/41 تتحول إلى 20 في وضع كشف
+  const CUT  = isKashf ? 20 : 40; // بدل 40
+  const CUTP = isKashf ? 20 : 41; // بدل 41 (في كشف تصبح 20)
+
+  // الحدود بالدقائق
+  const M_13_40 = 13*60 + CUT;   // كان 13:40 → في كشف 13:20
+  const M_21_40 = 21*60 + CUT;   // كان 21:40 → في كشف 21:20
+  const M_21_41 = 21*60 + CUTP;  // كان 21:41 → في كشف 21:20
+  const M_05_40 = 5*60  + CUT;   // كان 05:40 → في كشف 05:20
+  const M_05_41 = 5*60  + CUTP;  // كان 05:41 → في كشف 05:20
+
+  // 13:40 - 21:40  (وفي كشف: 13:20 - 21:20)
   if (mins >= M_13_40 && mins <= M_21_40){
     return { from: '2م', to: '10م' };
   }
-  // 21:41 - 23:59 أو 00:00 - 05:40
+
+  // 21:41 - 23:59 أو 00:00 - 05:40  (وفي كشف: 21:20 - 23:59 أو 00:00 - 05:20)
   if (mins >= M_21_41 || mins <= M_05_40){
     return { from: '10م', to: '6ص' };
   }
-  // 05:41 - 13:40
+
+  // 05:41 - 13:40  (وفي كشف: 05:20 - 13:20)
   if (mins >= M_05_41 && mins <= M_13_40){
     return { from: '6ص', to: '2م' };
   }
+
   // افتراضي احتياطي
   return { from: '6ص', to: '2م' };
 }
+
 
 // يطبّق القيم تلقائيًا إذا لم يغيّر المستخدم يدويًا
 function setReceiveTimeAuto(force = false){
@@ -2009,10 +2243,27 @@ window.clearAll = function(){
 
 // تهيئة
 document.addEventListener('DOMContentLoaded', ()=>{
+  // اقرأ الاختيار المخزن
+  const choice =
+    (localStorage.getItem('wordLinkChoice') ||
+     localStorage.getItem('lastWordLinkChoice') || '').trim();
+
+  // حمّل المحفوظات كالمعتاد
   loadShiftFields();
+
+  // ✅ إذا كان الاختيار = كشف: فرّغ فقط هذه الحقول تلقائياً عند فتح الصفحة
+  if (choice === 'كشف') {
+    const idsToClear = ['shift-number', 'officer-name', 'officer-rank'];
+    idsToClear.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+  }
+
   bindAutoSaveForShiftFields();
   scheduleShiftStorageCleaner();
 });
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const root = document.getElementById('moatan-compact');
@@ -2382,7 +2633,7 @@ const ids = [
   const choice = localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice');
 
   // 3) إذا كان "استلام" -> أظهر البطاقة وكل حقولها
-  if (choice === 'استلام-اليوم') {
+  if (choice === 'استلام-اليوم' || choice === 'كشف') {
     // إن وُجدت بطاقة مخصصة للشفت
     const shiftCard = document.getElementById('card-shift-balance');
     if (shiftCard) shiftCard.style.display = 'block';
@@ -3191,6 +3442,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 (function(){
   const $ = (id)=>document.getElementById(id);
+
+
+// === helper: هل الاختيار الحالي = "كشف" ؟ (يعتمد على التخزين) ===
+function _isKashfChoice(){
+  try {
+    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+    return c === 'كشف';
+  } catch { return false; }
+}
+// حد الدقيقة الفاصل لاعتبار "اليوم السابق" (05:40 افتراضيًا، و05:20 في كشف)
+function _cutMinuteForShift(){
+  return _isKashfChoice() ? 20 : 40;
+}
   const inpAir  = $('AirlineName');
   const inpNo   = $('FlightNumber');
   const inpDest = $('TravelDestination');
@@ -3468,6 +3732,19 @@ recordType.addEventListener("change", () => {
 (function(){
   const $ = (id)=>document.getElementById(id);
 
+
+// === helper: هل الاختيار الحالي = "كشف" ؟ (يعتمد على التخزين) ===
+function _isKashfChoice(){
+  try {
+    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+    return c === 'كشف';
+  } catch { return false; }
+}
+// حد الدقيقة الفاصل لاعتبار "اليوم السابق" (05:40 افتراضيًا، و05:20 في كشف)
+function _cutMinuteForShift(){
+  return _isKashfChoice() ? 20 : 40;
+}
+
   // فحص وضع "تطبيق"
   function isApplyMode() {
     const choice =
@@ -3511,6 +3788,19 @@ recordType.addEventListener("change", () => {
 })();
 (function(){
   const $ = (id)=>document.getElementById(id);
+
+
+// === helper: هل الاختيار الحالي = "كشف" ؟ (يعتمد على التخزين) ===
+function _isKashfChoice(){
+  try {
+    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+    return c === 'كشف';
+  } catch { return false; }
+}
+// حد الدقيقة الفاصل لاعتبار "اليوم السابق" (05:40 افتراضيًا، و05:20 في كشف)
+function _cutMinuteForShift(){
+  return _isKashfChoice() ? 20 : 40;
+}
 
   function isApplyMode() {
     const choice =
@@ -3666,11 +3956,11 @@ function getShiftBaseDateForHijri() {
   const hour = now.getHours();
   const minute = now.getMinutes();
 
-  // بين 00:00 و 05:40 نرجع لليوم السابق
-  if (hour < 5 || (hour === 5 && minute < 40)) {
+  // بين 00:00 و 05:40 (أو 05:20 في كشف) نرجع لليوم السابق
+  if (hour < 5 || (hour === 5 && minute < _cutMinuteForShift())) {
     now.setDate(now.getDate() - 1);
   }
-  return now;
+return now;
 }
 
 // بناء قائمة الأيام الخمسة (اليوم + ٤ أيام) هجريًا
@@ -3795,4 +4085,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // ملاحظة للمستخدم
     alert("تم تحديث التاريخ لليوم الفعلي ✅");
   });
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const choice =
+    (localStorage.getItem("wordLinkChoice") ||
+     localStorage.getItem("lastWordLinkChoice") || "").trim();
+
+  const note = document.getElementById("kashf-note");
+  if (!note) return;
+
+  // يظهر فقط في وضع "كشف"
+  note.style.display = (choice === "كشف") ? "flex" : "none";
 });

@@ -220,7 +220,7 @@
             </div>
 
             <!-- رقم الصالة مع أزرار اختصار -->
-            <label for="hall-number"><i class="fas fa-building"></i> رقم الصالة</label>
+            <label for="hall-number"><i class="fas fa-building"></i> الصالة</label>
             <div class="with-chips">
               <input id="hall-number" list="halls" placeholder="1 / 2 / 3 / 4" />
              
@@ -512,7 +512,7 @@
               <!-- بطاقة وقت الشفت والموازنة (داخل shell + cards-grid) -->
           <h3 class="card__title">
             <i class="fas fa-business-time"></i>
-            وقت الشفت والموازنة
+            وقت الشفت 
             <span id="note-shift-balance-now" class="note-inline">
               (تلقائياً )
             </span>
@@ -858,6 +858,16 @@
 </div>
 
 </div>
+<!-- تنبيه ملاحظات الكشف (يظهر فقط في وضع كشف) -->
+<div id="kashf-note" class="kashf-note" style="display:none">
+  <i class="fab fa-whatsapp"></i>
+  <span>
+    في حال وجود ملاحظات على الكشف أو تحديثه 
+    يرجى التواصل معي على 
+    <a href="https://wa.me/966568190224" target="_blank">الواتس اب</a>
+  </span>
+</div>
+
 
   </main>
 
@@ -871,6 +881,11 @@
   
   <footer class="action-bar" role="contentinfo">
     <div class="action-bar__inner">
+      <label class="open-pdf-toggle" style="display:inline-flex;align-items:center;gap:8px;margin-inline-start:12px;">
+  <input type="checkbox" id="open-kashf-pdf">
+  <span>عرض PDF</span>
+</label>
+
       <button id="save-btn" class="btn btn--primary" type="button">
         <i class="fas fa-file-word"></i> تنفيذ وحفظ
       </button>
