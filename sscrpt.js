@@ -3282,42 +3282,77 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // تحميل شركات الطيران والوجهات من fly.json
+// تحميل شركات الطيران والوجهات من fly.json
 async function loadFlyData() {
   try {
     const res = await fetch('fly.json', { cache: 'no-store' });
     const data = await res.json();
 
-    // تعبئة شركات الطيران
-    const dlAir = document.getElementById('airlines');
-    if (dlAir) {
-      dlAir.innerHTML = '';
-      (data.airlines || [])
-        .sort((a,b)=> (a.priority||999)-(b.priority||999))
-        .forEach(a => {
-          const opt = document.createElement('option');
-          opt.value = a.name_ar || a.name_en || '';
-          if (a.name_en) opt.label = a.name_en; // يظهر ترجمة إن توفرت
-          dlAir.appendChild(opt);
-        });
+    // ====== (A) خريطة: iata -> name_ar ======
+    const airlineByIata = new Map();
+    (data.airlines || []).forEach(a => {
+      const code = String(a.iata || '').toUpperCase().trim();
+      const ar   = String(a.name_ar || '').trim();
+      if (code && ar) airlineByIata.set(code, ar);
+    });
+
+ // ====== (B) تعبئة datalist بحيث "الاسم العربي" هو الأساس ======
+const dlAir = document.getElementById('airlines');
+if (dlAir) {
+  dlAir.innerHTML = '';
+  const seen = new Set(); // لمنع تكرار الشركات (موجود تكرار في fly.json)
+
+  (data.airlines || [])
+    .sort((a,b)=> (a.priority||999)-(b.priority||999))
+    .forEach(a => {
+      const ar   = String(a.name_ar || '').trim();
+      const code = String(a.iata || '').toUpperCase().trim();
+      const en   = String(a.name_en || '').trim();
+      if (!ar) return;
+
+      // امنع التكرار
+      if (seen.has(ar)) return;
+      seen.add(ar);
+
+      const opt = document.createElement('option');
+
+      // ✅ الأساسي (الذي يظهر ويُكتب) = الاسم العربي
+      opt.value = ar;
+
+      // ✅ معلومات إضافية (قد تظهر بشكل ثانوي حسب المتصفح)
+      // إذا ما تبيها نهائياً، احذف هذا السطر
+      opt.label = code ? `${code}${en ? ` (${en})` : ''}` : (en ? `(${en})` : '');
+
+      dlAir.appendChild(opt);
+    });
+}
+
+
+    // ====== (C) تحويل الرمز داخل الحقل إلى الاسم العربي بعد الاختيار ======
+    function bindAirlineInput(id){
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      const apply = () => {
+        const v = String(el.value || '').toUpperCase().trim();
+        const ar = airlineByIata.get(v);
+        if (ar) el.value = ar; // ✅ يصير "السعودية" بدل "SV"
+      };
+
+      el.addEventListener('change', apply);
+      el.addEventListener('blur', apply);
     }
 
-    // تعبئة الوجهات
-    const dlDest = document.getElementById('destinations');
-    if (dlDest) {
-      dlDest.innerHTML = '';
-      (data.destinations || [])
-        .sort((a,b)=> (a.priority||999)-(b.priority||999))
-        .forEach(d => {
-          const opt = document.createElement('option');
-          opt.value = d.city_ar || d.city_en || '';
-          if (d.city_en) opt.label = d.city_en;
-          dlDest.appendChild(opt);
-        });
-    }
+    bindAirlineInput('AirlineName');     // الحقل الأساسي :contentReference[oaicite:2]{index=2}
+    bindAirlineInput('AirlineNameNow');  // حقل الرحلة الحالية :contentReference[oaicite:3]{index=3}
+
+    // (باقي الدالة كما هو: الوجهات... إلخ)
+
   } catch (e) {
-    console.error('❌ خطأ في تحميل fly.json:', e);
+    console.error('❌ فشل تحميل fly.json:', e);
   }
 }
+
 // مبسّط: يضيف رمز IATA (حروف فقط) في رقم الرحلة ويضع المؤشر يسار الحقل للكتابة
 document.addEventListener('DOMContentLoaded', () => {
   const AR_DIAC = /[\u064B-\u0652\u0670\u0640]/g;

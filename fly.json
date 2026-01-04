@@ -7,8 +7,8 @@
       "city_ar": "الرياض",
       "city_en": "Riyadh"
     },
-    "updated_at": "2025-11-11T05:38:54Z",
-    "notes_ar": "تمت ازالة الهمزات والتشكيل من الاسماء العربية، والغاء كلمات (الخطوط/طيران) من اسماء الشركات. تمت اضافة بعض الشركات والوجهات المذكورة في القائمة."
+    "updated_at": "2026-01-04T00:00:00Z",
+    "notes_ar": "تمت ازالة الهمزات والتشكيل من الاسماء العربية، والغاء كلمات (الخطوط/طيران) من اسماء الشركات. تمت اضافة بعض الشركات والوجهات المذكورة في القائمة. تمت اضافة رحلات دولية اضافية من قائمة 2026-01-04."
   },
   "airlines": [
     {
@@ -173,7 +173,7 @@
       "priority": 29
     },
     {
-      "name_ar": "ايتا ايرويز",
+      "name_ar": "الايطالية",
       "name_en": "ITA Airways",
       "iata": "AZ",
       "icao": "ITY",
@@ -292,20 +292,6 @@
       "priority": 46
     },
     {
-      "name_ar": "أديل",
-      "name_en": "flyadeal",
-      "iata": "F3",
-      "icao": "FAD",
-      "priority": 47
-    },
-    {
-      "name_ar": "العربية",
-      "name_en": "Air Arabia",
-      "iata": "G9",
-      "icao": "ABY",
-      "priority": 48
-    },
-    {
       "name_ar": "اليمنية",
       "name_en": "Yemenia",
       "iata": "IY",
@@ -318,13 +304,6 @@
       "iata": "J4",
       "icao": "BDR",
       "priority": 50
-    },
-    {
-      "name_ar": "الجزيرة",
-      "name_en": "Jazeera",
-      "iata": "J9",
-      "icao": "JZR",
-      "priority": 51
     },
     {
       "name_ar": "الشرق الأوسط",
@@ -374,6 +353,27 @@
       "iata": "RX",
       "icao": "RXI",
       "priority": 58
+    },
+    {
+      "name_ar": "سيرين اير",
+      "name_en": "SereneAir",
+      "iata": "ER",
+      "icao": "SEP",
+      "priority": 59
+    },
+    {
+      "name_ar": "ايرسيال",
+      "name_en": "AirSial",
+      "iata": "PF",
+      "icao": "SIF",
+      "priority": 60
+    },
+    {
+      "name_ar": "فلاي جناح",
+      "name_en": "Fly Jinnah",
+      "iata": "9P",
+      "icao": "FJL",
+      "priority": 61
     }
   ],
   "destinations": [
@@ -733,6 +733,76 @@
       "iata": "ATZ",
       "country_ar": "مصر",
       "priority": 53
+    },
+    {
+      "city_ar": "بيروت",
+      "city_en": "Beirut",
+      "iata": "BEY",
+      "country_ar": "لبنان",
+      "priority": 54
+    },
+    {
+      "city_ar": "الدمام",
+      "city_en": "Dammam",
+      "iata": "DMM",
+      "country_ar": "السعودية",
+      "priority": 55
+    },
+    {
+      "city_ar": "شنغهاي",
+      "city_en": "Shanghai",
+      "iata": "PVG",
+      "country_ar": "الصين",
+      "priority": 56
+    },
+    {
+      "city_ar": "اسطنبول",
+      "city_en": "Istanbul",
+      "iata": "SAW",
+      "country_ar": "تركيا",
+      "priority": 57
+    },
+    {
+      "city_ar": "الجيزة",
+      "city_en": "Giza",
+      "iata": "SPX",
+      "country_ar": "مصر",
+      "priority": 58
+    },
+    {
+      "city_ar": "تبليسي",
+      "city_en": "Tbilisi",
+      "iata": "TBS",
+      "country_ar": "جورجيا",
+      "priority": 59
+    },
+    {
+      "city_ar": "موسكو",
+      "city_en": "Moscow",
+      "iata": "VKO",
+      "country_ar": "روسيا",
+      "priority": 60
+    },
+    {
+      "city_ar": "دمشق",
+      "city_en": "Damascus",
+      "iata": "DAM",
+      "country_ar": "سوريا",
+      "priority": 61
+    },
+    {
+      "city_ar": "كنور",
+      "city_en": "Kannur",
+      "iata": "CNN",
+      "country_ar": "الهند",
+      "priority": 62
+    },
+    {
+      "city_ar": "بورتسودان",
+      "city_en": "Port Sudan",
+      "iata": "PZU",
+      "country_ar": "السودان",
+      "priority": 63
     }
   ],
   "extra_routes": [
@@ -1547,6 +1617,94 @@
     {
       "no": "XY283",
       "dest": "أسيوط"
+    },
+    {
+      "no": "RJ733",
+      "dest": "عمان"
+    },
+    {
+      "no": "SM464",
+      "dest": "اسيوط"
+    },
+    {
+      "no": "GF170",
+      "dest": "البحرين"
+    },
+    {
+      "no": "XY237",
+      "dest": "البحرين"
+    },
+    {
+      "no": "ME2425",
+      "dest": "بيروت"
+    },
+    {
+      "no": "XY321",
+      "dest": "مومباي"
+    },
+    {
+      "no": "E5411",
+      "dest": "القاهرة"
+    },
+    {
+      "no": "NP152",
+      "dest": "القاهرة"
+    },
+    {
+      "no": "IX322",
+      "dest": "كاليكوت"
+    },
+    {
+      "no": "IX790",
+      "dest": "كنور"
+    },
+    {
+      "no": "XY387",
+      "dest": "دمشق"
+    },
+    {
+      "no": "AI2244",
+      "dest": "نيودلهي"
+    },
+    {
+      "no": "KL423",
+      "dest": "الدمام"
+    },
+    {
+      "no": "XY323",
+      "dest": "باكو"
+    },
+    {
+      "no": "CX648",
+      "dest": "هونغ كونغ"
+    },
+    {
+      "no": "ER808",
+      "dest": "اسلام اباد"
+    },
+    {
+      "no": "PF769",
+      "dest": "اسلام اباد"
+    },
+    {
+      "no": "9P581",
+      "dest": "لاهور"
+    },
+    {
+      "no": "XY317",
+      "dest": "لاهور"
+    },
+    {
+      "no": "IX190",
+      "dest": "لكناو"
+    },
+    {
+      "no": "OV206",
+      "dest": "مسقط"
+    },
+    {
+      "no": "XY311",
+      "dest": "تبليسي"
     }
   ]
 }
