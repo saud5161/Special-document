@@ -840,3 +840,13 @@ label {
   font-size: 18px;
   color: #25d366; /* لون واتساب */
 }
+
+/* Permission transfer labels (shown only in صلاحيات mode) */
+.perm-transfer-label{
+  grid-column: 1 / -1;   /* يأخذ الخانة كاملة */
+  color: #149737;        /* أخضر */
+  font-weight: 700;
+  margin: 8px 0 4px;
+  display: none;         /* JS يتحكم */
+}
+

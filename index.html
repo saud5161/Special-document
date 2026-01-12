@@ -345,14 +345,30 @@
     </select>
     
     <!-- اسم الفرد / المجندة -->
-    <label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد / المجندة</label>
+     
+    
+          <label id="permTransferFrom" class="perm-transfer-label">نقل صلاحيات من</label>
+<label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد / المجندة</label>
+    
     <input id="IndividualName" list="individual-list" placeholder="اختر نوع المحضر أولاً" disabled>
+    
     <datalist id="individual-list"></datalist>
 
     <!-- رتبة الفرد / المجندة -->
     <label for="IndividualRank"><i class="fas fa-medal"></i> رتبة الفرد / المجندة</label>
     <input id="IndividualRank" placeholder="اختر نوع المحضر أولاً" disabled>
-    <label for="ApplyDuration" id="ApplyDurationLabel" style="display:none">
+    
+    <!-- رقم الهوية + رقم المشغل (تظهر فقط في وضع "صلاحيات") -->
+    <label for="IndividualID" id="lbl-IndividualID" style="display:none">
+      <i class="fas fa-id-card"></i> رقم الهوية (1)
+    </label>
+    <input id="IndividualID" style="display:none" placeholder="رقم الهوية">
+
+    <label for="OperatorNumber1" id="OperatorNumber1Label" style="display:none">
+      <i class="fas fa-hashtag"></i> رقم المشغل (1)
+    </label>
+    <input id="OperatorNumber1" style="display:none" placeholder="رقم المشغل">
+<label for="ApplyDuration" id="ApplyDurationLabel" style="display:none">
       <!-- رقم الهوية للفرد (مخفي دائمًا) -->
 
 
@@ -393,15 +409,28 @@
 </datalist>
 <!-- === مجموعة 2 === -->
 <!-- === مجموعة 2 === -->
-<div class="individual-separator"></div>
+<div class="individual-separator" id="individual-sep-1-2"></div>
 
 <!-- === مجموعة 2 === -->
+
+          <label id="permTransferTo" class="perm-transfer-label">نقل صلاحية الى</label>
 <label for="IndividualName2"><i class="fas fa-user"></i> اسم الفرد (2)</label>
 <input id="IndividualName2" list="individual-list" placeholder="اكتب اسم الفرد" disabled>
 
 <label for="IndividualRank2"><i class="fas fa-medal"></i> رتبته (2)</label>
 <input id="IndividualRank2" placeholder="اكتب الرتبة" disabled>
 
+
+<!-- رقم الهوية + رقم المشغل (2) — تظهر فقط في وضع "صلاحيات" -->
+<label for="IndividualID2" id="lbl-IndividualID2" style="display:none">
+  <i class="fas fa-id-card"></i> رقم الهوية (2)
+</label>
+<input id="IndividualID2" style="display:none" placeholder="رقم الهوية">
+
+<label for="OperatorNumber2" id="OperatorNumber2Label" style="display:none">
+  <i class="fas fa-hashtag"></i> رقم المشغل (2)
+</label>
+<input id="OperatorNumber2" style="display:none" placeholder="رقم المشغل">
 <label for="ApplyDuration2"><i class="fas fa-hourglass-half"></i> مدة التطبيق (2)</label>
 <input id="ApplyDuration2" list="apply-durations" placeholder="ساعة … 6 ساعات">
 
@@ -409,7 +438,7 @@
 <input id="ApplyReason2" list="apply-reasons" placeholder="اختر أو اكتب السبب">
 
 <!-- ✅ فاصل بين الفرد 2 و 3 -->
-<div class="individual-separator"></div>
+<div class="individual-separator" id="individual-sep-2-3"></div>
 
 <!-- === مجموعة 3 === -->
 <label for="IndividualName3"><i class="fas fa-user"></i> اسم الفرد (3)</label>
@@ -473,11 +502,7 @@
       <option value="الخميس">الخميس</option>
       <option value="الجمعة">الجمعة</option>
     </select>
-<label for="IndividualID" id="lbl-IndividualID" style="display:none">
-  <i class="fas fa-id-card"></i> رقم الهوية
-</label>
-<input id="IndividualID" style="display:none" placeholder="رقم الهوية">
-    <!-- سبب الاستئذان -->
+<!-- سبب الاستئذان -->
     <label for="PermitReason"><i class="fas fa-circle-exclamation"></i> سبب الاستئذان</label>
     <input id="PermitReason" placeholder="اذكر سبب الاستئذان">
 
@@ -502,6 +527,38 @@
 
   </div>
 </section>
+</div>
+</section>
+
+<!-- قسم الصلاحيات المنقولة (يظهر فقط عند اختيار "صلاحيات") -->
+<section class="card" id="card-transferred-permissions" style="display:none">
+  <h3 class="card_title">الصلاحيات المطلوب نقلها</h3>
+  <div class="card_body form-grid">
+
+    <label for="Permission1">الصلاحية الأولى</label>
+    <input id="Permission1" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <label for="Permission2">الصلاحية الثانية</label>
+    <input id="Permission2" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <label for="Permission3">الصلاحية الثالثة</label>
+    <input id="Permission3" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <label for="Permission4">الصلاحية الرابعة</label>
+    <input id="Permission4" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <!-- قائمة واحدة مشتركة -->
+    <datalist id="permissions-list"></datalist>
+
+    <label for="TransferReason">سبب النقل</label>
+  <input id="TransferReason" list="transfer-reasons-list" placeholder="اختر أو اكتب">
+
+  <datalist id="transfer-reasons-list"></datalist>
+
+
+  </div>
+</section>
+
 
         
         <!-- =========================================================

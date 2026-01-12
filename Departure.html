@@ -1280,6 +1280,8 @@
 
   <div class="model-card">
     <div class="card-content">
+              <span class="badge-new">جديد</span>
+
       <img src="img/icon-g.png" class="model-icon" alt="">
       <h3>نقل صلاحيات</h3>
       <p>نقل صلاحيات من فرد إلى فرد آخر</p>
@@ -1292,13 +1294,16 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <a
-        href="javascript:void(0);"
-        class="btn-icon print-icon"
-        title="طباعة"
-        onclick="printFile('dic/نماذج الافراد/نقل صلاحيات_1.pdf');">
-        <i class="fa-solid fa-print"></i>
-      </a>
+      
+<a 
+  href="index.html" 
+  class="btn-icon word-icon" 
+  target="_top" 
+  title="تعديل Word"
+  onclick="localStorage.setItem('wordLinkChoice', 'صلاحيات')">
+</a>
+
+
     </div>
   </div>
 

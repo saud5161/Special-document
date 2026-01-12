@@ -260,10 +260,13 @@ IndividualName:  $('IndividualName')?.value  || '',
 IndividualRank:  $('IndividualRank')?.value  || '',
 IndividualJobNature: $('IndividualJobNature')?.value   || '',  // ✅ طبيعة العمل
 IndividualID:  $('IndividualID')?.value  || '',
+OperatorNumber:  $('OperatorNumber1')?.value  || '',
 // الفرد رقم 2
 IndividualNameo: $('IndividualName2')?.value || '',
 IndividualRanko: $('IndividualRank2')?.value || '',
 
+IndividualIDo:    $('IndividualID2')?.value   || '',
+OperatorNumbero: $('OperatorNumber2')?.value || '',
 // الفرد رقم 3
 IndividualNamet: $('IndividualName3')?.value || '',
 IndividualRankt: $('IndividualRank3')?.value || '',
@@ -403,6 +406,19 @@ IssuedExtra1:     $('IssuedExtra1')?.value     || '', // صادر إضافي 1 (
     IssuedExtra5:     ex5,
     IssuedExtra6:     ex6,
     IssuedExtra7:     ex7,
+//صلاحيات
+TransferReason: $('TransferReason')?.value || "",
+Permission1: $('Permission1')?.value || "",
+Permission2: $('Permission2')?.value || "",
+Permission3: $('Permission3')?.value || "",
+Permission4: $('Permission4')?.value || "",
+
+OperatorNumber1: $('OperatorNumber1')?.value || "",
+OperatorNumber2: $('OperatorNumber2')?.value || "",
+
+IndividualID1: $('IndividualID1')?.value || "",
+IndividualID2: $('IndividualID2')?.value || ""
+
 
   };
 }
@@ -737,7 +753,9 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نماذج الممنوعين/مطلوبين تبليغ مراجعة.docm";
    } else if (choice === "تطبيق") {
   wordLink.href = "dic/نماذج الافراد/تطبيق.docm";
-  } else if (choice === "منع-سفر") {
+  } else if (choice === "صلاحيات") {
+  wordLink.href = "dic/نماذج الافراد/صلاحيات.docm";
+} else if (choice === "منع-سفر") {
   wordLink.href = "dic/نماذج الممنوعين/منع سفر جوازات جديد.docm";
   } else if (choice === "خطاب-فرد") {
   wordLink.href = "dic/نــماذج  اليومية/خطاب فرد.docm";
@@ -749,6 +767,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نماذج الافراد/استاذان.docm";
    } else if (choice === "منفستات") {
   wordLink.href = "dic/خطوط/ملاحظة على المنفست.docm";
+  } else if (choice === "صلاحيات") {
+  wordLink.href = "dic/نماذج الافراد/صلاحيات.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -1550,6 +1570,93 @@ if (choice === "تطبيق") {
     }
   }, { once: true });
 }
+
+if (choice === "صلاحيات") {
+  // 1) إظهار بطاقة "بيانات الفرد"
+  const individualCard = document.getElementById("card-individual");
+  if (individualCard) individualCard.style.display = "block";
+
+  // 2) إخفاء كل البطاقات ما عدا: التاريخ/المستلم + بيانات الفرد + بيانات الصادر
+  const keepIds = new Set(["card-receipt", "card-individual", "card-issued", "card-issued-data"]);
+  document.querySelectorAll(".card").forEach(card => {
+    if (!keepIds.has(card.id)) card.style.display = "none";
+  });
+
+  // 3) إخفاء اسم/رتبة الآمر المناوب مع الـ labels
+  const commanderName = document.getElementById("commander-name");
+  const commanderRank = document.getElementById("commander-rank");
+  if (commanderName) {
+    commanderName.style.display = "none";
+    const labelName = document.querySelector('label[for="commander-name"]');
+    if (labelName) labelName.style.display = "none";
+  }
+  if (commanderRank) {
+    commanderRank.style.display = "none";
+    const labelRank = document.querySelector('label[for="commander-rank"]');
+    if (labelRank) labelRank.style.display = "none";
+  }
+
+  // 4) إخفاء نوع المحضر (RecordType) + خيار إبقاء الصفحة مفتوحة
+  const recType    = document.getElementById("RecordType");
+  const recTypeLbl = document.querySelector('label[for="RecordType"]');
+  if (recType)    recType.style.display = "none";
+  if (recTypeLbl) recTypeLbl.style.display = "none";
+  const keepOpenWrap = document.querySelector(".keep-open-label");
+  if (keepOpenWrap) keepOpenWrap.style.display = "none";
+
+  // helper: إظهار/إخفاء عنصر مع الليبل المرتبط به (label[for="..."])
+  const showPair = (id, show) => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    const disp = show ? "block" : "none";
+    if (el)  el.style.display  = disp;
+    if (lbl) lbl.style.display = disp;
+  };
+
+  // 5) إخفاء مدة/سبب التطبيق بالكامل (1/2/3)
+  ["ApplyDurationLabel","ApplyDuration","ApplyReasonLabel","ApplyReason"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+  ["ApplyDuration2","ApplyReason2","ApplyDuration3","ApplyReason3"].forEach(id => showPair(id, false));
+
+  // 6) إظهار الفرد (2) وإخفاء الفرد (3) + الفاصل بين 2 و3
+  showPair("IndividualName2", true);
+  showPair("IndividualRank2", true);
+
+  showPair("IndividualName3", false);
+  showPair("IndividualRank3", false);
+  showPair("ApplyDuration3", false);
+  showPair("ApplyReason3", false);
+
+  const sep12 = document.getElementById("individual-sep-1-2");
+  const sep23 = document.getElementById("individual-sep-2-3");
+  if (sep12) sep12.style.display = "block";
+  if (sep23) sep23.style.display = "none";
+
+  // 7) إظهار "رقم الهوية" + "رقم المشغل" للفرد 1 و2 (مخفية افتراضيًا)
+  showPair("IndividualID", true);
+  showPair("OperatorNumber1", true);
+  showPair("IndividualID2", true);
+  showPair("OperatorNumber2", true);
+
+  // 8) فتح أسماء/رتب الأفراد 1 و2 وجعلها إلزامية
+  const indName1 = document.getElementById("IndividualName");
+  const indRank1 = document.getElementById("IndividualRank");
+  const indName2 = document.getElementById("IndividualName2");
+  const indRank2 = document.getElementById("IndividualRank2");
+
+  [indName1, indRank1, indName2, indRank2].forEach(el => {
+    if (!el) return;
+    el.disabled = false;
+    el.required = true;
+  });
+  if (indName1) indName1.placeholder = "اكتب اسم الفرد / المجندة";
+  if (indRank1) indRank1.placeholder = "اكتب رتبة الفرد / المجندة";
+  if (indName2) indName2.placeholder = "اكتب اسم الفرد (2)";
+  if (indRank2) indRank2.placeholder = "اكتب رتبة الفرد (2)";
+}
+
 // ===================
 // وضع absence2
 // ===================
@@ -2630,7 +2737,7 @@ const ids = [
   });
 
   // 2) اقرأ الاختيار المخزن
-  const choice = localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice');
+const choice = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
 
   // 3) إذا كان "استلام" -> أظهر البطاقة وكل حقولها
   if (choice === 'استلام-اليوم' || choice === 'كشف') {
@@ -3475,377 +3582,69 @@ document.addEventListener('DOMContentLoaded', () => {
 // - التنسيق معزول عبر Shadow DOM ولا يؤثر على بقية الصفحة
 // - عند تعبئة الوجهة تلقائيًا: تظهر رسالة خضراء "تم اقتراح الوجهة" أسفل خانة الوجهة
 
+
 (function(){
   const $ = (id)=>document.getElementById(id);
 
-
-// === helper: هل الاختيار الحالي = "كشف" ؟ (يعتمد على التخزين) ===
-function _isKashfChoice(){
-  try {
-    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
-    return c === 'كشف';
-  } catch { return false; }
-}
-// حد الدقيقة الفاصل لاعتبار "اليوم السابق" (05:40 افتراضيًا، و05:20 في كشف)
-function _cutMinuteForShift(){
-  return _isKashfChoice() ? 20 : 40;
-}
-  const inpAir  = $('AirlineName');
-  const inpNo   = $('FlightNumber');
-  const inpDest = $('TravelDestination');
-  if (!inpAir || !inpNo) return;
-
-  // ====== تحميل قاعدة البيانات ======
-  let flyDB = { airlines:[], extra_routes:[] };
-  let nameToIata = new Map();
-  let routes = [];
-  let noToRoute = new Map();
-
-  async function loadFly(){
-    try{
-      const res = await fetch('fly.json', { cache:'no-store' });
-      flyDB = await res.json();
-
-      (flyDB.airlines||[]).forEach(a=>{
-        if (a?.name_ar && a?.iata) nameToIata.set(a.name_ar.trim(), a.iata.trim());
-      });
-
-      routes = flyDB.flights ?? flyDB.extra_routes ?? [];
-      indexRoutes();
-    }catch(e){
-      console.error('فشل تحميل fly.json:', e);
-    }
+  function getChoice(){
+    try {
+      return (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+    } catch { return ''; }
   }
+  function isApplyMode(){ return getChoice() === 'تطبيق'; }
+  function isPermissionsMode(){ return getChoice() === 'صلاحيات'; }
+const TRANSFERRED_PERMISSIONS = [
+  "تاشيرة الزيارة المنتهية (مغادرة)",
+  " جواز مواطن اقل من المدة النظامية",
+  "تجاوز تحقق الخصائص الحيوية",
+  "اشراف"
+];
 
-  function indexRoutes(){
-    noToRoute.clear();
-    (routes||[]).forEach(r=>{
-      if (r?.no) noToRoute.set(String(r.no).trim().toUpperCase(), r);
+function initTransferredPermissions(){
+  const dl = $('permissions-list');
+  if (dl) {
+    dl.innerHTML = "";
+    TRANSFERRED_PERMISSIONS.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p;
+      dl.appendChild(opt);
     });
   }
 
-  // ====== رسالة "تم اقتراح الوجهة" ======
-  let suggestMsgEl = null;
-  let hideMsgTimer = null;
-  function showSuggestedDestMessage(){
-    if (!inpDest) return;
-    if (!suggestMsgEl){
-      suggestMsgEl = document.createElement('div');
-      suggestMsgEl.id = 'dest-suggest-msg';
-      suggestMsgEl.textContent = 'تم اقتراح الوجهة';
-      suggestMsgEl.setAttribute('aria-live','polite');
-      // تنسيق معزول inline حتى لا يؤثر على شيء:
-      suggestMsgEl.style.marginTop = '6px';
-      suggestMsgEl.style.fontSize = '12px';
-      suggestMsgEl.style.color = '#0f766e';                  // أخضر داكن
-      suggestMsgEl.style.background = 'rgba(16,185,129,.10)';// أخضر فاتح شفاف
-      suggestMsgEl.style.border = '1px solid rgba(16,185,129,.25)';
-      suggestMsgEl.style.padding = '6px 8px';
-      suggestMsgEl.style.borderRadius = '8px';
-      suggestMsgEl.style.display = 'none';
-      // ضعها مباشرة بعد خانة الوجهة
-      inpDest.insertAdjacentElement('afterend', suggestMsgEl);
-    }
-    // أظهر الرسالة لمدة 3 ثوانٍ
-    suggestMsgEl.style.display = 'block';
-    clearTimeout(hideMsgTimer);
-    hideMsgTimer = setTimeout(()=>{ 
-      if (suggestMsgEl) suggestMsgEl.style.display = 'none';
-    }, 3000);
-  }
 
-  // ====== قائمة منسدلة مخصّصة ومعزولة ======
-  const host = document.createElement('div');
-  host.style.position = 'fixed';
-  host.style.zIndex = '99999';
-  host.style.top = '-9999px';
-  host.style.left = '-9999px';
-  host.style.width = '0px';
-  host.style.pointerEvents = 'auto'; // مهم: اسمح بتمرير النقرات للداخل
-  document.body.appendChild(host);
-
-  const root = host.attachShadow({ mode:'open' });
-  const style = document.createElement('style');
-  style.textContent = `
-    :host{ all:initial; }
-    .panel{
-      all:initial;
-      display:none;
-      position:relative;
-      border:1px solid rgba(0,0,0,.12);
-      background:#ffffff;         /* أبيض */
-      border-radius:10px;
-      box-shadow:0 10px 24px rgba(0,0,0,.10);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
-      font-size:12px;
-      color:#111;
-      overflow:auto;              /* Scroll للباقي */
-      padding:4px;
-      pointer-events:auto;
-    }
-    .row{
-      all:initial;
-      display:flex; align-items:center; justify-content:space-between; gap:8px;
-      padding:8px 10px; border-radius:8px; cursor:pointer;
-      font-family:inherit; font-size:12px; color:#111;
-      white-space:nowrap;
-    }
-    .row:hover{ background:rgba(0,0,0,.05); }
-    .no{ all:initial; font-family:inherit; font-weight:700; font-size:12px; color:#0c3e84; }
-    .dest{ all:initial; font-family:inherit; font-size:12px; color:#333; opacity:.85; }
-    .empty{ all:initial; display:block; padding:8px 10px; font-family:inherit; font-size:12px; color:#555; opacity:.8; }
-  `;
-  const panel = document.createElement('div');
-  panel.className = 'panel';
-  root.append(style, panel);
-
-  // حد أقصى 5 عناصر مرئية تقريبًا
-  const ROW_H = 36;
-  function updateMaxHeight(){ panel.style.maxHeight = (ROW_H * 5) + 'px'; }
-  updateMaxHeight();
-
-  function positionPanel(){
-    const r = inpNo.getBoundingClientRect();
-    host.style.left = Math.round(r.left) + 'px';
-    host.style.top  = Math.round(r.bottom + 4) + 'px';
-    host.style.width = Math.round(r.width) + 'px';
-    panel.style.width = '100%';
-  }
-  function showPanel(){ positionPanel(); panel.style.display = 'block'; }
-  function hidePanel(){ panel.style.display = 'none'; }
-
-  function renderList(list){
-    panel.innerHTML = '';
-    if (!list.length){
-      const empty = document.createElement('div');
-      empty.className = 'empty';
-      empty.textContent = 'لا توجد اقتراحات لرقم الرحلة.';
-      panel.appendChild(empty);
-      return;
-    }
-    list.forEach(item=>{
-      const row = document.createElement('div');
-      row.className = 'row';
-      const no  = document.createElement('span'); no.className='no';   no.textContent = item.no || '';
-      const dst = document.createElement('span'); dst.className='dest'; dst.textContent = item.dest ? `→ ${item.dest}` : '';
-      row.append(no, dst);
-      row.addEventListener('click', ()=>{
-        // عند النقر نعبّي القيم
-        inpNo.value = String(item.no || '').trim();
-        if (inpDest && !inpDest.value && item.dest){
-          inpDest.value = item.dest;
-          showSuggestedDestMessage(); // ✅ أظهر رسالة "تم اقتراح الوجهة"
-        }
-        hidePanel();
-        inpNo.focus();
-        inpNo.select();
-      });
-      panel.appendChild(row);
-    });
-    panel.scrollTop = 0; // ابدأ من الأعلى
-  }
-
-
-// بعد إنشاء panel مباشرة
-panel.addEventListener('mousedown', (e)=> {
-  // يمنع انتقال التركيز من خانة رقم الرحلة أثناء الضغط داخل اللوحة
-  e.preventDefault();
-});
-
-
-
-  function computeSuggestions(){
-    const chosen = (inpAir.value||'').trim();
-    if (!chosen){ hidePanel(); panel.innerHTML = ''; return; }
-
-    const iata = (nameToIata.get(chosen) || '').toUpperCase();
-
-    // جميع الاقتراحات المطابقة لكود الشركة
-    const list = (routes||[])
-      .filter(f => (String(f.no||'').toUpperCase()).startsWith(iata));
-
-    // لا تعبئة تلقائية: فقط اعرض القائمة
-    renderList(list);
-    if (list.length) {
-      showPanel();
-    } else {
-      hidePanel();
-    }
-  }
-
-  // تصفية أثناء الكتابة يدويًا
-  inpNo.addEventListener('input', ()=>{
-  const q = (inpNo.value||'').trim().toUpperCase();
-
-  // فلترة القائمة كما هو (ابقِ على منطقك الحالي إن كان موجودًا)
-  const chosen = (inpAir.value||'').trim();
-  const iata = (nameToIata.get(chosen) || '').toUpperCase();
-  let list = (routes||[]).filter(f=>{
-    const no = String(f.no||'').toUpperCase();
-    if (iata && !no.startsWith(iata)) return false;
-    return q ? no.includes(q) : true;
-  });
-  renderList(list);
-  if (list.length) { showPanel(); } else { hidePanel(); }
-
-  // إن كان الحقل فارغًا تمامًا → فرّغ الوجهة وأخفِ الرسالة (إن وُجدت)
-  if (!q && inpDest){
-    inpDest.value = '';
-    if (typeof suggestMsgEl !== 'undefined' && suggestMsgEl) {
-      suggestMsgEl.style.display = 'none';
-    }
-  }
-});
-
-// عند إنهاء التعديل (change/blur): لو لا يوجد أي رحلة مطابقة → فرّغ الوجهة حتمًا
-inpNo.addEventListener('change', ()=>{
-  const val = (inpNo.value||'').trim().toUpperCase();
-  const route = noToRoute.get(val);
-
-  if (route && inpDest && route.dest){
-    // يوجد تطابق → عبّي الوجهة وأظهر الرسالة (إن كنت تستخدمها)
-    inpDest.value = route.dest;
-    if (typeof showSuggestedDestMessage === 'function') {
-      showSuggestedDestMessage();
-    }
-  } else {
-    // لا يوجد تطابق → فرّغ الوجهة دائمًا
-    if (inpDest){
-      inpDest.value = '';
-      if (typeof suggestMsgEl !== 'undefined' && suggestMsgEl) {
-        suggestMsgEl.style.display = 'none';
-      }
-    }
-  }
-});
-
-  // إظهار عند التركيز إن كان هناك محتوى
-  inpNo.addEventListener('focus', ()=>{
-    if (panel.innerHTML.trim()) showPanel();
-  });
-
-  // إخفاء بعد فقدان التركيز (مهلة للسماح بالنقر داخل اللوحة)
-  inpNo.addEventListener('blur', ()=>{ setTimeout(()=> hidePanel(), 120); });
-
-  // النقر خارج اللوحة/الحقول → إخفاء (يشمل النقر داخل الشادو)
-  document.addEventListener('click', (e)=>{
-    const insideShadow = root.contains(e.target);
-    const targetIsInput = (e.target === inpNo || e.target === inpAir);
-    if (!insideShadow && !targetIsInput){
-      hidePanel();
-    }
-  });
-
-  window.addEventListener('resize', positionPanel);
-  window.addEventListener('scroll', positionPanel, { passive:true });
-
-  inpAir.addEventListener('change', computeSuggestions);
-  inpAir.addEventListener('input',  computeSuggestions);
-
-  loadFly();
-})();
-const recordType = document.getElementById("RecordType");
-const indName    = document.getElementById("IndividualName");
-const indRank    = document.getElementById("IndividualRank");
-
-recordType.addEventListener("change", () => {
-  const type = recordType.value;
-
-  if (type !== "") {
-    indName.disabled = false;
-    indRank.disabled = false;
-    indName.placeholder = "اكتب اسم الفرد / المجندة";
-    indRank.placeholder = "تظهر تلقائيًا بعد اختيار الاسم";
-  }
-
-  if (type === "افراد") {
-    localStorage.setItem("wordLinkChoice", "غياب-افراد");
-  } else if (type === "مجندات") {
-    localStorage.setItem("wordLinkChoice", "غياب-مجندات");
-  }
-});
-(function(){
-  const $ = (id)=>document.getElementById(id);
-
-
-// === helper: هل الاختيار الحالي = "كشف" ؟ (يعتمد على التخزين) ===
-function _isKashfChoice(){
-  try {
-    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
-    return c === 'كشف';
-  } catch { return false; }
 }
-// حد الدقيقة الفاصل لاعتبار "اليوم السابق" (05:40 افتراضيًا، و05:20 في كشف)
-function _cutMinuteForShift(){
-  return _isKashfChoice() ? 20 : 40;
-}
+const TRANSFER_REASONS = [
+  "اجازة اعتيادية",
+  "اجازة عرضية",
+  "مصلحة العمل",
+  "انتداب"
+];
 
-  // فحص وضع "تطبيق"
-  function isApplyMode() {
-    const choice =
-      (localStorage.getItem('wordLinkChoice') ||
-       localStorage.getItem('lastWordLinkChoice') ||
-       '').trim();
-    return choice === 'تطبيق';
-  }
-
-  // إظهار/إخفاء وفتح حقول المجموعة 2 و3 فقط
-  function setupApplyPairs23(){
-    const on = isApplyMode();
-
-    // فتح الاسم/الرتبة للمجموعة 2 و3 إذا كان تطبيق، وإلا إبقائها كما هي
-    [2,3].forEach(i=>{
-      const nm = $(`IndividualName${i}`);
-      const rk = $(`IndividualRank${i}`);
-      const dur= $(`ApplyDuration${i}`);
-      const rsn= $(`ApplyReason${i}`);
-
-      // الظهور يكون طبيعيًا ضمن .form-grid (لا نعدّل display)
-      // فقط نتحكم بتفعيل/تعطيل الاسم والرتبة حسب الوضع
-      if (nm) {
-        nm.disabled = !on ? nm.disabled : false;
-        if (on && !nm.placeholder) nm.placeholder = 'اكتب اسم الفرد';
-      }
-      if (rk) {
-        rk.disabled = !on ? rk.disabled : false;
-        if (on && !rk.placeholder) rk.placeholder = 'اكتب الرتبة';
-      }
-
-      // المدة/السبب تبقى ظاهرة مثل بقية الحقول (لا تنسيق إضافي)
-      // فقط نتأكد من وجود placeholder إن لزم
-      if (dur && !dur.placeholder) dur.placeholder = 'ساعة … 6 ساعات';
-      if (rsn && !rsn.placeholder) rsn.placeholder = 'اختر أو اكتب السبب';
+function initTransferredPermissions(){
+  // قائمة الصلاحيات (تبقى كما هي)
+  const dl = $('permissions-list');
+  if (dl) {
+    dl.innerHTML = "";
+    TRANSFERRED_PERMISSIONS.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p;
+      dl.appendChild(opt);
     });
   }
 
-  document.addEventListener('DOMContentLoaded', setupApplyPairs23);
-  // لو تغيّرت قيمة التخزين لاحقًا، يمكنك استدعاء setupApplyPairs23() يدويًا
-})();
-(function(){
-  const $ = (id)=>document.getElementById(id);
-
-
-// === helper: هل الاختيار الحالي = "كشف" ؟ (يعتمد على التخزين) ===
-function _isKashfChoice(){
-  try {
-    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
-    return c === 'كشف';
-  } catch { return false; }
-}
-// حد الدقيقة الفاصل لاعتبار "اليوم السابق" (05:40 افتراضيًا، و05:20 في كشف)
-function _cutMinuteForShift(){
-  return _isKashfChoice() ? 20 : 40;
-}
-
-  function isApplyMode() {
-    const choice =
-      (localStorage.getItem('wordLinkChoice') ||
-       localStorage.getItem('lastWordLinkChoice') ||
-       '').trim();
-    return choice === 'تطبيق';
+  // قائمة أسباب النقل (جديدة)
+  const dlR = $('transfer-reasons-list');
+  if (dlR) {
+    dlR.innerHTML = "";
+    TRANSFER_REASONS.forEach(r => {
+      const opt = document.createElement("option");
+      opt.value = r;
+      dlR.appendChild(opt);
+    });
   }
+}
 
-  // إظهار/إخفاء عنصر مع الليبل الخاص به
+  // إظهار/إخفاء عنصر مع الليبل الخاص به (label[for="..."])
   function showPair(id, show){
     const el   = $(id);
     const lbl  = document.querySelector(`label[for="${id}"]`);
@@ -3854,32 +3653,75 @@ function _cutMinuteForShift(){
     if (lbl) lbl.style.display = disp;
   }
 
-  function applyVisibilityForGroup(i, show){
-    showPair(`IndividualName${i}`, show);
-    showPair(`IndividualRank${i}`, show);
-    showPair(`ApplyDuration${i}`, show);
-    showPair(`ApplyReason${i}`, show);
+  // إظهار/إخفاء مجموعة (2/3) + التحكم بمدة/سبب التطبيق
+  function applyVisibilityForGroup(i, showGroup, showApply){
+    showPair(`IndividualName${i}`, showGroup);
+    showPair(`IndividualRank${i}`, showGroup);
 
-    // عند الظهور في وضع تطبيق: افتح الاسم/الرتبة واجعل الـ placeholder مناسب
-    if (show && isApplyMode()) {
-      const nm = $(`IndividualName${i}`);
-      const rk = $(`IndividualRank${i}`);
+    // في "صلاحيات": أخفِ مدة/سبب التطبيق دائمًا
+    showPair(`ApplyDuration${i}`, showApply);
+    showPair(`ApplyReason${i}`,   showApply);
+
+    // عند ظهور الاسم/الرتبة: افتحها في تطبيق/صلاحيات
+    const nm = $(`IndividualName${i}`);
+    const rk = $(`IndividualRank${i}`);
+    if (showGroup && (isApplyMode() || isPermissionsMode())) {
       if (nm) { nm.disabled = false; if (!nm.placeholder) nm.placeholder = 'اكتب اسم الفرد'; }
       if (rk) { rk.disabled = false; if (!rk.placeholder) rk.placeholder = 'اكتب الرتبة'; }
     }
   }
 
-  function updateApplyGroups23Visibility(){
-    const on = isApplyMode();
-    // المجموعة 2 و 3 فقط
-    applyVisibilityForGroup(2, on);
-    applyVisibilityForGroup(3, on);
+  function updateIndividualsExtendedVisibility(){
+    const apply = isApplyMode();
+    const perm  = isPermissionsMode();
+
+    // عبارات نقل الصلاحيات (تظهر فقط في وضع صلاحيات)
+    const transferFromLabel = document.getElementById('permTransferFrom');
+  if (transferFromLabel) {
+    transferFromLabel.style.display = perm ? 'block' : 'none';
   }
 
-  document.addEventListener('DOMContentLoaded', updateApplyGroups23Visibility);
+  // نقل صلاحية الى
+  const transferToLabel = document.getElementById('permTransferTo');
+  if (transferToLabel) {
+    transferToLabel.style.display = perm ? 'block' : 'none';
+  }
 
-  // لو عدّلت قيمة التخزين إلى "تطبيق" أثناء العمل، أعد الاستدعاء يدويًا:
-  // window.addEventListener('storage', updateApplyGroups23Visibility);
+const n1 = document.getElementById('perm-note-1');
+const n2 = document.getElementById('perm-note-2');
+if (n1) n1.style.display = perm ? '' : 'none';
+if (n2) n2.style.display = perm ? '' : 'none';
+
+    // المجموعة 2: تظهر في تطبيق + صلاحيات
+    applyVisibilityForGroup(2, apply || perm, apply);
+
+    // المجموعة 3: تظهر فقط في تطبيق
+    applyVisibilityForGroup(3, apply, apply);
+
+    // الفواصل بين المجموعات
+    const sep12 = document.getElementById('individual-sep-1-2');
+    const sep23 = document.getElementById('individual-sep-2-3');
+    if (sep12) sep12.style.display = (apply || perm) ? '' : 'none';
+    if (sep23) sep23.style.display = apply ? '' : 'none';
+
+    // مدة/سبب التطبيق للفرد (1) — عناصرها تحمل ID مباشرة (ليست label[for])
+    ["ApplyDurationLabel","ApplyDuration","ApplyReasonLabel","ApplyReason"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = apply ? 'block' : 'none';
+    });
+
+    // عناصر "صلاحيات" الجديدة (رقم الهوية + رقم المشغل للفرد 1 و2)
+["IndividualID","OperatorNumber1","IndividualID2","OperatorNumber2"].forEach(id => showPair(id, perm));
+
+// إظهار/إخفاء قسم "الصلاحيات المنقولة"
+const permCard = document.getElementById('card-transferred-permissions');
+if (permCard) permCard.style.display = perm ? '' : 'none';
+  }
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTransferredPermissions();
+  updateIndividualsExtendedVisibility();
+});
 })();
 document.addEventListener("DOMContentLoaded", function () {
   const dateInput = document.getElementById("custom-hijri-date");
@@ -3946,11 +3788,18 @@ async function loadIndividualsWithID() {
     const data = await res.json();
 
     const list = document.getElementById("individual-list");
-    const nameInput = document.getElementById("IndividualName");
-    const rankInput = document.getElementById("IndividualRank");
-    const idInput   = document.getElementById("IndividualID");
 
-    const allIndividuals = [];
+    const nameInput  = document.getElementById("IndividualName");
+    const rankInput  = document.getElementById("IndividualRank");
+    const idInput    = document.getElementById("IndividualID");
+
+    const nameInput2 = document.getElementById("IndividualName2");
+    const rankInput2 = document.getElementById("IndividualRank2");
+    const idInput2   = document.getElementById("IndividualID2");
+
+    const nameInput3 = document.getElementById("IndividualName3");
+    const rankInput3 = document.getElementById("IndividualRank3");
+const allIndividuals = [];
 
     // تحويل جميع الشفتات والحروف إلى مصفوفة واحدة
     for (const letter in data) {
@@ -3970,15 +3819,24 @@ async function loadIndividualsWithID() {
       list.appendChild(opt);
     });
 
-    // عند اختيار الاسم
-    nameInput.addEventListener("change", () => {
-      const selected = allIndividuals.find(p => p.name === nameInput.value.trim());
+    // عند اختيار الاسم: عبّي الرتبة + رقم الهوية تلقائيًا (عند تطابق الاسم)
+    function bindAutoFill(nameEl, rankEl, idEl){
+      if (!nameEl) return;
+      const update = () => {
+        const val = (nameEl.value || '').trim();
+        const selected = allIndividuals.find(p => (p.name || '').trim() === val);
+        if (rankEl) rankEl.value = selected ? (selected.rank || "") : "";
+        if (idEl)   idEl.value   = selected ? (selected.id   || "") : "";
+      };
+      nameEl.addEventListener("change", update);
+      nameEl.addEventListener("input",  update);
+      nameEl.addEventListener("blur",   update);
+    }
 
-      rankInput.value = selected ? selected.rank || "" : "";
-      idInput.value   = selected ? selected.id   || "" : "";
-    });
-
-  } catch (e) {
+    bindAutoFill(nameInput,  rankInput,  idInput);
+    bindAutoFill(nameInput2, rankInput2, idInput2);
+    bindAutoFill(nameInput3, rankInput3, null);
+} catch (e) {
     console.error("خطأ في تحميل الأفراد:", e);
   }
 }

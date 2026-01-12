@@ -9,365 +9,376 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/icon-g.png" type="image/x-icon">
     <style>
-        body {
-            font-family: 'Cairo', Arial, sans-serif;
-            direction: rtl;
-            background-color: #d3d3d3;
-            margin: 0;
-            padding: 0;
-        }
-        a {
-            text-decoration: none;
-        }
-        .top-bar {
-            background-color: #3d775f;
-            color: white;
-            padding: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        .top-bar .right, .top-bar .left {
-            display: flex;
-            align-items: center;
-        }
-        .top-bar .left {
-            flex-grow: 1;
-            justify-content: flex-end;
-        }
-        .top-bar .left a {
-            color: white;
-            margin-left: 10px;
-            cursor: pointer;
-        }
-        .top-bar .left a:hover {
-            text-decoration: underline;
-        }
-        .top-bar .right .logo-container {
-            display: flex;
-            align-items: center;
-        }
-        .top-bar .right img {
-            height: 60px;
-            margin-left: 10px;
-        }
-        .top-bar .right div {
-            font-size: 12px;
-            text-align: right;
-        }
-        .top-bar .right div div {
-            line-height: 1.2;
-        }
-        #date {
-            font-family: 'Amiri', serif;
-            font-size: 16px;
-            color: white;
-            margin-left: 15px;
-        }
-        .buttons-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: calc(100vh - 100px);
-            justify-content: center;
-            gap: 20px;
-            padding-top: 70px; /* Add padding to avoid overlap with top bar */
-            box-sizing: border-box;
-        }
-        .buttons-container a {
-            background-color: #ffffff;
-            color: #004d00;
-            border: none;
-            padding: 20px 40px;
-            font-size: 24px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 500px;
-            text-decoration: none;
-            box-sizing: border-box;
-            position: relative; /* Added for positioning the icon */
-        }
-        .buttons-container a i {
-            font-size: 36px;
-            position: absolute; /* Position the icon absolutely */
-            right: 20px; /* Align it to the right */
-        }
-        .buttons-container a:hover {
-            background-color: #868e94;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .highlight {
-            background-color: #ffffff;
-            transition: background-color 0.5s;
-        }
-        @media (max-width: 768px) {
-            .buttons-container a {
-                padding: 15px 30px;
-                font-size: 20px;
-            }
-            .buttons-container a i {
-                font-size: 8vw; /* Larger icon size for smaller screens */
-                right: 10px; /* Adjust right position for smaller screens */
-            }
-        }
-        @media (max-width: 480px) {
-            .buttons-container a {
-                padding: 10px 20px;
-                font-size: 18px;
-            }
-            .buttons-container a i {
-                font-size: 10vw; /* Even larger icon size for very small screens */
-                right: 5px; /* Adjust right position for very small screens */
-            }
-        }
-        .password-container {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.5);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-        }
-        .password-box {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            position: relative;
-        }
-        .password-box input {
-            padding: 10px;
-            font-size: 18px;
-            margin: 10px 0;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .password-box button {
-            padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border: none;
-            background-color: #3d775f;
-            color: #fff;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .password-box button:hover {
-            background-color: #868e94;
-        }
-        .password-box .close-btn {
-            background-color: #f44336;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            padding: 10px 20px;
-            margin-top: 10px;
-        }
-        .password-box .close-btn:hover {
-            background-color: #d32f2f;
-        }
-    </style>
+:root{
+  --brand:#3d775f;
+  --brand-2:#2f5f4b;
+  --accent:#868e94;
+  --bg-1:#d3d3d3;
+  --bg-2:#c6c6c6;
+  --surface:#ffffff;
+  --surface-2:#f2f3f4;
+  --text:#0f172a;
+  --muted:#334155;
+  --shadow: 0 10px 25px rgba(0,0,0,.12);
+  --shadow-2: 0 18px 40px rgba(0,0,0,.18);
+  --radius:18px;
+  --radius-sm:12px;
+}
+
+*{ box-sizing:border-box; }
+
+html,body{ height:100%; }
+
+body{
+  font-family: 'Cairo', Arial, sans-serif;
+  direction: rtl;
+  margin:0;
+  padding:0;
+  color:var(--text);
+  background: radial-gradient(1200px 600px at 20% 0%, rgba(61,119,95,.25), transparent 60%),
+              radial-gradient(900px 500px at 80% 20%, rgba(134,142,148,.20), transparent 60%),
+              linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  overflow-x:hidden;
+}
+
+a{ text-decoration:none; color:inherit; }
+
+/* Top bar */
+.top-bar{
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  color:#fff;
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:1000;
+  box-shadow: 0 8px 18px rgba(0,0,0,.18);
+  backdrop-filter: blur(6px);
+}
+
+.top-bar .right, .top-bar .left{ display:flex; align-items:center; gap:10px; }
+
+.top-bar .left{ flex-grow:1; justify-content:flex-end; gap:12px; }
+
+.top-bar .left a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  border-radius: 12px;
+  color:#fff;
+  opacity:.95;
+  transition: transform .22s ease, background-color .22s ease, box-shadow .22s ease, opacity .22s ease;
+}
+
+.top-bar .left a:hover{
+  transform: translateY(-2px);
+  background-color: rgba(255,255,255,.12);
+  box-shadow: 0 10px 20px rgba(0,0,0,.18);
+  opacity:1;
+}
+
+.top-bar .left a:active{ transform: translateY(0); box-shadow:none; }
+
+#date{
+  font-family: 'Amiri', serif;
+  font-size: 14px;
+  color:#fff;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.16);
+}
+
+/* Logo */
+.top-bar .right .logo-container{ display:flex; align-items:center; gap:10px; }
+
+.top-bar .right img{
+  height:56px;
+  width:auto;
+  margin-left:0;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.22));
+}
+
+.top-bar .right div{
+  font-size:12px;
+  text-align:right;
+}
+
+.top-bar .right div div{ line-height:1.25; opacity:.98; }
+
+/* Main area */
+.buttons-container{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding: 96px 18px 28px;
+  width:100%;
+}
+
+.buttons-container::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+  opacity:.35;
+  mix-blend-mode: overlay;
+}
+
+.buttons-container a{
+  width:100%;
+  max-width: 560px;
+  background: linear-gradient(145deg, var(--surface), var(--surface-2));
+  color: var(--brand-2);
+  border: 1px solid rgba(15,23,42,.08);
+  padding: 18px 54px;
+  font-size: 22px;
+  border-radius: var(--radius);
+  cursor:pointer;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-shadow: var(--shadow);
+  transition: transform .28s ease, box-shadow .28s ease, background .28s ease, color .28s ease, border-color .28s ease;
+  isolation:isolate;
+  overflow:hidden;
+}
+
+/* Subtle shine */
+.buttons-container a::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.40) 35%, transparent 70%);
+  transform: translateX(120%);
+  transition: transform .55s ease;
+  z-index:0;
+}
+
+.buttons-container a span, .buttons-container a i{ position:relative; z-index:1; }
+
+.buttons-container a i{
+  font-size: 34px;
+  position:absolute;
+  right:18px;
+  color: var(--brand);
+  transition: transform .28s ease, color .28s ease, filter .28s ease;
+  filter: drop-shadow(0 10px 14px rgba(0,0,0,.12));
+}
+
+.buttons-container a:hover{
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: var(--shadow-2);
+  border-color: rgba(61,119,95,.35);
+  background: linear-gradient(145deg, rgba(61,119,95,.95), rgba(47,95,75,.95));
+  color:#fff;
+}
+
+.buttons-container a:hover::after{ transform: translateX(-120%); }
+
+.buttons-container a:hover i{
+  transform: scale(1.15) rotate(-6deg);
+  color:#fff;
+  filter: drop-shadow(0 14px 18px rgba(0,0,0,.22));
+}
+
+.buttons-container a:active{
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 0 10px 22px rgba(0,0,0,.16);
+}
+
+/* Focus accessibility */
+.buttons-container a:focus-visible,
+.top-bar .left a:focus-visible,
+.password-box button:focus-visible,
+.password-box input:focus-visible{
+  outline: 3px solid rgba(255,255,255,.55);
+  outline-offset: 3px;
+}
+
+/* Password modal */
+.password-container{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background: rgba(2,6,23,.55);
+  position:fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  z-index:1100;
+  padding: 18px;
+}
+
+.password-box{
+  width:min(420px, 100%);
+  background: linear-gradient(145deg, #ffffff, #f4f6f7);
+  padding: 18px;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 45px rgba(0,0,0,.28);
+  text-align:center;
+  position:relative;
+  border: 1px solid rgba(15,23,42,.10);
+  animation: popIn .22s ease-out;
+}
+
+.password-box input{
+  padding: 12px 12px;
+  font-size: 18px;
+  margin: 10px 0;
+  width:100%;
+  border-radius: 12px;
+  border: 1px solid rgba(15,23,42,.15);
+  background:#fff;
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+.password-box input:focus{
+  border-color: rgba(61,119,95,.6);
+  box-shadow: 0 0 0 4px rgba(61,119,95,.18);
+  outline:none;
+}
+
+.password-box button{
+  padding: 11px 16px;
+  font-size: 18px;
+  cursor:pointer;
+  border:none;
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  color:#fff;
+  border-radius: 12px;
+  margin-top: 10px;
+  width:100%;
+  transition: transform .18s ease, filter .18s ease;
+}
+
+.password-box button:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+
+.password-box .close-btn{
+  background: linear-gradient(90deg, #f44336, #d32f2f);
+  margin-top: 10px;
+}
+
+/* Responsiveness */
+@media (max-width: 768px){
+  #date{ font-size: 13px; }
+  .buttons-container{ padding-top: 92px; }
+  .buttons-container a{
+    padding: 16px 48px;
+    font-size: 20px;
+    max-width: 520px;
+  }
+  .buttons-container a i{ font-size: 8vw; right: 14px; }
+  .top-bar .left a{ width:36px; height:36px; border-radius: 12px; }
+  .top-bar .right img{ height: 52px; }
+}
+
+@media (max-width: 480px){
+  .buttons-container a{
+    padding: 14px 44px;
+    font-size: 18px;
+    border-radius: 16px;
+  }
+  .buttons-container a i{ font-size: 10vw; right: 12px; }
+  #date{ display:none; } /* keeps bar clean on very small screens */
+}
+
+
+/* ===== Page header ===== */
+.page-header{
+  width: min(980px, calc(100% - 32px));
+  margin: 92px auto 8px;
+  padding: 18px 18px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(255,255,255,.70), rgba(255,255,255,.55));
+  border: 1px solid rgba(15,23,42,.08);
+  box-shadow: 0 10px 22px rgba(0,0,0,.10);
+}
+.page-header h1{
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: var(--brand-2);
+}
+.page-header p{
+  margin: 0;
+  font-size: 14px;
+  color: rgba(15,23,42,.72);
+  line-height: 1.7;
+}
+
+/* ===== Square icon boxes (buttons) ===== */
+.buttons-container a{
+  padding: 18px 120px 18px 64px; /* extra space for icon box on the right */
+}
+
+.buttons-container a i{
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(61,119,95,.12);
+  border: 1px solid rgba(61,119,95,.22);
+  border-radius: 14px; /* مربع بحواف ناعمة */
+  box-shadow: 0 6px 14px rgba(0,0,0,.10);
+  color: var(--brand);
+}
+
+.buttons-container a:hover i{
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.40);
+  box-shadow: 0 10px 18px rgba(0,0,0,.20);
+  filter: none;
+}
+
+/* Make top-bar icons look like square controls too */
+.top-bar .left a{
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+}
+.top-bar .left a:hover{
+  background: rgba(255,255,255,.18);
+  border-color: rgba(255,255,255,.28);
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px){
+  .page-header{ margin-top: 92px; }
+  .buttons-container a{ padding: 16px 104px 16px 54px; }
+  .buttons-container a i{ width: 50px; height: 50px; }
+}
+@media (max-width: 480px){
+  .page-header{ margin-top: 92px; padding: 14px; }
+  .buttons-container a{ padding: 14px 96px 14px 46px; }
+  .buttons-container a i{ width: 46px; height: 46px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* Animations */
+@keyframes popIn{
+  from{ opacity:0; transform: scale(.96); }
+  to{ opacity:1; transform: scale(1); }
+}
+</style>
     <script>
-        const fs = require('fs');
-const path = require('path');
-const https = require('https');
-
-// قراءة ملف package.json المحلي
-const packageJsonPath = path.join(__dirname, 'package.json');
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-const currentVersion = packageJson.version;
-
-// رابط GitHub للحصول على الإصدار الأخير
-const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/releases/latest';
-
-https.get(githubApiUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
-    let data = '';
-
-    // جمع البيانات
-    res.on('data', (chunk) => {
-        data += chunk;
-    });
-
-    // بعد الانتهاء من جمع البيانات
-    res.on('end', () => {
-        console.log('Received data from GitHub:', data); // سجل البيانات التي تم استلامها
-
-        const releaseData = JSON.parse(data);
-        const latestVersion = releaseData.tag_name.replace('v', '');
-
-        console.log(`Current version: ${currentVersion}`);
-        console.log(`Latest version from GitHub: ${latestVersion}`);
-
-        // جلب رابط التحميل المباشر من الأصول (Assets)
-        const assetUrl = releaseData.assets && releaseData.assets.length > 0 ? releaseData.assets[0].browser_download_url : null;
-
-        if (compareVersions(latestVersion, currentVersion) && assetUrl) {
-            console.log(`يوجد إصدار جديد متاح: ${latestVersion}`);
-            showUpdateAvailableMessage(latestVersion, assetUrl);
-        } else {
-            console.log('أنت تستخدم أحدث إصدار.');
-            showLatestVersionMessage(latestVersion, assetUrl);
-        }
-    });
-}).on('error', (err) => {
-    console.error('حدث خطأ أثناء التحقق من التحديث:', err);
-});
-
-// دالة للمقارنة بين الإصدارين
-function compareVersions(latest, current) {
-    const latestParts = latest.split('.').map(Number);
-    const currentParts = current.split('.').map(Number);
-
-    for (let i = 0; i < latestParts.length; i++) {
-        if (latestParts[i] > currentParts[i]) {
-            return true;
-        } else if (latestParts[i] < currentParts[i]) {
-            return false;
-        }
-    }
-    return false;
-}
-
-// دالة لعرض رسالة وجود تحديث جديد
-function showUpdateAvailableMessage(latestVersion, downloadUrl) {
-    const messageContainer = document.createElement("div");
-    messageContainer.style.backgroundColor = "#ff4d4d"; // اللون الأحمر
-    messageContainer.style.color = "#ffffff";
-    messageContainer.style.padding = "5px"; // تقليل الحشو
-    messageContainer.style.textAlign = "center";
-    messageContainer.style.position = "fixed";
-    messageContainer.style.bottom = "10px"; // مسافة صغيرة من الأسفل
-    messageContainer.style.right = "10px"; // مسافة صغيرة من اليمين
-    messageContainer.style.width = "250px"; // عرض صغير
-    messageContainer.style.zIndex = "1000";
-    messageContainer.style.borderRadius = "5px"; // لتنعيم الحواف
-    messageContainer.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)"; // إضافة ظل
-    messageContainer.style.fontSize = "12px"; // تصغير حجم النص
-    messageContainer.style.lineHeight = "1.5"; // تحسين المسافات بين الأسطر
-
-    const icon = document.createElement("i");
-    icon.className = "fas fa-exclamation-circle"; // أيقونة تنبيه
-    icon.style.fontSize = "16px"; // حجم أيقونة صغير
-    icon.style.marginRight = "5px"; // مسافة بين الأيقونة والنص
-
-    const text = document.createElement("span");
-    text.textContent = `تحديث جديد: ${latestVersion}`;
-
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.textContent = "تحميل";
-    link.style.color = "#ffffff";
-    link.style.fontWeight = "bold";
-    link.style.textDecoration = "underline";
-    link.style.marginLeft = "5px"; // مسافة صغيرة بين النص والرابط
-    link.setAttribute("download", "");
-
-    messageContainer.appendChild(icon);
-    messageContainer.appendChild(text);
-    messageContainer.appendChild(link);
-
-    document.body.appendChild(messageContainer);
-}
-
-// دالة لعرض رسالة "أنت تستخدم آخر إصدار" مع رابط إعادة التحديث
-function showLatestVersionMessage(latestVersion, downloadUrl) {
-    const messageContainer = document.createElement("div");
-    messageContainer.style.backgroundColor = "#007bff"; // اللون الأزرق
-    messageContainer.style.color = "#ffffff";
-    messageContainer.style.padding = "5px"; // تقليل الحشو
-    messageContainer.style.textAlign = "center";
-    messageContainer.style.position = "fixed";
-    messageContainer.style.bottom = "10px"; // مسافة صغيرة من الأسفل
-    messageContainer.style.right = "10px"; // مسافة صغيرة من اليمين
-    messageContainer.style.width = "250px"; // عرض أكبر قليلاً
-    messageContainer.style.zIndex = "1000";
-    messageContainer.style.borderRadius = "5px"; // لتنعيم الحواف
-    messageContainer.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)"; // إضافة ظل
-    messageContainer.style.fontSize = "12px"; // تصغير حجم النص
-    messageContainer.style.lineHeight = "1.5"; // تحسين المسافات بين الأسطر
-
-    const icon = document.createElement("i");
-    icon.className = "fas fa-check-circle"; // أيقونة مناسبة
-    icon.style.fontSize = "16px"; // حجم أيقونة صغير
-    icon.style.marginRight = "5px"; // مسافة بين الأيقونة والنص
-
-    const text = document.createElement("span");
-    text.textContent = "أنت تستخدم آخر إصدار";
-
-    const updateLink = document.createElement("a");
-    updateLink.href = downloadUrl;
-    updateLink.textContent = "إعادة التحديث، اضغط هنا";
-    updateLink.style.color = "#ffffff";
-    updateLink.style.fontWeight = "bold";
-    updateLink.style.textDecoration = "underline";
-    updateLink.style.marginTop = "5px"; // مسافة بين النص ورابط التحديث
-    updateLink.style.display = "block"; // تحويل الرابط إلى عنصر كتلة ليكون في سطر منفصل
-    updateLink.addEventListener("click", function(event) {
-        event.preventDefault();
-        // تحميل التحديث عند النقر
-        downloadUpdate(downloadUrl);
-    });
-
-    messageContainer.appendChild(icon);
-    messageContainer.appendChild(text);
-    messageContainer.appendChild(updateLink);
-
-    document.body.appendChild(messageContainer);
-}
-
-// دالة لتحميل التحديث عند النقر على الرابط
-function downloadUpdate(downloadUrl) {
-    // عرض رسالة "جاري التثبيت الآن... إغلاق التطبيق"
-    const installingMessageContainer = document.createElement("div");
-    installingMessageContainer.style.backgroundColor = "red"; // اللون الأحمر
-    installingMessageContainer.style.color = "#ffffff";
-    installingMessageContainer.style.padding = "10px";
-    installingMessageContainer.style.textAlign = "center";
-    installingMessageContainer.style.position = "fixed";
-    installingMessageContainer.style.bottom = "10px";
-    installingMessageContainer.style.right = "10px";
-    installingMessageContainer.style.width = "250px";
-    installingMessageContainer.style.zIndex = "1000";
-    installingMessageContainer.style.borderRadius = "5px";
-    installingMessageContainer.style.boxShadow = "0 2px 5px rgba(0,0,0,0.2)";
-    installingMessageContainer.style.fontSize = "12px";
-    installingMessageContainer.style.lineHeight = "1.5";
-
-    const installText = document.createElement("span");
-    installText.textContent = "جاري التثبيت الآن... إغلاق التطبيق عند بدء التثبيت";
-    installingMessageContainer.appendChild(installText);
-
-    document.body.appendChild(installingMessageContainer);
-
-    // عملية تحميل التحديث
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = ""; // تحديد أن الرابط يجب أن يقوم بتنزيل الملف
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // إغلاق التطبيق بعد تحميل التحديث
-    const { ipcRenderer } = require('electron');
-    ipcRenderer.send('close-app');  // إرسال طلب لإغلاق التطبيق
-}
+        
 
 
  
@@ -463,22 +474,22 @@ function downloadUpdate(downloadUrl) {
         <div class="right">
             <div class="logo-container">
                 <img src="img/main-httpswww.gdp.gov.saportalassetsimglogo.png" alt="الشعار">
-                <div>
-                    <div>المملكة العربية السعودية</div>
-                    <div>وزارة الداخلية - المديرية العامة للجوازات</div>
-                </div>
+                
             </div>
         </div>
         <div class="left">
             
             <span id="date"></span>
-            <a id="print-button"><i class="fas fa-print"></i></a>
-            <a href="#"><i class="fas fa-desktop"></i></a>
-            <a href="#"><i class="fas fa-bell"></i></a>
-            <a href="#"><i class="fas fa-headset"></i></a>
-            <a href="#"><i class="fas fa-file-alt"></i></a>
+            <a id="print-button" title="طباعة"><i class="fas fa-print"></i></a>
+            <a href="#" title="الوضع المكتبي"><i class="fas fa-desktop"></i></a>
+            <a href="#" title="التنبيهات"><i class="fas fa-bell"></i></a>
+            <a href="#" title="الدعم"><i class="fas fa-headset"></i></a>
+            <a href="#" title="الملفات"><i class="fas fa-file-alt"></i></a>
         </div>
     </div>
+
+    
+
     <div class="buttons-container">
         <a href="Arrival.html" ><i class="fas fa-plane-arrival"></i> <span>القدوم</span></a>
         <a href="Departure.html" ><i class="fas fa-plane-departure"></i> <span>مغادرة</span></a>
@@ -486,10 +497,10 @@ function downloadUpdate(downloadUrl) {
             <i class="fas fa-folder-open"></i> <span>تعديل الملفات</span>
         </a>
         <a href="update.html">
-    <i class="fas fa-sync-alt"></i> <span>تحديث البرنامج كامل</span>
+    <i class="fas fa-download"></i> <span>تحديث البرنامج كامل</span>
 </a>
 <a href="tesst.html">
-    <i class="fas fa-sync-alt"></i> <span>تعديل قاعدة البيانات</span>
+    <i class="fas fa-database"></i> <span>تعديل قاعدة البيانات</span>
 </a>
 
 
