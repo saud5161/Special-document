@@ -743,8 +743,8 @@
             <datalist id="airlines"></datalist>
 
                         <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
-                        <input id="FlightNumber" placeholder="مثال: SV225" />
-            <div id="flight-suggestions" class="flight-suggestions" hidden></div>
+                        <input id="FlightNumber" list="flightNumbers" placeholder="مثال: SV225" />
+            <datalist id="flightNumbers"></datalist>
 
                         <!-- وجهة السفر -->
             <label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
@@ -764,7 +764,8 @@
             <input id="AirlineNameNow" list="airlines" placeholder="اسم شركة الطيران">
 
             <label for="FlightNumberNow"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
-            <input id="FlightNumberNow" placeholder="مثال: XY123">
+            <input id="FlightNumberNow" list="flightNumbersNow" placeholder="مثال: XY123">
+            <datalist id="flightNumbersNow"></datalist>
 
             <label for="TravelDestinationNow"><i class="fas fa-location-dot"></i> وجهة السفر</label>
             <input id="TravelDestinationNow" list="destinations" placeholder="المدينة / الدولة">

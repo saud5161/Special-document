@@ -3647,11 +3647,90 @@ document.addEventListener('DOMContentLoaded', () => {
     bindAutoDest(routeMap, 'FlightNumberNow',  'TravelDestinationNow');
   });
 })();
-// ==== اقتراحات أرقام الرحلات (قائمة بيضاء معزولة + حد أقصى 5 عناصر مرئية) ====
-// - تظهر ملاصقة لحقل "رقم الرحلة" بدون اختيار تلقائي
-// - تعمل مع fly.json (يدعم flights أو extra_routes)
-// - التنسيق معزول عبر Shadow DOM ولا يؤثر على بقية الصفحة
-// - عند تعبئة الوجهة تلقائيًا: تظهر رسالة خضراء "تم اقتراح الوجهة" أسفل خانة الوجهة
+// ==== اقتراحات أرقام الرحلات (Datalist ملتصق بحقل رقم الرحلة) ====
+// الفكرة: عند اختيار "الخطوط الناقلة" يتم تعبئة datalist مرتبط بحقل FlightNumber
+// بحيث تظهر الاقتراحات داخل نفس الحقل (سهم الاختيار) وليس أسفله.
+
+(function(){
+  // توحيد رقم الرحلة: أحرف كبيرة + إزالة الفراغات والرموز، مع إبقاء A-Z و 0-9 فقط
+  const normNo = s => String(s || '')
+    .toUpperCase()
+    .replace(/\s+/g, '')
+    .replace(/[^A-Z0-9]/g, '');
+
+  const getPrefix = no => (normNo(no).match(/^[A-Z]+/) || [''])[0];
+
+  async function buildPrefixMap(){
+    try {
+      const res = await fetch('fly.json', { cache: 'no-store' });
+      const data = await res.json();
+      const rows = Array.isArray(data) ? data : (data.extra_routes || data.routes || data.flights || []);
+      const map = new Map(); // prefix -> Array(no)
+      const buckets = new Map(); // prefix -> Set(no)
+
+      (rows || []).forEach(r => {
+        const no = normNo(r?.no || r?.flight_no || r?.flightNumber || '');
+        const pref = getPrefix(no);
+        if (!no || !pref) return;
+
+        if (!buckets.has(pref)) buckets.set(pref, new Set());
+        buckets.get(pref).add(no);
+      });
+
+      // حوّلها إلى Arrays مرتبة
+      for (const [pref, set] of buckets.entries()){
+        const arr = Array.from(set);
+        arr.sort((a,b)=> a.localeCompare(b));
+        map.set(pref, arr);
+      }
+      return map;
+    } catch (e) {
+      console.error('❌ فشل تحميل fly.json لاقتراحات أرقام الرحلات:', e);
+      return new Map();
+    }
+  }
+
+  function fillDatalist(dl, items){
+    if (!dl) return;
+    dl.innerHTML = '';
+    (items || []).slice(0, 500).forEach(v => {
+      const opt = document.createElement('option');
+      opt.value = v;
+      dl.appendChild(opt);
+    });
+  }
+
+  function bindFlightDatalist(airlineId, flightId, datalistId, prefixMap){
+    const airline = document.getElementById(airlineId);
+    const flight  = document.getElementById(flightId);
+    const dl      = document.getElementById(datalistId);
+    if (!airline || !flight || !dl) return;
+
+    const update = () => {
+      const pref = getPrefix(flight.value);
+      fillDatalist(dl, pref ? prefixMap.get(pref) : []);
+    };
+
+    // بعد اختيار شركة الطيران سيتم إدخال كود IATA تلقائياً في FlightNumber بواسطة كود سابق،
+    // لذلك نؤخر التحديث لحظياً حتى تُكتب الحروف داخل الحقل.
+    const updateSoon = () => setTimeout(update, 0);
+
+    airline.addEventListener('change', updateSoon);
+    airline.addEventListener('blur',   updateSoon);
+
+    // عند التركيز/الكتابة داخل رقم الرحلة، حدّث القائمة حسب البادئة الحالية
+    flight.addEventListener('focus', update);
+    flight.addEventListener('input', update);
+
+    setTimeout(update, 0);
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const prefixMap = await buildPrefixMap();
+    bindFlightDatalist('AirlineName',    'FlightNumber',    'flightNumbers',    prefixMap);
+    bindFlightDatalist('AirlineNameNow', 'FlightNumberNow', 'flightNumbersNow', prefixMap);
+  });
+})();
 
 
 (function(){
