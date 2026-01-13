@@ -496,6 +496,76 @@ function hideIndividualPlaceholdersIfEstithan() {
 
 document.addEventListener("DOMContentLoaded", hideIndividualPlaceholdersIfEstithan);
 
+// ======================
+// إصلاح: تفعيل (اسم الفرد + الرتبة) بعد اختيار "نوع المحضر"
+// السبب: الحقول تبدأ disabled في HTML ولا يوجد Listener على RecordType لفتحها.
+// ======================
+function setupRecordTypeIndividualUnlock(){
+  const recordType = document.getElementById('RecordType');
+  if (!recordType) return;
+
+  const choice =
+    (localStorage.getItem('wordLinkChoice') ||
+     localStorage.getItem('lastWordLinkChoice') || '').trim();
+
+  const hidePlaceholders = (choice === 'استاذان');
+
+  const idsToToggle = [
+    'IndividualName','IndividualRank',
+    'IndividualName2','IndividualRank2',
+    'IndividualName3','IndividualRank3',
+  ];
+
+  const setLocked = (locked)=>{
+    idsToToggle.forEach(id=>{
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.disabled = locked;
+      if (hidePlaceholders) {
+        el.placeholder = '';
+      } else {
+        // placeholder مناسب حسب الحقل
+        if (locked) {
+          el.placeholder = 'اختر نوع المحضر أولاً';
+        } else {
+          if (id.includes('Rank')) el.placeholder = 'اكتب الرتبة';
+          else el.placeholder = 'اكتب/اختر الاسم';
+        }
+      }
+    });
+  };
+
+  // وضع ابتدائي حسب القيمة الحالية
+  setLocked(!recordType.value);
+
+  recordType.addEventListener('change', ()=>{
+    if (!recordType.value) {
+      // رجع للوضع المقفول إذا عاد للاختيار الافتراضي
+      setLocked(true);
+      // تنظيف القيم لتجنّب بقاء بيانات قديمة
+      ['IndividualName','IndividualRank','IndividualName2','IndividualRank2','IndividualName3','IndividualRank3']
+        .forEach(id=>{
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+      return;
+    }
+
+    // فتح الحقول
+    setLocked(false);
+
+    // تعبئة الاقتراحات (إن كانت قاعدة الأسماء محمّلة)
+    try {
+      if (typeof populateNamesForCurrentSelection === 'function') {
+        populateNamesForCurrentSelection();
+      }
+    } catch(e){}
+  });
+}
+
+document.addEventListener('DOMContentLoaded', setupRecordTypeIndividualUnlock);
+
+
 // ===== مسارات "كشف الحضور والانصراف" حسب الصالة + المناوبة =====
 const KASHF_FILES = {
   "1": {
@@ -3481,6 +3551,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // حروف فقط
     const letters = String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
     dst.value = letters;                 // لا نُبقي أرقام قديمة
+    
     dst.dir = 'ltr';                     // كتابة أرقام أسهل
     dst.style.textAlign = 'left';
     dst.focus();                         // ضع المؤشر في نهاية الحروف
