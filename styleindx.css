@@ -849,4 +849,34 @@ label {
   margin: 8px 0 4px;
   display: none;         /* JS يتحكم */
 }
+/* ===== Flight Number Input – Professional Look ===== */
+#FlightNumber {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: "Tajawal", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0d6efd;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+/* Focus state */
+#FlightNumber:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+  outline: none;
+}
+
+/* When value exists (✔ visual feedback already in your system) */
+#FlightNumber:not(:placeholder-shown) {
+  background-color: #f9fbff;
+}
+
+/* Placeholder */
+#FlightNumber::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
 

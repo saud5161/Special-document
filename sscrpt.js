@@ -1548,32 +1548,62 @@ if (choice === "تعذر-مغادرة") {
 // وضع absence
 // ===================
 if (choice === "غياب-افراد") {
-  // 1) إظهار بطاقة "بيانات الفرد"
+  // نفس منطق "غياب-مجندات": فرد واحد فقط (بدون فرد 2/3 وبدون مدة/سبب تطبيق)
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
 
-  // 2) إخفاء جميع البطاقات ما عدا: التاريخ/المستلم + بيانات الفرد + بيانات الصادر
   const keepIds = new Set(["card-receipt", "card-individual", "card-issued"]);
   document.querySelectorAll(".card").forEach(card => {
     if (!keepIds.has(card.id)) card.style.display = "none";
   });
 
-  // 3) إخفاء اسم/رتبة الآمر المناوب مع الـ labels
-  const commanderName = document.getElementById("commander-name");
-  const commanderRank = document.getElementById("commander-rank");
+  // إخفاء اسم/رتبة الآمر المناوب مع الـ labels
+  ["commander-name","commander-rank"].forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el)  el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
 
-  if (commanderName) {
-    commanderName.style.display = "none";
-    const labelName = document.querySelector('label[for="commander-name"]');
-    if (labelName) labelName.style.display = "none";
-  }
+  // تثبيت نوع المحضر على "أفراد" (لتصفية القائمة صحيحًا)
+  const rt = document.getElementById("RecordType");
+  if (rt) rt.value = "افراد";
 
-  if (commanderRank) {
-    commanderRank.style.display = "none";
-    const labelRank = document.querySelector('label[for="commander-rank"]');
-    if (labelRank) labelRank.style.display = "none";
-  }
-  
+  // إخفاء/تفريغ فرد 2 و3 بالكامل
+  const idsToHideClear = [
+    "IndividualName2","IndividualRank2","IndividualName3","IndividualRank3",
+    "ApplyDuration2","ApplyReason2","ApplyDuration3","ApplyReason3"
+  ];
+  idsToHideClear.forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el) { el.value = ""; el.required = false; el.disabled = true; el.style.display = "none"; }
+    if (lbl) lbl.style.display = "none";
+  });
+
+  // إخفاء الفواصل بين المجموعات
+  ["individual-sep-1-2","individual-sep-2-3"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+
+  // إخفاء/تفريغ مدة/سبب التطبيق للفرد (1)
+  ["ApplyDuration","ApplyReason"].forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el) { el.value = ""; el.required = false; el.style.display = "none"; }
+    if (lbl) lbl.style.display = "none";
+  });
+  ["ApplyDurationLabel","ApplyReasonLabel"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+
+  // فتح فرد (1) فقط
+  ["IndividualName","IndividualRank"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.disabled = false; el.required = true; }
+  });
 }
 if (choice === "تطبيق") {
  // 1) إظهار بطاقة "بيانات الفرد"
@@ -1731,31 +1761,57 @@ if (choice === "صلاحيات") {
 // وضع absence2
 // ===================
 if (choice === "غياب-مجندات") {
-  // 1) إظهار بطاقة "بيانات الفرد"
+  // فرد واحد فقط (بدون فرد 2/3 وبدون مدة/سبب تطبيق) — نفس منطق غياب-افراد
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
 
-  // 2) إخفاء جميع البطاقات ما عدا: التاريخ/المستلم + بيانات الفرد + بيانات الصادر
   const keepIds = new Set(["card-receipt", "card-individual", "card-issued"]);
   document.querySelectorAll(".card").forEach(card => {
     if (!keepIds.has(card.id)) card.style.display = "none";
   });
 
-  // 3) إخفاء اسم/رتبة الآمر المناوب مع الـ labels
-  const commanderName = document.getElementById("commander-name");
-  const commanderRank = document.getElementById("commander-rank");
+  ["commander-name","commander-rank"].forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el)  el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
 
-  if (commanderName) {
-    commanderName.style.display = "none";
-    const labelName = document.querySelector('label[for="commander-name"]');
-    if (labelName) labelName.style.display = "none";
-  }
+  // تثبيت نوع المحضر على "مجندات"
+  const rt = document.getElementById("RecordType");
+  if (rt) rt.value = "مجندات";
 
-  if (commanderRank) {
-    commanderRank.style.display = "none";
-    const labelRank = document.querySelector('label[for="commander-rank"]');
-    if (labelRank) labelRank.style.display = "none";
-  }
+  const idsToHideClear = [
+    "IndividualName2","IndividualRank2","IndividualName3","IndividualRank3",
+    "ApplyDuration2","ApplyReason2","ApplyDuration3","ApplyReason3"
+  ];
+  idsToHideClear.forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el) { el.value = ""; el.required = false; el.disabled = true; el.style.display = "none"; }
+    if (lbl) lbl.style.display = "none";
+  });
+
+  ["individual-sep-1-2","individual-sep-2-3"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+
+  ["ApplyDuration","ApplyReason"].forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el) { el.value = ""; el.required = false; el.style.display = "none"; }
+    if (lbl) lbl.style.display = "none";
+  });
+  ["ApplyDurationLabel","ApplyReasonLabel"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+
+  ["IndividualName","IndividualRank"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.disabled = false; el.required = true; }
+  });
 }
 
 // ===== وضع shafttime =====
@@ -3750,19 +3806,6 @@ const TRANSFERRED_PERMISSIONS = [
   "اشراف"
 ];
 
-function initTransferredPermissions(){
-  const dl = $('permissions-list');
-  if (dl) {
-    dl.innerHTML = "";
-    TRANSFERRED_PERMISSIONS.forEach(p => {
-      const opt = document.createElement("option");
-      opt.value = p;
-      dl.appendChild(opt);
-    });
-  }
-
-
-}
 const TRANSFER_REASONS = [
   "اجازة اعتيادية",
   "اجازة عرضية",
@@ -3792,6 +3835,16 @@ function initTransferredPermissions(){
       dlR.appendChild(opt);
     });
   }
+
+  // تأكيد أن حقول الصلاحيات كلها تستخدم نفس القائمة (مثل السابق)
+  ["Permission1","Permission2","Permission3","Permission4"].forEach(id => {
+    const el = $(id);
+    if (el) el.setAttribute("list", "permissions-list");
+  });
+
+  // تأكيد ربط سبب النقل بالقائمة
+  const tr = $("TransferReason");
+  if (tr) tr.setAttribute("list", "transfer-reasons-list");
 }
 
   // إظهار/إخفاء عنصر مع الليبل الخاص به (label[for="..."])
