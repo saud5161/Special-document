@@ -1,6 +1,46 @@
 
 const ALLOW_AUTO_SCROLL_ON_OPEN = false;
 
+
+
+// ===================
+// ربط نوع المحضر (RecordType) باختيار التخزين لنماذج الغياب
+// - "مجندات"  => wordLinkChoice = "غياب-مجندات"
+// - "افراد"   => wordLinkChoice = "غياب-افراد"
+// ===================
+(function () {
+  function getChoice() {
+    try {
+      return (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+    } catch { return ''; }
+  }
+  function setChoice(v) {
+    try {
+      localStorage.setItem('wordLinkChoice', v);
+      localStorage.setItem('lastWordLinkChoice', v);
+    } catch {}
+  }
+  function isAbsenceMode() {
+    const c = getChoice();
+    return c === 'غياب-افراد' || c === 'غياب-مجندات';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const rt = document.getElementById('RecordType');
+    if (!rt) return;
+
+    // في نماذج الغياب: لا نثبت قيمة تلقائيًا، نخلي الاختيار للمستخدم
+    if (isAbsenceMode()) rt.value = '';
+
+    rt.addEventListener('change', () => {
+      if (!isAbsenceMode()) return;
+
+      const v = (rt.value || '').trim();
+      if (v === 'مجندات') setChoice('غياب-مجندات');
+      else if (v === 'افراد') setChoice('غياب-افراد');
+    });
+  });
+})();
 // طباعة
 document.getElementById('print-button')?.addEventListener('click', ()=>window.print());
 
@@ -1547,7 +1587,7 @@ if (choice === "تعذر-مغادرة") {
 // ===================
 // وضع absence
 // ===================
-if (choice === "غياب-افراد") {
+if (choice === "غياب-افراد" || choice === "غياب-مجندات") {
   // نفس منطق "غياب-مجندات": فرد واحد فقط (بدون فرد 2/3 وبدون مدة/سبب تطبيق)
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
@@ -1565,9 +1605,7 @@ if (choice === "غياب-افراد") {
     if (lbl) lbl.style.display = "none";
   });
 
-  // تثبيت نوع المحضر على "أفراد" (لتصفية القائمة صحيحًا)
-  const rt = document.getElementById("RecordType");
-  if (rt) rt.value = "افراد";
+  // نوع المحضر يختاره المستخدم (لا يتم تثبيته تلقائيًا)
 
   // إخفاء/تفريغ فرد 2 و3 بالكامل
   const idsToHideClear = [
@@ -1760,7 +1798,7 @@ if (choice === "صلاحيات") {
 // ===================
 // وضع absence2
 // ===================
-if (choice === "غياب-مجندات") {
+if (choice === "غياب-افراد" || choice === "غياب-مجندات") {
   // فرد واحد فقط (بدون فرد 2/3 وبدون مدة/سبب تطبيق) — نفس منطق غياب-افراد
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
@@ -1777,9 +1815,7 @@ if (choice === "غياب-مجندات") {
     if (lbl) lbl.style.display = "none";
   });
 
-  // تثبيت نوع المحضر على "مجندات"
-  const rt = document.getElementById("RecordType");
-  if (rt) rt.value = "مجندات";
+  // نوع المحضر يختاره المستخدم (لا يتم تثبيته تلقائيًا)
 
   const idsToHideClear = [
     "IndividualName2","IndividualRank2","IndividualName3","IndividualRank3",
