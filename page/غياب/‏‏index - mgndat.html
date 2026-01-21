@@ -290,16 +290,16 @@ document.addEventListener("DOMContentLoaded", function() {
         let names;
         switch (department) {
             case 'أ':
-                names = room === '3' ? namesA2 : room === '4' ? namesA3 : room === '1' ? namesA4 : [];
+                names = room === '4' ? namesA2 : room === '1' ? namesA3 : room === '3' ? namesA4 : [];
                 break;
             case 'ب':
-                names = room === '3' ? namesB2 : room === '4' ? namesB3 : room === '1' ? namesB4 : [];
+                names = room === '4' ? namesB2 : room === '1' ? namesB3 : room === '3' ? namesB4 : [];
                 break;
             case 'ج':
-                names = room === '3' ? namesC2 : room === '4' ? namesC3 : room === '1' ? namesC4 : [];
+                names = room === '4' ? namesC2 : room === '1' ? namesC3 : room === '3' ? namesC4 : [];
                 break;
             case 'د':
-                names = room === '3' ? namesD2 : room === '4' ? namesD3 : room === '1' ? namesD4 : [];
+                names = room === '4' ? namesD2 : room === '1' ? namesD3 : room === '3' ? namesD4 : [];
                 break;
             default:
                 names = [];
@@ -448,7 +448,7 @@ manualInput.addEventListener("blur", function() {
             absenceDefaultOption.textContent = "اختر نوع المحضر";
             absenceSelect.appendChild(absenceDefaultOption);
 
-            const absenceTypes = ["مجندات", "أفراد"];
+            const absenceTypes = [ "أفراد"];
             absenceTypes.forEach(type => {
                 const option = document.createElement("option");
                 option.value = type;
@@ -670,69 +670,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-const personInfo = {
-    "عبدالعزيز حميد باتل الرشيدي": { rank: "رئيس رقباء", absenceType: "أفراد" },
-    "ماجد عشق بركة العتيبي": { rank: "وكيل رقيب", absenceType: "أفراد" },
-    "مشاري سعود عواض المطيري": { rank: "وكيل رقيب", absenceType: "أفراد" },
-    "عبدالعزيز فهد غازي العتيبي": { rank: "وكيل رقيب", absenceType: "أفراد" },
-    "محمد حمود دباشي العلياني": { rank: "عريف", absenceType: "أفراد" },
-    "نايف سعد محمد القحطاني": { rank: "عريف", absenceType: "أفراد" },
-    "عايشة جوعان العنزي": { rank: "عريف", absenceType: "مجندات" },
-    "ريم هادي الصيعري": { rank: "عريف", absenceType: "مجندات" },
-    "شوق ناصر الشهراني": { rank: "عريف", absenceType: "مجندات" },
-    "سفره ظافر الشهراني": { rank: "عريف", absenceType: "مجندات" },
-    "ريمه عارف ال محمد": { rank: "عريف", absenceType: "مجندات" },
-    "حسن محمد أبو طالب": { rank: "جندي أول", absenceType: "أفراد" },
-    "عبدالله محمد عبدالله الشمراني": { rank: "جندي أول", absenceType: "أفراد" },
-    "عبدالله فيحان مضحي العتيبي": { rank: "جندي أول", absenceType: "أفراد" },
-    "سلمان عشوي سمر الرويلي": { rank: "جندي أول", absenceType: "أفراد" },
-    "تهاني سعود العتيبي": { rank: "جندي أول", absenceType: "مجندات" },
-    "شاديه حسن احمد": { rank: "جندي أول", absenceType: "مجندات" },
-    "نوف فيصل الشمري": { rank: "جندي أول", absenceType: "مجندات" },
-    "مي محمد عبيد": { rank: "جندي أول", absenceType: "مجندات" },
-    "امل عبدالله سهلي": { rank: "جندي أول", absenceType: "مجندات" },
-    "ريم علي الشهري": { rank: "جندي أول", absenceType: "مجندات" },
-    "رزان سالم القحطاني": { rank: "جندي أول", absenceType: "مجندات" },
-    "أحمد يحي حماد المالكي": { rank: "جندي", absenceType: "أفراد" },
-    "شايع عبدالرحمن محمد العتيق": { rank: "رقيب", absenceType: "أفراد" },
-    "سعود محمد سعود الحجي": { rank: "وكيل رقيب", absenceType: "أفراد" },
-    "خالد عبدالرحمن الشهري": { rank: "عريف", absenceType: "أفراد" },
- "ممدوح عائض العتيبي": { rank: "عريف", absenceType: "أفراد" },
-  "عبد الله يحي عيدان الزهراني": { rank: "جندي أول", absenceType: "أفراد" },
-  "محسن مسعود مهدي علي": { rank: "جندي أول", absenceType: "أفراد" },
-  "عبد العزيز طريخم خمخم العنزي": { rank: "جندي أول", absenceType: "أفراد" },
-  "سهام دخيل الحربي": { rank: "جندي أول", absenceType: "مجندات" },
-  "ريم احمد عبدالرحمن": { rank: "جندي أول", absenceType: "مجندات" },
-  "الهنوف محمد الهويمل": { rank: "جندي أول", absenceType: "مجندات" },
-  "فهد مبارك حضرم الدوسري": { rank: "عريف", absenceType: "أفراد" },
-  "حسين علي منصور ال عتيق": { rank: "وكيل رقيب", absenceType: "أفراد" },
-  "عيد محمد عيد القرني": { rank: "عريف", absenceType: "أفراد" },
-  "عبد الرحمن سند عتيق الشراري": { rank: "عريف", absenceType: "أفراد" },
-  "نوف سعد الرويس": { rank: "جندي أول", absenceType: "مجندات" },
-  "عبد العزيز أحمد علي الشهراني": { rank: "جندي أول", absenceType: "أفراد" },
-  "مسفر مترك مسفر الدوسري": { rank: "جندي أول", absenceType: "أفراد" },
-  "خلود عبد الله الشهراني": { rank: "جندي أول", absenceType: "مجندات" },
-  "سفره نوار العصيمي": { rank: "جندي أول", absenceType: "مجندات" },
-  "عبد العزيز عبيد طامي الحربي": { rank: "جندي أول", absenceType: "أفراد" },
-  "ظافر عايض سالم العمري": { rank: "عريف", absenceType: "أفراد" },
-  "سميه منصور العتيبي": { rank: "عريف", absenceType: "مجندات" },
-  "منى محمد الرشيدي": { rank: "جندي أول", absenceType: "مجندات" },
-  "سلطان وهق علي السهلي": { rank: "جندي أول", absenceType: "أفراد" },
-  "رندا سالم الحربي": { rank: "جندي أول", absenceType: "مجندات" },
-  "سماهر سعد الصاعدي": { rank: "جندي أول", absenceType: "مجندات" },
-  "مناحي هتاش منير المرشدي": { rank: "وكيل رقيب", absenceType: "أفراد" },
-  "عيسى عزوز محسن الحربي": { rank: "رئيس رقباء", absenceType: "أفراد" },
-  "عبدالعزيز مصلح ال عيد": { rank: "وكيل رقيب", absenceType: "أفراد" },
-   "أحمد يحي حماد المالكي": { rank: "جندي", absenceType: "أفراد" },
-  "فهد حمود الحميدي العتيبي": { rank: "جندي", absenceType: "أفراد" },
-  "محمد غازي سعود العتيبي": { rank: "جندي", absenceType: "أفراد" },
-  "خالد محمد فهد المطيري": { rank: "جندي", absenceType: "أفراد" },
-  "زيد عوض نافع المطيري": { rank: "جندي", absenceType: "أفراد" },
-  "محمد مساعد سلطان السلطان": { rank: "جندي", absenceType: "أفراد" },
-  "عبدالله حسن علي عسيري": { rank: "جندي", absenceType: "أفراد" },
-  "فيصل مرزوق رابح الرحيلي": { rank: "جندي", absenceType: "أفراد" }
-  
-};
 
 
 </script>
