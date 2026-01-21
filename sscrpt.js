@@ -3,44 +3,6 @@ const ALLOW_AUTO_SCROLL_ON_OPEN = false;
 
 
 
-// ===================
-// ربط نوع المحضر (RecordType) باختيار التخزين لنماذج الغياب
-// - "مجندات"  => wordLinkChoice = "غياب-مجندات"
-// - "افراد"   => wordLinkChoice = "غياب-افراد"
-// ===================
-(function () {
-  function getChoice() {
-    try {
-      return (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
-    } catch { return ''; }
-  }
-  function setChoice(v) {
-    try {
-      localStorage.setItem('wordLinkChoice', v);
-      localStorage.setItem('lastWordLinkChoice', v);
-    } catch {}
-  }
-  function isAbsenceMode() {
-    const c = getChoice();
-    return c === 'غياب-افراد' || c === 'غياب-مجندات';
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    const rt = document.getElementById('RecordType');
-    if (!rt) return;
-
-    // في نماذج الغياب: لا نثبت قيمة تلقائيًا، نخلي الاختيار للمستخدم
-    if (isAbsenceMode()) rt.value = '';
-
-    rt.addEventListener('change', () => {
-      if (!isAbsenceMode()) return;
-
-      const v = (rt.value || '').trim();
-      if (v === 'مجندات') setChoice('غياب-مجندات');
-      else if (v === 'افراد') setChoice('غياب-افراد');
-    });
-  });
-})();
 // طباعة
 document.getElementById('print-button')?.addEventListener('click', ()=>window.print());
 
@@ -477,134 +439,31 @@ function payloadToIni(obj){
 
 
 
-//دالة تفريغ نوع المحضر
+//دالة تفريغ بيانات الفرد (بدون نوع محضر/بدون قفل)
 function clearIndividualFields() {
-  const recordType   = document.getElementById("RecordType");
-  const indName      = document.getElementById("IndividualName");
-  const indRank      = document.getElementById("IndividualRank");
-  const issuedNumber = document.getElementById("IssuedNumber");
-
-  // ✅ قراءة الاختيار الحالي من التخزين
-  const choice =
-    (localStorage.getItem('wordLinkChoice') ||
-     localStorage.getItem('lastWordLinkChoice') || '').trim();
-
-  const hidePlaceholders = (choice === "استاذان");
-
-  // إعادة نوع المحضر إلى الوضع الافتراضي
-  if (recordType) {
-    const firstOption = recordType.querySelector("option[disabled]");
-    if (firstOption) {
-      firstOption.selected = true;
-    } else {
-      recordType.value = "";
-    }
-  }
-
-  // تفريغ وإقفال اسم الفرد
-  if (indName) {
-    indName.value = "";
-    indName.disabled = true;
-    indName.placeholder = hidePlaceholders ? "" : "اختر نوع المحضر أولاً";
-  }
-
-  // تفريغ وإقفال رتبة الفرد
-  if (indRank) {
-    indRank.value = "";
-    indRank.disabled = true;
-    indRank.placeholder = hidePlaceholders ? "" : "اختر نوع المحضر أولاً";
-  }
-
-  // تفريغ رقم الصادر
-  if (issuedNumber) {
-    issuedNumber.value = "";
-    issuedNumber.placeholder = "ادخل رقم الصادر";
-  }
-}
-function hideIndividualPlaceholdersIfEstithan() {
-  const choice =
-    (localStorage.getItem('wordLinkChoice') ||
-     localStorage.getItem('lastWordLinkChoice') || '').trim();
-
-  if (choice !== "استاذان") return;
-
-  ["IndividualName", "IndividualRank"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.placeholder = "";
-  });
-}
-
-document.addEventListener("DOMContentLoaded", hideIndividualPlaceholdersIfEstithan);
-
-// ======================
-// إصلاح: تفعيل (اسم الفرد + الرتبة) بعد اختيار "نوع المحضر"
-// السبب: الحقول تبدأ disabled في HTML ولا يوجد Listener على RecordType لفتحها.
-// ======================
-function setupRecordTypeIndividualUnlock(){
-  const recordType = document.getElementById('RecordType');
-  if (!recordType) return;
-
-  const choice =
-    (localStorage.getItem('wordLinkChoice') ||
-     localStorage.getItem('lastWordLinkChoice') || '').trim();
-
-  const hidePlaceholders = (choice === 'استاذان');
-
-  const idsToToggle = [
-    'IndividualName','IndividualRank',
-    'IndividualName2','IndividualRank2',
-    'IndividualName3','IndividualRank3',
+  const ids = [
+    "IndividualName","IndividualRank",
+    "IndividualName2","IndividualRank2",
+    "IndividualName3","IndividualRank3",
+    "IssuedNumber",
+    "ApplyDuration","ApplyReason",
+    "ApplyDuration2","ApplyReason2",
+    "ApplyDuration3","ApplyReason3",
+    "IndividualID","OperatorNumber",
+    "IndividualID2","OperatorNumber2",
+    "IndividualID3","OperatorNumber3"
   ];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
 
-  const setLocked = (locked)=>{
-    idsToToggle.forEach(id=>{
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.disabled = locked;
-      if (hidePlaceholders) {
-        el.placeholder = '';
-      } else {
-        // placeholder مناسب حسب الحقل
-        if (locked) {
-          el.placeholder = 'اختر نوع المحضر أولاً';
-        } else {
-          if (id.includes('Rank')) el.placeholder = 'اكتب الرتبة';
-          else el.placeholder = 'اكتب/اختر الاسم';
-        }
-      }
-    });
-  };
-
-  // وضع ابتدائي حسب القيمة الحالية
-  setLocked(!recordType.value);
-
-  recordType.addEventListener('change', ()=>{
-    if (!recordType.value) {
-      // رجع للوضع المقفول إذا عاد للاختيار الافتراضي
-      setLocked(true);
-      // تنظيف القيم لتجنّب بقاء بيانات قديمة
-      ['IndividualName','IndividualRank','IndividualName2','IndividualRank2','IndividualName3','IndividualRank3']
-        .forEach(id=>{
-          const el = document.getElementById(id);
-          if (el) el.value = '';
-        });
-      return;
-    }
-
-    // فتح الحقول
-    setLocked(false);
-
-    // تعبئة الاقتراحات (إن كانت قاعدة الأسماء محمّلة)
-    try {
-      if (typeof populateNamesForCurrentSelection === 'function') {
-        populateNamesForCurrentSelection();
-      }
-    } catch(e){}
+  // تأكد أن حقول الفرد الأساسية قابلة للكتابة دائمًا
+  ["IndividualName","IndividualRank"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = false;
   });
 }
-
-document.addEventListener('DOMContentLoaded', setupRecordTypeIndividualUnlock);
-
 
 // ===== مسارات "كشف الحضور والانصراف" حسب الصالة + المناوبة =====
 const KASHF_FILES = {
@@ -828,10 +687,7 @@ if (choice === "خطاب-باسم") {
 } else if (choice === "تعذر-مغادرة") {
   wordLink.href = "dic/نــماذج  اليومية/تعذر مغادرة.docm";
 } else if (choice === "غياب-افراد") {
-  wordLink.href = "dic/نماذج الافراد/غياب افراد.docm";
-} else if (choice === "غياب-مجندات") {
-  wordLink.href = "dic/نماذج الافراد/غياب مجندات.docm";
-} else if (choice === "عدم-قبول-بصمات") {
+  wordLink.href = "dic/نماذج الافراد/غياب افراد.docm";} else if (choice === "عدم-قبول-بصمات") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/عدم قبول الخصائص الحيوية.docm";
 } else if (choice === "ارتباط-بصمات") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/ارتباط بصمات.docm";
@@ -1587,8 +1443,8 @@ if (choice === "تعذر-مغادرة") {
 // ===================
 // وضع absence
 // ===================
-if (choice === "غياب-افراد" || choice === "غياب-مجندات") {
-  // نفس منطق "غياب-مجندات": فرد واحد فقط (بدون فرد 2/3 وبدون مدة/سبب تطبيق)
+if (choice === "غياب-افراد") {
+  // فرد واحد فقط (بدون فرد 2/3 وبدون مدة/سبب تطبيق)
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
 
@@ -1668,12 +1524,6 @@ if (choice === "تطبيق") {
     const labelRank = document.querySelector('label[for="commander-rank"]');
     if (labelRank) labelRank.style.display = "none";
   }
-
-  // 4) إخفاء نوع المحضر (RecordType) وتلميح إبقاء الصفحة مفتوحة إن وُجد
-  const recType    = document.getElementById("RecordType");
-  const recTypeLbl = document.querySelector('label[for="RecordType"]');
-  if (recType)    recType.style.display = "none";
-  if (recTypeLbl) recTypeLbl.style.display = "none";
   const keepOpenWrap = document.querySelector(".keep-open-label");
   if (keepOpenWrap) keepOpenWrap.style.display = "none";
 
@@ -1689,24 +1539,14 @@ if (choice === "تطبيق") {
   if (indName) {
     indName.disabled = false;
     indName.required = true;
-    indName.placeholder = "اكتب اسم الفرد / المجندة";
+    indName.placeholder = "اكتب اسم الفرد";
   }
   if (indRank) {
     indRank.disabled = false;
     indRank.required = true;
-    indRank.placeholder = "اكتب رتبة الفرد / المجندة";
+    indRank.placeholder = "اكتب رتبة الفرد";
   }
 
-  // 7) منع أي منطق لاحق من إعادة قفل الحقول بناءً على RecordType في هذا الوضع
-  //    (لو لديك مستمع change على RecordType سيقرأ هذا الشرط ويتجاهل نفسه)
-  document.addEventListener("change", (e) => {
-    if (e.target && e.target.id === "RecordType") {
-      if (choice === "تطبيق") {
-        if (indName) { indName.disabled = false; indName.required = true; }
-        if (indRank) { indRank.disabled = false; indRank.required = true; }
-      }
-    }
-  }, { once: true });
 }
 
 if (choice === "صلاحيات") {
@@ -1733,12 +1573,6 @@ if (choice === "صلاحيات") {
     const labelRank = document.querySelector('label[for="commander-rank"]');
     if (labelRank) labelRank.style.display = "none";
   }
-
-  // 4) إخفاء نوع المحضر (RecordType) + خيار إبقاء الصفحة مفتوحة
-  const recType    = document.getElementById("RecordType");
-  const recTypeLbl = document.querySelector('label[for="RecordType"]');
-  if (recType)    recType.style.display = "none";
-  if (recTypeLbl) recTypeLbl.style.display = "none";
   const keepOpenWrap = document.querySelector(".keep-open-label");
   if (keepOpenWrap) keepOpenWrap.style.display = "none";
 
@@ -1789,8 +1623,8 @@ if (choice === "صلاحيات") {
     el.disabled = false;
     el.required = true;
   });
-  if (indName1) indName1.placeholder = "اكتب اسم الفرد / المجندة";
-  if (indRank1) indRank1.placeholder = "اكتب رتبة الفرد / المجندة";
+  if (indName1) indName1.placeholder = "اكتب اسم الفرد";
+  if (indRank1) indRank1.placeholder = "اكتب رتبة الفرد";
   if (indName2) indName2.placeholder = "اكتب اسم الفرد (2)";
   if (indRank2) indRank2.placeholder = "اكتب رتبة الفرد (2)";
 }
@@ -1798,7 +1632,7 @@ if (choice === "صلاحيات") {
 // ===================
 // وضع absence2
 // ===================
-if (choice === "غياب-افراد" || choice === "غياب-مجندات") {
+if (choice === "غياب-افراد") {
   // فرد واحد فقط (بدون فرد 2/3 وبدون مدة/سبب تطبيق) — نفس منطق غياب-افراد
   const individualCard = document.getElementById("card-individual");
   if (individualCard) individualCard.style.display = "block";
@@ -1935,12 +1769,12 @@ if (choice === "حذف-السجلات") {
   if (indName) {
     indName.disabled = false;
     indName.required = true;
-    indName.placeholder = "اكتب اسم الفرد / المجندة";
+    indName.placeholder = "اكتب اسم الفرد";
   }
   if (indRank) {
     indRank.disabled = false;
     indRank.required = true;
-    indRank.placeholder = "اكتب رتبة الفرد / المجندة";
+    indRank.placeholder = "اكتب رتبة الفرد";
   }
   // إخفاء اسم/رتبة الآمر المناوب إن وُجدت عناصرها (بما فيها الـ label)
     ["#commander-name","label[for='commander-name']",
@@ -1950,13 +1784,6 @@ if (choice === "حذف-السجلات") {
       if (el) el.style.display = "none";
     });
     });
-
-    // 2) إخفاء "نوع المحضر" (اللي هو RecordType)
-    const recordType = document.getElementById("RecordType");
-    const recordTypeLabel = document.querySelector("label[for='RecordType']");
-    if (recordType) recordType.style.display = "none";
-    if (recordTypeLabel) recordTypeLabel.style.display = "none";
-
     // 3) تفعيل اسم الفرد ورتبته
     const indName = document.getElementById("IndividualName");
     const indRank = document.getElementById("IndividualRank");

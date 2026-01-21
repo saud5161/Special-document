@@ -327,36 +327,26 @@
 
         <!-- =========================================================
              بطاقة 1.5: بيانات الفرد (تظهر بشرط)
-             - اختيار اسم الفرد / المجندة
+             - اختيار اسم الفرد
              - تعبئة الرتبة تلقائيًا مع إمكانية التعديل
         ========================================================== -->
        <section class="card" id="card-individual" style="display:none">
   <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الفرد</h3>
 
   <div class="card__body form-grid">
-
-    <!-- نوع المحضر في صف مستقل -->
-    <label for="RecordType"><i class="fas fa-list"></i> نوع المحضر</label>
-    <select id="RecordType" class="record-type-select" style="grid-column: span 3;">
-      <option value="" disabled selected>اختر نوع المحضر </option>
-      <option value="افراد">أفراد</option>
-      <option value="مجندات">مجندات</option>
-      
-    </select>
-    
-    <!-- اسم الفرد / المجندة -->
+<!-- اسم الفرد -->
      
     
           <label id="permTransferFrom" class="perm-transfer-label">نقل صلاحيات من</label>
-<label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد / المجندة</label>
+<label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد</label>
     
-    <input id="IndividualName" list="individual-list" placeholder="اختر نوع المحضر أولاً" disabled>
+    <input id="IndividualName" list="individual-list" placeholder="اختر اسم الفرد/المجندة" disabled>
     
     <datalist id="individual-list"></datalist>
 
-    <!-- رتبة الفرد / المجندة -->
-    <label for="IndividualRank"><i class="fas fa-medal"></i> رتبة الفرد / المجندة</label>
-    <input id="IndividualRank" placeholder="اختر نوع المحضر أولاً" disabled>
+    <!-- رتبة الفرد -->
+    <label for="IndividualRank"><i class="fas fa-medal"></i> رتبة الفرد</label>
+    <input id="IndividualRank" placeholder="اختر رتبة الفرد/المجندة" disabled>
     
     <!-- رقم الهوية + رقم المشغل (تظهر فقط في وضع "صلاحيات") -->
     <label for="IndividualID" id="lbl-IndividualID" style="display:none">
@@ -415,10 +405,10 @@
 
           <label id="permTransferTo" class="perm-transfer-label">نقل صلاحية الى</label>
 <label for="IndividualName2"><i class="fas fa-user"></i> اسم الفرد (2)</label>
-<input id="IndividualName2" list="individual-list" placeholder="اكتب اسم الفرد" disabled>
+<input id="IndividualName2" list="individual-list" placeholder="اكتب اسم الفرد">
 
 <label for="IndividualRank2"><i class="fas fa-medal"></i> رتبته (2)</label>
-<input id="IndividualRank2" placeholder="اكتب الرتبة" disabled>
+<input id="IndividualRank2" placeholder="اكتب الرتبة">
 
 
 <!-- رقم الهوية + رقم المشغل (2) — تظهر فقط في وضع "صلاحيات" -->
@@ -442,10 +432,10 @@
 
 <!-- === مجموعة 3 === -->
 <label for="IndividualName3"><i class="fas fa-user"></i> اسم الفرد (3)</label>
-<input id="IndividualName3" list="individual-list" placeholder="اكتب اسم الفرد" disabled>
+<input id="IndividualName3" list="individual-list" placeholder="اكتب اسم الفرد">
 
 <label for="IndividualRank3"><i class="fas fa-medal"></i> رتبته (3)</label>
-<input id="IndividualRank3" placeholder="اكتب الرتبة" disabled>
+<input id="IndividualRank3" placeholder="اكتب الرتبة">
 
 <label for="ApplyDuration3"><i class="fas fa-hourglass-half"></i> مدة التطبيق (3)</label>
 <input id="ApplyDuration3" list="apply-durations" placeholder="ساعة … 6 ساعات">
