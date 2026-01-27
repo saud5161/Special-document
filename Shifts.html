@@ -146,6 +146,17 @@
 
     .hidden { display: none !important; }
 
+    /* New Styles */
+    .instruction-hint {
+        font-size: 11px; color: var(--warning); font-weight: 800; margin-bottom: 8px;
+        display: flex; align-items: center; gap: 5px; animation: pulse-orange 3s infinite;
+    }
+    @keyframes pulse-orange { 0% {opacity:0.7;} 50% {opacity:1;} 100% {opacity:0.7;} }
+    
+    .submitted-section { margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 15px; }
+    .submitted-item { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3); padding: 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+    .submitted-item .meta { font-size: 11px; color: var(--text-muted); margin-right: 5px; }
+
     @media (max-width: 768px) {
       .app-container { flex-direction: column; height: 100vh; }
       .top-header { display: none !important; }
@@ -163,6 +174,10 @@
       .list-panel { height: 300px; flex: none; }
       .radio-label { padding: 12px 18px; font-size: 13px; margin-bottom: 5px; }
       .auth-box { width: 100%; }
+
+      /* Mobile Optimizations */
+      #status_manual_text { padding: 8px; font-size: 13px; height: 40px; }
+      .other-input-container { padding-top: 5px !important; margin-top: 5px !important; }
     }
   </style>
 </head>
@@ -248,8 +263,9 @@
             <div><label>النوع</label><select id="d_type" class="form-control" onchange="loadDailyData()"></select></div>
           </div>
           <div style="background:var(--bg-card); padding:15px; border-radius:var(--radius); border:1px solid var(--border)">
+             <div class="instruction-hint">⚠️ تنبيه: انقر على نوع الملاحظة المطلوبة (غياب، تأخير...) قبل اختيار الأسماء من القائمة.</div>
              <div class="status-selector" id="statusRadios"></div>
-             <div id="otherInputDiv" class="hidden" style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
+             <div id="otherInputDiv" class="hidden other-input-container" style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
                 <label style="font-size:12px; color:var(--text-muted)">📝 اكتب نوع الحالة:</label>
                 <input type="text" id="status_manual_text" class="form-control" placeholder="مثلاً: مهمة خارجية...">
              </div>
@@ -264,8 +280,16 @@
               <div class="list-box" id="list-chosen"></div>
             </div>
           </div>
-          <div style="margin-top:15px"><button class="btn-primary" onclick="submitDaily()">💾 حفظ المناوبة</button></div>
+          <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn-primary" onclick="submitDaily()" style="flex:2">💾 حفظ المناوبة</button>
+            <button class="btn-secondary" onclick="toggleSubmittedList()" style="flex:1; border-color:var(--success); color:var(--success)">👁️ عرض المرفوع اليوم</button>
+          </div>
           <div id="dailyMsg" style="margin-top:10px"></div>
+          
+          <div id="submitted-area" class="submitted-section hidden">
+              <h4 style="margin:0 0 10px 0; color:var(--text-muted)">📋 تم رفعهم لهذا اليوم ( <span id="sub-count">0</span> )</h4>
+              <div id="submitted-list"></div>
+          </div>
         </div>
 
         <div id="sec-monthly" class="section">
@@ -398,12 +422,20 @@
               <div style="font-size:10px; color:var(--text-muted)" id="g_most_violations_count"></div>
             </div>
           </div>
+          
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:20px">
             <div class="stats-card">
-              <h3>🏆 الأعلى إنتاجية</h3>
+              <h3>🏆 الأعلى إنتاجية (النقاط)</h3>
               <div id="prod_leaderboard" class="bar-chart-container"></div>
             </div>
+            
             <div class="stats-card">
+              <h3>🎖️ الأعلى انضباطاً</h3>
+              <p style="font-size:10px; color:var(--text-muted)">بناءً على: الحضور المبكر، قلة الغياب، والإنتاجية</p>
+              <div id="discipline_leaderboard" class="bar-chart-container"></div>
+            </div>
+
+            <div class="stats-card" style="grid-column: 1 / -1;">
               <h3>تحليل الحالات (شامل)</h3>
               <p style="font-size:11px; color:var(--text-muted); margin-bottom:15px">انقر على الحالة لعرض التفاصيل</p>
               <div id="status_breakdown"></div>
@@ -879,6 +911,7 @@
 
   // --- Main Data Loading (Sorted by Rank) ---
   async function loadEmployees(){
+    // Ensure only approved employees are loaded
     const {data} = await sb.from('employees').select('*').eq('is_approved', true);
     
     // Sort logic here
@@ -903,6 +936,9 @@
     const h = $('d_hall').value;
     const s = $('d_shift').value;
     const t = $('d_type').value; 
+    
+    // Hide submitted list on filter change
+    $('submitted-area').classList.add('hidden');
 
     // Strict Check: Require Hall AND Shift AND Type
     if (!h || !s || !t) {
@@ -915,10 +951,12 @@
         return;
     }
 
+    // Filter AND enforce is_approved check for absolute isolation
     dailyPool = employees.filter(e => 
         (e.hall == h) && 
         (e.shift == s) &&
-        (e.hall_type == t)
+        (e.hall_type == t) &&
+        (e.is_approved === true)
     );
     chosen = [];
     renderDaily();
@@ -978,7 +1016,83 @@
 
     const {error} = await sb.from('events').upsert(rows, {onConflict:'event_date,employee_id'});
     if(error) { $('dailyMsg').textContent = error.message; } 
-    else { $('dailyMsg').textContent = 'تم الحفظ بنجاح ✅'; chosen=[]; renderDaily(); $('status_manual_text').value=''; }
+    else { 
+        $('dailyMsg').textContent = 'تم الحفظ بنجاح ✅'; 
+        chosen=[]; 
+        renderDaily(); 
+        $('status_manual_text').value='';
+        // Auto refresh submitted list if open
+        if(!$('submitted-area').classList.contains('hidden')) loadSubmittedToday();
+    }
+  }
+
+  // --- Submitted List Logic ---
+  async function toggleSubmittedList() {
+      const area = $('submitted-area');
+      if (area.classList.contains('hidden')) {
+          area.classList.remove('hidden');
+          await loadSubmittedToday();
+      } else {
+          area.classList.add('hidden');
+      }
+  }
+
+  async function loadSubmittedToday() {
+      const h = $('d_hall').value;
+      const s = $('d_shift').value;
+      // We also check date
+      const d = $('d_date').value;
+      
+      const listDiv = $('submitted-list');
+      listDiv.innerHTML = '<div style="color:var(--text-muted); font-size:12px">جاري البحث...</div>';
+
+      const { data: evs, error } = await sb
+          .from('events')
+          .select('id, status, note, employees!inner(name, rank)')
+          .eq('event_date', d)
+          .eq('hall', h)
+          .eq('shift', s);
+      
+      if(error || !evs || evs.length === 0) {
+          listDiv.innerHTML = '<div style="color:var(--text-muted); text-align:center; padding:10px">لا توجد أسماء مرفوعة لهذا اليوم بهذه المواصفات</div>';
+          $('sub-count').textContent = 0;
+          return;
+      }
+
+      listDiv.innerHTML = '';
+      $('sub-count').textContent = evs.length;
+
+      evs.forEach(ev => {
+          const stDef = STATUSES[ev.status] || STATUSES.normal;
+          const noteTxt = ev.note ? `(${ev.note})` : '';
+          
+          let actionBtn = '';
+          if(isAdmin) {
+              actionBtn = `<button class="btn-danger" style="padding:4px 8px; font-size:10px; width:auto; margin:0" onclick="deleteEvent('${ev.id}')">حذف/تعديل</button>`;
+          }
+
+          const item = document.createElement('div');
+          item.className = 'submitted-item';
+          item.innerHTML = `
+            <div>
+                <span style="font-weight:bold; margin-left:5px">${ev.employees.name}</span>
+                <span class="meta">${ev.employees.rank || ''}</span>
+                <span style="color:${stDef.color}; font-size:11px; font-weight:bold">${stDef.label} ${noteTxt}</span>
+            </div>
+            ${actionBtn}
+          `;
+          listDiv.appendChild(item);
+      });
+  }
+
+  async function deleteEvent(eventId) {
+      if(!confirm('هل تريد حذف هذا التحضير لإعادة تسجيله؟')) return;
+      const { error } = await sb.from('events').delete().eq('id', eventId);
+      if(error) alert(error.message);
+      else {
+          loadSubmittedToday();
+          alert('تم الحذف. يمكنك الآن تحضيره مرة أخرى من القائمة العلوية.');
+      }
   }
 
   async function loadMonthlyEntry(){
@@ -999,11 +1113,14 @@
 
     const tb = $('monthlyBody'); tb.innerHTML = '';
     targetEmps.forEach(e => {
-      const val = statMap[e.id] || 0;
+      const val = statMap[e.id];
+      // Empty string if null/undefined, otherwise value
+      const displayVal = (val !== undefined && val !== null) ? val : '';
+      
       tb.innerHTML += `<tr>
         <td>${e.name}</td><td><span class="emp-meta">${e.rank||''}</span></td>
-        <td style="opacity:0.7">${val}</td>
-        <td><input type="number" class="score-input" min="0" value="${val}" id="sc_${e.id}"></td>
+        <td style="opacity:0.7">${displayVal || '-'}</td>
+        <td><input type="number" class="score-input" min="0" value="${displayVal}" id="sc_${e.id}" placeholder=""></td>
       </tr>`;
     });
   }
@@ -1122,28 +1239,43 @@
     const h = $('st_hall').value, s = $('st_shift').value, t = $('st_type').value;
     const curYear = new Date(from).getFullYear();
     
-    let qProd = sb.from('monthly_stats').select('employee_id, score, employees!inner(name, hall, shift, hall_type)').eq('year', curYear);
+    // 1. Productivity Data
+    let qProd = sb.from('monthly_stats').select('employee_id, score, employees!inner(name, hall, shift, hall_type, rank)').eq('year', curYear);
     if(h) qProd = qProd.eq('employees.hall', h); 
     if(s) qProd = qProd.eq('employees.shift', s);
     if(t) qProd = qProd.eq('employees.hall_type', t);
 
     const {data: prodData} = await qProd;
     const empProdMap = {}; let totalSysProd = 0;
+    
+    // Discipline map
+    const disciplineScores = {}; 
+
     if(prodData) prodData.forEach(row => {
       const eid = row.employee_id;
-      if(!empProdMap[eid]) empProdMap[eid] = { name:row.employees.name, hall:row.employees.hall, shift:row.employees.shift, total:0 };
-      empProdMap[eid].total += row.score; totalSysProd += row.score;
+      if(!empProdMap[eid]) empProdMap[eid] = { 
+          name:row.employees.name, hall:row.employees.hall, shift:row.employees.shift, rank:row.employees.rank,
+          total:0 
+      };
+      empProdMap[eid].total += row.score; 
+      totalSysProd += row.score;
+      
+      // Initialize discipline with productivity boost
+      if(!disciplineScores[eid]) disciplineScores[eid] = { ...empProdMap[eid], score: 0 };
+      disciplineScores[eid].score += (row.score * 0.5); 
     });
-    const sorted = Object.values(empProdMap).sort((a,b) => b.total - a.total);
-    const chartDiv = $('prod_leaderboard'); chartDiv.innerHTML = ''; const maxVal = sorted[0]?.total || 0;
-    sorted.slice(0, 10).forEach((e, i) => {
+
+    const sortedProd = Object.values(empProdMap).sort((a,b) => b.total - a.total);
+    const chartDiv = $('prod_leaderboard'); chartDiv.innerHTML = ''; const maxVal = sortedProd[0]?.total || 0;
+    sortedProd.slice(0, 10).forEach((e, i) => {
        const pct = maxVal > 0 ? (e.total/maxVal*100) : 0;
        chartDiv.innerHTML += `<div class="bar-row"><div style="font-size:13px; white-space:nowrap; overflow:hidden;">${i+1}. ${e.name} <span class="emp-meta">${e.hall}-${e.shift}</span></div>
             <div class="bar-track"><div class="bar-fill rank-1" style="width:${pct}%"></div></div><div style="font-weight:bold; color:var(--productivity)">${e.total}</div></div>`;
     });
     $('g_total_prod').textContent = totalSysProd;
 
-    let qEv = sb.from('events').select('status, event_date, note, employees!inner(name, hall, shift, hall_type)').gte('event_date', from).lte('event_date', to);
+    // 2. Events Data for Discipline
+    let qEv = sb.from('events').select('status, event_date, note, employees!inner(id, name, hall, shift, hall_type, rank)').gte('event_date', from).lte('event_date', to);
     if(h) qEv = qEv.eq('employees.hall', h); 
     if(s) qEv = qEv.eq('employees.shift', s);
     if(t) qEv = qEv.eq('employees.hall_type', t);
@@ -1151,21 +1283,50 @@
     const {data: events} = await qEv;
     const statsEvents = events || [];
     const statusCounts = {}; const hallViolations = {}; const hallAbsent = {}; const hallDiscipline = {}; 
-    const globalBadCounts = { absent:0, late:0, detained:0, app:0 };
     let globalBad = 0; let globalGood = 0; let globalTotal = 0;
 
     statsEvents.forEach(ev => {
        globalTotal++; statusCounts[ev.status] = (statusCounts[ev.status]||0)+1;
        const key = `صالة ${ev.employees.hall} - مناوبة ${ev.employees.shift}`;
        const type = STATUSES[ev.status]?.type || 'neutral';
+       
+       // Calculate Discipline Score
+       const eid = ev.employees.id;
+       if(!disciplineScores[eid]) disciplineScores[eid] = { 
+           name:ev.employees.name, hall:ev.employees.hall, shift:ev.employees.shift, rank:ev.employees.rank, score: 0 
+       };
+
+       if(ev.status === 'early') disciplineScores[eid].score += 5;
+       else if(ev.status === 'normal') disciplineScores[eid].score += 2;
+       else if(ev.status === 'late') disciplineScores[eid].score -= 2;
+       else if(ev.status === 'absent') disciplineScores[eid].score -= 10;
+       else if(type === 'bad') disciplineScores[eid].score -= 5;
+
        if(type === 'bad') { 
            globalBad++; hallViolations[key] = (hallViolations[key]||0)+1; 
-           if(ev.status === 'absent') globalBadCounts.absent++; if(ev.status === 'late') globalBadCounts.late++;
-           if(ev.status === 'detained') globalBadCounts.detained++; if(ev.status === 'app') globalBadCounts.app++;
        }
        if(type === 'good') { globalGood++; hallDiscipline[key] = (hallDiscipline[key]||0)+1; }
        if(type === 'good' || ev.status === 'normal') hallDiscipline[key] = (hallDiscipline[key]||0)+1;
        if(ev.status === 'absent') hallAbsent[key] = (hallAbsent[key]||0)+1;
+    });
+
+    // Render Discipline Leaderboard
+    const sortedDisc = Object.values(disciplineScores).sort((a,b) => b.score - a.score);
+    const discChartDiv = $('discipline_leaderboard'); discChartDiv.innerHTML = ''; 
+    const maxDisc = sortedDisc[0]?.score || 1; 
+    
+    sortedDisc.slice(0, 5).forEach((e, i) => {
+       let displayPct = maxDisc > 0 ? (e.score/maxDisc*100) : 0;
+       if(displayPct < 0) displayPct = 0;
+       
+       discChartDiv.innerHTML += `<div class="bar-row">
+            <div style="font-size:12px; line-height:1.2; overflow:hidden;">
+                <div style="font-weight:bold">${i+1}. ${e.name}</div>
+                <div style="font-size:10px; color:var(--text-muted)">${e.rank} | ${e.hall}-${e.shift}</div>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${displayPct}%; background:var(--success)"></div></div>
+            <div style="font-weight:bold; color:var(--success); font-size:12px">${Math.round(e.score)}</div>
+       </div>`;
     });
 
     let globalPct = 90;
