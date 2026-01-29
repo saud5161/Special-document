@@ -26,6 +26,7 @@
       --text-muted: #94a3b8;
       --border: #334155;
       --radius: 12px;
+      --chart-bg: #334155;
     }
 
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -159,6 +160,82 @@
 
     .discipline-detail-text { font-size: 9px; color: var(--text-muted); margin-top: 3px; display: block; }
 
+    /* PROFESSIONAL TIMELINE CHART - GROUPED BARS */
+    .timeline-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 250px;
+        padding-bottom: 20px;
+        overflow-x: auto;
+    }
+    .timeline-container {
+        display: flex;
+        align-items: flex-end;
+        height: 100%;
+        padding: 10px 0;
+        gap: 12px;
+        min-width: 100%;
+    }
+    .timeline-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+    .timeline-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 150px;
+        position: relative;
+    }
+    /* Bar for Total/Present (Navy) */
+    .t-bar-total {
+        width: 10px;
+        background: #1e3a8a; /* Dark Navy */
+        border-radius: 2px 2px 0 0;
+        transition: height 0.5s ease;
+    }
+    /* Bar for Discipline/Good (Green) */
+    .t-bar-good {
+        width: 10px;
+        background: var(--success);
+        border-radius: 2px 2px 0 0;
+        transition: height 0.5s ease;
+    }
+    /* Bar for Bad/Violations (Red) */
+    .t-bar-bad {
+        width: 10px;
+        background: var(--danger);
+        border-radius: 2px 2px 0 0;
+        transition: height 0.5s ease;
+    }
+    .timeline-label {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 5px;
+        transform: rotate(-45deg);
+        white-space: nowrap;
+    }
+    .timeline-score {
+        font-size: 9px;
+        font-weight: bold;
+        margin-bottom: 3px;
+        position: absolute;
+        top: -15px;
+        width: 100%;
+        text-align: center;
+    }
+    .legend-box {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 10px;
+        font-size: 11px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 10px; height: 10px; border-radius: 2px; }
+
     @media (max-width: 768px) {
       .app-container { flex-direction: column; height: 100vh; }
       .top-header { display: none !important; }
@@ -177,7 +254,6 @@
       .radio-label { padding: 12px 18px; font-size: 13px; margin-bottom: 5px; }
       .auth-box { width: 100%; }
 
-      /* Mobile Optimizations */
       #status_manual_text { padding: 8px; font-size: 13px; height: 40px; }
       .other-input-container { padding-top: 5px !important; margin-top: 5px !important; }
     }
@@ -206,18 +282,17 @@
       <input type="password" id="reg_pass" class="form-control" placeholder="كلمة المرور" style="margin-bottom:10px">
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px">
           <select id="reg_hall" class="form-control">
-              <option value="" disabled selected>الصالة</option>
+              <option value="" disabled selected>الصالة (اختياري)</option>
               <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
           </select>
           <select id="reg_shift" class="form-control">
-              <option value="" disabled selected>المناوبة</option>
+              <option value="" disabled selected>المناوبة (اختياري)</option>
               <option value="أ">أ</option><option value="ب">ب</option><option value="ج">ج</option><option value="د">د</option>
           </select>
       </div>
       <select id="reg_type" class="form-control" style="margin-bottom:15px">
-          <option value="" disabled selected>نوع الصالة</option>
+          <option value="departure" selected>مغادرة</option>
           <option value="arrival">قدوم</option>
-          <option value="departure">مغادرة</option>
       </select>
       <button class="btn-primary" style="background:var(--success)" onclick="signUp()">إرسال الطلب</button>
       <button class="btn-secondary" onclick="toggleAuthMode()">رجوع لتسجيل الدخول</button>
@@ -393,6 +468,19 @@
             <div><label>النوع</label><select id="st_type" class="form-control"></select></div>
             <div style="display:flex; align-items:flex-end"><button class="btn-primary" onclick="loadGeneralStats()">تحديث المؤشرات</button></div>
           </div>
+          
+          <div class="stats-card" style="margin-bottom:20px;">
+              <h3 style="margin:0 0 10px 0;">📅 الخط الزمني للانضباط (آخر 30 يوم)</h3>
+              <div class="legend-box">
+                  <div class="legend-item"><div class="dot" style="background:#1e3a8a"></div> إجمالي</div>
+                  <div class="legend-item"><div class="dot" style="background:var(--success)"></div> انضباط</div>
+                  <div class="legend-item"><div class="dot" style="background:var(--danger)"></div> مخالفات</div>
+              </div>
+              <div class="timeline-wrapper">
+                  <div id="timeline_chart" class="timeline-container"></div>
+              </div>
+          </div>
+
           <div class="stats-card" style="display:flex; flex-direction:column; align-items:center; margin-bottom:20px;">
                 <h3 style="margin:0 0 10px 0; align-self:flex-start">🌍 مؤشر الانضباط العام للنظام</h3>
                 <div class="gauge-container">
@@ -408,7 +496,7 @@
           </div>
           <div class="kpi-row">
             <div class="kpi-box" style="border-top:3px solid var(--productivity)">
-              <div class="kpi-lbl">إجمالي الإنتاجية</div>
+              <div class="kpi-lbl">إجمالي المسافرين</div>
               <div class="kpi-val" id="g_total_prod" style="color:var(--productivity)">0</div>
             </div>
             <div class="kpi-box" style="border-top:3px solid var(--danger)">
@@ -430,19 +518,24 @@
           
           <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:20px">
             <div class="stats-card">
-              <h3>🏆 الأعلى إنتاجية (النقاط)</h3>
+              <h3>🏆 الأعلى إنتاجية (مسافرين)</h3>
               <div id="prod_leaderboard" class="bar-chart-container"></div>
             </div>
             
             <div class="stats-card">
               <h3>🎖️ الأعلى انضباطاً (تفصيلي)</h3>
-              <p style="font-size:10px; color:var(--text-muted)">ترتيب حسب: نقاط الالتزام + الإنتاجية</p>
+              <p style="font-size:10px; color:var(--text-muted)">المعيار: الحضور > الالتزام المبكر > الإنتاجية</p>
               <div id="discipline_leaderboard" class="bar-chart-container"></div>
             </div>
 
             <div class="stats-card">
               <h3>⚠️ الأكثر مخالفات (العدد)</h3>
               <div id="violations_leaderboard" class="bar-chart-container"></div>
+            </div>
+
+            <div class="stats-card">
+              <h3>❌ قائمة الأكثر غياباً</h3>
+              <div id="absent_leaderboard" class="bar-chart-container"></div>
             </div>
 
             <div class="stats-card" style="grid-column: 1 / -1;">
@@ -507,7 +600,7 @@
                     <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:8px">
                         <select id="add_hall" class="form-control" style="font-size:13px"><option value="1">ص1</option><option value="2">ص2</option><option value="3">ص3</option><option value="4">ص4</option><option value="5">ص5</option></select>
                         <select id="add_shift" class="form-control" style="font-size:13px"><option value="أ">أ</option><option value="ب">ب</option><option value="ج">ج</option><option value="د">د</option></select>
-                        <select id="add_type" class="form-control" style="font-size:13px"><option value="arrival">قدوم</option><option value="departure">مغادرة</option></select>
+                        <select id="add_type" class="form-control" style="font-size:13px"><option value="arrival">قدوم</option><option value="departure" selected>مغادرة</option></select>
                     </div>
                     <button class="btn-primary" style="margin-top:10px; background:var(--success)" onclick="addNewEmployeeManual()">+ إضافة للكشف</button>
                 </div>
@@ -563,7 +656,6 @@
   const HALL_TYPES = { arrival: "قدوم", departure: "مغادرة" };
   const MONTHS = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
   
-  // RANK SORT ORDER
   const RANK_ORDER = {
       "رئيس رقباء": 1,
       "رقيب أول": 2,
@@ -605,14 +697,16 @@
     $('d_date').value = $('st_from').value = $('st_to').value = today();
     $('dateNow').textContent = new Date().toLocaleDateString('ar-SA');
     
-    // Fill Selects
+    // Fill Selects with DEFAULT DEPARTURE
     [ 'd_hall', 'm_hall_filter', 'm_new_hall', 'st_hall', 'rec_hall' ].forEach(id => fillSelect(id, HALLS, true));
     [ 'd_shift', 'm_shift_filter', 'm_new_shift', 'st_shift', 'rec_shift' ].forEach(id => fillSelect(id, SHIFTS, true));
     
-    // Fill Type Selects
+    // Fill Type Selects & Set Default to Departure
     [ 'd_type', 'm_type_filter', 'm_new_type', 'st_type', 'rec_type' ].forEach(id => {
         const el = $(id); el.innerHTML = '<option value="">الكل</option>';
-        for(let [k,v] of Object.entries(HALL_TYPES)) el.innerHTML += `<option value="${k}">${v}</option>`;
+        el.innerHTML += `<option value="departure" selected>مغادرة</option>`;
+        el.innerHTML += `<option value="arrival">قدوم</option>`;
+        el.value = 'departure'; // Force selection
     });
 
     const mSel = $('m_month');
@@ -795,12 +889,12 @@
       const pass = $('reg_pass').value;
       const rank = $('reg_rank').value;
       const name = $('reg_name').value;
-      const hall = $('reg_hall').value;
-      const shift = $('reg_shift').value;
-      const type = $('reg_type').value;
+      const hall = $('reg_hall').value || null;
+      const shift = $('reg_shift').value || null;
+      const type = $('reg_type').value || null;
 
-      if(!email || !pass || !name || !hall || !shift) {
-          $('regMsg').textContent = "الرجاء تعبئة كافة البيانات"; return;
+      if(!email || !pass || !name) {
+          $('regMsg').textContent = "الرجاء تعبئة الاسم، البريد الإلكتروني، وكلمة المرور"; return;
       }
 
       const { data: authData, error: authError } = await sb.auth.signUp({
@@ -818,7 +912,7 @@
               id: authData.user.id,
               name: name,
               rank: rank,
-              hall: hall,
+              hall: hall, 
               shift: shift,
               hall_type: type,
               email: email,
@@ -837,7 +931,6 @@
 
   async function logout(){ await sb.auth.signOut(); location.reload(); }
 
-  // --- Requests Logic ---
   async function loadRequests() {
       const list = $('requestsList');
       list.innerHTML = 'جاري التحميل...';
@@ -857,7 +950,7 @@
             <div>
                 <div style="font-weight:bold; color:var(--text-main)">${r.rank || ''} ${r.name}</div>
                 <div style="font-size:12px; color:var(--text-muted)">${r.email}</div>
-                <div style="font-size:11px; margin-top:5px; color:var(--productivity)">صالة ${r.hall} | مناوبة ${r.shift} | ${HALL_TYPES[r.hall_type]||r.hall_type}</div>
+                <div style="font-size:11px; margin-top:5px; color:var(--productivity)">صالة ${r.hall || '-'} | مناوبة ${r.shift || '-'}</div>
             </div>
             <div style="display:flex; gap:10px">
                 <button class="btn-primary" style="padding:8px 15px; font-size:12px; background:var(--success); width:auto" onclick="approveUser('${r.id}')">قبول ✅</button>
@@ -868,15 +961,14 @@
       });
   }
 
-  // --- All Users Logic ---
   async function loadAllApprovedUsers() {
       const list = $('allUsersList');
       list.innerHTML = 'جاري التحميل...';
       
       const { data: admins } = await sb.from('allowed_users').select('email');
-      const adminEmails = admins ? admins.map(a => a.email.toLowerCase()) : [];
+      const adminEmails = admins ? admins.map(a => a.email.toLowerCase().trim()) : [];
 
-      const { data: users } = await sb.from('employees').select('*').eq('is_approved', true).neq('email', null);
+      const { data: users } = await sb.from('employees').select('*').neq('email', null);
       
       if(!users || users.length === 0) {
           list.innerHTML = '<div style="padding:10px; text-align:center">لا يوجد مستخدمين مسجلين</div>';
@@ -885,25 +977,35 @@
 
       list.innerHTML = '';
       users.forEach(r => {
-          const isAdminUser = adminEmails.includes(r.email.toLowerCase());
+          const userEmail = r.email ? r.email.toLowerCase().trim() : '';
+          const isAdminUser = adminEmails.includes(userEmail);
+          
+          const statusBadge = r.is_approved 
+            ? '<span style="color:var(--success); border:1px solid var(--success); padding:2px 6px; border-radius:4px; font-size:10px">نشط</span>' 
+            : '<span style="color:var(--warning); border:1px solid var(--warning); padding:2px 6px; border-radius:4px; font-size:10px">غير مفعل</span>';
+
           let btnHtml = '';
           
           if(isAdminUser) {
-              btnHtml = `<button class="btn-warning" style="padding:6px 12px; font-size:11px; width:auto" onclick="revokeAdmin('${r.email}')">إزالة الصلاحيات 🔽</button>`;
+              btnHtml = `<button class="btn-warning" style="padding:6px 12px; font-size:11px; width:auto" onclick="revokeAdmin('${r.email}')">سحب إدارة 🔽</button>`;
           } else {
-              btnHtml = `<button class="btn-primary" style="padding:6px 12px; font-size:11px; background:var(--admin); width:auto" onclick="makeAdmin('${r.id}', '${r.email}')">منح الصلاحيات كاملة 🔼</button>`;
+              btnHtml = `<button class="btn-primary" style="padding:6px 12px; font-size:11px; background:var(--admin); width:auto" onclick="makeAdmin('${r.id}', '${r.email}')">ترقية لمدير 🔼</button>`;
           }
           
-          btnHtml += `<button class="btn-danger" style="padding:6px 12px; font-size:11px; width:auto; margin-right:5px" onclick="deleteSystemUser('${r.id}')">حذف المستخدم 🗑️</button>`;
+          if(!r.is_approved){
+               btnHtml += `<button class="btn-primary" style="padding:6px 12px; font-size:11px; background:var(--success); width:auto; margin-right:5px" onclick="approveUser('${r.id}')">تفعيل الحساب ✅</button>`;
+          }
+
+          btnHtml += `<button class="btn-danger" style="padding:6px 12px; font-size:11px; width:auto; margin-right:5px" onclick="deleteSystemUser('${r.id}')">حذف 🗑️</button>`;
 
           const item = document.createElement('div');
           item.style.cssText = "background:rgba(0,0,0,0.2); padding:15px; margin-bottom:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border)";
           item.innerHTML = `
             <div>
-                <div style="font-weight:bold; color:var(--text-main)">${r.rank || ''} ${r.name}</div>
+                <div style="font-weight:bold; color:var(--text-main)">${r.rank || ''} ${r.name} ${statusBadge}</div>
                 <div style="font-size:11px; color:var(--text-muted)">${r.email}</div>
             </div>
-            <div style="display:flex; gap:10px; align-items:center">
+            <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap">
                 ${btnHtml}
             </div>
           `;
@@ -914,19 +1016,19 @@
   async function approveUser(id) {
       if(!confirm('هل أنت متأكد من قبول هذا العضو؟')) return;
       const { error } = await sb.from('employees').update({ is_approved: true }).eq('id', id);
-      if(error) alert('خطأ: ' + error.message); else { loadRequests(); checkNotifications(); loadEmployees(); }
+      if(error) alert('خطأ: ' + error.message); else { loadRequests(); checkNotifications(); loadEmployees(); loadAllApprovedUsers(); }
   }
   
   async function makeAdmin(id, email) {
       if(!email) return alert('هذا المستخدم ليس لديه إيميل مسجل');
       if(!confirm('هل أنت متأكد من منح صلاحيات كاملة (مدير)؟')) return;
-      const { error } = await sb.from('allowed_users').insert({ email: email });
+      const { error } = await sb.from('allowed_users').insert({ email: email.toLowerCase().trim() });
       if(error) alert(error.message); else { alert('تمت الترقية بنجاح ✅'); loadAllApprovedUsers(); }
   }
 
   async function revokeAdmin(email) {
       if(!confirm('هل أنت متأكد من سحب صلاحيات المدير؟')) return;
-      const { error } = await sb.from('allowed_users').delete().eq('email', email);
+      const { error } = await sb.from('allowed_users').delete().eq('email', email.toLowerCase().trim());
       if(error) alert(error.message); else { alert('تم سحب الصلاحيات'); loadAllApprovedUsers(); }
   }
 
@@ -948,12 +1050,13 @@
       if(error) alert('خطأ: ' + error.message); else { loadRequests(); checkNotifications(); }
   }
 
-  // --- Main Data Loading (Sorted by Rank) ---
+  // --- Main Data Loading (Manual Employees Only) ---
   async function loadEmployees(){
-    // Ensure only approved employees are loaded
-    const {data} = await sb.from('employees').select('*').eq('is_approved', true);
+    const {data} = await sb.from('employees')
+        .select('*')
+        .eq('is_approved', true)
+        .is('email', null); // FILTER: Manual employees only (no email)
     
-    // Sort logic here
     if(data) {
         employees = data.sort((a,b) => {
             const rankA = RANK_ORDER[a.rank] || 99;
@@ -967,8 +1070,8 @@
     loadDailyData();
     filterRecSelect(); 
     filterEditSelect();
-    filterMoveSelect();   // Initialize move select
-    filterDeleteSelect(); // Initialize delete select
+    filterMoveSelect();  
+    filterDeleteSelect(); 
   }
 
   function loadDailyData(){
@@ -976,10 +1079,8 @@
     const s = $('d_shift').value;
     const t = $('d_type').value; 
     
-    // Hide submitted list on filter change
     $('submitted-area').classList.add('hidden');
 
-    // Strict Check: Require Hall AND Shift AND Type
     if (!h || !s || !t) {
         dailyPool = [];
         $('c-pool').textContent = 0;
@@ -990,19 +1091,19 @@
         return;
     }
 
-    // Filter AND enforce is_approved check for absolute isolation
     dailyPool = employees.filter(e => 
         (e.hall == h) && 
         (e.shift == s) &&
-        (e.hall_type == t) &&
-        (e.is_approved === true)
+        (e.hall_type == t)
     );
     chosen = [];
     renderDaily();
   }
+
   function renderDaily(){
     const p = $('list-pool'), c = $('list-chosen');
     p.innerHTML = ''; c.innerHTML = '';
+    
     const chIds = chosen.map(x=>x.id);
     const avail = dailyPool.filter(x => !chIds.includes(x.id));
 
@@ -1013,8 +1114,7 @@
       const d = document.createElement('div'); d.className = 'list-item';
       d.innerHTML = `<span>${e.name}</span> <span class="emp-meta">${e.rank||''}</span>`;
       d.onclick = () => { 
-          let note = "";
-          if(curStatus === 'other') note = $('status_manual_text').value || "غير محدد";
+          let note = $('status_manual_text').value.trim(); 
           chosen.push({...e, st:curStatus, manualNote: note}); 
           renderDaily(); 
       };
@@ -1023,49 +1123,93 @@
 
     chosen.forEach((e, idx) => {
       const def = STATUSES[e.st];
-      let displayLabel = def.label;
-      if(e.st === 'other') displayLabel = e.manualNote;
-
+      
       const d = document.createElement('div'); d.className = 'list-item selected';
       d.style.borderColor = def.color;
       d.style.backgroundColor = `${def.color}15`; 
-      d.innerHTML = `<span>${e.name}</span> <small style="color:${def.color}">${displayLabel}</small>`;
+      
+      d.innerHTML = `
+        <div style="width:100%">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <span>${e.name}</span>
+                <small style="color:${def.color}; font-weight:bold">${def.label}</small>
+            </div>
+            ${e.manualNote ? `<div style="font-size:10px; color:var(--text-muted); margin-top:3px">📝 ${e.manualNote}</div>` : ''}
+        </div>`;
+        
       d.onclick = () => { chosen.splice(idx,1); renderDaily(); };
       c.appendChild(d);
     });
   }
+
   function moveAll(){
     const chIds = chosen.map(x=>x.id);
-    let note = "";
-    if(curStatus === 'other') note = $('status_manual_text').value || "غير محدد";
+    let note = $('status_manual_text').value.trim();
     dailyPool.filter(x => !chIds.includes(x.id)).forEach(e => chosen.push({...e, st:curStatus, manualNote: note}));
     renderDaily();
   }
+
   function clearChosen(){ chosen=[]; renderDaily(); }
   
   async function submitDaily(){
-    if (!isAdmin) { alert('⛔ عذراً، هذا الحساب للصلاحيات "مشاهدة فقط". لا يمكنك حفظ التغييرات.'); return; }
+    if (!isAdmin) { alert('⛔ عذراً، هذا الحساب للصلاحيات "مشاهدة فقط".'); return; }
     if(!chosen.length) return alert('القائمة فارغة');
-    $('dailyMsg').textContent = 'جاري الحفظ...';
     
-    const rows = chosen.map(c => ({
-      event_date: $('d_date').value, hall: $('d_hall').value, shift: $('d_shift').value,
-      employee_id: c.id, status: c.st, note: c.manualNote || null, created_by: sessionUser.id
-    }));
+    $('dailyMsg').textContent = 'جاري التحقق والحفظ...';
+    
+    const finalInserts = [];
+    const date = $('d_date').value;
+    const currentHallType = $('d_type').value;
 
-    const {error} = await sb.from('events').upsert(rows, {onConflict:'event_date,employee_id'});
-    if(error) { $('dailyMsg').textContent = error.message; } 
-    else { 
+    const { data: existingEvents } = await sb.from('events')
+        .select('employee_id, status')
+        .eq('event_date', date);
+
+    for (let c of chosen) {
+        const userPrevEvents = existingEvents ? existingEvents.filter(e => e.employee_id === c.id) : [];
+        
+        let proceed = true;
+        if(userPrevEvents.length > 0) {
+             const prevStatuses = userPrevEvents.map(e => STATUSES[e.status]?.label || e.status).join(' و ');
+             const newStatus = STATUSES[c.st]?.label || c.st;
+             
+             proceed = confirm(`⚠️ تنبيه للموظف: ${c.name}\n\nلديه تسجيل سابق اليوم: (${prevStatuses})\nهل تريد إضافة تسجيل جديد له بصفة: (${newStatus})؟`);
+        }
+
+        if(proceed) {
+            finalInserts.push({
+                event_date: date, 
+                hall: $('d_hall').value, 
+                shift: $('d_shift').value,
+                hall_type: currentHallType,
+                employee_id: c.id, 
+                status: c.st, 
+                note: c.manualNote || null,
+                created_by: sessionUser.id
+            });
+        }
+    }
+
+    if(finalInserts.length === 0) {
+        $('dailyMsg').textContent = 'تم الإلغاء.';
+        return;
+    }
+
+    const {error} = await sb.from('events').insert(finalInserts);
+    
+    if(error) { 
+        console.error(error);
+        $('dailyMsg').textContent = 'حدث خطأ: ' + error.message; 
+        if(error.message.includes('unique')) alert('⚠️ خطأ: ما زال القيد (Unique Constraint) موجوداً في قاعدة البيانات.\nيرجى تنفيذ كود SQL لحذف القيد من جدول events.');
+    } else { 
         $('dailyMsg').textContent = 'تم الحفظ بنجاح ✅'; 
         chosen=[]; 
         renderDaily(); 
         $('status_manual_text').value='';
-        // Auto refresh submitted list if open
         if(!$('submitted-area').classList.contains('hidden')) loadSubmittedToday();
     }
   }
 
-  // --- Submitted List Logic ---
   async function toggleSubmittedList() {
       const area = $('submitted-area');
       if (area.classList.contains('hidden')) {
@@ -1079,7 +1223,6 @@
   async function loadSubmittedToday() {
       const h = $('d_hall').value;
       const s = $('d_shift').value;
-      // We also check date
       const d = $('d_date').value;
       
       const listDiv = $('submitted-list');
@@ -1103,7 +1246,7 @@
 
       evs.forEach(ev => {
           const stDef = STATUSES[ev.status] || STATUSES.normal;
-          const noteTxt = ev.note ? `(${ev.note})` : '';
+          const noteTxt = ev.note ? ` - <span style="opacity:0.8">(${ev.note})</span>` : '';
           
           let actionBtn = '';
           if(isAdmin) {
@@ -1125,12 +1268,12 @@
   }
 
   async function deleteEvent(eventId) {
-      if(!confirm('هل تريد حذف هذا التحضير لإعادة تسجيله؟')) return;
+      if(!confirm('هل تريد حذف هذا التحضير؟')) return;
       const { error } = await sb.from('events').delete().eq('id', eventId);
       if(error) alert(error.message);
       else {
           loadSubmittedToday();
-          alert('تم الحذف. يمكنك الآن تحضيره مرة أخرى من القائمة العلوية.');
+          alert('تم الحذف.');
       }
   }
 
@@ -1153,7 +1296,6 @@
     const tb = $('monthlyBody'); tb.innerHTML = '';
     targetEmps.forEach(e => {
       const val = statMap[e.id];
-      // Empty string if null/undefined, otherwise value
       const displayVal = (val !== undefined && val !== null) ? val : '';
       
       tb.innerHTML += `<tr>
@@ -1175,7 +1317,6 @@
 
     if(!updates.length) return;
     
-    // UI Feedback
     const span = $('saveStatusSpan');
     span.style.opacity = '1';
     
@@ -1204,20 +1345,18 @@
      );
 
      if(filtered.length === 0) el.innerHTML = '<option value="">لا يوجد نتائج</option>';
-     filtered.forEach(e => { el.innerHTML += `<option value="${e.id}">${e.name} (${e.hall}-${e.shift})</option>`; });
+     filtered.forEach(e => { el.innerHTML += `<option value="${e.id}">${e.name} (${e.hall || '-'}-${e.shift || '-'})</option>`; });
      if(filtered.length) el.selectedIndex = 0;
   }
 
-  // *** Helper function for score calculation ***
   function calculateScore(status) {
       if(status === 'early') return 10;
-      if(status === 'normal') return 8; // Good attendance
-      if(status === 'late') return 1;   // Just present, low score
+      if(status === 'normal') return 8; 
+      if(status === 'late') return 1;   
       if(status === 'app' || status === 'detained') return -10;
       if(status === 'absent') return -20;
-      // Neutral statuses (vacation, etc) return null to ignore
       if(STATUSES[status] && STATUSES[status].type === 'neutral') return null;
-      return 0; // Fallback
+      return 0; 
   }
 
   async function loadSoldierRecord(){
@@ -1228,7 +1367,7 @@
     $('soldier-profile').classList.remove('hidden');
     $('p_name').textContent = emp.name;
     $('p_rank').textContent = emp.rank || 'فرد';
-    $('p_loc').textContent = `صالة ${emp.hall} | مناوبة ${emp.shift} | ${HALL_TYPES[emp.hall_type] || ''}`;
+    $('p_loc').textContent = `صالة ${emp.hall || '-'} | مناوبة ${emp.shift || '-'} | ${HALL_TYPES[emp.hall_type] || ''}`;
     
     const {data: evs} = await sb.from('events').select('*').eq('employee_id', emp.id).order('event_date', {ascending:false}).limit(100);
     const tb = $('p_history'); tb.innerHTML = '';
@@ -1247,7 +1386,6 @@
             if(ev.status === 'excused') cExcused++;
             if(stDef.type === 'bad') cVio++;
             
-            // Calculate Logic Points (Hidden)
             const pts = calculateScore(ev.status);
             if (pts !== null) {
                 totalPoints += pts;
@@ -1265,43 +1403,36 @@
     $('p_count_excused').textContent = cExcused;
     $('p_count_vio').textContent = cVio;
 
-    // Check for Insufficient Data
     let scorePercent = 0;
-    let reasonText = "عادي - لا توجد بيانات كافية";
+    let reasonText = "عادي";
     let reasonColor = "var(--text-muted)";
 
     if(countedDays < 3) {
-        // Not enough data to judge
         scorePercent = 50; 
-        // Keep default reason text
     } else {
-        // Calculate Average Percentage
         const maxPossible = countedDays * 10;
         scorePercent = (totalPoints / maxPossible) * 100;
 
-        // Add productivity boost (small factor)
         const y = new Date().getFullYear();
         const {data: stats} = await sb.from('monthly_stats').select('month,score').eq('employee_id', emp.id).eq('year', y);
         let totalProd = 0;
         if(stats) stats.forEach(s => totalProd += s.score);
         if(totalProd > 0) scorePercent += 5; 
 
-        // Clamp
         if(scorePercent > 100) scorePercent = 100;
         if(scorePercent < 0) scorePercent = 0;
 
-        // Determine Text
         if(scorePercent < 50) { 
-            reasonText = `منخفض - لوجود (${cVio + cAbsent}) مخالفة`; 
+            reasonText = `منخفض (${cVio + cAbsent} مخالفة)`; 
             reasonColor = "var(--danger)"; 
         } else if (scorePercent < 70) {
-            reasonText = "متوسط - يحتاج إلى متابعة";
+            reasonText = "متوسط";
             reasonColor = "var(--warning)";
         } else if (scorePercent < 90) {
-            reasonText = "جيد - وضع مستقر نسبياً";
-            reasonColor = "#3b82f6"; // Primary Blue
+            reasonText = "جيد";
+            reasonColor = "#3b82f6";
         } else {
-            reasonText = "مميز - أداء وانضباط عالي";
+            reasonText = "مميز";
             reasonColor = "var(--success)";
         }
     }
@@ -1311,7 +1442,6 @@
     const chart = $('p_chart_container'); chart.innerHTML = '';
     const labels = $('p_chart_labels'); labels.innerHTML = '';
     
-    // Chart Logic remains same
     const y = new Date().getFullYear();
     const {data: stats} = await sb.from('monthly_stats').select('month,score').eq('employee_id', emp.id).eq('year', y);
     let totalProd = 0;
@@ -1324,8 +1454,8 @@
       const idx = i+1; const rec = stats?.find(s => s.month === idx); const val = rec ? rec.score : 0;
       const h = max > 0 ? (val/max*100) : 0; const barHeight = Math.max(h, 1); 
       chart.innerHTML += `<div style="flex:1; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center;">
-           <span style="font-size:10px; color:var(--text-main); margin-bottom:2px; ${val>0?'':'opacity:0'}">${val}</span>
-           <div style="width:100%; background:var(--productivity); height:${barHeight}%; border-radius:4px 4px 0 0; opacity:${val>0?1:0.2}"></div></div>`;
+            <span style="font-size:10px; color:var(--text-main); margin-bottom:2px; ${val>0?'':'opacity:0'}">${val}</span>
+            <div style="width:100%; background:var(--productivity); height:${barHeight}%; border-radius:4px 4px 0 0; opacity:${val>0?1:0.2}"></div></div>`;
       labels.innerHTML += `<div style="flex:1; text-align:center">${idx}</div>`;
     });
   }
@@ -1334,8 +1464,7 @@
       const maxDash = 251; const arc = $(`${prefix}_gauge_arc`); const needle = $(`${prefix}_gauge_needle`); const text = $(`${prefix}_gauge_text`);
       const rDiv = $(`${prefix}_gauge_reason`); if(rDiv && reason) { rDiv.textContent = reason; rDiv.style.color = rColor; }
       let color = "#10b981"; 
-      if(percent === 50 && reason.includes("بيانات")) color = "#64748b"; // Neutral grey
-      else if(percent < 50) color = "#ef4444"; 
+      if(percent < 50) color = "#ef4444"; 
       else if(percent < 85) color = "#f59e0b"; 
       
       arc.style.strokeDasharray = `${(percent/100)*251}, 251`; arc.style.stroke = color;
@@ -1347,7 +1476,6 @@
     const h = $('st_hall').value, s = $('st_shift').value, t = $('st_type').value;
     const curYear = new Date(from).getFullYear();
     
-    // 1. Productivity Data
     let qProd = sb.from('monthly_stats').select('employee_id, score, employees!inner(name, hall, shift, hall_type, rank)').eq('year', curYear);
     if(h) qProd = qProd.eq('employees.hall', h); 
     if(s) qProd = qProd.eq('employees.shift', s);
@@ -1356,10 +1484,9 @@
     const {data: prodData} = await qProd;
     const empProdMap = {}; let totalSysProd = 0;
     
-    // Discipline map (also tracks bad counts for violations list)
     const disciplineScores = {}; 
-    // Violation map
     const violationMap = {};
+    const absenceMap = {};
 
     if(prodData) prodData.forEach(row => {
       const eid = row.employee_id;
@@ -1370,14 +1497,13 @@
       empProdMap[eid].total += row.score; 
       totalSysProd += row.score;
       
-      // Initialize discipline
+      // Initialize if not present
       if(!disciplineScores[eid]) disciplineScores[eid] = { 
           ...empProdMap[eid], points: 0, days: 0, 
-          prodBonus: 0, 
-          earlyCount: 0, vioCount: 0 
+          prodTotal: row.score, 
+          earlyCount: 0, vioCount: 0, lateCount: 0 
       };
-      // Productivity adds a flat bonus
-      disciplineScores[eid].prodBonus = (row.score > 0) ? 5 : 0; 
+      else disciplineScores[eid].prodTotal = row.score;
     });
 
     const sortedProd = Object.values(empProdMap).sort((a,b) => b.total - a.total);
@@ -1389,7 +1515,6 @@
     });
     $('g_total_prod').textContent = totalSysProd;
 
-    // 2. Events Data for Discipline
     let qEv = sb.from('events').select('status, event_date, note, employees!inner(id, name, hall, shift, hall_type, rank)').gte('event_date', from).lte('event_date', to);
     if(h) qEv = qEv.eq('employees.hall', h); 
     if(s) qEv = qEv.eq('employees.shift', s);
@@ -1399,26 +1524,33 @@
     const statsEvents = events || [];
     const statusCounts = {}; const hallViolations = {}; const hallAbsent = {}; const hallDiscipline = {}; 
     let totalBadEvents = 0;
-
-    // Calculate General Score Logic
     let grandTotalPoints = 0;
     let grandTotalDays = 0;
+    
+    // Timeline Data
+    const timelineData = {};
 
     statsEvents.forEach(ev => {
        statusCounts[ev.status] = (statusCounts[ev.status]||0)+1;
        const key = `صالة ${ev.employees.hall} - مناوبة ${ev.employees.shift}`;
        const type = STATUSES[ev.status]?.type || 'neutral';
        
-       // Calculate Discipline Score for Individuals
+       // Timeline Aggregation
+       if(!timelineData[ev.event_date]) timelineData[ev.event_date] = { good: 0, bad: 0, total: 0 };
+       timelineData[ev.event_date].total++;
+       if(type === 'good' || ev.status === 'normal') timelineData[ev.event_date].good++;
+       if(type === 'bad') timelineData[ev.event_date].bad++;
+
        const eid = ev.employees.id;
        if(!disciplineScores[eid]) disciplineScores[eid] = { 
            name:ev.employees.name, hall:ev.employees.hall, shift:ev.employees.shift, rank:ev.employees.rank, 
-           points: 0, days: 0, prodBonus: 0, earlyCount: 0, vioCount: 0
+           points: 0, days: 0, prodTotal: 0, earlyCount: 0, vioCount: 0, lateCount: 0
        };
-       
        if(!violationMap[eid]) violationMap[eid] = {
-           name:ev.employees.name, hall:ev.employees.hall, shift:ev.employees.shift, rank:ev.employees.rank,
-           count: 0
+           name:ev.employees.name, hall:ev.employees.hall, shift:ev.employees.shift, rank:ev.employees.rank, count: 0
+       };
+       if(!absenceMap[eid]) absenceMap[eid] = {
+           name:ev.employees.name, hall:ev.employees.hall, shift:ev.employees.shift, rank:ev.employees.rank, count: 0
        };
 
        const pts = calculateScore(ev.status);
@@ -1429,14 +1561,13 @@
            grandTotalDays++;
        }
 
-       // Track specific counts for detail text
        if(ev.status === 'early') disciplineScores[eid].earlyCount++;
+       if(ev.status === 'late') disciplineScores[eid].lateCount++;
+       if(ev.status === 'absent') absenceMap[eid].count++;
+       
        if(type === 'bad') {
            disciplineScores[eid].vioCount++;
-           violationMap[eid].count++; // Track for violations leaderboard
-       }
-
-       if(type === 'bad') { 
+           violationMap[eid].count++;
            totalBadEvents++; 
            hallViolations[key] = (hallViolations[key]||0)+1; 
        }
@@ -1445,34 +1576,38 @@
        if(ev.status === 'absent') hallAbsent[key] = (hallAbsent[key]||0)+1;
     });
 
-    // --- Render Discipline Leaderboard with Details ---
-    const disciplineList = Object.values(disciplineScores).map(e => {
-        let finalScore = 0;
-        // REMOVED THE strict 3-day constraint so names show up
-        if(e.days > 0) { 
-            const avg = e.points / (e.days * 10); // 0 to 1
-            finalScore = (avg * 100) + (e.prodBonus || 0);
-        } else {
-            // Even if 0 days but exists in data (maybe just added), show neutral
-            finalScore = 0; 
-        }
-        if(finalScore > 100) finalScore = 100;
-        return { ...e, finalScore };
+    // --- REFINED DISCIPLINE LOGIC ---
+    // Formula: (Days * 10) + (Early * 5) + (Prod / 25) - (Violations * 40) - (Late * 15)
+    // Ensures behavior matters more than pure numbers.
+    const rawDiscList = Object.values(disciplineScores).map(e => {
+        let rawScore = (e.days * 10) + (e.earlyCount * 5) + ((e.prodTotal || 0) / 25) - (e.vioCount * 40) - (e.lateCount * 15);
+        if(rawScore < 0) rawScore = 0;
+        return { ...e, rawScore };
+    });
+    
+    let maxRaw = 0;
+    rawDiscList.forEach(e => { if(e.rawScore > maxRaw) maxRaw = e.rawScore; });
+
+    const disciplineList = rawDiscList.map(e => {
+        let pct = maxRaw > 0 ? (e.rawScore / maxRaw * 100) : 0;
+        return { ...e, finalScore: pct };
     }).sort((a,b) => b.finalScore - a.finalScore);
 
     const discChartDiv = $('discipline_leaderboard'); discChartDiv.innerHTML = ''; 
     
-    // Slice top 5
     disciplineList.slice(0, 5).forEach((e, i) => {
-       // Only skip if score is absolutely 0 AND no days, but usually we want to see them if they have any positive attribute
        let displayPct = e.finalScore;
        
-       // Build Detail String
+       // Prod Text Logic
+       let prodText = "جيد";
+       if(e.prodTotal > 3000) prodText = "رائعة جداً";
+       else if(e.prodTotal >= 1000) prodText = "جيد جداً";
+       else if(e.prodTotal === 0) prodText = "منخفض";
+       
        let details = [];
-       if(e.earlyCount > 0) details.push(`حضور مبكر: ${e.earlyCount}`);
-       if(e.prodBonus > 0) details.push(`إنتاجية: جيد`);
+       if(e.earlyCount > 0) details.push(`مبكر: ${e.earlyCount}`);
+       details.push(`إنتاجية: ${prodText}`);
        if(e.vioCount > 0) details.push(`مخالفات: ${e.vioCount}`);
-       else details.push(`مخالفات: لا يوجد`);
        
        const detailStr = details.join(' - ');
 
@@ -1487,7 +1622,7 @@
        </div>`;
     });
 
-    // --- Render Violations Leaderboard ---
+    // Violations List
     const violationList = Object.values(violationMap).sort((a,b) => b.count - a.count);
     const vioChartDiv = $('violations_leaderboard'); vioChartDiv.innerHTML = '';
     const maxVioVal = violationList[0]?.count || 0;
@@ -1495,52 +1630,83 @@
     violationList.slice(0, 5).forEach((e, i) => {
         if(e.count === 0) return;
         const pct = (maxVioVal > 0) ? (e.count/maxVioVal*100) : 0;
-        
         vioChartDiv.innerHTML += `<div class="bar-row">
             <div style="font-size:12px; line-height:1.2; overflow:hidden;">
                 <div style="font-weight:bold">${i+1}. ${e.name}</div>
-                <div style="font-size:10px; color:var(--text-muted)">${e.rank} | ${e.hall}-${e.shift}</div>
             </div>
             <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:var(--danger)"></div></div>
             <div style="font-weight:bold; color:var(--danger); font-size:12px">${e.count}</div>
        </div>`;
     });
-    if(vioChartDiv.innerHTML === '') vioChartDiv.innerHTML = '<div style="text-align:center; padding:10px; color:var(--text-muted)">لا توجد مخالفات مسجلة في هذه الفترة ✅</div>';
+    if(vioChartDiv.innerHTML === '') vioChartDiv.innerHTML = '<div style="text-align:center; color:var(--text-muted)">لا توجد مخالفات ✅</div>';
 
+    // Absence List (New)
+    const absentList = Object.values(absenceMap).sort((a,b) => b.count - a.count);
+    const absChartDiv = $('absent_leaderboard'); absChartDiv.innerHTML = '';
+    const maxAbsVal = absentList[0]?.count || 0;
 
-    // General Gauge Logic
-    let globalPct = 90; // Default start
+    absentList.slice(0, 5).forEach((e, i) => {
+        if(e.count === 0) return;
+        const pct = (maxAbsVal > 0) ? (e.count/maxAbsVal*100) : 0;
+        absChartDiv.innerHTML += `<div class="bar-row">
+            <div style="font-size:12px; line-height:1.2; overflow:hidden;">
+                <div style="font-weight:bold">${i+1}. ${e.name}</div>
+            </div>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:var(--danger)"></div></div>
+            <div style="font-weight:bold; color:var(--danger); font-size:12px">${e.count}</div>
+       </div>`;
+    });
+    if(absChartDiv.innerHTML === '') absChartDiv.innerHTML = '<div style="text-align:center; color:var(--text-muted)">لا يوجد غياب ✅</div>';
+
+    // Render Timeline Chart (Grouped Bars - Last 30 Days)
+    const timelineContainer = $('timeline_chart');
+    timelineContainer.innerHTML = '';
+    // Sort dates
+    const allDates = Object.keys(timelineData).sort();
+    const sortedDates = allDates.slice(-30); // Max 30
+
+    sortedDates.forEach(d => {
+        const item = timelineData[d];
+        const totalHeight = item.total > 0 ? Math.min(item.total * 5, 100) : 5; // Scale height
+        const goodHeight = item.total > 0 ? (item.good / item.total * totalHeight) : 0;
+        const badHeight = item.total > 0 ? (item.bad / item.total * totalHeight) : 0;
+        
+        // Format Date (Day/Month)
+        const dateObj = new Date(d);
+        const dateStr = `${dateObj.getDate()}/${dateObj.getMonth()+1}`;
+
+        timelineContainer.innerHTML += `
+            <div class="timeline-group">
+                <div class="timeline-score">${Math.round((item.good/item.total)*100)}%</div>
+                <div class="timeline-bars">
+                    <div class="t-bar-total" style="height:${totalHeight}px;" title="إجمالي: ${item.total}"></div>
+                    <div class="t-bar-good" style="height:${goodHeight}px;" title="منضبط: ${item.good}"></div>
+                    <div class="t-bar-bad" style="height:${badHeight}px;" title="مخالف: ${item.bad}"></div>
+                </div>
+                <div class="timeline-label">${dateStr}</div>
+            </div>
+        `;
+    });
+
+    // General Gauge
+    let globalPct = 90;
     let gReason = "", gColor = "";
-
     if(grandTotalDays < 10) {
-        globalPct = 50;
-        gReason = "عادي - لا توجد بيانات كافية للتحليل";
-        gColor = "var(--text-muted)";
+        globalPct = 50; gReason = "عادي - لا توجد بيانات كافية"; gColor = "var(--text-muted)";
     } else {
         if(grandTotalDays > 0) {
             globalPct = (grandTotalPoints / (grandTotalDays * 10)) * 100;
             if(totalSysProd > 100) globalPct += 2;
         }
-        
         if(globalPct > 100) globalPct = 100; if(globalPct < 0) globalPct = 0;
-
-        if(globalPct < 50) { 
-            gReason = `منخفض - لوجود (${totalBadEvents}) مخالفة`; 
-            gColor = "var(--danger)"; 
-        } else if (globalPct < 70) {
-            gReason = "متوسط - يحتاج إلى متابعة";
-            gColor = "var(--warning)";
-        } else if (globalPct < 90) {
-            gReason = "جيد - وضع مستقر نسبياً";
-            gColor = "#3b82f6";
-        } else {
-            gReason = "مميز - أداء وانضباط عالي";
-            gColor = "var(--success)";
-        }
+        if(globalPct < 50) { gReason = `منخفض`; gColor = "var(--danger)"; } 
+        else if (globalPct < 70) { gReason = "متوسط"; gColor = "var(--warning)"; } 
+        else if (globalPct < 90) { gReason = "جيد"; gColor = "#3b82f6"; } 
+        else { gReason = "مميز"; gColor = "var(--success)"; }
     }
-    
     updateGauge('g', globalPct, gReason, gColor);
 
+    // KPI Cards
     let maxVio = 0, mostVioHall = "لا يوجد"; for(const [k, v] of Object.entries(hallViolations)){ if(v > maxVio) { maxVio = v; mostVioHall = k; } }
     $('g_most_violations').textContent = mostVioHall; $('g_most_violations_count').textContent = maxVio > 0 ? `${maxVio} مخالفة` : '';
     let maxAbs = 0, mostAbsHall = "لا يوجد"; for(const [k, v] of Object.entries(hallAbsent)){ if(v > maxAbs) { maxAbs = v; mostAbsHall = k; } }
@@ -1571,7 +1737,6 @@
     const id=$('m_emp').value, h=$('m_new_hall').value, s=$('m_new_shift').value, t=$('m_new_type').value;
     if(!id) return;
     
-    // Update hall, shift AND TYPE
     const updates = { hall: h, shift: s };
     if(t) updates.hall_type = t;
 
@@ -1590,8 +1755,6 @@
 
       if(!name || !rank) return alert('يرجى كتابة الاسم والرتبة');
 
-      // Note: Since this is manual add without auth, we generate a random UUID
-      // This user will appear in lists but cannot login unless they register properly later
       const fakeId = crypto.randomUUID();
 
       const { error } = await sb.from('employees').insert({
@@ -1601,8 +1764,8 @@
           hall: hall,
           shift: shift,
           hall_type: type,
-          is_approved: true, // Auto approve manual additions
-          email: null // No email implies manual add
+          is_approved: true, 
+          email: null 
       });
 
       if(error) alert('خطأ: ' + error.message);
