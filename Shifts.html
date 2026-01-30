@@ -26,7 +26,6 @@
       --text-muted: #94a3b8;
       --border: #334155;
       --radius: 12px;
-      --chart-bg: #334155;
     }
 
     * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -49,7 +48,13 @@
     }
     
     .brand { display: flex; align-items: center; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-    .brand-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--productivity)); border-radius: 10px; display: grid; place-items: center; font-weight: bold; font-size: 20px; color: white; }
+    .brand-icon { 
+        width: 45px; height: 45px; 
+        background: transparent; 
+        display: grid; place-items: center; 
+        border-radius: 50%; overflow: hidden;
+    }
+    .brand-icon img { width: 100%; height: 100%; object-fit: contain; }
     
     .nav-item {
       display: flex; align-items: center; gap: 12px; padding: 12px 16px; position: relative;
@@ -108,20 +113,20 @@
 
     .stats-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; position:relative; }
     .score-table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 15px; }
-    .score-table th { text-align: right; padding: 15px; color: var(--text-muted); border-bottom: 2px solid var(--border); font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.2); }
-    .score-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; vertical-align: middle; }
+    .score-table th { text-align: right; padding: 15px; color: var(--text-muted); border-bottom: 2px solid var(--border); font-size: 12px; font-weight: bold; background: rgba(0,0,0,0.2); }
+    .score-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; vertical-align: middle; }
     .score-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
     .score-input { width: 100px; text-align: center; padding: 8px; background: var(--bg-body); border: 1px solid var(--border); color: var(--productivity); border-radius: 8px; font-weight: 800; font-size: 16px; -webkit-appearance: none; transition: 0.2s; }
     .score-input:focus { border-color: var(--productivity); box-shadow: 0 0 0 3px rgba(6,182,212,0.15); }
 
-    .gauge-container { width: 220px; margin: 0 auto; text-align: center; position: relative; }
+    .gauge-container { width: 100%; max-width: 180px; margin: 0 auto; text-align: center; position: relative; }
     .gauge-svg { width: 100%; height: auto; overflow: visible; }
     .gauge-arc-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 12; stroke-linecap: round; }
     .gauge-arc-val { fill: none; stroke-width: 12; stroke-linecap: round; transition: stroke-dasharray 1s ease-out, stroke 0.5s; }
     .gauge-needle { fill: var(--text-main); transform-origin: 100px 90px; transition: transform 1s cubic-bezier(0.4, 0.0, 0.2, 1); }
     .gauge-center { fill: var(--bg-card); stroke: var(--border); stroke-width: 2; }
-    .gauge-text { font-size: 24px; font-weight: bold; fill: var(--text-main); text-anchor: middle; }
-    .gauge-reason { font-size: 12px; margin-top: 5px; font-weight: bold; line-height: 1.4; }
+    .gauge-text { font-size: 20px; font-weight: bold; fill: var(--text-main); text-anchor: middle; }
+    .gauge-reason { font-size: 11px; margin-top: 5px; font-weight: bold; line-height: 1.4; }
 
     .bar-chart-container { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
     .bar-row { display: grid; grid-template-columns: 180px 1fr 60px; align-items: center; gap: 15px; }
@@ -160,7 +165,7 @@
 
     .discipline-detail-text { font-size: 9px; color: var(--text-muted); margin-top: 3px; display: block; }
 
-    /* PROFESSIONAL TIMELINE CHART - GROUPED BARS */
+    /* Timeline Chart Styles */
     .timeline-wrapper {
         display: flex;
         flex-direction: column;
@@ -189,52 +194,48 @@
         height: 150px;
         position: relative;
     }
-    /* Bar for Total/Present (Navy) */
-    .t-bar-total {
-        width: 10px;
-        background: #1e3a8a; /* Dark Navy */
-        border-radius: 2px 2px 0 0;
-        transition: height 0.5s ease;
-    }
-    /* Bar for Discipline/Good (Green) */
-    .t-bar-good {
-        width: 10px;
-        background: var(--success);
-        border-radius: 2px 2px 0 0;
-        transition: height 0.5s ease;
-    }
-    /* Bar for Bad/Violations (Red) */
-    .t-bar-bad {
-        width: 10px;
-        background: var(--danger);
-        border-radius: 2px 2px 0 0;
-        transition: height 0.5s ease;
-    }
-    .timeline-label {
-        font-size: 10px;
-        color: var(--text-muted);
-        margin-top: 5px;
-        transform: rotate(-45deg);
-        white-space: nowrap;
-    }
-    .timeline-score {
-        font-size: 9px;
-        font-weight: bold;
-        margin-bottom: 3px;
-        position: absolute;
-        top: -15px;
-        width: 100%;
-        text-align: center;
-    }
-    .legend-box {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        margin-bottom: 10px;
-        font-size: 11px;
-    }
+    .t-bar-total { width: 10px; background: #1e3a8a; border-radius: 2px 2px 0 0; transition: height 0.5s ease; }
+    .t-bar-good { width: 10px; background: var(--success); border-radius: 2px 2px 0 0; transition: height 0.5s ease; }
+    .t-bar-bad { width: 10px; background: var(--danger); border-radius: 2px 2px 0 0; transition: height 0.5s ease; }
+    .timeline-label { font-size: 10px; color: var(--text-muted); margin-top: 5px; transform: rotate(-45deg); white-space: nowrap; }
+    .timeline-score { font-size: 9px; font-weight: bold; margin-bottom: 3px; position: absolute; top: -15px; width: 100%; text-align: center; }
+    .legend-box { display: flex; gap: 15px; justify-content: center; margin-bottom: 10px; font-size: 11px; }
     .legend-item { display: flex; align-items: center; gap: 5px; }
     .dot { width: 10px; height: 10px; border-radius: 2px; }
+
+    /* Toggle Switch */
+    .violation-toggle {
+        display: flex; gap: 10px; justify-content: center; margin: 10px 0;
+    }
+    .v-option {
+        padding: 5px 12px; border: 1px solid var(--border); border-radius: 20px; font-size: 11px; cursor: pointer;
+        opacity: 0.6; transition: 0.2s;
+    }
+    .v-option.active { opacity: 1; font-weight: bold; border-color: transparent; }
+    .v-option[data-val="no"].active { background: var(--success); color: white; }
+    .v-option[data-val="yes"].active { background: var(--danger); color: white; }
+
+    .excuse-btn {
+        background: rgba(139, 92, 246, 0.1); border: 1px solid #8b5cf6; color: #8b5cf6;
+        font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+        font-weight: bold; transition: 0.2s;
+    }
+    .excuse-btn:hover { background: #8b5cf6; color: white; }
+
+    .delete-btn-sm {
+        background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger);
+        font-size: 12px; padding: 4px 8px; border-radius: 6px; cursor: pointer; margin-right: 8px;
+    }
+    .delete-btn-sm:hover { background: var(--danger); color: white; }
+
+    /* Record Layout Styles */
+    .record-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
+    .doughnut-card { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 200px; }
+    .doughnut-container { position: relative; width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; }
+    .doughnut-hole { width: 100px; height: 100px; background: var(--bg-card); border-radius: 50%; position: absolute; z-index: 2; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
+    .doughnut-legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; font-size: 10px; }
+    .d-leg-item { display: flex; align-items: center; gap: 4px; }
+    .d-leg-color { width: 8px; height: 8px; border-radius: 50%; }
 
     @media (max-width: 768px) {
       .app-container { flex-direction: column; height: 100vh; }
@@ -256,13 +257,13 @@
 
       #status_manual_text { padding: 8px; font-size: 13px; height: 40px; }
       .other-input-container { padding-top: 5px !important; margin-top: 5px !important; }
+      .record-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
   <div id="authScreen" style="position:fixed; inset:0; background:rgba(15,23,42,0.98); z-index:2500; display:grid; place-items:center; padding: 20px;">
-    
     <div id="loginForm" class="auth-box">
       <h2 style="color:var(--primary); margin-bottom:20px;">🔐 تسجيل الدخول</h2>
       <input type="email" id="email" class="form-control" placeholder="البريد الإلكتروني" style="margin-bottom:10px">
@@ -271,7 +272,6 @@
       <div class="auth-toggle" onclick="toggleAuthMode()">ليس لديك حساب؟ طلب تسجيل</div>
       <div id="authMsg" class="text-danger" style="margin-top:10px; font-size:12px; color:var(--danger)"></div>
     </div>
-
     <div id="registerForm" class="auth-box hidden">
       <h2 style="color:var(--success); margin-bottom:20px;">📝 طلب انضمام</h2>
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px">
@@ -298,7 +298,6 @@
       <button class="btn-secondary" onclick="toggleAuthMode()">رجوع لتسجيل الدخول</button>
       <div id="regMsg" class="text-danger" style="margin-top:10px; font-size:12px;"></div>
     </div>
-
   </div>
 
   <button id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
@@ -307,7 +306,9 @@
   <div class="app-container">
     <aside class="sidebar" id="mainSidebar">
       <div class="brand">
-        <div class="brand-icon">P</div>
+        <div class="brand-icon">
+            <img src="https://i0.wp.com/ksalogo.com/wp-content/uploads/2025/01/General-Directorate-of-Passports.png?fit=1000%2C1000&ssl=1" alt="Logo">
+        </div>
         <div><b>الإنتاجية</b><div style="font-size:11px;color:var(--text-muted)">إدارة المناوبات</div></div>
       </div>
       <nav style="display:flex; flex-direction:column; gap:5px; width:100%">
@@ -342,10 +343,22 @@
           <div style="background:var(--bg-card); padding:15px; border-radius:var(--radius); border:1px solid var(--border)">
              <div class="instruction-hint">⚠️ تنبيه: انقر على نوع الملاحظة المطلوبة (غياب، تأخير...) قبل اختيار الأسماء من القائمة.</div>
              <div class="status-selector" id="statusRadios"></div>
+             
              <div id="otherInputDiv" class="hidden other-input-container" style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
+                <div style="text-align:center; margin-bottom:5px; font-size:12px; font-weight:bold;">هل تعتبر مخالفة؟</div>
+                <div class="violation-toggle">
+                    <div class="v-option active" data-val="no" onclick="setViolation(false, this)">ليست مخالفة ✅</div>
+                    <div class="v-option" data-val="yes" onclick="setViolation(true, this)">مخالفة ❌</div>
+                </div>
                 <label style="font-size:12px; color:var(--text-muted)">📝 اكتب نوع الحالة:</label>
-                <input type="text" id="status_manual_text" class="form-control" placeholder="مثلاً: مهمة خارجية...">
+                <input type="text" id="status_manual_text" class="form-control" placeholder="وصف الحالة...">
              </div>
+
+             <div id="appInputDiv" class="hidden other-input-container" style="margin-top:10px; border-top:1px solid var(--border); padding-top:10px;">
+                <label style="font-size:12px; color:var(--text-muted)">📝 سبب التطبيق:</label>
+                <input type="text" id="app_reason_text" class="form-control" placeholder="اكتب سبب التطبيق هنا...">
+             </div>
+
           </div>
           <div class="transfer-area">
             <div class="list-panel">
@@ -423,35 +436,49 @@
               </div>
               <div class="profile-stat-group">
                   <div class="mini-stat"><div class="val" id="p_count_absent" style="color:var(--danger)">0</div><div class="lbl">غياب</div></div>
+                  <div class="mini-stat"><div class="val" id="p_count_absent_excused" style="color:#d946ef">0</div><div class="lbl">غياب/بعذر</div></div>
                   <div class="mini-stat"><div class="val" id="p_count_late" style="color:var(--warning)">0</div><div class="lbl">تأخير</div></div>
                   <div class="mini-stat"><div class="val" id="p_count_early" style="color:var(--success)">0</div><div class="lbl">حضور مبكر</div></div>
                   <div class="mini-stat"><div class="val" id="p_count_excused" style="color:#8b5cf6">0</div><div class="lbl">استئذان</div></div>
                   <div class="mini-stat"><div class="val" id="p_count_vio" style="color:var(--danger)">0</div><div class="lbl">مخالفات</div></div>
               </div>
             </div>
-            <div class="stats-card" style="display:flex; flex-direction:column; align-items:center;">
-                 <h3 style="margin:0 0 20px 0; align-self:flex-start">🧭 مستوى الانضباط</h3>
-                 <div class="gauge-container">
-                     <svg class="gauge-svg" viewBox="0 0 200 100">
-                         <path class="gauge-arc-bg" d="M20 90 A 80 80 0 0 1 180 90" />
-                         <path id="p_gauge_arc" class="gauge-arc-val" d="M20 90 A 80 80 0 0 1 180 90" stroke-dasharray="0, 251" />
-                         <polygon id="p_gauge_needle" class="gauge-needle" points="100,90 95,90 100,20 105,90" />
-                         <circle cx="100" cy="90" r="5" class="gauge-center" />
-                     </svg>
-                     <div id="p_gauge_text" class="gauge-text" style="margin-top:-10px">0%</div>
-                     <div id="p_gauge_reason" class="gauge-reason" style="color:var(--text-muted)">--</div>
-                 </div>
+            
+            <div class="record-grid">
+                <div class="stats-card" style="display:flex; flex-direction:column; align-items:center; margin:0">
+                     <h3 style="margin:0 0 15px 0; align-self:flex-start; font-size:16px;">🧭 مستوى الانضباط</h3>
+                     <div class="gauge-container">
+                         <svg class="gauge-svg" viewBox="0 0 200 100">
+                             <path class="gauge-arc-bg" d="M20 90 A 80 80 0 0 1 180 90" />
+                             <path id="p_gauge_arc" class="gauge-arc-val" d="M20 90 A 80 80 0 0 1 180 90" stroke-dasharray="0, 251" />
+                             <polygon id="p_gauge_needle" class="gauge-needle" points="100,90 95,90 100,20 105,90" />
+                             <circle cx="100" cy="90" r="5" class="gauge-center" />
+                         </svg>
+                         <div id="p_gauge_text" class="gauge-text" style="margin-top:-10px">0%</div>
+                         <div id="p_gauge_reason" class="gauge-reason" style="color:var(--text-muted)">--</div>
+                     </div>
+                </div>
+
+                <div class="stats-card doughnut-card" style="margin:0">
+                    <h3 style="margin:0 0 15px 0; align-self:flex-start; font-size:16px;">📊 توزيع الحالات</h3>
+                    <div id="p_doughnut" class="doughnut-container">
+                        <div class="doughnut-hole">0</div>
+                    </div>
+                    <div id="p_doughnut_legend" class="doughnut-legend"></div>
+                </div>
+
+                <div class="stats-card" style="margin:0">
+                  <div style="font-weight:bold; font-size:14px; margin-bottom:15px">📈 الرسم البياني للإنتاجية (السنوي)</div>
+                  <div id="p_chart_container" style="display:flex; align-items:flex-end; height:120px; gap:6px; padding-bottom:10px; border-bottom:1px solid var(--border)"></div>
+                  <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:9px; color:var(--text-muted)" id="p_chart_labels"></div>
+                </div>
             </div>
-            <div class="stats-card">
-              <div style="font-weight:bold; font-size:14px; margin-bottom:15px">📈 الرسم البياني للإنتاجية (السنوي)</div>
-              <div id="p_chart_container" style="display:flex; align-items:flex-end; height:180px; gap:8px; padding-bottom:10px; border-bottom:1px solid var(--border)"></div>
-              <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:10px; color:var(--text-muted)" id="p_chart_labels"></div>
-            </div>
+
             <div class="stats-card">
               <div style="font-weight:bold; margin-bottom:10px">سجل الحضور والغياب</div>
               <div style="max-height:300px; overflow-y:auto">
                 <table class="score-table">
-                  <thead><tr><th>التاريخ</th><th>الحالة</th><th>ملاحظة</th></tr></thead>
+                  <thead><tr><th>التاريخ</th><th>الموافق</th><th>الحالة</th><th>ملاحظة</th></tr></thead>
                   <tbody id="p_history"></tbody>
                 </table>
               </div>
@@ -675,6 +702,7 @@
     app:      { label:"تطبيق",     color:"#fbbf24", type:'bad' },
     normal:   { label:"حضور عادي", color:"#3b82f6", type:'neutral' },
     excused:  { label:"استئذان",   color:"#8b5cf6", type:'neutral' },
+    absent_excused: { label:"غياب/بعذر", color:"#d946ef", type:'neutral' }, 
     vacation: { label:"إجازة",     color:"#64748b", type:'neutral' },
     sick:     { label:"مرضية",     color:"#f472b6", type:'neutral' },
     newborn:  { label:"رعاية مولود",color:"#d946ef", type:'neutral' },
@@ -689,9 +717,21 @@
   let employees = [];
   let dailyPool = [], chosen = [];
   let curStatus = "normal";
+  let isViolation = false; 
 
   const $ = (id) => document.getElementById(id);
   const today = () => new Date().toISOString().split('T')[0];
+
+  // --- Hijri Converter Helper ---
+  function toHijri(dateStr) {
+      if(!dateStr) return "-";
+      const date = new Date(dateStr);
+      // 'en-TN-u-ca-islamic-umalqura' provides proper numbering, ar-SA sometimes uses names.
+      // We use 'ar-SA-u-ca-islamic-umalqura' for Arabic locale context
+      return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+          day: 'numeric', month: 'long', year: 'numeric' 
+      }).format(date);
+  }
 
   window.onload = async () => {
     $('d_date').value = $('st_from').value = $('st_to').value = today();
@@ -706,7 +746,7 @@
         const el = $(id); el.innerHTML = '<option value="">الكل</option>';
         el.innerHTML += `<option value="departure" selected>مغادرة</option>`;
         el.innerHTML += `<option value="arrival">قدوم</option>`;
-        el.value = 'departure'; // Force selection
+        el.value = 'departure'; 
     });
 
     const mSel = $('m_month');
@@ -777,8 +817,20 @@
 
   function changeStatus(val) {
       curStatus = val;
-      if(val === 'other') $('otherInputDiv').classList.remove('hidden');
-      else $('otherInputDiv').classList.add('hidden');
+      $('otherInputDiv').classList.add('hidden');
+      $('appInputDiv').classList.add('hidden');
+
+      if(val === 'other') {
+          $('otherInputDiv').classList.remove('hidden');
+      } else if (val === 'app') {
+          $('appInputDiv').classList.remove('hidden');
+      }
+  }
+
+  function setViolation(isBad, el) {
+      isViolation = isBad;
+      document.querySelectorAll('.v-option').forEach(d => d.classList.remove('active'));
+      el.classList.add('active');
   }
 
   let isAdmin = false;
@@ -1114,7 +1166,13 @@
       const d = document.createElement('div'); d.className = 'list-item';
       d.innerHTML = `<span>${e.name}</span> <span class="emp-meta">${e.rank||''}</span>`;
       d.onclick = () => { 
-          let note = $('status_manual_text').value.trim(); 
+          let note = "";
+          if (curStatus === 'other') {
+              const text = $('status_manual_text').value.trim();
+              note = isViolation ? `[مخالفة] ${text}` : text;
+          } else if (curStatus === 'app') {
+              note = $('app_reason_text').value.trim();
+          }
           chosen.push({...e, st:curStatus, manualNote: note}); 
           renderDaily(); 
       };
@@ -1144,7 +1202,13 @@
 
   function moveAll(){
     const chIds = chosen.map(x=>x.id);
-    let note = $('status_manual_text').value.trim();
+    let note = "";
+    if (curStatus === 'other') {
+        const text = $('status_manual_text').value.trim();
+        note = isViolation ? `[مخالفة] ${text}` : text;
+    } else if (curStatus === 'app') {
+        note = $('app_reason_text').value.trim();
+    }
     dailyPool.filter(x => !chIds.includes(x.id)).forEach(e => chosen.push({...e, st:curStatus, manualNote: note}));
     renderDaily();
   }
@@ -1201,11 +1265,13 @@
         console.error(error);
         $('dailyMsg').textContent = 'حدث خطأ: ' + error.message; 
         if(error.message.includes('unique')) alert('⚠️ خطأ: ما زال القيد (Unique Constraint) موجوداً في قاعدة البيانات.\nيرجى تنفيذ كود SQL لحذف القيد من جدول events.');
+        if(error.message.includes('check constraint')) alert('⚠️ خطأ: حالة غير مدعومة في قاعدة البيانات.\nيرجى تنفيذ كود SQL لحذف القيد "events_status_check".');
     } else { 
         $('dailyMsg').textContent = 'تم الحفظ بنجاح ✅'; 
         chosen=[]; 
         renderDaily(); 
         $('status_manual_text').value='';
+        $('app_reason_text').value='';
         if(!$('submitted-area').classList.contains('hidden')) loadSubmittedToday();
     }
   }
@@ -1274,6 +1340,17 @@
       else {
           loadSubmittedToday();
           alert('تم الحذف.');
+      }
+  }
+
+  async function deleteEventFromHistory(eventId) {
+      if (!isAdmin) { alert('صلاحيات المدير مطلوبة'); return; }
+      if(!confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) return;
+      const { error } = await sb.from('events').delete().eq('id', eventId);
+      if(error) alert(error.message);
+      else {
+          alert('تم الحذف بنجاح');
+          loadSoldierRecord();
       }
   }
 
@@ -1349,14 +1426,30 @@
      if(filtered.length) el.selectedIndex = 0;
   }
 
-  function calculateScore(status) {
+  function calculateScore(status, note) {
+      if (status === 'other' && note && note.includes('[مخالفة]')) return -10;
+      
       if(status === 'early') return 10;
       if(status === 'normal') return 8; 
       if(status === 'late') return 1;   
-      if(status === 'app' || status === 'detained') return -10;
+      if(status === 'app') return -10;
+      if(status === 'detained') return -10;
       if(status === 'absent') return -20;
       if(STATUSES[status] && STATUSES[status].type === 'neutral') return null;
       return 0; 
+  }
+
+  async function updateEventStatus(id, newStatus, reason) {
+      if(!confirm('هل أنت متأكد من تبرير هذا الغياب؟')) return;
+      const { error } = await sb.from('events')
+          .update({ status: 'absent_excused', note: reason }) // Changed to absent_excused
+          .eq('id', id);
+      
+      if(error) alert('خطأ: ' + error.message);
+      else {
+          alert('تم التعديل بنجاح ✅');
+          loadSoldierRecord(); 
+      }
   }
 
   async function loadSoldierRecord(){
@@ -1372,7 +1465,7 @@
     const {data: evs} = await sb.from('events').select('*').eq('employee_id', emp.id).order('event_date', {ascending:false}).limit(100);
     const tb = $('p_history'); tb.innerHTML = '';
     
-    let cAbsent=0, cLate=0, cEarly=0, cExcused=0, cVio=0;
+    let cAbsent=0, cLate=0, cEarly=0, cExcused=0, cVio=0, cAbsentExcused=0;
     
     let totalPoints = 0;
     let countedDays = 0;
@@ -1384,17 +1477,44 @@
             if(ev.status === 'late') cLate++;
             if(ev.status === 'early') cEarly++;
             if(ev.status === 'excused') cExcused++;
-            if(stDef.type === 'bad') cVio++;
+            if(ev.status === 'absent_excused') cAbsentExcused++; // Counter
             
-            const pts = calculateScore(ev.status);
+            const isFlagged = (ev.status === 'other' && ev.note && ev.note.includes('[مخالفة]'));
+            if(stDef.type === 'bad' || isFlagged) cVio++;
+            
+            const pts = calculateScore(ev.status, ev.note);
             if (pts !== null) {
                 totalPoints += pts;
                 countedDays++;
             }
 
             let noteTxt = ev.note || '-';
-            if(ev.status === 'other' && ev.note) noteTxt = ev.note;
-            tb.innerHTML += `<tr><td>${ev.event_date}</td><td><span style="color:${stDef.color}; font-weight:bold">${stDef.label}</span></td><td>${noteTxt}</td></tr>`;
+            
+            // Buttons logic
+            let actionHtml = '';
+            // Justify Button (Left of Note)
+            if(ev.status === 'absent') {
+                actionHtml += `<button class="excuse-btn" onclick="const r=prompt('سبب الغياب:'); if(r) updateEventStatus('${ev.id}','absent_excused',r)" style="margin-left:8px">تبرير 🛡️</button>`;
+            }
+            // Delete Button (Admin Only)
+            if(isAdmin) {
+                actionHtml += `<button class="delete-btn-sm" onclick="deleteEventFromHistory('${ev.id}')">🗑️</button>`;
+            }
+
+            // --- Updated Table Row with Hijri Date ---
+            const hijriDate = toHijri(ev.event_date);
+            tb.innerHTML += `
+            <tr>
+                <td>${ev.event_date}</td>
+                <td style="font-size:11px; color:var(--text-muted)">${hijriDate}</td>
+                <td><span style="color:${stDef.color}; font-weight:bold">${stDef.label}</span></td>
+                <td>
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%">
+                        <span>${noteTxt}</span>
+                        <div style="display:flex; align-items:center">${actionHtml}</div>
+                    </div>
+                </td>
+            </tr>`;
         });
     }
     $('p_count_absent').textContent = cAbsent;
@@ -1402,6 +1522,56 @@
     $('p_count_early').textContent = cEarly;
     $('p_count_excused').textContent = cExcused;
     $('p_count_vio').textContent = cVio;
+    $('p_count_absent_excused').textContent = cAbsentExcused;
+
+    // --- Doughnut Chart Logic ---
+    const totalEvents = cAbsent + cAbsentExcused + cLate + cEarly + cExcused;
+    const doughnut = $('p_doughnut');
+    const legend = $('p_doughnut_legend');
+    
+    if(totalEvents > 0) {
+        // Calculate percentages
+        const pAbsent = (cAbsent / totalEvents) * 100;
+        const pAbsentEx = (cAbsentExcused / totalEvents) * 100;
+        const pLate = (cLate / totalEvents) * 100;
+        const pEarly = (cEarly / totalEvents) * 100;
+        const pExcused = (cExcused / totalEvents) * 100;
+
+        // Create Conic Gradient
+        let currentDeg = 0;
+        const colors = [];
+        
+        // Helper to add segment
+        const addSeg = (pct, color) => {
+            if(pct > 0) {
+                colors.push(`${color} ${currentDeg}% ${currentDeg + pct}%`);
+                currentDeg += pct;
+            }
+        };
+
+        addSeg(pAbsent, STATUSES.absent.color);
+        addSeg(pAbsentEx, STATUSES.absent_excused.color);
+        addSeg(pLate, STATUSES.late.color);
+        addSeg(pEarly, STATUSES.early.color);
+        addSeg(pExcused, STATUSES.excused.color);
+
+        doughnut.style.background = `conic-gradient(${colors.join(', ')})`;
+        doughnut.querySelector('.doughnut-hole').textContent = totalEvents;
+
+        // Create Legend
+        legend.innerHTML = `
+            <div class="d-leg-item"><div class="d-leg-color" style="background:${STATUSES.absent.color}"></div>غياب (${cAbsent})</div>
+            <div class="d-leg-item"><div class="d-leg-color" style="background:${STATUSES.absent_excused.color}"></div>بعذر (${cAbsentExcused})</div>
+            <div class="d-leg-item"><div class="d-leg-color" style="background:${STATUSES.late.color}"></div>تأخير (${cLate})</div>
+            <div class="d-leg-item"><div class="d-leg-color" style="background:${STATUSES.early.color}"></div>مبكر (${cEarly})</div>
+            <div class="d-leg-item"><div class="d-leg-color" style="background:${STATUSES.excused.color}"></div>استئذان (${cExcused})</div>
+        `;
+    } else {
+        doughnut.style.background = '#334155'; // Empty color
+        doughnut.querySelector('.doughnut-hole').textContent = '0';
+        legend.innerHTML = '<span style="color:var(--text-muted)">لا توجد بيانات</span>';
+    }
+
 
     let scorePercent = 0;
     let reasonText = "عادي";
@@ -1417,13 +1587,19 @@
         const {data: stats} = await sb.from('monthly_stats').select('month,score').eq('employee_id', emp.id).eq('year', y);
         let totalProd = 0;
         if(stats) stats.forEach(s => totalProd += s.score);
-        if(totalProd > 0) scorePercent += 5; 
+        
+        let boost = 0;
+        if(totalProd > 2000) boost += 2;
+        if(totalProd > 3000) boost += 2; 
+        if(totalProd > 4000) boost += 2;
+        
+        scorePercent += boost;
 
         if(scorePercent > 100) scorePercent = 100;
         if(scorePercent < 0) scorePercent = 0;
 
         if(scorePercent < 50) { 
-            reasonText = `منخفض (${cVio + cAbsent} مخالفة)`; 
+            reasonText = `منخفض (${cVio} مخالفة)`; 
             reasonColor = "var(--danger)"; 
         } else if (scorePercent < 70) {
             reasonText = "متوسط";
@@ -1454,7 +1630,7 @@
       const idx = i+1; const rec = stats?.find(s => s.month === idx); const val = rec ? rec.score : 0;
       const h = max > 0 ? (val/max*100) : 0; const barHeight = Math.max(h, 1); 
       chart.innerHTML += `<div style="flex:1; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center;">
-            <span style="font-size:10px; color:var(--text-main); margin-bottom:2px; ${val>0?'':'opacity:0'}">${val}</span>
+            <span style="font-size:9px; color:var(--text-main); margin-bottom:1px; ${val>0?'':'opacity:0'}">${val}</span>
             <div style="width:100%; background:var(--productivity); height:${barHeight}%; border-radius:4px 4px 0 0; opacity:${val>0?1:0.2}"></div></div>`;
       labels.innerHTML += `<div style="flex:1; text-align:center">${idx}</div>`;
     });
@@ -1497,7 +1673,6 @@
       empProdMap[eid].total += row.score; 
       totalSysProd += row.score;
       
-      // Initialize if not present
       if(!disciplineScores[eid]) disciplineScores[eid] = { 
           ...empProdMap[eid], points: 0, days: 0, 
           prodTotal: row.score, 
@@ -1527,7 +1702,6 @@
     let grandTotalPoints = 0;
     let grandTotalDays = 0;
     
-    // Timeline Data
     const timelineData = {};
 
     statsEvents.forEach(ev => {
@@ -1535,7 +1709,6 @@
        const key = `صالة ${ev.employees.hall} - مناوبة ${ev.employees.shift}`;
        const type = STATUSES[ev.status]?.type || 'neutral';
        
-       // Timeline Aggregation
        if(!timelineData[ev.event_date]) timelineData[ev.event_date] = { good: 0, bad: 0, total: 0 };
        timelineData[ev.event_date].total++;
        if(type === 'good' || ev.status === 'normal') timelineData[ev.event_date].good++;
@@ -1553,7 +1726,7 @@
            name:ev.employees.name, hall:ev.employees.hall, shift:ev.employees.shift, rank:ev.employees.rank, count: 0
        };
 
-       const pts = calculateScore(ev.status);
+       const pts = calculateScore(ev.status, ev.note);
        if (pts !== null) {
            disciplineScores[eid].points += pts;
            disciplineScores[eid].days++;
@@ -1565,7 +1738,9 @@
        if(ev.status === 'late') disciplineScores[eid].lateCount++;
        if(ev.status === 'absent') absenceMap[eid].count++;
        
-       if(type === 'bad') {
+       const isFlagged = (ev.status === 'other' && ev.note && ev.note.includes('[مخالفة]'));
+       
+       if(type === 'bad' || isFlagged) {
            disciplineScores[eid].vioCount++;
            violationMap[eid].count++;
            totalBadEvents++; 
@@ -1576,9 +1751,6 @@
        if(ev.status === 'absent') hallAbsent[key] = (hallAbsent[key]||0)+1;
     });
 
-    // --- REFINED DISCIPLINE LOGIC ---
-    // Formula: (Days * 10) + (Early * 5) + (Prod / 25) - (Violations * 40) - (Late * 15)
-    // Ensures behavior matters more than pure numbers.
     const rawDiscList = Object.values(disciplineScores).map(e => {
         let rawScore = (e.days * 10) + (e.earlyCount * 5) + ((e.prodTotal || 0) / 25) - (e.vioCount * 40) - (e.lateCount * 15);
         if(rawScore < 0) rawScore = 0;
@@ -1598,7 +1770,6 @@
     disciplineList.slice(0, 5).forEach((e, i) => {
        let displayPct = e.finalScore;
        
-       // Prod Text Logic
        let prodText = "جيد";
        if(e.prodTotal > 3000) prodText = "رائعة جداً";
        else if(e.prodTotal >= 1000) prodText = "جيد جداً";
@@ -1622,7 +1793,6 @@
        </div>`;
     });
 
-    // Violations List
     const violationList = Object.values(violationMap).sort((a,b) => b.count - a.count);
     const vioChartDiv = $('violations_leaderboard'); vioChartDiv.innerHTML = '';
     const maxVioVal = violationList[0]?.count || 0;
@@ -1640,7 +1810,6 @@
     });
     if(vioChartDiv.innerHTML === '') vioChartDiv.innerHTML = '<div style="text-align:center; color:var(--text-muted)">لا توجد مخالفات ✅</div>';
 
-    // Absence List (New)
     const absentList = Object.values(absenceMap).sort((a,b) => b.count - a.count);
     const absChartDiv = $('absent_leaderboard'); absChartDiv.innerHTML = '';
     const maxAbsVal = absentList[0]?.count || 0;
@@ -1658,20 +1827,17 @@
     });
     if(absChartDiv.innerHTML === '') absChartDiv.innerHTML = '<div style="text-align:center; color:var(--text-muted)">لا يوجد غياب ✅</div>';
 
-    // Render Timeline Chart (Grouped Bars - Last 30 Days)
     const timelineContainer = $('timeline_chart');
     timelineContainer.innerHTML = '';
-    // Sort dates
     const allDates = Object.keys(timelineData).sort();
-    const sortedDates = allDates.slice(-30); // Max 30
+    const sortedDates = allDates.slice(-30); 
 
     sortedDates.forEach(d => {
         const item = timelineData[d];
-        const totalHeight = item.total > 0 ? Math.min(item.total * 5, 100) : 5; // Scale height
+        const totalHeight = item.total > 0 ? Math.min(item.total * 5, 100) : 5; 
         const goodHeight = item.total > 0 ? (item.good / item.total * totalHeight) : 0;
         const badHeight = item.total > 0 ? (item.bad / item.total * totalHeight) : 0;
         
-        // Format Date (Day/Month)
         const dateObj = new Date(d);
         const dateStr = `${dateObj.getDate()}/${dateObj.getMonth()+1}`;
 
@@ -1688,7 +1854,6 @@
         `;
     });
 
-    // General Gauge
     let globalPct = 90;
     let gReason = "", gColor = "";
     if(grandTotalDays < 10) {
@@ -1706,7 +1871,6 @@
     }
     updateGauge('g', globalPct, gReason, gColor);
 
-    // KPI Cards
     let maxVio = 0, mostVioHall = "لا يوجد"; for(const [k, v] of Object.entries(hallViolations)){ if(v > maxVio) { maxVio = v; mostVioHall = k; } }
     $('g_most_violations').textContent = mostVioHall; $('g_most_violations_count').textContent = maxVio > 0 ? `${maxVio} مخالفة` : '';
     let maxAbs = 0, mostAbsHall = "لا يوجد"; for(const [k, v] of Object.entries(hallAbsent)){ if(v > maxAbs) { maxAbs = v; mostAbsHall = k; } }
