@@ -2106,7 +2106,7 @@ $('clear-btn')?.addEventListener('click', clearAll);
 $('close-btn')?.addEventListener('click', ()=>{
   localStorage.removeItem('wordLinkChoice');
   localStorage.removeItem('lastWordLinkChoice');
-  window.location.href = "Departure.html";
+  window.location.href = "Arrival.html";
 });
 
 
