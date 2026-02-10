@@ -1,0 +1,882 @@
+/* ====================== Palette & Base ====================== */
+:root{
+  --blue-700:#0d6efd;   /* أزرق للنص والأزرار وعلامة الصح */
+  --blue-600:#2b6fff;
+  --blue-050:#eef4ff;
+
+  --gold-700:#d4a017;   /* للعناوين الذهبية */
+
+  --ink:#101418;
+  --muted:#6b7280;
+  --bg:#f5f6f7;
+  --card:#ffffff;
+  --bd:#e5e7eb;
+
+  --radius:16px;
+  --radius-sm:10px;
+  --shadow:0 10px 28px rgba(0,0,0,.08);
+  --shadow-sm:0 4px 14px rgba(0,0,0,.06);
+}
+
+*{ box-sizing:border-box; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Tajawal",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  /* مساحة أسفل الصفحة حتى لا يغطي action-bar__inner أي عنصر */
+  padding-bottom: 340px;
+}
+
+/* ====================== Header ====================== */
+.page-wrap{ max-width:1200px; margin:10px auto 0; padding:0 16px; }
+
+.app-topbar{
+  background:transparent!important; box-shadow:none!important; border:none!important;
+  display:grid; grid-template-columns:1fr; justify-items:center; padding:0; margin:0;
+}
+.app-topbar__section--left,.app-topbar__section--center{ display:none!important; }
+.app-topbar .brand{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:10px 16px; border:1px solid var(--bd); border-radius:18px;
+  background:#eef8f5; box-shadow:var(--shadow-sm);
+}
+.app-topbar .brand i{ font-size:20px; color:#0e5c4b; }
+.app-topbar .brand span{ font-weight:800; font-size:24px; color:#0e5c4b; }
+
+/* ====================== Shell (كتلة موحّدة) ====================== */
+.shell{
+  width:100%; max-width:1200px;
+  margin:8px auto 0;
+  padding:18px 18px 20px;   /* لا نضع مسافة سفلية هنا */
+  background:#fff; border:1px solid var(--bd); border-radius:20px; box-shadow:var(--shadow);
+}
+.cards-grid{ display:grid; grid-template-columns:1fr; gap:18px; }
+
+.card{ background:transparent; border:0; box-shadow:none; }
+.card__title,.section-title{
+  margin:12px 0 8px; padding:0;
+  color:var(--gold-700);
+  font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px;
+}
+.card__body{ padding:0; }
+
+/* ====================== Grid: label | input | label | input ====================== */
+.form-grid{
+  display:grid;
+  grid-template-columns:170px 1fr 170px 1fr;
+  gap:12px 16px; align-items:center;
+}
+@media (max-width:760px){ .form-grid{ grid-template-columns:150px 1fr; } }
+@media (max-width:560px){ .form-grid{ grid-template-columns:1fr; } }
+
+.form-grid > label{ color:#1e2935; font-weight:700; font-size:.95rem; }
+
+/* Inputs: أبيض + نص أزرق + Placeholder رمادي */
+.form-grid :where(input,select,textarea){
+
+  background:#ffffff;
+  border:1px solid #c8d6ff;
+  color:var(--blue-700);
+  border-radius:12px;
+  padding:8px 12px;
+  transition:border .15s, box-shadow .15s, background .15s, color .15s;
+}
+.form-grid textarea{ min-height:90px; height:auto; resize:vertical; }
+.form-grid :where(input,select,textarea)::placeholder{ color:#9aa3af; } /* التلميح رمادي */
+.form-grid :where(input,select,textarea):focus{
+  border-color: var(--blue-600);
+  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+}
+
+input[type="checkbox"], input[type="radio"]{ accent-color: var(--blue-700); }
+
+/* علامة ✓ يسار النص عند وجود قيمة */
+.form-grid input, .form-grid textarea{ background-image:none !important; }
+.form-grid input[type="text"]:not(:placeholder-shown),
+.form-grid input[type="search"]:not(:placeholder-shown),
+.form-grid input[type="tel"]:not(:placeholder-shown),
+.form-grid input[type="email"]:not(:placeholder-shown),
+.form-grid input[type="number"]:not(:placeholder-shown),
+.form-grid input[type="date"]:valid,
+.form-grid select:valid,
+.form-grid textarea:not(:placeholder-shown){
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%230d6efd' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") !important;
+  background-repeat:no-repeat !important;
+  background-size:18px 18px !important;
+  background-position:10px 50% !important;
+  padding-inline-start:34px !important;
+}
+
+/* الحقول الناقصة: أحمر فاتح */
+.is-missing,.missing,[data-missing="1"], input:invalid, select:invalid, textarea:invalid{
+  background:#fff5f5 !important; border-color:#f5b5b5 !important; color:#7a1d1d !important;
+}
+.is-missing:focus,.missing:focus,[data-missing="1"]:focus, input:invalid:focus, select:invalid:focus, textarea:invalid:focus{
+  box-shadow:0 0 0 3px rgba(240,90,90,.15) !important;
+}
+
+/* ====================== ملاحظة التاريخ — أحمر فاتح ====================== */
+#shift-alert,
+#prev-day-note,.prev-day-note,.note-prevday,.note--prevday,[data-prevday="1"],#note-date-adjusted{
+  border:1px solid #f5b5b5 !important;
+  color:#1b65d3 !important;
+  padding:8px 10px; border-radius:10px; font-weight:700; margin:6px 0 10px;
+  display:flex; align-items:center; gap:8px;
+}
+
+/* ====================== Help: زر جميل + الصندوق مخفي افتراضيًا ====================== */
+.help-toggle{
+  position:fixed; top:10px; left:10px;
+  display:inline-flex; align-items:center; gap:8px;
+  background: linear-gradient(90deg, var(--blue-700), var(--blue-600));
+  color:#fff; border:none;
+  padding:10px 14px; border-radius:999px; cursor:pointer;
+  font-weight:800; box-shadow:var(--shadow-sm); z-index:3050;
+}
+.help-toggle i{ font-size:16px; }
+
+/* ——— تصغير ونقل صندوق التعليمات ——— */
+#helpBox{
+  top: 6px !important;
+  left: 6px !important;
+  bottom: auto !important;
+  width: 250px !important;        /* الحجم الأساسي الصغير */
+  max-height: 28vh !important;
+  padding: 6px 8px !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+/* أحجام أصغر عند الحاجة */
+#helpBox.mini{
+  width: 200px !important;
+  max-height: 24vh !important;
+  padding: 5px 6px !important;
+  font-size: 10px !important;
+}
+
+#helpBox.tiny{
+  width: 160px !important;
+  max-height: 20vh !important;
+  padding: 4px 5px !important;
+  font-size: 9px !important;
+  line-height: 1.2 !important;
+}
+
+#helpBox h4{ margin:0 0 6px; font-size:.9rem; color:#0e5c4b; text-align:center; }
+#helpBox img{ width:100%; max-height:100px; object-fit:cover; border:1px solid #e5e5e5; border-radius:8px; }
+.hide-help-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  background:#fff; color:#0e5c4b; border:1px solid var(--bd);
+  padding:6px 10px; border-radius:999px; cursor:pointer; font-weight:700; box-shadow:var(--shadow-sm);
+}
+
+/* آلية الإظهار بدون تعديل JS: أضف help-open على body */
+body.help-open #helpBox{ display:block; }
+@media (max-width:1200px){
+  #helpBox, .help-toggle{ display:none !important; }
+}
+
+/* ====================== Action Bar ====================== */
+.action-bar{ position:fixed; left:0; right:0; bottom:18px; z-index:3500; pointer-events:none; }
+.action-bar__inner{
+  pointer-events:auto;
+  max-width:1200px; margin:0 auto; padding:12px 16px;
+  display:flex; gap:12px; align-items:center; justify-content:center; flex-wrap:wrap;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:saturate(140%) blur(10px);
+  border:1px solid var(--bd); border-radius:16px; box-shadow:var(--shadow);
+}
+.action-bar__inner .btn, .btn{
+  min-width:190px; height:48px; padding:10px 18px;
+  border-radius:14px; border:1px solid transparent;
+  font-weight:800; font-size:15px; cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  transition: transform .06s ease, box-shadow .12s ease, background .2s ease, border-color .2s ease;
+}
+.btn:active{ transform: translateY(1px); }
+
+.btn--primary, #save-btn{
+  background: linear-gradient(90deg, var(--blue-700), var(--blue-600));
+  color:#fff; border-color: transparent;
+}
+.btn--primary:hover, #save-btn:hover{ box-shadow: 0 10px 28px rgba(13,110,253,.25); }
+
+.btn--secondary, #clear-btn{
+  background:#f3f4f6; color:#22303a; border-color:#d1d5db;
+}
+.btn--secondary:hover, #clear-btn:hover{ background:#e9ecef; box-shadow:0 10px 28px rgba(0,0,0,.08); }
+
+.btn--danger, #close-btn{
+  background:#fef2f2; color:#9a1b12; border:1px solid #fbd5d5;
+}
+.btn--danger:hover, #close-btn:hover{ background:#fde8e8; }
+
+/* ====================== المناوبة / رقم الصالة — طبيعي ====================== */
+#shift-number, #hall-number,
+[id*="shift"], [name*="shift"], [id*="hall"], [name*="hall"]{
+  appearance:auto !important; -webkit-appearance:auto !important; -moz-appearance:auto !important;
+  background:#ffffff !important;
+  border:1px solid #c8d6ff !important;
+  color:var(--blue-700) !important;
+  border-radius:12px !important;
+  padding:8px 12px !important;
+  height:40px !important;
+}
+
+/* ====================== الدول الممنوعة — هاي لايت مميز ====================== */
+.forbidden,
+#mc-forbidden-wrap,
+[data-section="forbidden"]{
+  background: linear-gradient(180deg, #fff7e6, #fff);
+  border: 1px solid #ffd7a3;
+  border-radius: 14px;
+  padding: 12px 14px;
+  position: relative;
+}
+.forbidden::before,
+#mc-forbidden-wrap::before,
+[data-section="forbidden"]::before,
+#mc-forbidden-line::before{
+  content:""; position:absolute; inset-inline-start:0; top:0; bottom:0; width:6px;
+  border-start-start-radius:12px; border-end-start-radius:12px;
+  background: linear-gradient(180deg, #ffb84d, #ff9f1a);
+}
+#mc-forbidden-line{
+  background: linear-gradient(180deg, #fff7e6, #fff) !important;
+  border: 1px solid #ffd7a3 !important;
+  border-radius: 12px !important;
+  padding: 10px 12px !important;
+}
+
+/* inline-alert — النص أحمر */
+.inline-alert{ color:#ff1e00 !important; }
+.inline-alert i{ color:#1442a7 !important; }
+.inline-alert:not(.orange){ background:#fff8e6; border-color:#ffe3a3; }
+
+/* ====================== Print ====================== */
+@media print{
+  .action-bar{ display:none !important; }
+  #helpBox, .help-toggle{ display:none !important; }
+  .shell{ box-shadow:none; border:1px solid #bbb; }
+}
+/* =========================
+   Highlight لمحتوى moatan-compact بالكامل
+   بدون تغيير أي ID أو HTML
+   ========================= */
+
+/* غلاف الشبكة داخل moatan-compact */
+#moatan-compact .mc-grid {
+  background: linear-gradient(180deg, #fffdf8, #ffffff);
+  border: 1px solid #f2e6c9;              /* إطار ذهبي فاتح */
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.06);
+  position: relative;
+  /* عند التمرير إلى هذا البلوك لا يُغطّى بالـ action-bar__inner */
+  scroll-margin-bottom: 300px;            /* لا نضيف margin فعلي داخل الهاي لايت */
+}
+
+/* شريط تمييز جانبي (بدون تعديل HTML) */
+#moatan-compact .mc-grid::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0; top: 0; bottom: 0;
+  width: 6px;
+  border-start-start-radius: 16px;
+  border-end-start-radius: 16px;
+  background: linear-gradient(180deg, #f1c04a, #e5a90f); /* ذهبي متدرج */
+}
+
+/* بطاقات الأقسام داخل الهاي لايت — بلا صناديق منفصلة لإحساس الكتلة الواحدة */
+#moatan-compact .mc-card {
+  background: transparent;
+  border: 0;
+  padding: 8px 4px;
+  margin: 0 0 8px 0;
+}
+
+/* عناوين/سطر التفعيل (label) */
+#moatan-compact .mc-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0d6efd;                 /* نص أزرق */
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+/* هذا هو السطر الرئيسي المطلوب تمييزه */
+#mc-forbidden-line {
+  background: linear-gradient(180deg, #fff7e6, #fff);
+  border: 1px solid #ffd7a3;
+  border-radius: 12px;
+  padding: 10px 12px;
+  position: relative;
+}
+#mc-forbidden-line::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0; top: 0; bottom: 0;
+  width: 5px;
+  border-start-start-radius: 12px;
+  border-end-start-radius: 12px;
+  background: linear-gradient(180deg, #ffb84d, #ff9f1a);
+}
+
+/* مربعات الاختيار — الأزرق السابق */
+#moatan-compact input[type="checkbox"] {
+  accent-color: #0d6efd;
+  width: 18px; height: 18px; cursor: pointer;
+}
+
+/* الحقول الصغيرة/الواسعة داخل السطور */
+#moatan-compact .mc-mini,
+#moatan-compact .mc-wide,
+#moatan-compact input.h-date {
+  background: #ffffff;               /* أبيض */
+  border: 1px solid #c8d6ff;
+  color: #0d6efd;                    /* نص أزرق */
+  border-radius: 10px;
+  padding: 6px 8px;
+  height: 36px;
+  outline: none;
+  transition: border .15s, box-shadow .15s, background .15s, color .15s;
+}
+#moatan-compact .mc-mini::placeholder,
+#moatan-compact .mc-wide::placeholder,
+#moatan-compact input.h-date::placeholder {
+  color: #9aa3af;                    /* التلميح رمادي */
+}
+#moatan-compact .mc-mini:focus,
+#moatan-compact .mc-wide:focus,
+#moatan-compact input.h-date:focus {
+  border-color: #2b6fff;
+  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+}
+
+/* توزيع أفقي أنيق لخيارات القسم */
+#moatan-compact .mc-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+#moatan-compact .mc-options.mc-inline {
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 14px;
+}
+
+/* لو أردت علامة ✓ داخل أي مدخل عندما يُملأ (اختياري ويطابق باقي التصميم) */
+#moatan-compact .mc-mini:not(:placeholder-shown),
+#moatan-compact .mc-wide:not(:placeholder-shown),
+#moatan-compact .mc-mini:valid,
+#moatan-compact .mc-wide:valid {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%230d6efd' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  background-position: 8px 50%;
+  padding-inline-start: 30px;
+}
+
+/* اجعل هذا القسم دائمًا يظهر واضحًا عند القفز له */
+#sec-forbidden { scroll-margin-top: 12px; scroll-margin-bottom: 300px; }
+
+/* تنبيه inline-alert داخل هذا الهايلايت بالنص الأحمر */
+#moatan-compact .inline-alert {
+  color: #b3261e;
+  background: #fff8e6;
+  border: 1px solid #ffe3a3;
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+/* تمييز الخانات الفارغة باللون الأحمر */
+:where(input, select, textarea).empty-field{
+  background:#f3efef62 !important;
+  border-color:#975f5f !important;
+  color:#a18a8a !important;
+}
+:where(input, select, textarea).empty-field:focus{
+  box-shadow:0 0 0 3px rgba(240,90,90,.15) !important;
+}
+/* تصغير label في الجهة اليسار فقط (سطح المكتب) */
+@media (min-width: 761px){
+  /* المواقع LTR: العمود الأول (يسار الشاشة) هو label */
+  .form-grid{ grid-template-columns: 130px 1fr 170px 1fr; }
+
+  /* المواقع RTL: العمود الثالث هو الذي يظهر يسار الشاشة — نصغّره */
+  html[dir="rtl"] .form-grid{ grid-template-columns: 180px 1fr 100px 1fr; }
+}
+/* ===== صندوق التعليمات المصغّر (أسفل يسار) ===== */
+#helpBox{
+  position: fixed;
+  bottom: 6px;     /* أسفل */
+  left: 6px;       /* يسار دائمًا */
+  z-index: 9999;   /* فوق المحتوى لتحكم الأزرار */
+  width: min(300px, 46vw);
+  max-height: 28vh;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.35;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+  padding: 8px 10px;
+  display: block !important; /* يتجاوز أي قواعد قديمة تخفيه */
+}
+
+#helpBox .help-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+#helpBox .help-title{ font-weight: 800; font-size: 12px; }
+#helpBox .help-actions{ display: flex; gap: 6px; }
+#helpBox .help-btn{
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#helpBox ol{ margin: 0; padding-inline-start: 18px; }
+#helpBox li{ margin-block: 6px; }
+
+/* حالة الإخفاء: يتحوّل لشريحة صغيرة "إظهار التعليمات" في نفس المكان */
+#helpBox.is-collapsed{
+  padding: 6px 8px;
+  width: auto;
+  max-height: none;
+}
+#helpBox.is-collapsed .help-head,
+#helpBox.is-collapsed .help-body{ display: none; }
+#helpBox .help-restore{
+  display: none;
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+#helpBox.is-collapsed .help-restore{ display: inline-block; }
+
+/* ===== اللوحة الكاملة بالصور ===== */
+.help-overlay[hidden]{ display: none !important; }
+.help-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 10002; /* أعلى من الصندوق */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.help-overlay__panel{
+  background:#fff;
+  width: min(900px, calc(100vw - 32px));
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  position: relative;
+}
+.help-overlay__panel img{
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 8px auto;
+}
+.overlay-close{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 999px;
+  width: 34px; height: 34px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* شاشات أصغر */
+@media (max-width: 480px){
+  #helpBox{ width: min(240px, 60vw); font-size: 11px; }
+}
+.page-background-logo {
+    background-image: url("img/main-httpswww.gdp.gov.saportalassetsimglogo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 1; /* أقل شفافية من السابق */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    background-attachment: fixed;
+    background-color: rgb(243, 243, 241); /* لون بيج فاتح جداً شفاف */
+}
+.selected-banner{
+  display:flex; align-items:center; gap:8px;
+  font-weight:800; font-size:16px;
+  color:#d4af37;              /* ذهبي */
+  background:#fffdf5;         /* خلفية خفيفة */
+  border:1px solid #f3e6b3;   /* إطار فاتح */
+  border-radius:10px;
+  padding:8px 12px;
+  margin:10px 0 14px;
+}
+.selected-banner[hidden]{ display:none !important; }
+
+/* ملاحظة بجانب عنوان "وقت الشفت والموازنة" */
+.note-shift-balance-now{
+  display: none;           /* تُظهَر عبر السكربت عند تفعيل شرط الليل */
+  color: #16a34a;          /* أخضر واضح */
+  font-weight: 600;        /* بارز قليلاً */
+  font-size: 0.72rem;      /* صغير جدًا ~ 11.5px */
+  letter-spacing: .2px;    /* تباعد خفيف */
+  margin-inline-start: .5ch; /* مسافة صغيرة بعد العنوان */
+  white-space: nowrap;     /* تبقى في سطر واحد */
+}
+#card-shift-balance .note-inline{
+  color: #16a34a;       /* أخضر */
+  font-weight: 600;
+  font-size: 0.7rem;    /* أصغر من قبل */
+  line-height: 1;       /* ينسجم مع العنوان */
+  margin-inline-start: .25rem;
+  white-space: nowrap;
+}
+
+
+/* حقل صغير للأرقام فقط (قسم بيانات الصادر) */
+.sm-num{
+  max-width: 120px;
+  min-width: 90px;
+  height: 30px;
+  padding: 4px 6px;
+  font-size: .9rem;
+  text-align: center;
+}
+/* تمييز أخضر */
+.att-green{
+  background:#dcfce7; border-color:#16a34a; color:#166534; font-weight:700;
+}
+.att-green::placeholder{ color:#15803d; opacity:.8; }
+
+/* جعل الحقل طولي (أطول من العادي) */
+/* طول مناسب لحقل الحضور والانصراف */
+.att-tall{
+  height: 38px;        /* كان 56px */
+  padding: 6px 8px;    /* راحة بسيطة */
+  line-height: normal; /* أزلنا 56px حتى لا يكبر النص */
+  font-size: .95rem;   /* حجم نص معتدل */
+  box-sizing: border-box;
+}
+#fix-word-btn i.fa-screwdriver-wrench{ color:#16a34a; }       /* أخضر للمفك */
+#fix-word-btn .btn-text{ margin-inline:2px; }
+
+#fix-word-btn .word-img{
+  width:18px;      /* كان 14px — الآن أكبر قليلاً */
+  height:auto;
+  display:inline-block;
+  vertical-align:middle;
+  margin-inline-start:4px; /* مسافة بسيطة بعد النص */
+}
+/* لون نوع المحضر (أسود) */
+#RecordType {
+  background: #ffffff;
+  border: 1px solid #c8d6ff;
+   color: #000000;
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+/* لون التلميح (أحمر فاتح) */
+#IndividualName::placeholder,
+#IndividualRank::placeholder {
+  color: #b8a0a0 !important;
+  font-weight: bold;
+}
+#IndividualName:invalid,
+#IndividualRank:invalid{
+  background: #ffffff !important;
+  border-color: #c8d6ff !important;
+  color: var(--blue-700) !important;
+  box-shadow: none !important;
+}
+
+/* لون التلميح داخل الخيارات */
+#RecordType:invalid {
+  color: #000000;
+  font-weight: bold;
+}
+#RecordType option {
+  color: #000000; /* أسود */
+}
+.keep-open-label {
+  grid-column: 1 / -1;               /* يمتد على عرض النموذج */
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f9fafb;
+  border: 1px dashed #c8d6ff;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.keep-open-label input[type="checkbox"] {
+  margin-top: 3px;
+}
+
+.keep-open-label span strong {
+  color: var(--blue-700);
+}
+/* إبراز لطيف لحقول التطبيق عند الظهور */
+#ApplyDuration, #ApplyReason {
+  background: #fff;
+  border: 1px solid #c8d6ff;
+  color: var(--blue-700);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+/* أيقونة التحذير داخل التسمية */
+#ApplyReasonLabel i { color: #b9b1aa; } /* عنبري */
+#ApplyDurationLabel i { color: #0d6efd; } /* أزرق */
+.individual-separator {
+  grid-column: 1 / -1;          /* يخلي الفاصل يمتد على عرض الـ form-grid كامل */
+  border-bottom: 1px solid #c8d6ff;
+  margin: 8px 0;
+}
+input,
+textarea,
+select,
+label {
+  font-family: "AL-Mohanad Bold", "Tajawal", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-weight: bold;
+}
+.date-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0;              /* إزالة المسافة بين input والأيقونة */
+}
+
+.date-wrapper input {
+  padding-left: 70px !important;
+}
+
+.date-icon {
+  position: absolute;
+  top: 50%;
+  left: 60px;
+  transform: translateY(-50%);
+    margin-right: -28px;   /* تقريب الأيقونة داخل حواف الـ input */
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: 0.2s;
+  line-height: 1;
+    z-index: 5;
+
+}
+
+.date-icon:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+/* تقويم هجري مصغّر لحقل تاريخ الاستئذان */
+#permit-hijri-calendar {
+  grid-column: 2 / 3;           /* يظهر تحت حقل التاريخ في العمود الثاني من form-grid */
+  background: #ffffff;
+  border: 1px solid #c8d6ff;
+  border-radius: 12px;
+  padding: 6px 8px;
+  box-shadow: var(--shadow-sm);
+  margin-top: 4px;
+  max-width: 100%;
+  z-index: 2500;
+}
+
+.mini-hijri-calendar__head {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.mini-hijri-calendar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mini-hijri-calendar__item {
+  width: 100%;
+  text-align: right;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+}
+
+.mini-hijri-calendar__item:hover {
+  background: #eef4ff;
+  border-color: #c8d6ff;
+  transform: translateY(-1px);
+}
+
+.mini-hijri-calendar__item:active {
+  transform: translateY(0);
+}
+.date-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.date-wrapper input {
+  flex: 1;
+}
+
+.date-btn {
+  cursor: pointer;
+  user-select: none;
+  background: #f3f4f6;
+  border: 1px solid #c8d6ff;
+  border-radius: 8px;
+  padding: 4px 6px;
+  font-size: 14px;
+  line-height: 1;
+  color: #0d6efd;
+  transition: 0.2s;
+  white-space: nowrap;
+}
+
+.date-btn:hover {
+  background: #e7f0ff;
+}
+
+/* ====================== اقتراحات اسم القائمة ====================== */
+.name-suggest{
+  grid-column: 1 / span 2;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 0;
+  border: none;                 /* ❌ لا إطار أزرق */
+  background: transparent;      /* ❌ لا خلفية ملونة */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 12px;              /* حجم صغير */
+}
+
+/* عنوان الاقتراح */
+.name-suggest__title{
+  color: #374151;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* الأسماء بجانبه */
+.name-suggest__items{
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* الأزرار بدون أي شكل input */
+.name-suggest__btn{
+  background: none;
+  border: none;
+  padding: 0 4px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #111827;
+}
+
+.name-suggest__btn:hover{
+  text-decoration: underline;
+}
+.name-suggest__btn:active{ transform: translateY(1px); }
+/* تنبيه ملاحظات الكشف */
+.kashf-note{
+  margin: 14px auto 0;
+  max-width: 1200px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, #eef6ff, #f7fbff);
+  border: 1px solid #cfe3ff;
+  border-radius: 12px;
+  color: #0b5ed7;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(13,110,253,.08);
+}
+
+.kashf-note i{
+  font-size: 18px;
+  color: #25d366; /* لون واتساب */
+}
+
+/* Permission transfer labels (shown only in صلاحيات mode) */
+.perm-transfer-label{
+  grid-column: 1 / -1;   /* يأخذ الخانة كاملة */
+  color: #149737;        /* أخضر */
+  font-weight: 700;
+  margin: 8px 0 4px;
+  display: none;         /* JS يتحكم */
+}
+/* ===== Flight Number Input – Professional Look ===== */
+#FlightNumber {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: "Tajawal", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0d6efd;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+/* Focus state */
+#FlightNumber:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+  outline: none;
+}
+
+/* When value exists (✔ visual feedback already in your system) */
+#FlightNumber:not(:placeholder-shown) {
+  background-color: #f9fbff;
+}
+
+/* Placeholder */
+#FlightNumber::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+

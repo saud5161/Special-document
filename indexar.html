@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <!-- =========================
+       إعدادات الصفحة العامة
+       - الترميز
+       - العنوان
+       - توافق الشاشات
+       - الأيقونة والخطوط والأيقونات
+       - استيراد ورقة الأنماط
+  ========================== -->
+  <meta charset="UTF-8" />
+  <title>بيانات الاستلام لهذا اليوم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="img/icon-g.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styleindx.css" />
+</head>
+
+<body>
+     <div class="page-background-logo"></div>
+
+  <!-- =========================
+       الشريط العلوي الثابت (Header)
+       - شعار ونص المنصة (يمين)
+       - تاريخ اليوم (منتصف)
+       - أزرار الطباعة والخروج (يسار)
+  ========================== -->
+   <header class="app-topbar">
+    <div class="app-topbar__section app-topbar__section--right">
+      <!-- مساحة شعار الجهة (اختياري) -->
+      <div class="brand">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>منصة تعبئة البيانات</span>
+        <div id="selected-template" class="selected-banner" hidden>
+  <i class="fas fa-bookmark"></i>
+  <span>اسم الخطاب:</span>
+  <strong id="selected-template-name"></strong>
+</div>
+
+      </div>
+      
+    </div>
+
+    <div class="app-topbar__section app-topbar__section--center">
+      <span id="header-date" class="today"></span>
+    </div>
+
+    <div class="app-topbar__section app-topbar__section--left">
+      <button id="print-button" class="icon-btn" title="طباعة"><i class="fas fa-print"></i></button>
+      <a class="icon-btn" href="Departure.html" title="خروج"><i class="fa-solid fa-power-off"></i></a>
+    </div>
+  </header>
+<!-- صندوق التعليمات المصغّر (أسفل يسار) -->
+<div id="helpBox" class="help-box" role="region" aria-label="مربع التعليمات" aria-live="polite">
+  <div class="help-head">
+    <strong class="help-title">مربع التعليمات</strong>
+    <div class="help-actions">
+      <button type="button" class="help-btn" id="helpHideBtn" aria-label="إخفاء التعليمات">إخفاء</button>
+      <button type="button" class="help-btn" id="helpDetailsBtn" aria-label="عرض التفاصيل">شرح بالصور</button>
+    </div>
+  </div>
+
+  <div class="help-body">
+    <ol>
+      <li>إذا لم تظهر المعطيات في ملف الوورد، أغلق الملف فورًا.</li>
+      <li>انقر <strong>اضغط هنا للإصلاح</strong>.</li>
+      <li>انقر <strong>تنفيذ</strong> ثم احفظ مرة أخرى.</li>
+    </ol>
+  </div>
+
+  <!-- يظهر فقط عند الإخفاء (شريحة صغيرة لاسترجاع الصندوق) -->
+  <button type="button" class="help-restore" id="helpRestoreBtn" aria-label="إظهار التعليمات" hidden>إظهار التعليمات</button>
+</div>
+
+<!-- اللوحة الكاملة بالصور (تظهر عند الضغط على "عرض التفاصيل") -->
+<div id="helpOverlay" class="help-overlay" hidden aria-hidden="true">
+  <div class="help-overlay__panel" role="dialog" aria-labelledby="helpBoxTitleFull" aria-modal="true">
+    <button class="overlay-close" type="button" id="helpOverlayClose" aria-label="إغلاق">✖</button>
+    <h4 id="helpBoxTitleFull">مربع التعليمات</h4>
+    <ol>
+      <li>
+        في حال عدم ظهور المعطيات في ملف الوورد  
+        <br>قم بإغلاق الملف فورًا
+        <br>
+        <img src="page/ttt.jpg" alt="إغلاق الملف">
+      </li>
+      <li>
+        قم بالنقر على <strong>اضغط هنا للإصلاح</strong>
+        <br>
+        <img src="page/ttt1.jpg" alt="الإصلاح">
+      </li>
+      <li>
+        انقر على <strong>تنفيذ</strong>  مرة أخرى
+        <br>
+        <img src="page/ttt2.jpg" alt="تنفيذ وحفظ">
+      </li>
+    </ol>
+  </div>
+</div>
+
+
+<!-- زر إظهار مربع المساعدة -->
+<button class="show-help-floating" id="showHelpBtn" onclick="showHelpBox()" style="display:none;">
+❓ تعليمات
+</button>
+
+
+  <!-- =========================
+       محتوى الصفحة الرئيسي (Main)
+       - غلاف الصفحة ومسافات آمنة للأسفل
+       - شبكة البطاقات (النماذج/الأقسام)
+  ========================== -->
+  <main class="page-wrap">
+    <div class="shell">
+      <div class="cards-grid" id="receipt-page">
+
+        <!-- =========================================================
+             بطاقة 1: بيانات التاريخ والمستلم
+             - تاريخ هجري + اليوم
+             - اسم ضابط الصالة ورتبته
+             - اسم الآمر المناوب ورتبته
+             - اختيار المناوبة ورقم الصالة (مع أزرار Quick Chips)
+             - تنبيهات تلقائية لضبط التاريخ/الشفت
+        ========================================================== -->
+        <section class="card" id="card-receipt">
+          
+          <h3 class="card__title"><i class="fas fa-file-signature"></i> بيانات التاريخ والمستلم</h3>
+
+          <!-- تنبيه عند تغيير التاريخ لليوم السابق بسبب وقت الاستلام -->
+          <div id="shift-alert" class="inline-alert" style="display:none">
+            <i class="fa-solid fa-circle-info"></i>
+            تم ضبط التاريخ لليوم السابق بسبب توقيت الاستلام
+          </div>
+
+          <!-- تنبيه خاص بفترة تغيير الشفت -->
+          <div id="shift-change-note" class="inline-alert orange" style="display:none">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            يرجى التأكد من التاريخ واليوم — فترة تغيير الشفت
+          </div>
+
+          <div class="card__body form-grid">
+            
+            <!-- تاريخ هجري ويوم الأسبوع -->
+            <label for="custom-hijri-date"><i class="fas fa-calendar-alt"></i> التاريخ (هجري)</label>
+            
+   <div class="date-wrapper">
+  <input id="custom-hijri-date" class="form-control" placeholder="يُملأ تلقائيًا">
+
+  <span id="toggle-date-format" class="date-btn" title="تغيير صيغة التاريخ">
+    🔄صيغة الرسمية
+  </span>
+
+  <span id="fix-date-btn" class="date-btn" title="تصحيح التاريخ لليوم الحالي">
+    📅التاريخ الفعلي
+  </span>
+</div>
+
+
+              
+            <label for="custom-weekday"><i class="fas fa-calendar-day"></i> اليوم</label>
+            <input id="custom-weekday" class="form-control" placeholder="—">
+
+            <!-- بيانات الضابط -->
+            <label for="officer-name"><i class="fas fa-user-tie"></i> اسم ضابط الصالة</label>
+            <input id="officer-name" list="names" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
+
+            <label for="officer-rank"><i class="fas fa-medal"></i> الرتبة</label>
+            <input id="officer-rank" list="ranks" placeholder="الرتبة" />
+            
+            <!-- بيانات الآمر المناوب -->
+            <label for="commander-name"><i class="fas fa-user-shield"></i> اسم الآمر المناوب</label>
+            <input id="commander-name" list="commanders" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
+            <datalist id="commanders"></datalist>
+           
+            <label for="commander-rank"><i class="fas fa-medal"></i> رتبته</label>
+            <input id="commander-rank" list="ranks" placeholder="الرتبة" />
+
+
+
+
+
+            <label for="ForgeryOfficerName" style="display:none">
+              <i class="fas fa-user-tie"></i> اسم موظف التزوير
+            </label>
+            <input id="ForgeryOfficerName" list="forgeryOfficers"
+                  placeholder="اختر اسم موظف التزوير" style="display:none" />
+
+            <datalist id="forgeryOfficers">
+              <option value="محمد عجمي الشمري"></option>
+              <option value="بدر مطلق العتيبي"></option>
+              <option value="سالم الشهري"></option>
+              <option value="سعد ناصر الدوسري"></option>
+            </datalist>
+
+            <label for="ForgeryOfficerRank" style="display:none">
+              <i class="fas fa-medal"></i> رتبته
+            </label>
+            <input id="ForgeryOfficerRank" list="rankOptions"
+                  placeholder="الرتبة" style="display:none" />
+
+            <!-- قائمة رتب قابلة للتعديل -->
+            <datalist id="rankOptions">
+              <option value="جندي"></option>
+              <option value="جندي اول"></option>
+              <option value="عريف"></option>
+              <option value="وكيل رقيب"></option>
+              <option value="رقيب"></option>
+              <option value="رقيب اول"></option>
+              <option value="رئيس رقباء"></option>
+            </datalist>
+            <!-- المناوبة مع أزرار اختصار -->
+            <label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
+            <div class="with-chips">
+              <input id="shift-number" list="shifts" placeholder="أ / ب / ج / د" />
+              
+            </div>
+
+            <!-- رقم الصالة مع أزرار اختصار -->
+            <label for="hall-number"><i class="fas fa-building"></i> الصالة</label>
+            <div class="with-chips">
+              <input id="hall-number" list="halls" placeholder="1 / 2 / 3 / 4" />
+             
+            </div>
+
+            <!-- ملاحظة تعبئة تلقائية -->
+            <span id="timeNote" class="muted row-span-2" style="display:none">
+              <i class="fas fa-info-circle"></i> تم ضبط التاريخ واليوم تلقائيًا
+            </span>
+          </div>
+        </section>
+
+
+<section class="card" id="card-lists-admin" style="display:none">
+
+  <h3 class="card__title"><i class="fas fa-clipboard-list"></i> أسماء القوائم والأعمال الإدارية</h3>
+  <div class="card__body form-grid">
+    <label for="ListOfficerName">
+  <i class="fas fa-list"></i> اسم القائمة
+</label>
+
+<div class="input-with-suggest">
+  <input
+    id="ListOfficerName"
+    placeholder="اختر أو اكتب الاسم"
+    autocomplete="off"
+  >
+
+  <div id="ListOfficerSuggestions" class="name-suggest" hidden>
+    <span class="name-suggest__title"> اقتراح  :</span>
+    <div
+      id="ListOfficerSuggestionsItems"
+      class="name-suggest__items"
+      role="listbox"
+      aria-label="اقتراحات اسم القائمة">
+    </div>
+  </div>
+</div>
+
+
+    <label for="ListOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
+    <input id="ListOfficerRank" list="ranks" placeholder="الرتبة">
+
+    <!-- الأعمال الإدارية -->
+    <label for="AdminOfficerName">
+  <i class="fas fa-user-cog"></i> اسم الأعمال الإدارية
+</label>
+
+<div class="input-with-suggest">
+  <input
+    id="AdminOfficerName"
+    placeholder="اختر أو اكتب الاسم"
+    autocomplete="off"
+  >
+
+  <div id="AdminOfficerSuggestions" class="name-suggest" hidden>
+    <span class="name-suggest__title">تم اقتراح :</span>
+    <div
+      id="AdminOfficerSuggestionsItems"
+      class="name-suggest__items"
+      role="listbox"
+      aria-label="اقتراحات اسم الأعمال الإدارية">
+    </div>
+  </div>
+</div>
+
+    <label for="AdminOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
+    <input id="AdminOfficerRank" list="ranks" placeholder="الرتبة">
+  </div>
+</section>
+<!-- =========================================================
+     بطاقة: بيانات الصادر (نفس أسلوب بطاقة أسماء القوائم والأعمال الإدارية)
+========================================================= -->
+<section class="card" id="card-issued-data" style="display:none">
+  <h3 class="card__title"><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
+  <div class="card__body form-grid">
+    <!-- ملاحظة (مخفية بدون حذف) -->
+    <label style="display:none"></label>
+    <div class="muted" style="display:none">سيتم توزيع ارقــام الصادر تلقائيا بعد التعبئة</div>
+
+    <label for="IssuedAttendance"><i class="fas fa-user-check"></i> الحضور والانصراف</label>
+    <input id="IssuedAttendance"
+       class="sm-num att-green att-tall"
+       inputmode="numeric" pattern="\d*"
+       oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+       type="text"
+       placeholder="ادخل رقم الصادر">
+    <label for="IssuedBalance"><i class="fas fa-scale-balanced"></i> الموازنة</label>
+    <input id="IssuedBalance" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedManifests"><i class="fas fa-list"></i> المنفستات</label>
+    <input id="IssuedManifests" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedReports"><i class="fas fa-file-lines"></i> التقارير</label>
+    <input id="IssuedReports" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedGates"><i class="fas fa-door-open"></i> البوابات</label>
+    <input id="IssuedGates" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+    <label for="IssuedExtra1"><i class="fas fa-plus"></i>اضافي </label>
+    <input id="IssuedExtra1" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+        <label for="IssuedTitle">عنوان الصادر</label>
+    <input id="IssuedTitle" type="text" placeholder="= / م (المناوبة) مغادرة (الصالة) /">
+
+  </div>
+</section>
+     
+
+        <!-- =========================================================
+             بطاقة 1.5: بيانات الفرد (تظهر بشرط)
+             - اختيار اسم الفرد
+             - تعبئة الرتبة تلقائيًا مع إمكانية التعديل
+        ========================================================== -->
+       <section class="card" id="card-individual" style="display:none">
+  <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الفرد</h3>
+
+  <div class="card__body form-grid">
+<!-- اسم الفرد -->
+     
+    
+          <label id="permTransferFrom" class="perm-transfer-label">نقل صلاحيات من</label>
+<label for="IndividualName"><i class="fas fa-user"></i> اسم الفرد</label>
+    
+    <input id="IndividualName" list="individual-list" placeholder="اختر اسم الفرد/المجندة" disabled>
+    
+    <datalist id="individual-list"></datalist>
+
+    <!-- رتبة الفرد -->
+    <label for="IndividualRank"><i class="fas fa-medal"></i> رتبة الفرد</label>
+    <input id="IndividualRank" placeholder="اختر رتبة الفرد/المجندة" disabled>
+    
+    <!-- رقم الهوية + رقم المشغل (تظهر فقط في وضع "صلاحيات") -->
+    <label for="IndividualID" id="lbl-IndividualID" style="display:none">
+      <i class="fas fa-id-card"></i> رقم الهوية (1)
+    </label>
+    <input id="IndividualID" style="display:none" placeholder="رقم الهوية">
+
+    <label for="OperatorNumber1" id="OperatorNumber1Label" style="display:none">
+      <i class="fas fa-hashtag"></i> رقم المشغل (1)
+    </label>
+    <input id="OperatorNumber1" style="display:none" placeholder="رقم المشغل">
+<label for="ApplyDuration" id="ApplyDurationLabel" style="display:none">
+      <!-- رقم الهوية للفرد (مخفي دائمًا) -->
+
+
+  <i class="fas fa-hourglass-half"></i> مدة التطبيق
+</label>
+<!-- ✅ جديد: طبيعة عمل الفرد (مخفية افتراضيًا) -->
+<label for="IndividualJobNature" id="IndividualJobNatureLabel" style="display:none">
+  <i class="fas fa-briefcase"></i> طبيعة العمل
+</label>
+<input id="IndividualJobNature"
+       list="jobNatureOptions"
+       placeholder="اختر أو اكتب طبيعة العمل"
+       style="display:none">
+
+<!-- قائمة اقتراحات لطبيعة العمل (قابلة للتعديل) -->
+<datalist id="jobNatureOptions">
+  <option value="مشغل كاونتر"></option>
+  <option value="قائمة"></option>
+</datalist>
+<input id="ApplyDuration" list="apply-durations" placeholder="ساعة … 6 ساعات" style="display:none">
+<datalist id="apply-durations">
+  <option value="ساعة"></option>
+  <option value="ساعتين"></option>
+  <option value="3 ساعات"></option>
+  <option value="4 ساعات"></option>
+  <option value="5 ساعات"></option>
+  <option value="6 ساعات"></option>
+</datalist>
+
+<!-- سبب التطبيق (مخفي افتراضيًا) -->
+<label for="ApplyReason" id="ApplyReasonLabel" style="display:none">
+  <i class="fas fa-circle-exclamation"></i> سبب التطبيق
+</label>
+<input id="ApplyReason" list="apply-reasons" placeholder="اختر أو اكتب السبب" style="display:none">
+<datalist id="apply-reasons">
+  <option value="عدم التقيد بالتعليمات"></option>
+  <option value="عدم التواجد في الموقع"></option>
+</datalist>
+<!-- === مجموعة 2 === -->
+<!-- === مجموعة 2 === -->
+<div class="individual-separator" id="individual-sep-1-2"></div>
+
+<!-- === مجموعة 2 === -->
+
+          <label id="permTransferTo" class="perm-transfer-label">نقل صلاحية الى</label>
+<label for="IndividualName2"><i class="fas fa-user"></i> اسم الفرد (2)</label>
+<input id="IndividualName2" list="individual-list" placeholder="اكتب اسم الفرد">
+
+<label for="IndividualRank2"><i class="fas fa-medal"></i> رتبته (2)</label>
+<input id="IndividualRank2" placeholder="اكتب الرتبة">
+
+
+<!-- رقم الهوية + رقم المشغل (2) — تظهر فقط في وضع "صلاحيات" -->
+<label for="IndividualID2" id="lbl-IndividualID2" style="display:none">
+  <i class="fas fa-id-card"></i> رقم الهوية (2)
+</label>
+<input id="IndividualID2" style="display:none" placeholder="رقم الهوية">
+
+<label for="OperatorNumber2" id="OperatorNumber2Label" style="display:none">
+  <i class="fas fa-hashtag"></i> رقم المشغل (2)
+</label>
+<input id="OperatorNumber2" style="display:none" placeholder="رقم المشغل">
+<label for="ApplyDuration2"><i class="fas fa-hourglass-half"></i> مدة التطبيق (2)</label>
+<input id="ApplyDuration2" list="apply-durations" placeholder="ساعة … 6 ساعات">
+
+<label for="ApplyReason2"><i class="fas fa-circle-exclamation"></i> سبب التطبيق (2)</label>
+<input id="ApplyReason2" list="apply-reasons" placeholder="اختر أو اكتب السبب">
+
+<!-- ✅ فاصل بين الفرد 2 و 3 -->
+<div class="individual-separator" id="individual-sep-2-3"></div>
+
+<!-- === مجموعة 3 === -->
+<label for="IndividualName3"><i class="fas fa-user"></i> اسم الفرد (3)</label>
+<input id="IndividualName3" list="individual-list" placeholder="اكتب اسم الفرد">
+
+<label for="IndividualRank3"><i class="fas fa-medal"></i> رتبته (3)</label>
+<input id="IndividualRank3" placeholder="اكتب الرتبة">
+
+<label for="ApplyDuration3"><i class="fas fa-hourglass-half"></i> مدة التطبيق (3)</label>
+<input id="ApplyDuration3" list="apply-durations" placeholder="ساعة … 6 ساعات">
+
+<label for="ApplyReason3"><i class="fas fa-circle-exclamation"></i> سبب التطبيق (3)</label>
+<input id="ApplyReason3" list="apply-reasons" placeholder="اختر أو اكتب السبب">
+
+    <!-- ✅ مربع خيار: إبقاء الصفحة مفتوحة (بعد الرتبة) -->
+    <label for="KeepPageOpen" class="keep-open-label">
+      <input type="checkbox" id="KeepPageOpen">
+      <span>
+        في حال كان لديك أكثر من محضر غياب، فعِّل هذا الخيار ليبقى النموذج مفتوحًا بعد الضغط على
+        <strong>تنفيذ وحفظ</strong>.
+      </span>
+    </label>
+
+  </div>
+</section>
+<section class="card" id="card-permit" style="display:none">
+  <h3 class="card__title"><i class="fas fa-clock"></i> معلومات الاستئذان</h3>
+
+  <div class="card__body form-grid">
+
+    <!-- تاريخ الاستئذان -->
+    <!-- تاريخ الاستئذان -->
+<label for="PermitDate"><i class="fas fa-calendar-alt"></i> تاريخ الاستئذان</label>
+
+<div class="date-wrapper">
+  <input id="PermitDate" class="h-date" placeholder="—">
+  <!-- زر فتح التقويم الهجري ( أيام) -->
+  <span id="permit-date-picker" class="date-icon" title="اختيار من التقويم الهجري">📅  لاختيار التاريخ</span>
+</div>
+
+<!-- تقويم هجري مصغّر لخمسة أيام قادمة -->
+<div id="permit-hijri-calendar" class="mini-hijri-calendar" hidden>
+  <div class="mini-hijri-calendar__head">
+ اختر تاريخ الاستئذان (   )
+  </div>
+  <div id="permit-hijri-calendar-list" class="mini-hijri-calendar__list">
+    <!-- تُملأ ديناميكياً من JavaScript -->
+  </div>
+</div>
+
+
+
+    <!-- يوم الاستئذان -->
+    <label for="PermitDay"><i class="fas fa-calendar-day"></i> يوم الاستئذان</label>
+    <select id="PermitDay">
+      <option value="السبت">السبت</option>
+      <option value="الأحد">الأحد</option>
+      <option value="الاثنين">الاثنين</option>
+      <option value="الثلاثاء">الثلاثاء</option>
+      <option value="الأربعاء">الأربعاء</option>
+      <option value="الخميس">الخميس</option>
+      <option value="الجمعة">الجمعة</option>
+    </select>
+<!-- سبب الاستئذان -->
+    <label for="PermitReason"><i class="fas fa-circle-exclamation"></i> سبب الاستئذان</label>
+    <input id="PermitReason" placeholder="اذكر سبب الاستئذان">
+
+    <!-- مدة الاستئذان -->
+    <!-- مدة الاستئذان -->
+<label for="PermitDuration"><i class="fas fa-hourglass-half"></i> مدة الاستئذان</label>
+<input id="PermitDuration"
+       list="permit-durations"
+       placeholder="مدة الاستئذان">
+
+<datalist id="permit-durations">
+  <option value="يوم"></option>
+  <option value="يومان"></option>
+  <option value="ثلاثة أيام"></option>
+  <option value="أربعة أيام"></option>
+</datalist>
+
+
+    <!-- قوة المناوبة -->
+    <label for="ShiftPower"><i class="fas fa-users"></i> قوة المناوبة</label>
+    <input id="ShiftPower" placeholder="عدد قوة المناوبة">
+
+  </div>
+</section>
+</div>
+</section>
+
+<!-- قسم الصلاحيات المنقولة (يظهر فقط عند اختيار "صلاحيات") -->
+<section class="card" id="card-transferred-permissions" style="display:none">
+  <h3 class="card_title">الصلاحيات المطلوب نقلها</h3>
+  <div class="card_body form-grid">
+
+    <label for="Permission1">الصلاحية الأولى</label>
+    <input id="Permission1" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <label for="Permission2">الصلاحية الثانية</label>
+    <input id="Permission2" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <label for="Permission3">الصلاحية الثالثة</label>
+    <input id="Permission3" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <label for="Permission4">الصلاحية الرابعة</label>
+    <input id="Permission4" list="permissions-list" placeholder="اختر أو اكتب">
+
+    <!-- قائمة واحدة مشتركة -->
+    <datalist id="permissions-list"></datalist>
+
+    <label for="TransferReason">سبب النقل</label>
+  <input id="TransferReason" list="transfer-reasons-list" placeholder="اختر أو اكتب">
+
+  <datalist id="transfer-reasons-list"></datalist>
+
+
+  </div>
+</section>
+
+
+        
+        <!-- =========================================================
+             بطاقة 1.1: وقت الشفت والموازنة (تظهر عند الحاجة)
+             - أوقات الاستلام والموازنة (ص/م)
+             - تاريخ/يوم الموازنة تلقائيًا (الغد للهجري/اليوم)
+        ========================================================== -->
+              <!-- بطاقة وقت الشفت والموازنة (داخل shell + cards-grid) -->
+          <h3 class="card__title">
+            <i class="fas fa-business-time"></i>
+            وقت الشفت 
+            <span id="note-shift-balance-now" class="note-inline">
+              (تلقائياً )
+            </span>
+          </h3>
+        
+        <div class="card__body form-grid">
+          <!-- وقت الاستلام -->
+          <label for="ReceiveTimeFrom"><i class="fas fa-clock"></i> وقت الاستلام (من)</label>
+          <input id="ReceiveTimeFrom" placeholder="مثال: 2م" />
+
+          <label for="ReceiveTimeTo"><i class="fas fa-clock"></i> وقت الاستلام (إلى)</label>
+          <input id="ReceiveTimeTo" placeholder="مثال: 10م" />
+
+          <!-- وقت الموازنة -->
+          <label for="BalanceTimeFrom"><i class=""></i> وقت الموازنة (من)</label>
+          <input id="BalanceTimeFrom" placeholder="مثال: 2م" />
+
+          <label for="BalanceTimeTo"><i class=""></i> وقت الموازنة (إلى)</label>
+          <input id="BalanceTimeTo" placeholder="مثال: 10م" />
+
+          <!-- وقت الموازنة شفت المساء -->
+          <label for="EveningBalanceFrom"><i class="fas fa-moon"></i> الموازنة (المساء) من</label>
+          <input id="EveningBalanceFrom" placeholder="مثال: 10م" />
+
+          <label for="EveningBalanceTo"><i class="fas fa-moon"></i> الموازنة (المساء) إلى</label>
+          <input id="EveningBalanceTo" placeholder="مثال: 6ص" />
+
+          <!-- تاريخ/يوم الموازنة -->
+          <label for="BalanceDateNight"><i class="fas fa-calendar-night"></i> تاريخ الموازنة (ليل فقط)</label>
+          <input id="BalanceDateNight" placeholder="يُملأ تلقائيًا: تاريخ الغد (هجري)" />
+
+          <label for="BalanceWeekday"><i class="fas fa-calendar-day"></i> يوم الموازنة</label>
+          <input id="BalanceWeekday" placeholder="يُملأ تلقائيًا: يوم الغد" />
+        </div>
+      </section>
+
+
+        <!-- =========================================================
+             بطاقة 2: بيانات المسافر
+             - الاسم والجنسية
+             - رقم الجواز والهوية/الإقامة
+             - نوع التأشيرة
+        ========================================================== -->
+        <section class="card" id="card-traveler">
+          <h3 class="card__title"><i class="fas fa-user"></i> بيانات المسافر</h3>
+          <div class="card__body form-grid">
+            <label for="TravelerName"><i class="fas fa-id-card"></i> اسم المسافر</label>
+            <input id="TravelerName" placeholder="اسم المسافر" />
+
+            <label for="Nationality"><i class="fas fa-flag"></i> الجنسية</label>
+            <input id="Nationality" list="nationalities" placeholder="الجنسية" />
+            <datalist id="nationalities"></datalist>
+            <label for="id"><i class="fas fa-address-card"></i> رقم الهوية - إقامة</label>
+            <input id="id" placeholder="مثال: 2000000000" />
+            <label for="PassportNumber"><i class="fas fa-passport"></i> رقم الجواز</label>
+            <input id="PassportNumber" placeholder="ادخل رقم الجواز " />
+             
+            <label for="PassportIssueDate" style="display:none"><i class="fas fa-calendar-alt"></i> تاريخ الإصدار</label>
+<input id="PassportIssueDate" placeholder="YYYY/MM/DD" style="display:none" />
+
+<label for="PassportSource" style="display:none"><i class="fas fa-building"></i> مصدر الجواز</label>
+<input id="PassportSource" placeholder="جهة الإصدار" style="display:none" />
+
+<!-- في نهاية بطاقة بيانات المسافر: مكان الميلاد + تاريخ الميلاد (مخفية مبدئيًا) -->
+<label for="BirthPlace" style="display:none"><i class="fas fa-map-marker-alt"></i> مكان الميلاد</label>
+<input id="BirthPlace" placeholder="المدينة - الدولة" style="display:none" />
+
+<label for="BirthDate" style="display:none"><i class="fas fa-calendar"></i> تاريخ الميلاد</label>
+<input id="BirthDate" placeholder="YYYY/MM/DD" style="display:none" />
+ <label for="Gender" style="display:none">
+  <i class="fas fa-venus-mars"></i> الجنس
+</label>
+<select id="Gender" style="display:none">
+  <option value=""></option>
+  <option value="ذكر">ذكر</option>
+  <option value="أنثى">أنثى</option>
+</select>           
+            <!-- الاشتباه في (قابل للتعديل + غير إجباري) -->
+<label for="SuspectIn" style="display:none">
+  <i class="fas fa-exclamation-triangle"></i> الاشتباه في
+</label>
+<input id="SuspectIn" list="suspectOptions" placeholder="اكتب أو اختر سبب الاشتباه" style="display:none" />
+<datalist id="suspectOptions">
+  <option value="جواز السفر"></option>
+  <option value="الجنسية المسجلة في النظام مختلفه"></option>
+  <option value="التأشيرة"></option>
+</datalist>
+
+<!-- تبيّن بعد الفحص (قابل للتعديل + غير إجباري) -->
+<label for="AfterCheck" style="display:none">
+  <i class="fas fa-search"></i> تبيّن بعد الفحص
+</label>
+<input id="AfterCheck" list="afterCheckOptions" placeholder="اكتب أو اختر نتيجة الفحص" style="display:none" />
+<datalist id="afterCheckOptions">
+  <option value="الجواز سليم"></option>
+  <option value="الجواز مزور"></option>
+</datalist>
+
+            <label for="VisaType"><i class="fas fa-stamp"></i> نوع التأشيرة</label>
+            <input id="VisaType" list="visaTypes" placeholder="زيارة / نهائي / عمرة / ..." />
+            
+            <datalist id="visaTypes"></datalist>
+          </div>
+        </section>
+<section class="card" id="card-command" style="display:none">
+  <h3 class="card__title"><i class="fas fa-file-alt"></i> معلومات الأمر وجهة الطالبة</h3>
+  <div class="card__body form-grid">
+    <!-- جهة طالبة -->
+    <label for="RequestingAgency"><i class="fas fa-building"></i>  جهة الخطاب/  مدير ادارة....</label>
+    <input id="RequestingAgency" list="requestingAgencyList" placeholder="مثال: مباحث / شرطة / جمارك">
+    <datalist id="requestingAgencyList">
+      <option value="مباحث"></option>
+      <option value="شرطة"></option>
+      <option value="جمارك"></option>
+      <option value="جوازات"></option>
+      <option value="مرور"></option>
+      <option value="مكافحة المخدرات"></option>
+      <option value="التحريات الادارية"></option>
+    </datalist>
+
+    <!-- بيانات الأمر -->
+    <label for="RegistrationNumber"><i class="fas fa-file-alt"></i> رقم السجل</label>
+    <input id="RegistrationNumber" placeholder="مثال: 12345/ق">
+
+    <label for="CommandNumber"><i class="fas fa-hashtag"></i> رقم الأمر</label>
+    <input id="CommandNumber" placeholder="رقم الأمر">
+
+    <label for="CommandDate"><i class="fas fa-calendar-check"></i> تاريخ الأمر</label>
+    <input id="CommandDate" placeholder="YYYY/MM/DD">
+
+    <label for="CommandBody"><i class="fas fa-building"></i> جهة الأمر</label>
+    <input id="CommandBody" placeholder="مثال: النيابة العامة">
+
+    <label for="CommandSystem"><i class="fas fa-shield-alt"></i> نظام</label>
+    <select id="CommandSystem">
+      <option value=""></option>
+      <option value="الممنوعين ترقب عند المغادرة والقدوم">الممنوعين ترقب عند المغادرة والقدوم</option>
+      <option value="الممنوعين">الممنوعين</option>
+      <option value="المطلوبين">المطلوبين</option>
+      <option value="منع الخروج">منع الخروج</option>
+      <option value="البصمة الجنائي">البصمة الجنائي</option>
+      <option value="الجواز السعودي">الجواز السعودي</option>
+    </select>
+
+    <!-- الإجراء المطلوب (نُقل من القسم المحذوف) -->
+    <label for="ActionType"><i class="fas fa-list"></i> الإجراء المطلوب</label>
+    <input id="ActionType" list="actionTypeList" placeholder="اختر أو اكتب الإجراء">
+    <datalist id="actionTypeList">
+      <option value="اشعار اقرب ادارة (مباحث)"></option>
+      <option value="اشعار اقرب ادارة"></option>
+      <option value="منع من السفر"></option>
+      <option value="يقبض علية"></option>
+            <option value="من الدخول"></option>
+      <option value="القبض عند المغادرة والقدوم"></option>
+    </datalist>
+  </div>
+</section>
+        <!-- =========================================================
+             بطاقة 3: بيانات الرحلة
+             - الخطوط الناقلة
+             - رقم الرحلة
+             - وجهة السفر
+        ========================================================== -->
+        <section class="card" id="card-flight">
+            <h3 class="card__title"><i class="fas fa-plane"></i> بيانات الرحلة
+              <span id="prev-flight-note" style="font-size:12px; margin-inline-start:8px; color:#6b7280;" hidden>السابقة</span>
+            </h3>
+                      <div class="card__body form-grid">
+                        <!-- الخطوط الناقلة -->
+            <label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
+            <input id="AirlineName" list="airlines" placeholder="مثال: السعودية" />
+            <datalist id="airlines"></datalist>
+
+                        <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
+                        <input id="FlightNumber" list="flightNumbers" placeholder="مثال: SV225" />
+            <datalist id="flightNumbers"></datalist>
+
+                        <!-- وجهة السفر -->
+            <label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
+            <input id="TravelDestination" list="destinations" placeholder="مثال: دبي" />
+            <datalist id="destinations"></datalist>
+            <div id="travel-route-row" class="form-row" hidden>
+            <label for="TravelRoute"><i class="fas fa-route"></i> خط سير الرحلة</label>
+            <input id="TravelRoute" placeholder="مثال: الرياض → دبي → لندن">
+          </div>
+
+          </div>
+        </section>
+        <section class="card" id="card-flight-now" style="display:none">
+          <h3 class="card__title"><i class="fas fa-plane-departure"></i> بيانات الرحلة المغادر عليها الآن</h3>
+          <div class="card__body form-grid">
+            <label for="AirlineNameNow"><i class="fas fa-building"></i> الخطوط الناقلة</label>
+            <input id="AirlineNameNow" list="airlines" placeholder="اسم شركة الطيران">
+
+            <label for="FlightNumberNow"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
+            <input id="FlightNumberNow" list="flightNumbersNow" placeholder="مثال: XY123">
+            <datalist id="flightNumbersNow"></datalist>
+
+            <label for="TravelDestinationNow"><i class="fas fa-location-dot"></i> وجهة السفر</label>
+            <input id="TravelDestinationNow" list="destinations" placeholder="المدينة / الدولة">
+          </div>
+          
+        </section>
+
+        <!-- =========================================================
+             بطاقة 4: بيانات الصادر
+             - عدد المشفوعات
+             - رقم الصادر
+        ========================================================== -->
+        <section class="card" id="card-issued">
+          <h3 class="card__title"><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
+          <div class="card__body form-grid">
+            <label for="IssuedNumber"><i class="fas fa-barcode"></i> رقم الصادر</label>
+            <input id="IssuedNumber" placeholder="رقم الصادر" />
+           <label for="AttachedCount"><i class="fas fa-copy"></i>  المشفوعات</label>
+          <input id="AttachedCount" type="text" placeholder="مثال: 2" />
+
+
+          </div>
+        </section>
+
+
+        
+
+
+        
+      </div> <!-- /cards-grid -->
+    </div> <!-- /shell -->
+
+    <!-- =========================================================
+         نموذج موجز (مواطن) — عرض مضغوط مخفي افتراضيًا
+         - أقسام:
+           1) حالات الدول الممنوع السفر إليها مع مبررات السماح
+           2) من فئة العسكريين مع الحالات الفرعية
+           3) وثيقة سفر أقل من المدة النظامية (3 أشهر/6 أشهر)
+    ========================================================== -->
+    <div id="moatan-compact" hidden dir="rtl">
+      <div class="mc-grid mc-compact">
+
+        <!-- القسم الأول: الممنوعون والسماح بالمغادرة -->
+        <div class="mc-card" id="sec-forbidden">
+          <label class="mc-check mc-one-line" id="mc-forbidden-line">
+            <input type="checkbox" id="mc-forbidden">
+            <span>مغادر الى احدى الدول الممنوع السفر إليها وتم السماح له بالمغادرة بناءً على :</span>
+          </label>
+
+          <div class="mc-options">
+            <label class="mc-check">
+              <input type="checkbox" id="mc-moi">
+              <span>
+                برقية وزارة الداخلية رقم
+                <input class="mc-mini" id="mc-moiNum">
+                وتاريخ
+                <input class="mc-mini h-date" id="mc-moiDate" placeholder="مثال: 01/02/1447هـ">
+                والمقيدة بالمديرية بالرقم
+                <input class="mc-mini" id="mc-moiDirNum">
+              </span>
+            </label>
+
+            <label class="mc-check">
+              <input type="checkbox" id="mc-jawazat">
+              <span>
+                برقية مدير عام الجوازات رقم
+                <input class="mc-mini" id="mc-jawazatNum">
+                وتاريخ
+                <input class="mc-mini h-date" id="mc-jawazatDate" placeholder="مثال: 05/03/1447هـ">
+              </span>
+            </label>
+
+            <label class="mc-check">
+              <input type="checkbox" id="mc-diplomatic">
+              <span>
+                يحمل جواز دبلوماسي بصفة (
+                <input class="mc-wide" id="mc-diplomaticDesc">
+                )
+              </span>
+            </label>
+
+            <label class="mc-check">
+              <input type="checkbox" id="mc-under18">
+              <span>دون السن 18 عام ومغادر الى الدول المسموح للأبناء بمرافقة والداتهم</span>
+            </label>
+          </div>
+        </div>
+        <!-- خيار: لديه تصريح سفر للدول الممنوعة -->
+<label class="mc-check">
+  <input type="checkbox" id="mc-permit">
+  <span>
+    لديه تصريح سفر للدول الممنوعة منعكس في نظام المسافرين ساري من تاريخ
+    <input class="mc-mini h-date" id="mc-permitFrom" placeholder="مثال: 01/01/1447هـ">
+    إلى تاريخ
+    <input class="mc-mini h-date" id="mc-permitTo" placeholder="مثال: 30/01/1447هـ">
+    ويحق له السفر إلى (
+    <input class="mc-wide" id="mc-permitDest" placeholder="الدولة المصرح بها">
+    )
+  </span>
+</label>
+
+        <!-- القسم الثاني: فئة العسكريين -->
+        <div class="mc-card" id="sec-military">
+          <label class="mc-check">
+            <input type="checkbox" id="mc-military">
+            <span>من فئة العسكريين</span>
+          </label>
+
+          <div class="mc-options">
+            <label class="mc-check"><input type="checkbox" id="mc-mil-nosdoc"><span>لا يحمل وثيقة سفر</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-destdiff"><span>وجهة المغادرة مختلفة</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-leavenotstart"><span>الاجازة لم تبدا</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-other"><span>اخرى</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-mil-attach-leave"><span>مرفق نسخة من وثيقة الاجازة</span></label>
+          </div>
+        </div>
+
+        <!-- القسم الثالث: صلاحية وثيقة السفر -->
+        <div class="mc-card" id="sec-docvalid">
+          <label class="mc-check">
+            <input type="checkbox" id="mc-docless">
+            <span>يحمل وثيقة سفر اقل من المدة النظامية</span>
+          </label>
+
+          <div class="mc-options mc-inline">
+            <label class="mc-check"><input type="checkbox" id="mc-doc-3m"><span>أقل من ثلاثة أشهر</span></label>
+            <label class="mc-check"><input type="checkbox" id="mc-doc-6m"><span>أقل من ستة أشهر</span></label>
+          </div>
+        </div>
+
+      </div> <!-- /mc-grid -->
+    </div> <!-- /moatan-compact -->
+
+
+  <div id="chief-signal-alert" class="inline-alert" hidden>
+  <label class="mc-check" style="display:block">
+    <span style="white-space:nowrap; display:inline-block;">
+      الإشارة خطاب: مناوبة (
+      <input class="mc-mini" id="mc-shift" list="shifts" placeholder="أ / ب / ج / د">
+      ) صالة (
+      <input class="mc-mini" id="mc-hall" list="halls" placeholder="1 / 2 / 3 / 4">
+      ) صادر رقم
+      <input class="mc-mini" id="mc-issuedNum" placeholder="صادر رقم">
+      وتاريخ
+      <input class="mc-mini h-date" id="mc-chiefDate" placeholder="مثال: 01/02/1447هـ">
+    </span>
+  </label>
+</div>
+
+</div>
+<!-- تنبيه ملاحظات الكشف (يظهر فقط في وضع كشف) -->
+<div id="kashf-note" class="kashf-note" style="display:none">
+  <i class="fab fa-whatsapp"></i>
+  <span>
+    في حال وجود ملاحظات على الكشف أو تحديثه 
+    يرجى التواصل معي على 
+    <a href="https://wa.me/966568190224" target="_blank">الواتس اب</a>
+  </span>
+</div>
+
+
+  </main>
+
+  <!-- =========================
+       شريط الإجراءات السفلي (Footer)
+       - تنفيذ وحفظ (توليد ملف Word)
+       - تفريغ الخانات
+       - رجوع وإلغاء
+       - رابط مساعد للإصلاح عند فشل التنفيذ
+  ========================== -->
+  
+  <footer class="action-bar" role="contentinfo">
+    <div class="action-bar__inner">
+      <label class="open-pdf-toggle" style="display:inline-flex;align-items:center;gap:8px;margin-inline-start:12px;">
+  <input type="checkbox" id="open-kashf-pdf">
+  <span>عرض PDF</span>
+</label>
+
+      <button id="save-btn" class="btn btn--primary" type="button">
+        <i class="fas fa-file-word"></i> تنفيذ وحفظ
+      </button>
+      <span id="auto-back-timer" class="auto-back-timer" hidden>
+  سيتم العودة خلال <b id="auto-back-timer-value">00:00</b> او انقر على رجوع للعودة الان
+</span>
+<button id="cancel-auto-back" class="btn-cancel-auto-back" hidden type="button">
+  إيقاف العودة
+</button>
+
+      <button id="clear-btn" class="btn btn--secondary" type="button">
+        تفريغ الخانات
+      </button>
+      <button id="close-btn" class="btn btn--danger" type="button">
+        رجوع
+      </button>
+   <form class="helper-link" action="dic/Doc4.docm" method="get">
+  <button type="submit" id="fix-word-btn" class="btn btn--secondary" title="إصلاح ملف Word" aria-label="إصلاح ملف Word">
+    <i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i>
+    <span class="btn-text">إصلاح</span>
+    <img class="word-img" src="img\Microsoft_Word-Logo.wine.png" alt="Word" />
+  </button>
+</form>
+
+</a>
+
+      <span id="check-officer-name" class="status-pill" style="display:none">✔ تم التنفيذ</span>
+    </div>
+
+   
+  </footer>
+
+  <!-- =========================
+       قوائم البيانات (Datalists)
+       - أسماء / رتب / شفتات / صالات
+       - تُستخدم للإكمال التلقائي
+  ========================== -->
+  <datalist id="names"></datalist>
+
+  <datalist id="ranks">
+    <option value="ملازم">
+    <option value="ملازم أول">
+    <option value="نقيب">
+    <option value="رائد">
+    <option value="مقدم">
+    <option value="عقيد">
+  </datalist>
+
+  <datalist id="shifts">
+    <option value="أ">
+    <option value="ب">
+    <option value="ج">
+    <option value="د">
+  </datalist>
+
+  <datalist id="halls">
+    <option value="1">
+    <option value="2">
+    <option value="3">
+    <option value="4">
+    <option value="5">
+  </datalist>
+
+  <!-- =========================
+       استيراد ملف الجافاسكربت
+       - يحتوي منطق التعبئة والطباعة والحفظ والتنبيهات
+  ========================== -->
+  <script src="sscrptar.js"></script>
+</body>
+</html>
