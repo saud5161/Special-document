@@ -4076,13 +4076,13 @@ function updateAutoTravelReason() {
 
   // تحديد النص والتحقق مما إذا كان يجب الإظهار
   if (moi || jawazat) {
-    text = "حسب البرقية المشار إليها أعلاه";
+    text = " البرقية المشار إليها أعلاه";
     shouldShow = true;
   } else if (diplomatic || under18) {
-    text = "حسب التعليمات";
+    text = " التعليمات";
     shouldShow = true;
   } else if (permit) {
-    text = "حسب التصريح المنعكس في النظام";
+    text = " التصريح المنعكس في النظام";
     shouldShow = true;
   }
 
