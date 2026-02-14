@@ -419,9 +419,10 @@ OperatorNumber1: $('OperatorNumber1')?.value || "",
 OperatorNumber2: $('OperatorNumber2')?.value || "",
 
 IndividualID1: $('IndividualID1')?.value || "",
-IndividualID2: $('IndividualID2')?.value || ""
+IndividualID2: $('IndividualID2')?.value || "",
 
-
+// أضف هذا السطر داخل return في دالة collect
+AutoTravelReason: $('AutoTravelReason')?.value || ''
   };
 }
 
@@ -4055,4 +4056,58 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // يظهر فقط في وضع "كشف"
   note.style.display = (choice === "كشف") ? "flex" : "none";
+});
+// وظيفة تحديث سبب السفر تلقائياً في نموذج المواطن
+// وظيفة تحديث وإظهار/إخفاء سبب السفر تلقائياً
+function updateAutoTravelReason() {
+  const reasonInput = document.getElementById('AutoTravelReason');
+  const reasonContainer = document.getElementById('sec-auto-reason');
+  if (!reasonInput || !reasonContainer) return;
+
+  // جلب حالة الاختيار للعناصر
+  const moi = document.getElementById('mc-moi')?.checked;
+  const jawazat = document.getElementById('mc-jawazat')?.checked;
+  const diplomatic = document.getElementById('mc-diplomatic')?.checked;
+  const under18 = document.getElementById('mc-under18')?.checked;
+  const permit = document.getElementById('mc-permit')?.checked;
+
+  let text = "";
+  let shouldShow = false;
+
+  // تحديد النص والتحقق مما إذا كان يجب الإظهار
+  if (moi || jawazat) {
+    text = "حسب البرقية المشار إليها أعلاه";
+    shouldShow = true;
+  } else if (diplomatic || under18) {
+    text = "حسب التعليمات";
+    shouldShow = true;
+  } else if (permit) {
+    text = "حسب التصريح المنعكس في النظام";
+    shouldShow = true;
+  }
+
+  // تحديث القيمة
+  reasonInput.value = text;
+
+  // التحكم في الظهور والاختفاء
+  if (shouldShow) {
+    reasonContainer.style.display = 'block'; // إظهار إذا وجد اختيار
+  } else {
+    reasonContainer.style.display = 'none';  // إخفاء إذا أزيل الاختيار
+    reasonInput.value = "";                  // تفريغ الحقل عند الإخفاء
+  }
+}
+
+// ربط الوظيفة بالعناصر عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+  const checkboxes = [
+    'mc-moi', 'mc-jawazat', 'mc-diplomatic', 'mc-under18', 'mc-permit'
+  ];
+
+  checkboxes.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('change', updateAutoTravelReason);
+    }
+  });
 });
