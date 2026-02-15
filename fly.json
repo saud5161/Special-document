@@ -374,7 +374,21 @@
       "iata": "9P",
       "icao": "FJL",
       "priority": 61
-    }
+    },
+    {
+  "name_ar": "اجيت",
+  "name_en": "AJet",
+  "iata": "VF",
+  "icao": "TKJ",
+  "priority": 62
+},
+{
+  "name_ar": "الاذربيجانية",
+  "name_en": "Azerbaijan Airlines",
+  "iata": "J2",
+  "icao": "AHY",
+  "priority": 63
+}
   ],
   "destinations": [
     {
@@ -664,6 +678,7 @@
       "country_ar": "اليونان",
       "priority": 43
     },
+    
     {
       "city_ar": "شرم الشيخ",
       "city_en": "Sharm El Sheikh",
@@ -742,13 +757,6 @@
       "priority": 54
     },
     {
-      "city_ar": "الدمام",
-      "city_en": "Dammam",
-      "iata": "DMM",
-      "country_ar": "السعودية",
-      "priority": 55
-    },
-    {
       "city_ar": "شنغهاي",
       "city_en": "Shanghai",
       "iata": "PVG",
@@ -804,6 +812,7 @@
       "country_ar": "السودان",
       "priority": 63
     }
+    
   ],
   "extra_routes": [
     {
@@ -952,8 +961,42 @@
     },
     {
       "no": "SV888",
-      "dest": "بكين"
+      "dest": ""
     },
+    
+  {
+    "no": "J28204",
+    "dest": "باكو"
+  },
+  {
+    "no": "QR1969",
+    "dest": "الدوحة"
+  },
+  {
+    "no": "SV712",
+    "dest": "كاليكوت"
+  },
+  {
+    "no": "6E54",
+    "dest": "بنجالور"
+  },
+  {
+    "no": "VF214",
+    "dest": "اسطنبول"
+  },
+  {
+    "no": "F3561",
+    "dest": "دمشق"
+  },
+  {
+    "no": "SV283",
+    "dest": "موسكو"
+  },
+  {
+    "no": "AF685",
+    "dest": "باريس"
+  },
+
     {
       "no": "SV724",
       "dest": "اسلام اباد"
@@ -1668,7 +1711,7 @@
     },
     {
       "no": "KL423",
-      "dest": "الدمام"
+      "dest": "امستردام"
     },
     {
       "no": "XY323",
