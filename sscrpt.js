@@ -474,7 +474,7 @@ const KASHF_FILES = {
     "ج": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةج.docm" },
     "د": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةد.docm" },
   },
-  "3": {
+  "5": {
     "ا": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةا.docm" },
     "ب": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةب.docm" },
     "ج": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةج.docm" },
@@ -3778,8 +3778,10 @@ if (n2) n2.style.display = perm ? '' : 'none';
     });
 
     // عناصر "صلاحيات" الجديدة (رقم الهوية + رقم المشغل للفرد 1 و2)
-["IndividualID","OperatorNumber1","IndividualID2","OperatorNumber2"].forEach(id => showPair(id, perm));
-
+// عناصر "صلاحيات" والاستئذان (رقم الهوية + رقم المشغل للفرد 1 و2)
+const estethan = getChoice() === 'استاذان';
+showPair("IndividualID", perm || estethan); // إظهار رقم الهوية في الصلاحيات والاستئذان
+["OperatorNumber1","IndividualID2","OperatorNumber2"].forEach(id => showPair(id, perm));
 // إظهار/إخفاء قسم "الصلاحيات المنقولة"
 const permCard = document.getElementById('card-transferred-permissions');
 if (permCard) permCard.style.display = perm ? '' : 'none';
