@@ -261,7 +261,7 @@
 
     async function loadDataAndInitialize() {
         try {
-            const response = await fetch('name.json');
+        const response = await fetch('./name.json');
             if (!response.ok) throw new Error("لم يتم العثور على الملف");
             employeesData = await response.json();
         } catch (error) {
