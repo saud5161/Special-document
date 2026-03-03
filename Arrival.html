@@ -180,61 +180,7 @@
           </div>
         </div>
 
-        <div class="shift-form">
-            <h3>بيانات الاستلام لهذا اليوم</h3>
-            <p class="hint">بعد تعبئة الخانات، سيتم اعتماد المعطيات تلقائيًا داخل ملفات Word</p>
-            <div class="officer-date-info" style="margin-bottom: 15px;">
-              <label for="custom-hijri-date">التاريخ (هجري):</label>
-              <input type="text" id="custom-hijri-date" class="form-control">
-              <label for="custom-weekday">اليوم (أسبوعي):</label>
-              <input type="text" id="custom-weekday" class="form-control">
-              <span id="timeNote" style="color: green; font-size: small; display: none;">التاريخ وقت الاستلام</span>
-            </div>
-
-            <label for="officer-name">اسم ضابط الصالة:</label>
-            <span class="saved-check" id="check-officer-name" style="display:none; color:green;">✔ تم الحفظ</span>
-            <input list="names" id="officer-name" placeholder="اختر أو اكتب الاسم" />
-            <datalist id="names">
-                <option value="أحمد عادل الزهراني">
-                <option value="اسامه راشد المشوح">
-                <option value="الريان عبدالله الهويمل">
-                <option value="سعد عبدالعزيز الخشلان">
-                </datalist>
-
-            <label for="officer-rank">رتبة الضابط:</label>
-            <input list="ranks" id="officer-rank" placeholder="اختر أو اكتب الرتبة" />
-            <datalist id="ranks">
-              <option value="ملازم">
-              <option value="ملازم اول">
-              <option value="نقيب">
-              <option value="رائد">
-              <option value="مقدم">
-              <option value="عقيد">
-            </datalist>
-
-            <label for="shift-number">المناوبة:</label>
-            <input list="shifts" id="shift-number" placeholder="اختر أو اكتب رقم المناوبة" />
-            <datalist id="shifts">
-              <option value="أ">
-              <option value="ب">
-              <option value="ج">
-              <option value="د">
-            </datalist>
-
-            <label for="hall-number">رقم الصالة:</label>
-            <input list="halls" id="hall-number" placeholder="اختر أو اكتب رقم الصالة" />
-            <datalist id="halls">
-                <option value="1">
-                <option value="2">
-                <option value="3">
-                <option value="4">
-            </datalist>
-
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
-              <button id="send-officer-info" class="btn-primary">حفظ</button>
-              <button id="clear-officer-info" class="btn-secondary">تفريغ الخانات</button>
-            </div>
-        </div>
+        
 
         <div class="section-header highlight-style">
             <h2><i class="fas fa-calendar-check"></i> الحضور والانصراف</h2>
