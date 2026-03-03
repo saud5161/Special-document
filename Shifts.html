@@ -79,17 +79,23 @@
       background:#f8fafc; color:var(--primary2); font-size:.85rem; font-weight:800;
       display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.15s ease; white-space:nowrap;
     }
-    /* جعل العرض التلقائي للأزرار التي تحتوي نصوصاً */
-    .cnt-btn.task-cnt-btn { width: auto !important; padding: 0 12px; font-size: 0.78rem; flex-basis: auto; }
+    .task-cnt-btn { width: auto !important; padding: 0 12px; font-size: 0.78rem; flex-basis: auto; }
     
     .cnt-btn.filled {
       background: rgba(22, 163, 74, 0.15) !important;
       border-color: rgba(22, 163, 74, 0.4) !important;
       color: #15803d !important;
     }
-    
     .cnt-btn.active { background:var(--primary) !important; color:#fff !important; border-color:var(--primary) !important; }
     .cnt-btn.add-task-btn { background:var(--violet); color:#fff; border-color:var(--violet); }
+
+    /* كلاس التحديد الخاص بوضع الإخفاء */
+    .cnt-btn.hide-selected {
+      background: #fee2e2 !important;
+      border-color: #f87171 !important;
+      color: #991b1b !important;
+      border-style: dashed !important;
+    }
 
     /* التوزيع والقوائم */
     .transfer-area { display: flex; gap: 8px; margin: 0 8px 8px; }
@@ -104,7 +110,8 @@
     .search-row { display:grid; grid-template-columns:1fr auto auto; gap:6px; padding:6px; background:#f8fafc; border-bottom:1px solid var(--line); }
     .search-input { width: 100%; border:1px solid #dbe2ea; border-radius:6px; padding:6px; font-family: var(--font); font-size: 0.75rem; outline: none; }
     
-    .mini-action { border:none; border-radius:6px; padding:0 8px; font-family:var(--font); font-weight:800; font-size:.7rem; cursor:pointer; }
+    .mini-action { border:none; border-radius:6px; padding:0 8px; font-family:var(--font); font-weight:800; font-size:.7rem; cursor:pointer; transition: .1s; }
+    .mini-action:active { transform: scale(0.95); }
     .mini-green { background:var(--success); color:#fff; }
     
     .list-box { flex: 1; overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 4px; background: #fcfcfc; }
@@ -115,7 +122,6 @@
     .list-item:active { transform: scale(0.98); }
     .list-item.selected { border-color: var(--success); background: #f0fdf4; }
 
-    /* كلاس جديد للقائمة المصغرة بدون مسافات وتظليل */
     .list-item-compact {
       background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px;
       font-size: 0.7rem; color: #1e293b; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: .1s;
@@ -128,7 +134,7 @@
 
     .current-target-banner {
       background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 8px 12px;
-      margin: 0 8px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 800; text-align: center; transition: 0.2s;
+      margin: 0 8px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 800; min-height: 50px;
     }
 
     /* ===== PDF ===== */
@@ -186,7 +192,7 @@
   </div>
 
   <div class="counter-strip">
-    <div class="strip-title">
+    <div class="strip-title" id="stripTitle">
       <span>1. اختر الكاونتر أو المهمة للتوزيع عليها</span>
     </div>
     <div class="counter-scroll" id="counterContainer">
@@ -194,8 +200,7 @@
   </div>
 
   <div class="current-target-banner" id="currentTargetBanner">
-      الهدف الحالي: (الرجاء التحديد من الشريط الأعلى)
-  </div>
+      </div>
 
   <div class="transfer-area">
     <div class="list-panel">
@@ -256,6 +261,11 @@
     let employeesData = {}; 
     let savedCustomNames = [];
     let customTasksList = [];
+    let hiddenItems = []; 
+    
+    // متغيرات وضع الإخفاء المتعدد
+    let isHideModeActive = false;
+    let itemsSelectedForHide = [];
     
     let employees = []; 
     let dailyPool = []; 
@@ -295,6 +305,7 @@
                 if(p.chosen) chosen = p.chosen;
                 if(p.savedCustomNames) savedCustomNames = p.savedCustomNames;
                 if(p.customTasksList) customTasksList = p.customTasksList;
+                if(p.hiddenItems) hiddenItems = p.hiddenItems;
             }
         } catch(e){}
     }
@@ -306,7 +317,8 @@
             force: document.getElementById('forceCountInput').value,
             chosen: chosen,
             savedCustomNames: savedCustomNames,
-            customTasksList: customTasksList
+            customTasksList: customTasksList,
+            hiddenItems: hiddenItems
         };
         localStorage.setItem(PREFS_KEY, JSON.stringify(p));
     }
@@ -381,13 +393,36 @@
         renderTransferLists();
     }
 
+    // دالة التحديد المتعدد لوضع الإخفاء
+    function toggleHideSelectionMultiple(items) {
+        let allSelected = items.every(item => itemsSelectedForHide.includes(String(item)));
+        if (allSelected) {
+            itemsSelectedForHide = itemsSelectedForHide.filter(i => !items.includes(i));
+        } else {
+            items.forEach(item => {
+                if (!itemsSelectedForHide.includes(String(item))) {
+                    itemsSelectedForHide.push(String(item));
+                }
+            });
+        }
+        renderCounterStrip();
+    }
+
     function renderCounterStrip() {
         const container = document.getElementById('counterContainer');
         container.innerHTML = '';
         const rendered = new Set(); 
 
+        const stripTitleDiv = document.getElementById('stripTitle');
+        if (isHideModeActive) {
+            stripTitleDiv.innerHTML = `<span style="color:var(--danger)">وضع الإخفاء: حدد الكاونترات/المهام لإخفائها</span>`;
+        } else {
+            stripTitleDiv.innerHTML = `<span>1. اختر الكاونتر أو المهمة للتوزيع عليها</span>`;
+        }
+
         for (let i = 1; i <= 20; i++) {
             if (rendered.has(i)) continue;
+            if (hiddenItems.includes(String(i))) continue; 
 
             const assignedMergedPerson = chosen.find(x => x.task && x.task.includes('&') && x.task.replace('كاونتر ', '').split('&').map(n => parseInt(n.trim())).includes(i));
             
@@ -420,20 +455,30 @@
                 div.className = 'cnt-btn';
                 div.style.width = 'auto';
                 div.style.padding = '0 10px';
-                div.style.background = '#eff6ff'; 
-                div.style.borderColor = '#93c5fd'; 
-                div.style.color = '#1d4ed8'; 
+                
+                // تلوين حسب حالة وضع الإخفاء
+                if (isHideModeActive && (itemsSelectedForHide.includes(String(i)) || itemsSelectedForHide.includes(String(partnerNum)))) {
+                    div.classList.add('hide-selected');
+                } else {
+                    div.style.background = '#eff6ff'; 
+                    div.style.borderColor = '#93c5fd'; 
+                    div.style.color = '#1d4ed8'; 
+                }
                 
                 div.innerHTML = `<span style="font-size:0.9rem;">${i}</span><span style="font-size:0.65rem; margin:0 6px; padding:0 6px; border-right:1px solid #93c5fd; border-left:1px solid #93c5fd; color:#3b82f6;">مدمج مع</span><span style="font-size:0.9rem;">${partnerNum}</span>`;
                 
                 div.onclick = () => {
-                    selectedCountersForMerge = [i, partnerNum].sort((a,b)=>a-b);
-                    currentTask = `كاونتر ${selectedCountersForMerge[0]} & ${selectedCountersForMerge[1]}`;
-                    renderCounterStrip();
+                    if (isHideModeActive) {
+                        toggleHideSelectionMultiple([String(i), String(partnerNum)]);
+                    } else {
+                        selectedCountersForMerge = [i, partnerNum].sort((a,b)=>a-b);
+                        currentTask = `كاونتر ${selectedCountersForMerge[0]} & ${selectedCountersForMerge[1]}`;
+                        renderCounterStrip();
+                    }
                 };
                 wrapper.appendChild(div);
 
-                if (assignedPeopleForMerged.length > 0) {
+                if (assignedPeopleForMerged.length > 0 && !isHideModeActive) {
                     const namesBox = document.createElement('div');
                     namesBox.style.fontSize = '0.65rem';
                     namesBox.style.color = '#1e3a8a';
@@ -454,6 +499,12 @@
                 rendered.add(i);
                 rendered.add(partnerNum);
             } else {
+                const isSelected = selectedCountersForMerge.includes(i);
+                if (isSelected && !isHideModeActive) {
+                    rendered.add(i);
+                    continue; 
+                }
+
                 const allAssignedToThis = chosen.filter(x => {
                     if(!x.task) return false;
                     if(x.task === `كاونتر ${i}`) return true;
@@ -465,7 +516,6 @@
                 });
                 
                 const isFilled = allAssignedToThis.length > 0;
-                const isSelected = selectedCountersForMerge.includes(i);
                 
                 const wrapper = document.createElement('div');
                 wrapper.style.display = 'flex';
@@ -474,14 +524,24 @@
                 wrapper.style.gap = '4px';
 
                 const div = document.createElement('div');
-                div.className = `cnt-btn ${isSelected ? 'active' : ''} ${isFilled && !isSelected ? 'filled' : ''}`;
+                div.className = `cnt-btn ${isFilled ? 'filled' : ''}`;
+                if (isHideModeActive && itemsSelectedForHide.includes(String(i))) {
+                    div.classList.add('hide-selected');
+                }
                 div.style.flex = '0 0 36px';
                 div.style.width = '36px';
                 div.textContent = i;
-                div.onclick = () => selectCounterNumber(i);
+                
+                div.onclick = () => {
+                    if (isHideModeActive) {
+                        toggleHideSelectionMultiple([String(i)]);
+                    } else {
+                        selectCounterNumber(i);
+                    }
+                };
                 wrapper.appendChild(div);
 
-                if (isSelected && isFilled) {
+                if (isFilled && !isHideModeActive) {
                     const namesBox = document.createElement('div');
                     namesBox.style.fontSize = '0.65rem';
                     namesBox.style.color = '#15803d';
@@ -504,9 +564,13 @@
 
         const allTasks = [...DEFAULT_TASKS, ...customTasksList];
         allTasks.forEach(t => {
+            if (hiddenItems.includes(t)) return;
+
+            const isSelected = currentTask === t;
+            if (isSelected && !isHideModeActive) return; 
+
             const assignedPeople = chosen.filter(x => x.task === t);
             const isFilled = assignedPeople.length > 0;
-            const isSelected = currentTask === t;
 
             const wrapper = document.createElement('div');
             wrapper.style.display = 'flex';
@@ -515,12 +579,22 @@
             wrapper.style.gap = '4px';
 
             const div = document.createElement('div');
-            div.className = `cnt-btn task-cnt-btn ${isSelected ? 'active' : ''} ${isFilled && !isSelected ? 'filled' : ''}`;
+            div.className = `cnt-btn task-cnt-btn ${isFilled ? 'filled' : ''}`;
+            if (isHideModeActive && itemsSelectedForHide.includes(t)) {
+                div.classList.add('hide-selected');
+            }
             div.textContent = t;
-            div.onclick = () => selectTask(t);
+            
+            div.onclick = () => {
+                if (isHideModeActive) {
+                    toggleHideSelectionMultiple([t]);
+                } else {
+                    selectTask(t);
+                }
+            };
             wrapper.appendChild(div);
 
-            if (isSelected && isFilled) {
+            if (isFilled && !isHideModeActive) {
                 const namesBox = document.createElement('div');
                 namesBox.style.fontSize = '0.65rem';
                 namesBox.style.color = '#15803d';
@@ -539,18 +613,80 @@
             container.appendChild(wrapper);
         });
 
-        const wrapperAdd = document.createElement('div');
-        wrapperAdd.style.display = 'flex';
-        wrapperAdd.style.flexDirection = 'column';
-        wrapperAdd.style.alignItems = 'center';
+        // 1. حاوية الأزرار الإضافية
+        const wrapperControls = document.createElement('div');
+        wrapperControls.style.display = 'flex';
+        wrapperControls.style.gap = '6px';
+        wrapperControls.style.alignItems = 'flex-start';
 
+        // 2. زر إضافة مهمة (دائم)
         const btnAddTask = document.createElement('div');
         btnAddTask.className = `cnt-btn task-cnt-btn add-task-btn`;
         btnAddTask.textContent = 'إضافة مهمة';
         btnAddTask.onclick = addNewTask;
-        wrapperAdd.appendChild(btnAddTask);
+        wrapperControls.appendChild(btnAddTask);
 
-        container.appendChild(wrapperAdd);
+        // 3. أزرار وضع الإخفاء والإظهار
+        if (isHideModeActive) {
+            const btnConfirmHide = document.createElement('div');
+            btnConfirmHide.className = `cnt-btn task-cnt-btn`;
+            btnConfirmHide.textContent = `إخفاء المحدد (${itemsSelectedForHide.length})`;
+            btnConfirmHide.style.background = '#fee2e2';
+            btnConfirmHide.style.color = '#991b1b';
+            btnConfirmHide.style.borderColor = '#f87171';
+            btnConfirmHide.onclick = () => {
+                hiddenItems.push(...itemsSelectedForHide);
+                itemsSelectedForHide = [];
+                isHideModeActive = false;
+                savePrefs();
+                renderCounterStrip();
+            };
+
+            const btnCancelHide = document.createElement('div');
+            btnCancelHide.className = `cnt-btn task-cnt-btn`;
+            btnCancelHide.textContent = 'إلغاء التحديد';
+            btnCancelHide.onclick = () => {
+                itemsSelectedForHide = [];
+                isHideModeActive = false;
+                renderCounterStrip();
+            };
+
+            wrapperControls.appendChild(btnConfirmHide);
+            wrapperControls.appendChild(btnCancelHide);
+        } else {
+            // زر تفعيل وضع التحديد للإخفاء
+            const btnEnterHideMode = document.createElement('div');
+            btnEnterHideMode.className = `cnt-btn task-cnt-btn`;
+            btnEnterHideMode.textContent = 'تحديد للإخفاء';
+            btnEnterHideMode.style.background = '#f8fafc';
+            btnEnterHideMode.style.color = '#475569';
+            btnEnterHideMode.onclick = () => {
+                isHideModeActive = true;
+                itemsSelectedForHide = [];
+                currentTask = null;
+                selectedCountersForMerge = [];
+                renderCounterStrip();
+            };
+            wrapperControls.appendChild(btnEnterHideMode);
+
+            // زر إظهار الكونترات المخفية (يظهر فقط إذا كان هناك مخفي)
+            if (hiddenItems.length > 0) {
+                const btnShowHidden = document.createElement('div');
+                btnShowHidden.className = `cnt-btn task-cnt-btn`;
+                btnShowHidden.textContent = `إظهار الكونترات المخفية`;
+                btnShowHidden.style.background = '#e0f2fe';
+                btnShowHidden.style.color = '#0369a1';
+                btnShowHidden.style.borderColor = '#7dd3fc';
+                btnShowHidden.onclick = () => {
+                    hiddenItems = [];
+                    savePrefs();
+                    renderCounterStrip();
+                };
+                wrapperControls.appendChild(btnShowHidden);
+            }
+        }
+
+        container.appendChild(wrapperControls);
 
         updateCurrentTargetBanner();
     }
@@ -573,6 +709,13 @@
         } else if (selectedCountersForMerge.length === 2) {
             const sorted = [...selectedCountersForMerge].sort((a,b)=>a-b);
             currentTask = `كاونتر ${sorted[0]} & ${sorted[1]}`;
+            chosen.forEach(p => {
+                if (p.task === `كاونتر ${sorted[0]}` || p.task === `كاونتر ${sorted[1]}`) {
+                    p.task = currentTask;
+                }
+            });
+            savePrefs();
+            renderTransferLists();
         } else {
              currentTask = null;
         }
@@ -588,22 +731,107 @@
 
     function updateCurrentTargetBanner() {
         const banner = document.getElementById('currentTargetBanner');
-        if (!currentTask) {
+        banner.innerHTML = '';
+
+        if (!currentTask || isHideModeActive) {
             banner.style.background = '#fef2f2';
             banner.style.color = '#991b1b';
             banner.style.borderColor = '#fecaca';
-            banner.textContent = 'يرجى اختيار كاونتر أو مهمة من الشريط الأعلى أولاً';
-        } else {
-            banner.style.background = '#eef2ff';
-            banner.style.color = '#4338ca';
-            banner.style.borderColor = '#c7d2fe';
-            
-            if (selectedCountersForMerge.length === 2) {
-                banner.textContent = `سيتم دمج الكونترين: ${currentTask} (اختر اسماً من المتاح للتوزيع)`;
-            } else {
-                banner.textContent = `الهدف الحالي: ${currentTask} (اختر اسماً من المتاح للتوزيع)`;
-            }
+            banner.style.display = 'flex';
+            banner.style.justifyContent = 'center';
+            banner.style.alignItems = 'center';
+            banner.textContent = isHideModeActive ? 'أنت الآن في وضع الإخفاء، انقر لتحديد الكاونترات أو المهام' : 'يرجى اختيار كاونتر أو مهمة من الشريط الأعلى أولاً';
+            return;
         }
+
+        banner.style.background = '#eef2ff';
+        banner.style.color = '#4338ca';
+        banner.style.borderColor = '#c7d2fe';
+        banner.style.display = 'flex';
+        banner.style.alignItems = 'center';
+        banner.style.justifyContent = 'space-between';
+        banner.style.textAlign = 'right';
+
+        const leftSide = document.createElement('div');
+        leftSide.style.display = 'flex';
+        leftSide.style.alignItems = 'center';
+        leftSide.style.gap = '8px';
+        leftSide.style.flexWrap = 'wrap';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.textContent = 'الهدف:';
+        titleSpan.style.fontSize = '0.75rem';
+        titleSpan.style.fontWeight = '800';
+        leftSide.appendChild(titleSpan);
+
+        const allAssignedToThis = chosen.filter(x => x.task === currentTask);
+
+        if (selectedCountersForMerge.length > 0) {
+            selectedCountersForMerge.forEach(num => {
+                const btn = document.createElement('div');
+                btn.className = 'cnt-btn active';
+                btn.style.flex = '0 0 36px';
+                btn.style.width = '36px';
+                btn.textContent = num;
+                btn.title = 'انقر لفك التحديد';
+                btn.onclick = () => selectCounterNumber(num); 
+                leftSide.appendChild(btn);
+            });
+            
+            if (selectedCountersForMerge.length === 1) {
+                const hint = document.createElement('span');
+                hint.style.fontSize = '0.65rem';
+                hint.style.color = '#6366f1';
+                hint.textContent = '(اختر آخر للدمج أو أضف اسماً)';
+                leftSide.appendChild(hint);
+            } else if (selectedCountersForMerge.length === 2) {
+                const hint = document.createElement('span');
+                hint.style.fontSize = '0.65rem';
+                hint.style.color = '#6366f1';
+                hint.textContent = '(تم دمج الكاونترين)';
+                leftSide.appendChild(hint);
+            }
+        } else {
+            const btn = document.createElement('div');
+            btn.className = 'cnt-btn task-cnt-btn active';
+            btn.textContent = currentTask;
+            leftSide.appendChild(btn);
+        }
+
+        if (allAssignedToThis.length > 0) {
+            const namesBox = document.createElement('div');
+            namesBox.style.fontSize = '0.65rem';
+            namesBox.style.color = '#15803d';
+            namesBox.style.background = '#dcfce7';
+            namesBox.style.border = '1px solid #bbf7d0';
+            namesBox.style.borderRadius = '6px';
+            namesBox.style.padding = '2px 8px';
+            namesBox.style.fontWeight = '700';
+            namesBox.innerHTML = allAssignedToThis.map(p => formatFirstAndLastName(p.name)).join(' + ');
+            leftSide.appendChild(namesBox);
+        }
+
+        const rightSide = document.createElement('div');
+        rightSide.style.display = 'flex';
+        rightSide.style.gap = '6px';
+
+        const doneBtn = document.createElement('button');
+        doneBtn.textContent = 'إغلاق للتعديل (تم)';
+        doneBtn.className = 'mini-action';
+        doneBtn.style.background = '#4f46e5';
+        doneBtn.style.color = '#fff';
+        doneBtn.style.padding = '6px 14px';
+        doneBtn.style.fontSize = '0.75rem';
+        doneBtn.onclick = () => {
+            currentTask = null;
+            selectedCountersForMerge = [];
+            renderCounterStrip();
+        };
+
+        rightSide.appendChild(doneBtn);
+
+        banner.appendChild(leftSide);
+        banner.appendChild(rightSide);
     }
 
     function formatShortName(fullName) {
@@ -655,7 +883,7 @@
             sortedChosen.forEach((e) => {
                 const isAbsent = e.task === "بدون مهام/غياب";
                 const div = document.createElement('div');
-                div.className = 'list-item-compact'; // كلاس مصغر بدون تظليل أو رتبة
+                div.className = 'list-item-compact'; 
                 div.innerHTML = `
                     <div style="font-weight:800;">${formatShortName(e.name)}</div>
                     <div class="task-badge ${isAbsent ? 'absent-badge' : ''}">${e.task}</div>
