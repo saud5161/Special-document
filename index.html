@@ -31,82 +31,34 @@
   ========================== -->
    <header class="app-topbar">
     <div class="app-topbar__section app-topbar__section--right">
-      <!-- مساحة شعار الجهة (اختياري) -->
       <div class="brand">
         <i class="fa-solid fa-shield-halved"></i>
         <span>منصة تعبئة البيانات</span>
-        <div id="selected-template" class="selected-banner" hidden>
-  <i class="fas fa-bookmark"></i>
-  <span>اسم الخطاب:</span>
-  <strong id="selected-template-name"></strong>
-</div>
-
       </div>
-      
     </div>
 
     <div class="app-topbar__section app-topbar__section--center">
       <span id="header-date" class="today"></span>
+      
+      <div id="selected-template" class="selected-banner" hidden>
+        <i class="fas fa-bookmark"></i>
+        <span>اسم الخطاب:</span>
+        <strong id="selected-template-name"></strong>
+      </div>
     </div>
 
     <div class="app-topbar__section app-topbar__section--left">
+      <button id="dark-mode-toggle" class="icon-btn" title="الوضع الليلي">
+        <i class="fas fa-moon"></i>
+      </button>
       <button id="print-button" class="icon-btn" title="طباعة"><i class="fas fa-print"></i></button>
       <a class="icon-btn" href="Departure.html" title="خروج"><i class="fa-solid fa-power-off"></i></a>
     </div>
   </header>
 <!-- صندوق التعليمات المصغّر (أسفل يسار) -->
-<div id="helpBox" class="help-box" role="region" aria-label="مربع التعليمات" aria-live="polite">
-  <div class="help-head">
-    <strong class="help-title">مربع التعليمات</strong>
-    <div class="help-actions">
-      <button type="button" class="help-btn" id="helpHideBtn" aria-label="إخفاء التعليمات">إخفاء</button>
-      <button type="button" class="help-btn" id="helpDetailsBtn" aria-label="عرض التفاصيل">شرح بالصور</button>
-    </div>
-  </div>
-
-  <div class="help-body">
-    <ol>
-      <li>إذا لم تظهر المعطيات في ملف الوورد، أغلق الملف فورًا.</li>
-      <li>انقر <strong>اضغط هنا للإصلاح</strong>.</li>
-      <li>انقر <strong>تنفيذ</strong> ثم احفظ مرة أخرى.</li>
-    </ol>
-  </div>
-
-  <!-- يظهر فقط عند الإخفاء (شريحة صغيرة لاسترجاع الصندوق) -->
-  <button type="button" class="help-restore" id="helpRestoreBtn" aria-label="إظهار التعليمات" hidden>إظهار التعليمات</button>
-</div>
-
-<!-- اللوحة الكاملة بالصور (تظهر عند الضغط على "عرض التفاصيل") -->
-<div id="helpOverlay" class="help-overlay" hidden aria-hidden="true">
-  <div class="help-overlay__panel" role="dialog" aria-labelledby="helpBoxTitleFull" aria-modal="true">
-    <button class="overlay-close" type="button" id="helpOverlayClose" aria-label="إغلاق">✖</button>
-    <h4 id="helpBoxTitleFull">مربع التعليمات</h4>
-    <ol>
-      <li>
-        في حال عدم ظهور المعطيات في ملف الوورد  
-        <br>قم بإغلاق الملف فورًا
-        <br>
-        <img src="page/ttt.jpg" alt="إغلاق الملف">
-      </li>
-      <li>
-        قم بالنقر على <strong>اضغط هنا للإصلاح</strong>
-        <br>
-        <img src="page/ttt1.jpg" alt="الإصلاح">
-      </li>
-      <li>
-        انقر على <strong>تنفيذ</strong>  مرة أخرى
-        <br>
-        <img src="page/ttt2.jpg" alt="تنفيذ وحفظ">
-      </li>
-    </ol>
-  </div>
-</div>
 
 
-<!-- زر إظهار مربع المساعدة -->
-<button class="show-help-floating" id="showHelpBtn" onclick="showHelpBox()" style="display:none;">
-❓ تعليمات
-</button>
+
 
 
   <!-- =========================

@@ -10,9 +10,38 @@
     <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/all.css">
    
-    
- 
-
+    <style>
+        div.model-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 34px !important;
+            color: #1e5631;
+            position: relative;
+        }
+        .badge-icon {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            font-size: 14px;
+            background: #ffffff;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid #eef2f5;
+        }
+        .badge-red { color: #d32f2f; }
+        .badge-gold { color: #c7a33a; }
+        .badge-green { color: #1e5631; }
+        
+        .model-card:hover div.model-icon {
+            color: #c7a33a !important;
+        }
+    </style>
     
 </head>
 <body>
@@ -20,7 +49,6 @@
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0;
     background: rgb(90, 89, 89);
-
     z-index: 9999;
     display: flex;
     justify-content: center;
@@ -43,10 +71,6 @@
             <div class="logo-container">
                 <img src="img/main-httpswww.gdp.gov.saportalassetsimglogo.png" alt="الشعار">
                 <div>
-                 
-
-                  
-                   
                 </div>
             </div>
         </div>
@@ -56,20 +80,16 @@
         </div>
         <div class="left">
           <a href="#" id="theme-toggle" class="theme-toggle" aria-label="تفعيل الوضع الداكن" aria-pressed="false">
-  <i class="fas fa-moon"></i>
-  <span class="theme-toggle-text">الوضع الداكن</span>
-</a>
-
-
+            <i class="fas fa-moon"></i>
+            <span class="theme-toggle-text">الوضع الداكن</span>
+          </a>
 
              <a href="dic/Doc4.docm">
                 <i class="btn-icon word-icon" style="color: #ffffff;"></i>
             </a>
    
-
             <a href="#"><i class="fas fa-desktop"></i></a>
         
-            <!-- أيقونة الجرس مع الإشعار -->
             <a href="#" onclick="fetchLatestRelease()">
                 <div class="icon-with-notification">
                     <i class="fas fa-bell"></i>
@@ -77,57 +97,35 @@
                 </div>
              </a>
              
-             <!-- مربع النص لعرض المحتوى أسفل الجرس -->
              <div id="notification-content" style="display: none;">
                  <p id="latest-release-text">جارٍ التحميل...</p>
              </div>
-             
-            
-            
-            
-            
 
             <a id="print-button"><i class="fas fa-print"></i></a>
             <a href="#" onclick="toggleHeadsetNotification(event)">
                 <div class="icon-with-notification">
                     <i class="fas fa-headset"></i>
-                    <span class="notification-star">1</span> <!-- رقم 1 بدلاً من النجمة -->
-                </div>
+                    <span class="notification-star">1</span> </div>
              </a>
              
-             <!-- مربع النص لعرض محتوى الاقتراح -->
              <div id="headset-notification-content" style="display: none;">
                  <p id="headset-latest-release-text">في حال وجود اي ملاحظة او اقتراح يرجى التواصل واتس اب فقط مع سعود الحجي رقم جوال 0568190224</p>
              </div>
              
             <a href="passport-d.html"><i class="fa-solid fa-power-off"></i></a>
-           
-
         </div>
-        
     </div>
     
     <div class="search-bar">
-        <div style="margin: 20px;">
-  
-</div>
-
+        <div style="margin: 20px;"></div>
         <input type="text" id="search-input" placeholder="ابحث هنا...">
         <button id="search-button">بحث</button>
         <div id="search-feedback" class="search-feedback" aria-live="polite" style="display:none;"></div>
-
-        <div style="margin: 20px;">
-
-</div>
-
+        <div style="margin: 20px;"></div>
     </div>
     
     <div class="container">
-        
-        <!-- محتويات الصفحة الأخرى -->
-    </div>
-   
-    
+        </div>
     
 <div class="sidebar hidden" id="sidebar">
             <button class="toggle-sidebar" id="toggle-sidebar-btn" onclick="toggleSidebar()">
@@ -224,12 +222,6 @@
 
         </div>
         
-       
-        
-        
-        
-    
-        
         <div class="content">
           
            <div class="quick-links">
@@ -256,10 +248,7 @@
 
 
   </div>
-<div style="font-size: 13px; color: green; margin-top: 15px; display: flex; align-items: center; gap: 8px;">
-  ⚠️ في حال توقف مربع التعبئة في نماذج الوورد اضغط على الشريط في الأعلى أيقونة
-  <span class="btn-icon word-icon" style="pointer-events: none;"></span>
-</div>
+
 
   <div id="instruction-content" style="display: none;" class="instruction-content">
     <ol>
@@ -290,85 +279,52 @@
       </li>
     </ol>
   </div>
-
-
-
-
-
-
-
 </div>
             
-           <div class="section-header highlight-style">
+<div class="section-header highlight-style">
     <h2><i class="fas fa-calendar-check"></i> الحضور والانصراف</h2>
-  </div>
+</div>
    
+<div id="content-attendance" class="content-section">
+    <div class="button-grid">
 
-            
-          <div id="content-attendance" class="content-section">
+        <div class="model-card">
+          <div class="card-content">
+            <div class="model-icon"><i class="fa-solid fa-clipboard-list"></i></div>
 
-                   <div class="button-grid">
+            <h3>كشف حضور لكل الصالات</h3>
 
-<div class="model-card">
-  <div class="card-content">
-    <img src="img/icon-g.png" class="model-icon" alt="">
+            <div class="update-note">
+              <i class="fas fa-circle-check"></i>
+              تم تحديث الكشوفات بتاريخ 1447/08/25
+            </div>
 
-    <h3>كشف حضور لكل الصالات</h3>
+            <p>كشف لجميع الصالات</p>
+          </div>
 
-    <!-- ✅ سطر التحديث الجديد -->
-    <div class="update-note">
-      <i class="fas fa-circle-check"></i>
-      تم تحديث الكشوفات بتاريخ 1447/08/25
+          <div class="card-actions">
+            <a 
+              href="index.html" 
+              class="btn-icon word-icon" 
+              target="_top" 
+              title="تعديل Word"
+              onclick="localStorage.setItem('wordLinkChoice', 'كشف')">
+            </a>
+          </div>
+        </div>
     </div>
-
-    <p>كشف لجميع الصالات</p>
-  </div>
-
-  <div class="card-actions">
-    <a 
-      href="index.html" 
-      class="btn-icon word-icon" 
-      target="_top" 
-      title="تعديل Word"
-      onclick="localStorage.setItem('wordLinkChoice', 'كشف')">
-    </a>
-  </div>
 </div>
-</div>
-  
-
-
-
-    
-
-
-
-
-      
-
-
-    
-
-
-    
-</div>
-
             
-
-
-
-            <div class="section-header highlight-style">
+<div class="section-header highlight-style">
     <h2><i class="fas fa-folder-open"></i> نماذج المستخدمة يومياً</h2>
 </div>
 
-            <div class="content-section" id="content-daily-forms">
-                
-                <div class="button-grid">
+<div class="content-section" id="content-daily-forms">
+    <div class="button-grid">
 
   <div class="model-card">
     <div class="card-content">
-
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-layer-group"></i></div>
       <h3>جميع النماذج اليومية</h3>
       <p>صادر + تاشيرات + حذف سجلات + تعديل + موازنة + بوابات+ التقارير</p>
       <p style="font-size: 10px; color: red; margin-top: 5px;">
@@ -376,7 +332,6 @@
       </p>
     </div>
     <div class="card-actions">
-      <!-- عرض PDF -->
       <a
         href="dic/نــماذج  اليومية/نموذج استلام.pdf"
         class="btn-icon pdf-icon"
@@ -384,7 +339,6 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <!-- تعديل Word -->
       <a 
         href="index.html" 
         class="btn-icon word-icon" 
@@ -393,7 +347,6 @@
         onclick="localStorage.setItem('wordLinkChoice', 'استلام-اليوم')">
       </a>
    
-      <!-- طباعة -->
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -401,22 +354,17 @@
         onclick="printFile('dic/نــماذج  اليومية/نموذج استلام.pdf');">
         <i class="fa-solid fa-print"></i>
       </a>
-      
     </div>
-    
   </div>
 
-  
-<div class="model-card">
+  <div class="model-card">
     <div class="card-content">
-
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-chart-pie"></i></div>
       <h3>احصائية الكونتر المتنقل والذاتيه</h3>
       <p>احصائي عن المسافرين من الخدمة الذاتية</p>
       <p style="font-size: 10px; color: green; margin-top: 5px;">
     🔗 المرفقات المطلوبة: شرائح الحاسب الآلي
      </p>
-
     </div>
     <div class="card-actions">
       <a
@@ -441,15 +389,15 @@
       </a>
     </div>
   </div>
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-plane-arrival"></i></div>
       <h3>عسكري لدية رحلة مواصلة</h3>
       <p>اجازة عسكري بالنظام لديه رحلة ترانزيت</p>
       <p style="font-size: 10px; color: green; margin-top: 5px;">
   🔗 المرفقات المطلوبة:بطاقة صعود الطائرة والمواصلة 
       </p>
-
     </div>
     <div class="card-actions">
       <a
@@ -478,7 +426,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-fingerprint"></i></div>
       <h3>استعلام بصمة</h3>
       <p>استعلام عن بصمة للمسافر</p>
     </div>
@@ -508,7 +456,10 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-fingerprint"></i>
+          <i class="fa-solid fa-plus badge-icon badge-green"></i>
+      </div>
       <h3>تسجيل بصمة</h3>
       <p>تسجيل الخصائص الحيوية للمسافر</p>
     </div>
@@ -539,7 +490,10 @@
   <div class="model-card">
     <div class="card-content">
         <span class="badge-new">تم اضافة وورد </span>
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-passport"></i>
+          <i class="fa-solid fa-exclamation badge-icon badge-red" style="padding: 2px 6px;"></i>
+      </div>
       <h3>تزوير فحص</h3>
       <p>نموذج فحص لحالات الاشتباه</p>
     </div>
@@ -572,7 +526,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-brands fa-cc-visa"></i></div>
       <h3>تأشيرات منتهية زيارة</h3>
       <p>نموذج للتاشيرات المنتهيه</p>
        <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -606,7 +560,7 @@
   
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-brands fa-cc-visa"></i></div>
       <h3>تأشيرات منتهية سياحية</h3>
       <p>نموذج للتاشيرات المنتهيه</p>
            <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -641,7 +595,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-export"></i></div>
       <h3>بيان صادر</h3>
       <p>نموذج تسليم الصادر</p>
     </div>
@@ -671,7 +625,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-pen"></i></div>
       <h3>تعديل الرحلات</h3>
       <p>نماذج تعديل الرحلات</p>
     </div>
@@ -701,7 +655,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-door-open"></i></div>
       <h3>تسليم البوابات</h3>
       <p>استلام وتسليم البوابات</p>
     </div>
@@ -731,7 +685,7 @@
 
   <div class="model-card">
     <div class="card-content">  
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-invoice"></i></div>
       <h3>تقرير الرحلات</h3>
       <p>تقارير الرحلات المغادرة</p>
     </div>
@@ -761,7 +715,7 @@
 
   <div class="model-card">
     <div class="card-content">  
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-xmark"></i></div>
       <h3>تعذر انهاء اجراءات مغادرة</h3>
       <p>نموذج تعذر المغادرة للمسافر</p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -795,7 +749,7 @@
 
   <div class="model-card">
     <div class="card-content">  
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-baby"></i></div>
       <h3>مواليد المملكة</h3>
       <p>مواليد المملكة يدوي</p>
     </div>
@@ -827,7 +781,10 @@
 
   <div class="model-card">
     <div class="card-content">  
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-fingerprint"></i>
+          <i class="fa-solid fa-copy badge-icon badge-gold"></i>
+      </div>
       <h3>ازدواجية بصمة</h3>
       <p>من لديه جنسية سعودية وغيرها</p>
     </div>
@@ -855,7 +812,7 @@
 
   <div class="model-card">
     <div class="card-content">  
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-circle-minus"></i></div>
       <h3>حذف السجلات</h3>
       <p>من تم الغاء سجل خروجهم</p>
     </div>
@@ -886,7 +843,7 @@
 
   <div class="model-card">
     <div class="card-content">  
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-scale-balanced"></i></div>
       <h3>موازنة</h3>
       <p>نموذج الموازنة في نهاية الاستلام</p>
     </div>
@@ -914,38 +871,23 @@
     </div>
   </div>
 
+    </div>
 </div>
 
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-            <div class="section-header highlight-style">
-  <h2><i class="fas fa-pencil-alt"></i> إنشاء خطابات العرض</h2>
+<div class="section-header highlight-style">
+  <h2><i class="fas fa-file-signature"></i> إنشاء خطابات العرض</h2>
 </div>
 
-            <div class="content-section" id="content-offer-letter">
-                
-               <div class="button-grid">
+<div class="content-section" id="content-offer-letter">
+    <div class="button-grid">
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-signature"></i></div>
       <h3>خطاب عرض باسم مسافر</h3>
       <p>انشاء خطاب عرض ويحتوي على اسم المسافر وغيره</p>
     </div>
     <div class="card-actions">
-      <!-- عرض PDF -->
       <a
         href="dic/نــماذج  اليومية/نموذج جاهز خطاب_2.pdf"
         class="btn-icon pdf-icon"
@@ -953,7 +895,6 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <!-- تعديل Word -->
       <a 
   href="index.html" 
   class="btn-icon word-icon" 
@@ -961,8 +902,6 @@
   title="تعديل Word"
   onclick="localStorage.setItem('wordLinkChoice', 'خطاب-باسم')">
 </a>
-
-      <!-- طباعة -->
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -975,7 +914,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-lines"></i></div>
       <h3>خطاب عرض بدون اسم</h3>
       <p>خطاب عرض لا يحتوي على جدول بالاسم</p>
     </div>
@@ -1007,12 +946,11 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-reply-all"></i></div>
       <h3>خطاب إشارة إلى</h3>
       <p>خطاب تشير فيه إلى خطاب معين</p>
     </div>
     <div class="card-actions">
-      <!-- تعديل Word فقط -->
       <a
         href="dic/نــماذج  اليومية/خطاب اشارة.docm"
         class="btn-icon word-icon"
@@ -1024,7 +962,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-tag"></i></div>
       <h3>خطاب عرض بخصوص فرد</h3>
       <p>خطاب بخصوص فرد معين</p>
     </div>
@@ -1041,9 +979,8 @@
   </div>
 <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
-              <span class="badge-new">جديد</span>
-
+      <span class="badge-new">جديد</span>
+      <div class="model-icon"><i class="fa-solid fa-user-tie"></i></div>
       <h3>خطاب لمدير ادارة المناوبات</h3>
       <p>خطاب لرد على خطاب معين</p>
     </div>
@@ -1059,34 +996,23 @@
     </div>
   </div>
   
-
-</div>
-            </div>
-            
-
-
-
-
-
-
-
-
-
-
-  <div class="section-header highlight-style">
-    <h2><i class="fas fa-users"></i> نماذج الأفراد</h2>
     </div>
-    <div class="content-section" id="content-individuals">
+</div>
+
+<div class="section-header highlight-style">
+    <h2><i class="fas fa-users"></i> نماذج الأفراد</h2>
+</div>
+
+<div class="content-section" id="content-individuals">
     <div class="button-grid">
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-business-time"></i></div>
       <h3>تطبيق</h3>
       <p>نموذج لتطبيق ساعات إضافية</p>
     </div>
     <div class="card-actions">
-      <!-- عرض PDF -->
       <a
         href="dic/نماذج الافراد/تطبيق.pdf"
         class="btn-icon pdf-icon"
@@ -1094,16 +1020,13 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <!-- تعديل Word -->
-        <a 
+      <a 
         href="index.html" 
         class="btn-icon word-icon" 
         target="_top" 
         title="تعديل Word"
         onclick="localStorage.setItem('wordLinkChoice', 'تطبيق')">
       </a>
-
-      <!-- طباعة -->
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -1116,7 +1039,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-pen-to-square"></i></div>
       <h3>توقيع التعاميم</h3>
       <p>أخذ تواقيع العموم على التعاميم</p>
     </div>
@@ -1146,7 +1069,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-slash"></i></div>
       <h3>إفادة غياب للأفراد</h3>
       <p>إفادة غياب أفراد</p>
     </div>
@@ -1170,7 +1093,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-slash"></i></div>
       <h3>إفادة غياب بدون عذر</h3>
       <p>إفادة غياب أفراد</p>
     </div>
@@ -1194,7 +1117,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-medical"></i></div>
       <h3>إفادة غياب بعذر للأفراد</h3>
       <p>إفادة غياب بعذر</p>
     </div>
@@ -1218,7 +1141,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-stopwatch"></i></div>
       <h3>إفادة تأخير</h3>
       <p>إفادة تأخير عن الحضور</p>
     </div>
@@ -1248,7 +1171,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-person-walking-arrow-right"></i></div>
       <h3>استئذان</h3>
       <p>نموذج لرفع استئذان للإدارة</p>
     </div>
@@ -1282,8 +1205,7 @@
   <div class="model-card">
     <div class="card-content">
               <span class="badge-new">جديد</span>
-
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-people-arrows"></i></div>
       <h3>نقل صلاحيات</h3>
       <p>نقل صلاحيات من فرد إلى فرد آخر</p>
     </div>
@@ -1303,17 +1225,13 @@
   title="تعديل Word"
   onclick="localStorage.setItem('wordLinkChoice', 'صلاحيات')">
 </a>
-
-
     </div>
   </div>
 
-  
-
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
     <span class="badge-new">تم دمج المحضر حسب التوجيهات</span>
+      <div class="model-icon"><i class="fa-solid fa-users-slash"></i></div>
       <h3>غياب أفراد/مجندات</h3>
       <p>محضر غياب للأفراد/مجندات</p>
     </div>
@@ -1344,7 +1262,7 @@
 
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-medal"></i></div>
       <h3>خطاب تميز</h3>
       <p>خطاب لمدير الإدارة لتميز موظف</p>
     </div>
@@ -1372,27 +1290,22 @@
     </div>
   </div>
 
+    </div>
 </div>
-</div>
-
-
-
-
-
-
-
 
 <div class="section-header highlight-style">
   <h2><i class="fas fa-edit"></i> خطابات جاهزة للتعديل</h2>
 </div>
-            <div class="content-section" id="content-ready-letters">
-                
-                <div class="button-grid">
 
-  <!-- تخلف على الرحلة -->
+<div class="content-section" id="content-ready-letters">
+    <div class="button-grid">
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-suitcase-rolling"></i>
+          <i class="fa-solid fa-xmark badge-icon badge-red"></i>
+      </div>
       <h3>تخلف على الرحلة</h3>
       <p>راكب تخلف عن رحلة معينة</p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -1423,10 +1336,10 @@
       </a>
     </div>
   </div>
-  <!-- اشارة الى خطاب تخلف راكب -->
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-route"></i></div>
       <h3>تعقب مغادرة</h3>
       <p>راكب تم تعديل رحلته الى رحلة اخرى</p>
     </div>
@@ -1454,10 +1367,10 @@
       </a>
     </div>
   </div>
-  <!-- راكب لم يسدد خروجه داخل الطائرة -->
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-plane"></i></div>
       <h3>راكب لم يسدد خروجه داخل الطائرة</h3>
       <p>راكب لم يسدد خروجه وبرفقة عائلته طفل</p>
     </div>
@@ -1471,10 +1384,12 @@
     </div>
   </div>
 
-  <!-- فقدان وثيقة السفر ( زائر) -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-passport"></i>
+          <i class="fa-solid fa-question badge-icon badge-gold"></i>
+      </div>
       <h3>فقدان وثيقة السفر ( زائر)</h3>
       <p>راكب فقد جواز سفره داخل المملكة ولديه بلاغ شرطة</p>
     </div>
@@ -1502,14 +1417,9 @@
     </div>
   </div>
 
-  
-
-
-
-  <!-- عطل في السيتا -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-server"></i></div>
       <h3>عطل في السيتا</h3>
       <p>عطل في نظام تسجيل المسافرين</p>
     </div>
@@ -1523,10 +1433,9 @@
     </div>
   </div>
 
-  <!-- عطل في النظام -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-server"></i></div>
       <h3>عطل في النظام</h3>
       <p>عطل في نظام المسافرين</p>
     </div>
@@ -1554,10 +1463,9 @@
     </div>
   </div>
 
-  <!-- تأشيرات لمكتب المشاريع -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-building-user"></i></div>
       <h3>تأشيرات لمكتب المشاريع</h3>
       <p>تاشيرات منتهية خاصة في مكتب المشاريع</p>
     </div>
@@ -1586,10 +1494,9 @@
     </div>
   </div>
 
-  <!-- إلغاء رحلة خطوط -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-plane-slash"></i></div>
       <h3>إلغاء رحلة خطوط</h3>
       <p>الغاء رحلة مجدولة</p>
     </div>
@@ -1603,10 +1510,9 @@
     </div>
   </div>
 
-  <!-- إلغاء رحلة خطوط وتبقى ركاب -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-plane-slash"></i></div>
       <h3>إلغاء رحلة خطوط وتبقى ركاب</h3>
       <p>الغاء رحلة مجدولة</p>
     </div>
@@ -1620,10 +1526,9 @@
     </div>
   </div>
 
-  <!-- اختلاف بالجنسية -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-earth-americas"></i></div>
       <h3>اختلاف بالجنسية</h3>
       <p>راكب لديه اختلاف بالجنسية</p>
     </div>
@@ -1657,10 +1562,12 @@
     </div>
   </div>
 
-  <!-- عدم قبول البصمة -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-fingerprint"></i>
+          <i class="fa-solid fa-xmark badge-icon badge-red"></i>
+      </div>
       <h3>عدم قبول البصمة</h3>
       <p>راكب لم يتم التعرف على بصمته</p>
     </div>
@@ -1678,7 +1585,6 @@
        target="_top" 
        title="تعديل Word"
       onclick="localStorage.setItem('wordLinkChoice', 'عدم-قبول-بصمات')">
-        
       </a>
       <a
         href="javascript:void(0);"
@@ -1689,32 +1595,31 @@
       </a>
     </div>
   </div>
-  <!-- عدم قبول البصمة -->
+  
   <div class="model-card">
     <div class="card-content">
         <span class="badge-new">جديد</span>
-
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-fingerprint"></i>
+          <i class="fa-solid fa-paperclip badge-icon badge-gold"></i>
+      </div>
       <h3>ارتباط بصمات</h3>
       <p>راكب لديه ربط سجل مع سجل اخر</p>
     </div>
     <div class="card-actions">
-      
        <a
        href="index.html" 
       class="btn-icon word-icon" 
        target="_top" 
        title="تعديل Word"
       onclick="localStorage.setItem('wordLinkChoice', 'ارتباط-بصمات')">
-        
       </a>
-      
     </div>
   </div>
-  <!-- تعهد لحالة راكب خارج المملكة -->
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-contract"></i></div>
       <h3>تعهد لحالة راكب خارج المملكة</h3>
       <p>حالة المسافر تظهر انه خارج المملكة</p>
     </div>
@@ -1736,10 +1641,12 @@
     </div>
   </div>
 
-  <!-- اختلاف الخصائص الحيوية -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-eye"></i>
+          <i class="fa-solid fa-xmark badge-icon badge-red"></i>
+      </div>
       <h3>اختلاف الخصائص الحيوية</h3>
       <p>مسافر لديه اختلاف في الخصائص الحيوية</p>
     </div>
@@ -1767,10 +1674,9 @@
     </div>
   </div>
 
-  <!-- عدم تسديد خروج راكب -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-xmark"></i></div>
       <h3>عدم تسديد خروج راكب</h3>
       <p>راكب تم إنزاله من الطائرة</p>
     </div>
@@ -1798,27 +1704,19 @@
     </div>
   </div>
 
+    </div>
 </div>
-            </div>
-
-            
-
-
-
-
-
 
 <div class="section-header highlight-style">
   <h2><i class="fas fa-user-shield"></i> نماذج الممنوعين</h2>
 </div>
-            <div class="content-section" id="content-banned-forms">
-                
-               <div class="button-grid">
 
-  <!-- ترقب عند المغادرة -->
+<div class="content-section" id="content-banned-forms">
+    <div class="button-grid">
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-bell"></i></div>
       <h3>ترقب عند المغادرة</h3>
       <p>خطاب ترقب عند المغادرة والقدوم</p>
        <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -1840,7 +1738,6 @@
   title="تعديل Word"
   onclick="localStorage.setItem('wordLinkChoice', 'اشعار')">
 </a>
-      
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -1851,10 +1748,9 @@
     </div>
   </div>
 
-  <!-- تبليغ مراجعة -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-bell"></i></div>
       <h3>تبليغ مراجعة</h3>
       <p>مسافر يبلغ بالمراجعة</p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -1869,7 +1765,6 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-     
         <a 
           href="index.html" 
           class="btn-icon word-icon" 
@@ -1877,7 +1772,6 @@
           title="تعديل Word"
           onclick="localStorage.setItem('wordLinkChoice', 'تبليغ-مراجعة')">
         </a>
-
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -1888,10 +1782,9 @@
     </div>
   </div>
 
-  <!-- ايقاف خدمات -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-lock"></i></div>
       <h3>ايقاف خدمات</h3>
       <p>ايقاف خدمات لراكب</p>
     </div>
@@ -1919,10 +1812,12 @@
     </div>
   </div>
 
-  <!-- منع سفر بالجواز -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-passport"></i>
+          <i class="fa-solid fa-xmark badge-icon badge-red"></i>
+      </div>
       <h3>عقوبة في الجواز السعودي</h3>
       <p>مسافر لدية منع سفر على الجواز</p>
     </div>
@@ -1936,10 +1831,9 @@
     </div>
   </div>
 
-  <!-- منع سفر مباحث -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-xmark"></i></div>
       <h3>منع سفر اشعار </h3>
       <p>منع سفر لجهة معينه اشعار</p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -1961,7 +1855,6 @@
   title="تعديل Word"
   onclick="localStorage.setItem('wordLinkChoice', 'اشعار-منع')">
 </a>
-     
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -1972,10 +1865,9 @@
     </div>
   </div>
 
-  <!-- منع سفر -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-xmark"></i></div>
       <h3>منع سفر</h3>
       <p>منع سفر الرفع لمدير الادارة</p>
         <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -1997,9 +1889,6 @@
       title="تعديل Word"
       onclick="localStorage.setItem('wordLinkChoice', 'منع-سفر')">
         </a>
-
-
-     
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -2010,10 +1899,9 @@
     </div>
   </div>
 
-  <!-- يقبض عليه -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-handcuffs"></i></div>
       <h3>يقبض عليه</h3>
       <p>مسافر لدية ملاحظة قبض علية</p>
         <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -2035,7 +1923,6 @@
   title="تعديل Word"
   onclick="localStorage.setItem('wordLinkChoice', 'قبض')">
 </a>
-    
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -2046,10 +1933,12 @@
     </div>
   </div>
 
-  <!-- محضر تفتيش -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-box-open"></i>
+          <i class="fa-solid fa-magnifying-glass badge-icon badge-gold"></i>
+      </div>
       <h3>محضر تفتيش</h3>
       <p>محضر تفتيش جمارك</p>
     </div>
@@ -2077,10 +1966,9 @@
     </div>
   </div>
 
-  <!-- إقرار مراجعة -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-file-signature"></i></div>
       <h3>إقرار مراجعة</h3>
       <p>لتوقيع المسافر لمراجعة الجهة الطالبة</p>
     </div>
@@ -2106,10 +1994,9 @@
     </div>
   </div>
 
-  <!-- خطاب عرض -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-scale-balanced"></i></div>
       <h3>خطاب عرض</h3>
       <p>خطاب عرض لمدير الادارة</p>
     </div>
@@ -2135,29 +2022,26 @@
     </div>
   </div>
 
+    </div>
 </div>
-
-            </div>
-
-            
-
 
 <div class="section-header highlight-style">
-  <h2><i class="far fa-user"></i> نماذج سعوديين</h2>
+  <h2><i class="fa-solid fa-id-card"></i> نماذج سعوديين</h2>
 </div>
-            <div class="content-section" id="content-saudi-forms">
-                
-                <div class="button-grid">
 
-  <!-- تعهد انتهى جواز السفر -->
+<div class="content-section" id="content-saudi-forms">
+    <div class="button-grid">
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-passport"></i>
+          <i class="fa-solid fa-clock badge-icon badge-red"></i>
+      </div>
       <h3>تعهد انتهى جواز السفر</h3>
       <p>راكب لديه جواز أقل من المدة المسموحة</p>
     </div>
     <div class="card-actions">
-      <!-- عرض PDF -->
       <a
         href="dic/السعودين/تعهد.pdf"
         class="btn-icon pdf-icon"
@@ -2165,14 +2049,12 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <!-- تعديل Word -->
       <a
         href="dic/السعودين/تعهد .docx"
         class="btn-icon word-icon"
         target="_top"
         title="تعديل Word">
       </a>
-      <!-- طباعة -->
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -2182,20 +2064,19 @@
       </a>
     </div>
   </div>
-  <!-- مواطن مغادر -->
   <div class="model-card">
     <div class="card-content">
-
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-id-card"></i>
+          <i class="fa-solid fa-plane badge-icon badge-green"></i>
+      </div>
       <h3>مواطن مغادر </h3>
       <p>دول ممنوعه + اقل من المدة جواز+ عسكري </p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
   🔗 المرفقات المطلوبة:نسخة من جواز السفر 
       </p>
-      
     </div>
     <div class="card-actions">
-      <!-- عرض PDF -->
       <a
         href="dic/السعودين/مواطن مغادر.pdf"
         class="btn-icon pdf-icon"
@@ -2203,16 +2084,13 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <!-- تعديل Word -->
       <a
        href="index.html" 
     class="btn-icon word-icon" 
     target="_top" 
     title="تعديل Word"
     onclick="localStorage.setItem('wordLinkChoice', 'مغادرة-مواطن')">
-        
       </a>
-      <!-- طباعة -->
       <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
@@ -2222,86 +2100,21 @@
       </a>
     </div>
   </div>
-  <!-- عسكري شريط اصفر -->
-  <div class="model-card">
-    <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
-      <h3>الشريط الاصفر الخاص بالعسكرين </h3>
-      <p>راكب يظهر له الشريط الخاص بالعسكرين  </p>
-             <p style="font-size: 10px; color: green; margin-top: 5px;">
-  🔗 المرفقات المطلوبة: 
-      </p>
-      
-    </div>
-    <div class="card-actions">
-      
-      <!-- تعديل Word -->
-      <a
-        href="dic/السعودين/مواطن ظهور شريط اصفر.docm"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
-      </a>
-      
-    </div>
-  </div>
-  <!-- الجواز غير نشط -->
-  <div class="model-card">
-    <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
-      <h3>الجواز غير نشط</h3>
-      <p>الجواز غير نشط</p>
-    </div>
-    <div class="card-actions">
-      <!-- عرض PDF -->
-      <a
-        href="dic/السعودين/سعودي الجواز غير نشط.docx"
-        class="btn-icon pdf-icon"
-        target="_blank"
-        title="عرض PDF"
-        onclick="window.open(this.href,'popup','width=800,height=600');return false;">
-      </a>
-      <!-- تعديل Word -->
-      <a
-        href="dic/السعودين/سعودي الجواز غير نشط.docx"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
-      </a>
-      <!-- طباعة -->
-      <a
-        href="javascript:void(0);"
-        class="btn-icon print-icon"
-        title="طباعة"
-        onclick="printFile('dic/السعودين/سعودي الجواز غير نشط.docx');">
-        <i class="fa-solid fa-print"></i>
-      </a>
-    </div>
-  </div>
-
-
-
   
 
- 
-
- 
-
+    </div>
 </div>
-
-            </div>
             
- 
 <div class="section-header highlight-style">
   <h2><i class="fas fa-plane"></i> الخطوط الناقلة</h2>
 </div>
-            <div class="content-section" id="content-carrier-lines">
-               <div class="button-grid">
 
-  <!-- تسليم منفستات -->
+<div class="content-section" id="content-carrier-lines">
+    <div class="button-grid">
+
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-clipboard-list"></i></div>
       <h3>تسليم منفستات</h3>
       <p>نموذج لتوقيع موظف الخطوط على التسليم</p>
     </div>
@@ -2327,10 +2140,12 @@
     </div>
   </div>
 
-  <!-- ملاحظة على المنفستات -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <i class="fa-solid fa-pen badge-icon badge-gold"></i>
+      </div>
       <h3>ملاحظة على المنفستات</h3>
       <p>في حال وجود ملاحظة على منفست الرحلة</p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -2362,10 +2177,9 @@
     </div>
   </div>
 
-  <!-- ترانزيت -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-plane-arrival"></i></div>
       <h3>ترانزيت</h3>
       <p>ركاب الترانزيت المغادرين</p>
     </div>
@@ -2391,10 +2205,9 @@
     </div>
   </div>
 
-  <!-- إلغاء راكب -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon"><i class="fa-solid fa-user-minus"></i></div>
       <h3>إلغاء راكب</h3>
       <p>نموذج إلغاء راكب خاص للخطوط الناقلة</p>
     </div>
@@ -2420,10 +2233,12 @@
     </div>
   </div>
 
-  <!-- مخالفة الخطوط خطاب عرض -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-file-pen"></i>
+          <i class="fa-solid fa-plane badge-icon badge-gold"></i>
+      </div>
       <h3>مخالفة الخطوط خطاب عرض</h3>
       <p>خطاب عرض إلى مدير الإدارة مخالفة</p>
              <p style="font-size: 10px; color: green; margin-top: 5px;">
@@ -2455,10 +2270,12 @@
     </div>
   </div>
 
-  <!-- تسجيل رحلة يدوي -->
   <div class="model-card">
     <div class="card-content">
-      <img src="img/icon-g.png" class="model-icon" alt="">
+      <div class="model-icon">
+          <i class="fa-solid fa-file-pen"></i>
+          <i class="fa-solid fa-plane badge-icon badge-gold"></i>
+      </div>
       <h3>تسجيل رحلة يدوي</h3>
       <p>خطاب عرض تسجيل رحلة يدوي مخالفة</p>
     </div>
@@ -2486,20 +2303,14 @@
     </div>
   </div>
 
+    </div>
 </div>
-
-            </div>
             
-            
-
             <div class="footer">
                 <p>برمجة / <a href="#">وكيل رقيب / سعود الحجي -جوازات مطار الملك خالد </a></p>
             </div>
         </div>
     </div>
-
-   
-   
 
 </body>
  <script src="script.js"></script>

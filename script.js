@@ -16,107 +16,79 @@ async function sha256Hex(text) {
     }
   });
 // ======================== الوضع الداكن (Theme Toggle - Time Based) ===========================
-(function () {
-  const STORAGE_KEY = "uiTheme"; // نخزن فقط "dark" (ليلي)
-  const DARK_CLASS = "theme-dark";
-
-  // نافذة الليل: من 18:00 إلى 05:00
-  function isNight(now = new Date()) {
-    const h = now.getHours();
-    return h >= 18 || h < 5;
-  }
-
-  function updateToggleButton() {
+// ======================== الوضع الداكن الذكي (يعود للنهاري تلقائياً) ===========================
+document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("theme-toggle");
     if (!btn) return;
 
-    const isDark = document.body.classList.contains(DARK_CLASS);
-    btn.setAttribute("aria-pressed", String(isDark));
+    const DARK_CLASS = "theme-dark";
+    const OVERRIDE_KEY = "theme_manual_choice"; 
+    const PHASE_KEY = "theme_time_phase"; // لتسجيل هل نحن في ليل أم نهار
 
-    btn.innerHTML = isDark
-      ? '<i class="fas fa-sun"></i><span class="theme-toggle-text">الوضع الفاتح</span>'
-      : '<i class="fas fa-moon"></i><span class="theme-toggle-text">الوضع الداكن</span>';
-  }
-
-  // تطبيق الثيم مع خيار الحفظ أو عدمه
-  function setTheme(mode, { persist = false } = {}) {
-    const isDark = mode === "dark";
-    document.body.classList.toggle(DARK_CLASS, isDark);
-
-    if (persist && isDark) {
-      localStorage.setItem(STORAGE_KEY, "dark");
-    } else {
-      // أي وضع غير "داكن محفوظ" نحذف التخزين
-      localStorage.removeItem(STORAGE_KEY);
-    }
-
-    updateToggleButton();
-  }
-
-  // يرجّع للوضع الفاتح عند 05:00 بالضبط
-  function scheduleAutoReturnToLight() {
-    // لا نحتاج مؤقت لو ما فيه داكن
-    if (!document.body.classList.contains(DARK_CLASS)) return;
-
-    const now = new Date();
-    const nextFiveAM = new Date(now);
-
-    // إذا الآن قبل 05:00 → نفس اليوم 05:00، وإذا بعد/يساوي 05:00 → بكرة 05:00
-    if (now.getHours() < 5) {
-      nextFiveAM.setHours(5, 0, 0, 0);
-    } else {
-      nextFiveAM.setDate(nextFiveAM.getDate() + 1);
-      nextFiveAM.setHours(5, 0, 0, 0);
-    }
-
-    const ms = nextFiveAM.getTime() - now.getTime();
-    if (ms <= 0) return;
-
-    setTimeout(() => {
-      // عند 05:00 نرجع فاتح ونحذف التخزين
-      setTheme("light", { persist: false });
-    }, ms);
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const now = new Date();
-
-    // ✅ على التحميل: الداكن فقط إذا كان مخزن + نحن داخل وقت الليل
-    if (saved === "dark" && isNight(now)) {
-      setTheme("dark", { persist: true });
-      scheduleAutoReturnToLight();
-    } else {
-      // خارج وقت الليل أو لا يوجد تخزين → فاتح + امسح أي تخزين قديم
-      setTheme("light", { persist: false });
-    }
-
-    const btn = document.getElementById("theme-toggle");
-    if (!btn) return;
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      const currentlyDark = document.body.classList.contains(DARK_CLASS);
-      const nowClick = new Date();
-
-      if (!currentlyDark) {
-        // طلب تفعيل الداكن
-        if (isNight(nowClick)) {
-          // ✅ داخل 18:00-05:00: فعّل + احفظ
-          setTheme("dark", { persist: true });
-          scheduleAutoReturnToLight();
+    // دالة لتطبيق الألوان وتغيير شكل الزر
+    function applyTheme(makeDark) {
+        if (makeDark) {
+            document.body.classList.add(DARK_CLASS);
+            btn.innerHTML = '<i class="fas fa-sun"></i><span class="theme-toggle-text">الوضع الفاتح</span>';
         } else {
-          // خارج الوقت: فعّل بدون حفظ
-          setTheme("dark", { persist: false });
+            document.body.classList.remove(DARK_CLASS);
+            btn.innerHTML = '<i class="fas fa-moon"></i><span class="theme-toggle-text">الوضع الداكن</span>';
         }
-      } else {
-        // رجوع للوضع الفاتح (دائمًا بدون حفظ)
-        setTheme("light", { persist: false });
-      }
+    }
+
+    // دالة فحص الوقت وتطبيق الوضع
+    function checkAndApplyTime() {
+        const hour = new Date().getHours();
+        
+        // تحديد هل الوقت الحالي ليل أم نهار
+        const isNight = (hour >= 19 || hour < 6);
+        const currentPhase = isNight ? "night" : "day";
+
+        // جلب الفترة الزمنية المسجلة سابقاً
+        const savedPhase = localStorage.getItem(PHASE_KEY);
+
+        // إذا تغيرت الفترة (مثلاً دخلنا الساعة 6 صباحاً أو 7 مساءً)
+        if (savedPhase !== null && savedPhase !== currentPhase) {
+            // نمسح الاختيار اليدوي لكي يستعيد النظام السيطرة التلقائية
+            localStorage.removeItem(OVERRIDE_KEY);
+            localStorage.setItem(PHASE_KEY, currentPhase);
+        } else if (savedPhase === null) {
+            localStorage.setItem(PHASE_KEY, currentPhase);
+        }
+
+        // تطبيق الوضع بناءً على الاختيار اليدوي (إن وُجد) أو الوقت الفعلي
+        const userChoice = localStorage.getItem(OVERRIDE_KEY);
+        if (userChoice !== null) {
+            applyTheme(userChoice === "dark");
+        } else {
+            applyTheme(isNight);
+        }
+    }
+
+    // 1. تشغيل الفحص فور فتح الصفحة
+    checkAndApplyTime();
+
+    // 2. فحص الوقت كل دقيقة (لكي يتحول تلقائياً إذا تركت الصفحة مفتوحة وجاءت الساعة 6ص أو 7م)
+    setInterval(checkAndApplyTime, 60000);
+
+    // 3. تشغيل الزر عند النقر اليدوي
+    btn.addEventListener("click", (e) => {
+        e.preventDefault(); 
+        
+        const isCurrentlyDark = document.body.classList.contains(DARK_CLASS);
+        const newState = !isCurrentlyDark; // عكس الحالة الحالية
+        
+        applyTheme(newState);
+        
+        // حفظ اختيارك اليدوي + حفظ الفترة الحالية
+        localStorage.setItem(OVERRIDE_KEY, newState ? "dark" : "light");
+        
+        const hour = new Date().getHours();
+        const currentPhase = (hour >= 19 || hour < 6) ? "night" : "day";
+        localStorage.setItem(PHASE_KEY, currentPhase);
     });
-  });
-})();
+});
+// ===================================================================================
 
 
 async function checkPassword() {

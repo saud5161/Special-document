@@ -4113,3 +4113,172 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+// =========================================================================
+// ✅ التحقق من فتح نموذج "استلام-اليوم" قبل وقت أي شفت بـ (1 إلى 4 ساعات)
+// =========================================================================
+function checkShiftTimeAlert() {
+  // 1. التحقق من وجود الحقول في الصفحة لضمان أننا في المكان الصحيح
+  const fromEl = document.getElementById('ReceiveTimeFrom');
+  const toEl = document.getElementById('ReceiveTimeTo');
+  const dateEl = document.getElementById('custom-hijri-date');
+  const dayEl = document.getElementById('custom-weekday');
+
+  // إذا كانت الحقول غير موجودة أو مخفية، نوقف العمل
+  if (!fromEl || fromEl.offsetParent === null) {
+    return;
+  }
+
+  // 2. التحقق من أن النموذج المختار هو "استلام-اليوم"
+  let choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
+  let isEstlam = (choice === "استلام-اليوم");
+
+  // دعم إضافي للتحقق
+  const shiftCard = document.getElementById('card-shift-balance');
+  if (shiftCard && shiftCard.style.display !== 'none') {
+      isEstlam = true;
+  }
+
+  const alertId = 'out-of-shift-alert';
+  let alertEl = document.getElementById(alertId);
+
+  const removeShiftHighlights = () => {
+    [fromEl, toEl, dateEl, dayEl].forEach(el => el && el.classList.remove('out-of-shift-highlight'));
+  };
+
+  if (!isEstlam) {
+    if (alertEl) alertEl.style.display = 'none';
+    removeShiftHighlights();
+    return;
+  }
+
+  // 3. قراءة الوقت الحالي من الجهاز مباشرة (تجاهل التعبئة التلقائية للخانة)
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+
+  let showWarning = false;
+
+  // فحص النوافذ الزمنية (من 1 إلى 4 ساعات قبل الشفتات الثابتة)
+  // شفت 6 صباحاً (التنبيه من 2:00 ص إلى 5:00 ص)
+  if (nowMins >= 120 && nowMins <= 300) { 
+    showWarning = true;
+  } 
+  // شفت 2 مساءً (التنبيه من 10:00 ص إلى 1:00 م)
+  else if (nowMins >= 600 && nowMins <= 780) { 
+    showWarning = true;
+  } 
+  // شفت 10 مساءً (التنبيه من 6:00 م إلى 9:00 م)
+  else if (nowMins >= 1080 && nowMins <= 1260) { 
+    showWarning = true;
+  }
+
+  // 4. إنشاء التنبيه وتطبيقه
+  if (!alertEl) {
+    alertEl = document.createElement('div');
+    alertEl.id = alertId;
+    alertEl.className = 'inline-alert';
+    alertEl.style.cssText = 'background:#fff0f0; border-color:#ffcaca; color:#d32f2f; margin-bottom:12px; font-size:14px; font-weight:bold; width: 100%; grid-column: 1 / -1;';
+    alertEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#d32f2f !important; margin-inline-end: 8px;"></i> يرجى التحقق من التاريخ واليوم ووقت الاستلام بسبب فتح الملف في غير وقت الشفت';
+    
+    const receiptBody = document.querySelector('#card-receipt .card__body');
+    if (receiptBody) receiptBody.insertBefore(alertEl, receiptBody.firstChild);
+  }
+
+  if (showWarning) {
+    alertEl.style.display = 'flex';
+    [fromEl, toEl, dateEl, dayEl].forEach(el => el && el.classList.add('out-of-shift-highlight'));
+  } else {
+    alertEl.style.display = 'none';
+    removeShiftHighlights();
+  }
+}
+
+// 5. تفعيل الفحص التلقائي السريع
+document.addEventListener('DOMContentLoaded', () => {
+  // فحص فوري وسريع ليظهر التنبيه بمجرد فتح الصفحة
+  checkShiftTimeAlert();
+  setTimeout(checkShiftTimeAlert, 500); 
+  
+  // تكرار الفحص كل ثانيتين لضمان استجابة النظام دون تأخير
+  setInterval(checkShiftTimeAlert, 2000); 
+});
+
+// =========================================================================
+// ✅ الوضع الليلي الذكي (يعود للنهاري تلقائياً) - مطابق لصفحة المغادرة
+// =========================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('dark-mode-toggle');
+  if (!btn) return;
+
+  const body = document.body;
+  const icon = btn.querySelector('i');
+  const textSpan = btn.querySelector('span'); // للتحكم بالنص
+
+  const DARK_CLASS = 'dark-mode'; // الكلاس الخاص بصفحة index
+  const OVERRIDE_KEY = 'index_theme_manual'; 
+  const PHASE_KEY = 'index_theme_phase'; // لتسجيل هل نحن في ليل أم نهار
+
+  // دالة لتطبيق الوضع (ليلي أو نهاري)
+  function applyTheme(isDark) {
+    if (isDark) {
+      body.classList.add(DARK_CLASS);
+      if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+      if (textSpan) textSpan.textContent = 'الوضع النهاري';
+    } else {
+      body.classList.remove(DARK_CLASS);
+      if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+      if (textSpan) textSpan.textContent = 'الوضع الليلي';
+    }
+  }
+
+  // دالة فحص الوقت وتطبيق الوضع
+  function checkAndApplyTime() {
+    const hour = new Date().getHours();
+    
+    // تحديد هل الوقت الحالي ليل أم نهار (من 19 مساءً إلى 5:59 صباحاً)
+    const isNight = (hour >= 19 || hour < 6);
+    const currentPhase = isNight ? "night" : "day";
+
+    // جلب الفترة الزمنية المسجلة سابقاً
+    const savedPhase = localStorage.getItem(PHASE_KEY);
+
+    // إذا تغيرت الفترة (مثلاً دخلنا الساعة 6 صباحاً أو 7 مساءً)
+    if (savedPhase !== null && savedPhase !== currentPhase) {
+        // نمسح الاختيار اليدوي لكي يستعيد النظام السيطرة التلقائية
+        localStorage.removeItem(OVERRIDE_KEY);
+        localStorage.setItem(PHASE_KEY, currentPhase);
+    } else if (savedPhase === null) {
+        localStorage.setItem(PHASE_KEY, currentPhase);
+    }
+
+    // تطبيق الوضع بناءً على الاختيار اليدوي (إن وُجد) أو الوقت الفعلي
+    const userChoice = localStorage.getItem(OVERRIDE_KEY);
+    if (userChoice !== null) {
+        applyTheme(userChoice === "dark");
+    } else {
+        applyTheme(isNight);
+    }
+  }
+
+  // 1. تطبيق الوضع فور فتح الصفحة
+  checkAndApplyTime();
+
+  // 2. فحص الوقت كل دقيقة لتبديل الوضع تلقائياً أو إعادة الضبط
+  setInterval(checkAndApplyTime, 60000);
+
+  // 3. وظيفة الزر عند النقر (تغيير يدوي)
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    const isCurrentlyDark = body.classList.contains(DARK_CLASS);
+    const newState = !isCurrentlyDark; // عكس الحالة الحالية
+    
+    applyTheme(newState);
+    
+    // حفظ التغيير اليدوي + حفظ الفترة الحالية
+    localStorage.setItem(OVERRIDE_KEY, newState ? "dark" : "light");
+    
+    const hour = new Date().getHours();
+    const currentPhase = (hour >= 19 || hour < 6) ? "night" : "day";
+    localStorage.setItem(PHASE_KEY, currentPhase);
+  });
+});

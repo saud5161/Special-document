@@ -36,7 +36,6 @@ body{
   background:transparent!important; box-shadow:none!important; border:none!important;
   display:grid; grid-template-columns:1fr; justify-items:center; padding:0; margin:0;
 }
-.app-topbar__section--left,.app-topbar__section--center{ display:none!important; }
 .app-topbar .brand{
   display:inline-flex; align-items:center; gap:10px;
   padding:10px 16px; border:1px solid var(--bd); border-radius:18px;
@@ -879,4 +878,441 @@ label {
   color: #9ca3af;
   font-weight: 400;
 }
+/* ==========================================================
+   تظليل الخانات عند فتح استلام-اليوم خارج وقت الشفت 
+========================================================== */
+.out-of-shift-highlight {
+  background-color: #fff0f0 !important;
+  border-color: #ffcaca !important;
+  color: #d32f2f !important;
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1) !important;
+}
+/* ====================== Header (الشريط العلوي الزجاجي) ====================== */
+.page-wrap { max-width: 1200px; margin: 10px auto 0; padding: 0 16px; }
 
+/* تصميم الشريط العلوي الأساسي (نسخة النهار) */
+.app-topbar {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.04) !important;
+  border-radius: 0 0 24px 24px;
+  padding: 12px 24px !important;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* تنسيق التاريخ في المنتصف */
+.app-topbar__section--center span {
+  background: #f8fafc;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* تصميم الأزرار العلوية (الخروج، الطباعة، الوضع الليلي) */
+.icon-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px; /* زوايا شبه دائرية حديثة */
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  background: #ffffff;
+  color: #d4a017; /* اللون الذهبي للمنصة */
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  border-color: #d4a017;
+}
+
+/* زر الخروج باللون الأحمر عند التمرير */
+.icon-btn[href="Departure.html"]:hover {
+  color: #dc2626;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+/* ==========================================================
+   الوضع الليلي الشامل (Dark Mode) - النسخة الاحترافية (V4)
+========================================================== */
+
+/* 1. الخلفية العامة ولون النص الأساسي */
+body.dark-mode {
+  background: #0f172a !important; 
+  color: #f8fafc !important; 
+}
+
+/* 2. البطاقات، اللوحات المنبثقة، والتقويم */
+body.dark-mode .shell,
+body.dark-mode .action-bar__inner,
+body.dark-mode #moatan-compact .mc-grid,
+body.dark-mode #helpBox,
+body.dark-mode .help-overlay__panel,
+body.dark-mode #permit-hijri-calendar {
+  background: #1e293b !important; 
+  border-color: #334155 !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4) !important; 
+}
+
+/* ✅ تصميم الشريط العلوي والتاريخ في الوضع الليلي */
+body.dark-mode .app-topbar {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+body.dark-mode .app-topbar__section--center span {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #fef08a !important; /* لون التاريخ ذهبي فاتح */
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 3. النصوص العامة والعناوين */
+body.dark-mode .form-grid > label,
+body.dark-mode .app-topbar .brand span,
+body.dark-mode .app-topbar .brand i {
+  color: #f8fafc !important;
+  font-size: 14.5px !important; 
+  font-weight: 700 !important;
+}
+
+/* العناوين الجانبية باللون الذهبي */
+body.dark-mode .card__title,
+body.dark-mode .section-title,
+body.dark-mode #helpBox h4,
+body.dark-mode .help-title,
+body.dark-mode .selected-banner span {
+  color: #eab308 !important; /* ذهبي أساسي وبارز */
+  font-size: 18px !important; 
+}
+body.dark-mode .selected-banner strong {
+  color: #fef08a !important; 
+}
+
+/* 4. ✅ حقول الإدخال (تم تغيير لون النص والتلميحات) */
+body.dark-mode .form-grid :where(input, select, textarea),
+body.dark-mode #RecordType,
+body.dark-mode .mc-mini,
+body.dark-mode .mc-wide,
+body.dark-mode input.h-date {
+  background: #0f172a !important; 
+  color: #fef08a !important; /* ✅ نص الإدخال: ذهبي فاتح/رملي (مريح جداً للعين) */
+  border: 1px solid #334155 !important;
+  font-size: 15px !important; 
+  font-weight: 600 !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+body.dark-mode .form-grid :where(input, select, textarea):focus,
+body.dark-mode .mc-mini:focus,
+body.dark-mode .mc-wide:focus {
+  border-color: #fde047 !important; /* توهج الإطار */
+  box-shadow: 0 0 0 3px rgba(253, 224, 71, 0.15) !important; 
+  outline: none !important;
+}
+
+/* ✅ التلميحات (Placeholders) بلون أوضح */
+body.dark-mode .form-grid :where(input, select, textarea)::placeholder,
+body.dark-mode .mc-mini::placeholder,
+body.dark-mode .mc-wide::placeholder {
+  color: #94a3b8 !important; /* رمادي فاتح مرئي بوضوح */
+  font-weight: 500 !important;
+}
+
+/* 5. الاقتراحات */
+body.dark-mode .name-suggest__title {
+  color: #94a3b8 !important;
+  font-size: 13px !important;
+}
+body.dark-mode .name-suggest__btn {
+  color: #f8fafc !important;
+  font-size: 14.5px !important;
+}
+body.dark-mode .name-suggest__btn:hover {
+  background: #334155 !important;
+  color: #fef08a !important; /* لون رملي عند التمرير */
+  border-radius: 6px !important;
+}
+
+/* 6. الأزرار الثانوية */
+body.dark-mode .btn--secondary,
+body.dark-mode #clear-btn,
+body.dark-mode .date-btn,
+body.dark-mode .help-btn,
+body.dark-mode .help-restore,
+body.dark-mode .overlay-close {
+  background: #334155 !important;
+  color: #f8fafc !important;
+  border-color: #475569 !important;
+  font-size: 14px !important; 
+}
+body.dark-mode .btn--secondary:hover,
+body.dark-mode .date-btn:hover,
+body.dark-mode .help-btn:hover {
+  background: #475569 !important;
+  color: #fef08a !important; 
+}
+
+/* 7. ✅ أزرار الشريط العلوي في الوضع الليلي */
+body.dark-mode .icon-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #cbd5e1 !important;
+}
+body.dark-mode .icon-btn:hover {
+  background: #334155 !important;
+  color: #fef08a !important;
+  border-color: #fde047 !important;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4) !important;
+}
+body.dark-mode .icon-btn[href="Departure.html"] {
+  color: #f87171 !important; 
+}
+body.dark-mode .icon-btn[href="Departure.html"]:hover {
+  background: #451a1a !important;
+  color: #fca5a5 !important;
+  border-color: #7f1d1d !important;
+}
+
+/* 8. البنرات والتنبيهات */
+body.dark-mode .selected-banner,
+body.dark-mode .kashf-note,
+body.dark-mode .keep-open-label {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.dark-mode .inline-alert,
+body.dark-mode #shift-change-note,
+body.dark-mode #shift-alert {
+  background: #a14110 !important;
+  border-color: #7f1d1d !important;
+  color: #a5f3fc !important;
+}
+
+body.dark-mode .out-of-shift-highlight {
+  background-color: #1a3245 !important;
+  border-color: #7f1d1d !important;
+  color: #fca5a5 !important;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2) !important;
+}
+
+/* 9. التقويم الهجري */
+body.dark-mode .mini-hijri-calendar__head { 
+  color: #fde047 !important; 
+}
+body.dark-mode .mini-hijri-calendar__item { 
+  background: #1e293b !important; 
+  color: #f8fafc !important; 
+  border-color: #334155 !important; 
+}
+body.dark-mode .mini-hijri-calendar__item:hover { 
+  background: #334155 !important; 
+  color: #fef08a !important; 
+}
+
+/* 10. شعار الخلفية */
+body.dark-mode .page-background-logo {
+  opacity: 0.04 !important; 
+  filter: invert(1) brightness(1.5) !important;
+}
+
+/* 11. الخطوط الفاصلة */
+body.dark-mode .individual-separator {
+  border-bottom: 2px dashed #475569 !important; 
+  margin: 25px 0 !important;
+}
+
+body.dark-mode #moatan-compact .mc-grid::before,
+body.dark-mode #mc-forbidden-line::before,
+body.dark-mode .forbidden::before,
+body.dark-mode [data-section="forbidden"]::before {
+  background: linear-gradient(180deg, #eab308, #ca8a04) !important; 
+}
+
+body.dark-mode #mc-forbidden-line {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+/* بانر اسم الخطاب والتاريخ في الوضع الليلي */
+body.dark-mode .app-topbar__section--center span.today {
+  background: rgba(30, 41, 59, 0.8) !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-mode .selected-banner {
+  background: linear-gradient(135deg, #b4860b, #d4a017) !important;
+  color: #fff !important;
+  border-color: #fde047 !important;
+  box-shadow: 0 4px 20px rgba(212, 160, 23, 0.3) !important;
+}
+body.dark-mode .selected-banner i {
+  color: #fef08a !important;
+}
+body.dark-mode .selected-banner strong {
+  background: rgba(0, 0, 0, 0.3) !important;
+  color: #fff !important;
+}
+
+/* ====================== Header (الشريط العلوي الاحترافي) ====================== */
+.page-wrap { max-width: 1200px; margin: 10px auto 0; padding: 0 16px; }
+
+/* تصميم الشريط العلوي الأساسي (الزجاجي) */
+.app-topbar {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 0 0 24px 24px;
+  padding: 12px 24px !important;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+/* ضبط توسيط العناصر بدقة */
+.app-topbar__section--right { flex: 1; display: flex; justify-content: flex-start; }
+.app-topbar__section--left { flex: 1; display: flex; justify-content: flex-end; gap: 12px; }
+.app-topbar__section--center { 
+  flex: auto; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  gap: 15px; 
+}
+
+/* تنسيق التاريخ */
+.app-topbar__section--center span.today {
+  background: #f1f5f9;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ✅ التصميم الفاخر لاسم الخطاب (النهار) */
+.selected-banner {
+  background: linear-gradient(135deg, #d4a017, #fde047);
+  color: #0f172a;
+  padding: 6px 20px;
+  border-radius: 50px;
+  font-size: 14.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(212, 160, 23, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+}
+.selected-banner i { color: #0f172a; font-size: 16px; }
+.selected-banner strong { 
+  font-weight: 900; 
+  font-size: 15px; 
+  background: rgba(255, 255, 255, 0.4); 
+  padding: 2px 10px; 
+  border-radius: 8px; 
+}
+
+/* تصميم الأزرار العلوية */
+.icon-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+}
+.icon-btn:hover {
+  background: #ffffff;
+  color: #d4a017;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+  border-color: #d4a017;
+}
+.icon-btn[href="Departure.html"]:hover {
+  color: #dc2626;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+/* ==========================================================
+   مربع التعليمات والزر العائم في الأسفل
+========================================================== */
+/* الزر العائم */
+.show-help-floating {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  background: linear-gradient(135deg, #d4a017, #b4860b);
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(212, 160, 23, 0.4);
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+.show-help-floating:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(212, 160, 23, 0.6);
+}
+
+/* صندوق التعليمات */
+.help-box {
+  position: fixed;
+  bottom: 30px;
+  left: 30px;
+  z-index: 10000;
+  width: 320px;
+  /* يمكنك إضافة خلفية وألوان هنا إذا لم تكن موجودة مسبقاً */
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  border: 1px solid #e2e8f0;
+}
