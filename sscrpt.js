@@ -420,7 +420,9 @@ OperatorNumber2: $('OperatorNumber2')?.value || "",
 
 IndividualID1: $('IndividualID1')?.value || "",
 IndividualID2: $('IndividualID2')?.value || "",
-
+//تعديل مرحل 
+ViolatorNumber:   $('ViolatorNumber')?.value    || '', // رقم المخالف
+    WrongFlightNumber:$('WrongFlightNumber')?.value || '', // رقم الرحلة الخطأ
 // أضف هذا السطر داخل return في دالة collect
 AutoTravelReason: $('AutoTravelReason')?.value || ''
   };
@@ -736,6 +738,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/خطوط/ملاحظة على المنفست.docm";
   } else if (choice === "صلاحيات") {
   wordLink.href = "dic/نماذج الافراد/صلاحيات.docm";
+  } else if (choice === "تعديل-مرحل") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/تعديل رحلة مرحل.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -926,7 +930,36 @@ if (choice === "كشف") {
   if (note) note.style.display = "none";
   
 }
+// ===== وضع تعديل-مرحل =====
+if (choice === "تعديل-مرحل") {
+  // 1) إخفاء الآمر المناوب ورتبته
+  const cmdName  = document.getElementById("commander-name");
+  const cmdRank  = document.getElementById("commander-rank");
+  const cmdNameL = document.querySelector("label[for='commander-name']");
+  const cmdRankL = document.querySelector("label[for='commander-rank']");
+  if (cmdName)  cmdName.style.display = "none";
+  if (cmdRank)  cmdRank.style.display = "none";
+  if (cmdNameL) cmdNameL.style.display = "none";
+  if (cmdRankL) cmdRankL.style.display = "none";
 
+  // 2) إخفاء نوع التأشيرة
+  const visaEl  = document.getElementById("VisaType");
+  const visaLbl = document.querySelector("label[for='VisaType']");
+  if (visaEl)  visaEl.style.display = "none";
+  if (visaLbl) visaLbl.style.display = "none";
+
+  // 3) إظهار حقل رقم المخالف
+  const violatorInput = document.getElementById("ViolatorNumber");
+  const violatorLabel = document.getElementById("ViolatorNumberLabel");
+  if (violatorInput) violatorInput.style.display = "block";
+  if (violatorLabel) violatorLabel.style.display = "block";
+
+  // 4) إظهار حقل رقم الرحلة الخطأ
+  const wrongFlightInput = document.getElementById("WrongFlightNumber");
+  const wrongFlightLabel = document.getElementById("WrongFlightNumberLabel");
+  if (wrongFlightInput) wrongFlightInput.style.display = "block";
+  if (wrongFlightLabel) wrongFlightLabel.style.display = "block";
+}
 
   if (choice === "خطاب-بدون") {
     // 1) إخفاء رقم الهوية

@@ -568,7 +568,10 @@
             <input id="id" placeholder="مثال: 2000000000" />
             <label for="PassportNumber"><i class="fas fa-passport"></i> رقم الجواز</label>
             <input id="PassportNumber" placeholder="ادخل رقم الجواز " />
-             
+             <label for="ViolatorNumber" id="ViolatorNumberLabel" style="display:none">
+  <i class="fas fa-user-slash"></i> رقم المخالف
+</label>
+<input id="ViolatorNumber" placeholder="9000000" style="display:none" />
             <label for="PassportIssueDate" style="display:none"><i class="fas fa-calendar-alt"></i> تاريخ الإصدار</label>
 <input id="PassportIssueDate" placeholder="YYYY/MM/DD" style="display:none" />
 
@@ -687,7 +690,10 @@
                         <label for="FlightNumber"><i class="fas fa-hashtag"></i> رقم الرحلة</label>
                         <input id="FlightNumber" list="flightNumbers" placeholder="مثال: SV225" />
             <datalist id="flightNumbers"></datalist>
-
+                        <label for="WrongFlightNumber" id="WrongFlightNumberLabel" style="display:none">
+  <i class="fas fa-plane-slash"></i> رقم الرحلة الخطأ
+</label>
+<input id="WrongFlightNumber" placeholder="مثال: SV999" style="display:none" />
                         <!-- وجهة السفر -->
             <label for="TravelDestination"><i class="fas fa-map-marker-alt"></i> وجهة السفر</label>
             <input id="TravelDestination" list="destinations" placeholder="مثال: دبي" />
@@ -695,6 +701,7 @@
             <div id="travel-route-row" class="form-row" hidden>
             <label for="TravelRoute"><i class="fas fa-route"></i> خط سير الرحلة</label>
             <input id="TravelRoute" placeholder="مثال: الرياض → دبي → لندن">
+            
           </div>
 
           </div>
