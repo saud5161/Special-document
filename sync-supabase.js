@@ -1,27 +1,33 @@
 const fs = require('fs');
 const path = require('path');
+const { app } = require('electron'); // استدعاء أداة التطبيق من إلكترون
 
 const SUPABASE_URL = "https://dkrtiuelioyshbjoocqm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_ts5SGrWhODsG6EH5dUt9Wg_KUvsf-CF";
+
+// تحديد المسارات الآمنة القابلة للكتابة بعد التثبيت
+const userDataPath = app.getPath('userData');
+const officersPath = path.join(userDataPath, 'officers.json');
+const namePath = path.join(userDataPath, 'name.json');
 
 async function syncAllWithSupabase() {
     try {
         console.log("🔄 جاري مزامنة الضباط والأفراد من Supabase...");
         const headers = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` };
 
-        // 1. مزامنة وتحديث ملف الضباط (officers.json)
+        // 1. مزامنة الضباط
         const officersRes = await fetch(`${SUPABASE_URL}/rest/v1/officers?select=name,rank`, { headers });
         if (officersRes.ok) {
             const officersData = await officersRes.json();
-            fs.writeFileSync(path.join(__dirname, 'officers.json'), JSON.stringify(officersData, null, 2), 'utf8');
-            console.log("✅ تم تحديث officers.json");
+            // الحفظ في المسار الآمن
+            fs.writeFileSync(officersPath, JSON.stringify(officersData, null, 2), 'utf8');
         }
 
-        // 2. مزامنة وتحديث ملف الأفراد (name.json) مع إعادة بناء الهيكلة
+        // 2. مزامنة الأفراد
         const individualsRes = await fetch(`${SUPABASE_URL}/rest/v1/individuals?select=name,rank,national_id,shift,hall`, { headers });
         if (individualsRes.ok) {
             const flatIndividuals = await individualsRes.json();
-            const nestedIndividuals = {}; // الهيكل المطلوب: { "ا": { "1": [ {name, rank, id} ] } }
+            const nestedIndividuals = {};
             
             flatIndividuals.forEach(ind => {
                 const shift = ind.shift || "عام";
@@ -33,12 +39,12 @@ async function syncAllWithSupabase() {
                 nestedIndividuals[shift][hall].push({
                     name: ind.name,
                     rank: ind.rank,
-                    id: ind.national_id || "" // نستخدم id ليطابق كودك الحالي
+                    id: ind.national_id || ""
                 });
             });
 
-            fs.writeFileSync(path.join(__dirname, 'name.json'), JSON.stringify(nestedIndividuals, null, 2), 'utf8');
-            console.log("✅ تم تحديث name.json بنجاح!");
+            // الحفظ في المسار الآمن
+            fs.writeFileSync(namePath, JSON.stringify(nestedIndividuals, null, 2), 'utf8');
         }
     } catch (error) {
         console.error("❌ خطأ أثناء المزامنة:", error.message);

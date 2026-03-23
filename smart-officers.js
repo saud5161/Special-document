@@ -1,5 +1,6 @@
 // ========================================================
 // السكربت الموحد: المزامنة الفورية للضباط والأفراد وتحديث الهوية
+// (تمت إضافة نظام التخزين المحلي لتجاوز حماية الملفات بعد التثبيت)
 // ========================================================
 
 const SUPABASE_URL = "https://dkrtiuelioyshbjoocqm.supabase.co";
@@ -8,14 +9,45 @@ const SUPABASE_KEY = "sb_publishable_ts5SGrWhODsG6EH5dUt9Wg_KUvsf-CF";
 let liveOfficersList = [];
 let liveIndividualsList = [];
 
-// 1. عند فتح الصفحة، نجلب البيانات ونعالج الطابور
+// 1. عند فتح الصفحة، نعطي الأولوية للذاكرة المحلية للعمل بدون إنترنت
 document.addEventListener('DOMContentLoaded', async () => {
-    await fetchLiveOfficers();
-    await fetchLiveIndividuals();
-    processOfflineQueue();
+    loadFromLocalStorage(); // تحميل البيانات المحفوظة محلياً أولاً
+
+    if (navigator.onLine) {
+        await fetchLiveOfficers();
+        await fetchLiveIndividuals();
+        processOfflineQueue();
+    }
 });
 
-// === دوال جلب البيانات ===
+// === تحميل البيانات من ذاكرة المتصفح (تتجاوز مشكلة ملف app.asar المحمي) ===
+function loadFromLocalStorage() {
+    const savedOff = localStorage.getItem('local_officers_db');
+    if (savedOff) {
+        liveOfficersList = JSON.parse(savedOff);
+        updateOfficersUI();
+    }
+    
+    const savedInd = localStorage.getItem('local_individuals_db');
+    if (savedInd) {
+        liveIndividualsList = JSON.parse(savedInd);
+    }
+}
+
+// تحديث قائمة الضباط في الواجهة (Datalist)
+function updateOfficersUI() {
+    const namesDL = document.getElementById('names');
+    if (namesDL) {
+        namesDL.innerHTML = ""; // تفريغ القائمة القديمة
+        liveOfficersList.forEach(o => {
+            const option = document.createElement("option"); 
+            option.value = o.name; 
+            namesDL.appendChild(option);
+        });
+    }
+}
+
+// === دوال جلب البيانات من السحابة ===
 async function fetchLiveOfficers() {
     if (!navigator.onLine) return;
     try {
@@ -24,13 +56,9 @@ async function fetchLiveOfficers() {
         });
         if (res.ok) {
             liveOfficersList = await res.json();
-            const namesDL = document.getElementById('names');
-            if (namesDL) {
-                namesDL.innerHTML = "";
-                liveOfficersList.forEach(o => {
-                    const option = document.createElement("option"); option.value = o.name; namesDL.appendChild(option);
-                });
-            }
+            // تحديث الذاكرة المحلية فوراً
+            localStorage.setItem('local_officers_db', JSON.stringify(liveOfficersList));
+            updateOfficersUI();
         }
     } catch (e) { console.error("فشل جلب الضباط:", e); }
 }
@@ -43,7 +71,8 @@ async function fetchLiveIndividuals() {
         });
         if (res.ok) {
             liveIndividualsList = await res.json();
-            // القائمة المنسدلة للأفراد يتكفل بها كودك الأساسي (name.json)، نحن نحتفظ بالقائمة هنا للفحص المباشر
+            // تحديث الذاكرة المحلية فوراً
+            localStorage.setItem('local_individuals_db', JSON.stringify(liveIndividualsList));
         }
     } catch (e) { console.error("فشل جلب الأفراد:", e); }
 }
@@ -92,13 +121,19 @@ inputGroups.forEach(group => {
             if (!nameVal || !rankVal) return;
 
             if (group.type === 'officer') {
-                // فحص الضباط
+                // فحص وإضافة الضباط
                 if (!liveOfficersList.some(o => o.name === nameVal)) {
                     liveOfficersList.push({ name: nameVal, rank: rankVal });
+                    
+                    // 💡 السحر هنا: حفظ الاسم فوراً في الذاكرة ليعمل البرنامج بدون إنترنت وبعد التثبيت!
+                    localStorage.setItem('local_officers_db', JSON.stringify(liveOfficersList));
+                    updateOfficersUI(); // تحديث الواجهة مباشرة
+                    
                     processInsert('officers', { name: nameVal, rank: rankVal });
+                    console.log(`✨ إضافة ضابط جديد: ${nameVal}`);
                 }
             } else {
-                // فحص الأفراد
+                // فحص وإضافة الأفراد
                 const existing = liveIndividualsList.find(i => i.name === nameVal);
                 const shiftVal = document.getElementById('shift-number')?.value.trim() || 'عام';
                 const hallVal = document.getElementById('hall-number')?.value.trim() || 'عام';
@@ -106,12 +141,16 @@ inputGroups.forEach(group => {
                 if (!existing) {
                     // فرد جديد تماماً
                     liveIndividualsList.push({ name: nameVal, rank: rankVal, national_id: idVal, shift: shiftVal, hall: hallVal });
+                    localStorage.setItem('local_individuals_db', JSON.stringify(liveIndividualsList));
+                    
                     processInsert('individuals', { name: nameVal, rank: rankVal, national_id: idVal, shift: shiftVal, hall: hallVal });
                     console.log(`✨ إضافة فرد جديد: ${nameVal}`);
                 } 
                 else if (idVal && !existing.national_id) {
                     // فرد موجود ولكن تم إدخال هويته للتو (تحديث)
                     existing.national_id = idVal;
+                    localStorage.setItem('local_individuals_db', JSON.stringify(liveIndividualsList));
+                    
                     processUpdateId(nameVal, idVal);
                 }
             }
