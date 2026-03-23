@@ -8,7 +8,76 @@ async function sha256Hex(text) {
   return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
+// ======================== نظام صندوق الاقتراحات (Supabase) ===========================
+const SUPABASE_URL = "https://dkrtiuelioyshbjoocqm.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ts5SGrWhODsG6EH5dUt9Wg_KUvsf-CF";
 
+async function sendFeedbackToSupabase() {
+    const type = document.getElementById("feedback-type").value;
+    const message = document.getElementById("feedback-message").value.trim();
+    const statusMsg = document.getElementById("feedback-status-msg");
+    const submitBtn = document.getElementById("submit-feedback-btn");
+
+    if (!message) {
+        statusMsg.style.display = "block";
+        statusMsg.style.color = "#d32f2f"; // أحمر
+        statusMsg.textContent = "❗ يرجى كتابة التفاصيل قبل الإرسال.";
+        return;
+    }
+
+    // تغيير حالة الزر أثناء الإرسال
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+    statusMsg.style.display = "none";
+
+    try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/feedbacks`, {
+            method: "POST",
+            headers: {
+                "apikey": SUPABASE_KEY,
+                // السطر المهم جداً: يجب تمرير المفتاح في Authorization كـ Bearer
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json",
+                "Prefer": "return=minimal" 
+            },
+            body: JSON.stringify({
+                type: type,
+                message: message
+            })
+        });
+
+        if (response.ok) {
+            statusMsg.style.display = "block";
+            statusMsg.style.color = "#1e5631"; // أخضر
+            statusMsg.innerHTML = "✅ تم الإرسال بنجاح، شكراً لك!";
+            document.getElementById("feedback-message").value = ""; // تفريغ الحقل
+        } else {
+            // جلب الخطأ التفصيلي من السيرفر
+            const errorData = await response.json();
+            console.error("Supabase Error Details:", errorData);
+            throw new Error(errorData.message || "تأكد من إعدادات الـ RLS في Supabase.");
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        statusMsg.style.display = "block";
+        statusMsg.style.color = "#d32f2f";
+        statusMsg.textContent = "❌ حدث خطأ: " + error.message;
+    } finally {
+        // إعادة الزر لحالته الطبيعية
+        submitBtn.disabled = false;
+        submitBtn.textContent = "إرسال الرسالة";
+        
+        // إخفاء الرسالة بعد 6 ثواني
+        setTimeout(() => {
+            statusMsg.style.display = "none";
+        }, 6000);
+    }
+}
+// دالة لفتح وإغلاق صندوق الاقتراحات العائم
+function toggleFeedbackBox() {
+    const box = document.getElementById('feedback-popup-box');
+    box.classList.toggle('show');
+}
   // تحقق من وجود إذن مسبق
   window.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("departureAccess") === "granted") {
