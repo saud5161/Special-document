@@ -740,6 +740,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نماذج الافراد/صلاحيات.docm";
   } else if (choice === "تعديل-مرحل") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تعديل رحلة مرحل.docm";
+  } else if (choice === "خروج-نهائي") {
+  wordLink.href = "dic/نــماذج  اليومية/خروج نهائي.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -763,7 +765,20 @@ if (!keepOpen || !keepOpen.checked) {
 
 
 
+// === إظهار التنبيه الأمني للنماذج المحددة ===
+document.addEventListener("DOMContentLoaded", () => {
+  const choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
+  const securityAlert = document.getElementById("security-alert-msg");
 
+  if (securityAlert) {
+    // إظهار التنبيه فقط إذا كان الاختيار أحد هذه القيم الثلاثة
+    if (choice === "اشعار-منع" || choice === "منع-سفر" || choice === "قبض") {
+      securityAlert.style.display = "flex";
+    } else {
+      securityAlert.style.display = "none";
+    }
+  }
+});
 // اخفاء حقول بشروط 
 // إخفاء حقول وبطاقات عندما تكون wordLinkChoice = "canceled"
 document.addEventListener("DOMContentLoaded", () => {
@@ -1328,7 +1343,9 @@ if (choice === "تخلف-مغادرة") {
 
 if (
   choice === "تأشيرات-منتهية-سياحية" ||
+  choice === "خروج-نهائي" ||
   choice === "حذف-السجلات"
+
 ) {
 
   // إخفاء قسم بيانات المسافر

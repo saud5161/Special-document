@@ -475,3 +475,278 @@ body.theme-dark .btn-icon:hover {
 body.theme-dark .word-icon { background-image: url("img/Microsoft_Word-Logo.wine.png") !important; }
 body.theme-dark .pdf-icon { background-image: url("img/PDF_file_icon.svg (1).png") !important; }
 body.theme-dark .print-icon i { color: #1e5631 !important; }
+
+/* =========================================================
+   11. صندوق الاقتراحات العائم (Floating Feedback Box)
+   ========================================================= */
+.feedback-toggle-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 30px; /* تم وضعه في اليسار كي لا يغطي على الشريط الجانبي */
+    background: linear-gradient(135deg, #1e5631, #2e5c49);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 22px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(30, 86, 49, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 2000;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.feedback-toggle-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(30, 86, 49, 0.6);
+}
+.feedback-toggle-btn i {
+    color: #c7a33a;
+    font-size: 18px;
+}
+
+.feedback-popup-box {
+    position: fixed;
+    bottom: 90px;
+    left: 30px;
+    width: 320px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid #eef2f5;
+    z-index: 2000;
+    overflow: hidden;
+    /* إعدادات الإخفاء والحركة */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95) origin(bottom left);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.feedback-popup-box.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.feedback-header {
+    background: linear-gradient(135deg, #1e5631, #114224);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #c7a33a;
+}
+.feedback-header h4 { margin: 0; font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.feedback-header h4 i { color: #c7a33a; }
+
+.close-feedback-btn {
+    background: rgba(255,255,255,0.1); border: none; color: white; width: 28px; height: 28px;
+    border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;
+}
+.close-feedback-btn:hover { background: #d32f2f; transform: rotate(90deg); }
+
+.feedback-body { padding: 20px; }
+.feedback-body label { display: block; font-weight: 800; font-size: 13px; color: #4a5568; margin-bottom: 8px; }
+.feedback-body select, .feedback-body textarea {
+    width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #dcdde3; background: #f8faf9;
+    margin-bottom: 15px; font-family: inherit; font-weight: 600; outline: none; box-sizing: border-box; resize: none; transition: 0.3s;
+}
+.feedback-body select:focus, .feedback-body textarea:focus {
+    border-color: #c7a33a; box-shadow: 0 0 0 3px rgba(199, 163, 58, 0.15); background: #fff;
+}
+.feedback-body .btn-primary {
+    width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: 800; font-family: inherit;
+    background: linear-gradient(135deg, #1e5631, #2e5c49); color: white; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(30,86,49,0.2);
+}
+.feedback-body .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(30, 86, 49, 0.4); }
+
+/* --- دعم الوضع الداكن (Dark Mode) --- */
+body.theme-dark .feedback-popup-box { background: #1e293b; border-color: rgba(255,255,255,0.05); box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+body.theme-dark .feedback-body label { color: #cbd5e1; }
+body.theme-dark .feedback-body p { color: #94a3b8 !important; }
+body.theme-dark .feedback-body select, body.theme-dark .feedback-body textarea {
+    background: #0f172a; color: #fff; border-color: rgba(255,255,255,0.08);
+}
+body.theme-dark .feedback-body select:focus, body.theme-dark .feedback-body textarea:focus {
+    border-color: #c7a33a; box-shadow: 0 0 0 3px rgba(199, 163, 58, 0.15); background: #0f172a;
+}
+
+/* ==========================================================
+   قسم ما الجديد (تصميم مصغر ومضغوط جداً)
+========================================================== */
+.whats-new-highlight-box {
+  background: linear-gradient(to right, #ffffff, #f4f8f5);
+  border-radius: 10px;
+  padding: 12px 15px; /* تقليل المسافات الداخلية */
+  margin: 10px 20px 20px 20px; /* تقليل المسافات الخارجية */
+  border: 1px solid #e8f0eb;
+  box-shadow: 0 4px 15px rgba(30, 86, 49, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.whats-new-highlight-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #e8f0eb 0%, transparent 100%);
+  border-bottom-left-radius: 100%;
+  z-index: 0;
+}
+
+.whats-new-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px; /* تصغير المسافة السفلية */
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px dashed #d1dfd5;
+  padding-bottom: 8px;
+}
+
+.whats-new-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px; /* تصغير خط العنوان الرئيسي */
+  font-weight: 800;
+  color: #2b3d34;
+}
+
+.version-badge {
+  background: #c7a33a;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10px; /* تصغير الشارة */
+  font-weight: bold;
+}
+
+.whats-new-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px; /* تقليل المسافة بين المربعين */
+  position: relative;
+  z-index: 1;
+}
+
+.highlight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px; /* تصغير الحشوة الداخلية للمربع */
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #d1dfd5;
+  transition: all 0.3s ease;
+}
+
+.highlight-item:hover {
+  transform: translateY(-2px);
+  border-color: #1e5631;
+  box-shadow: 0 5px 10px rgba(30, 86, 49, 0.08);
+}
+
+.update-icon {
+  width: 35px; /* تصغير حجم الأيقونة المربعة */
+  height: 35px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px; /* تصغير الأيقونة نفسها */
+  flex-shrink: 0;
+}
+
+.database-icon { background: #e8f0eb; color: #1e5631; } 
+.docs-icon { background: #fdf8e9; color: #c7a33a; }
+
+.update-text h4 {
+  margin: 0 0 4px 0; /* تصغير المسافة تحت العنوان */
+  font-size: 13px; /* تصغير خط العنوان */
+  color: #2b3d34;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.update-text p {
+  margin: 0;
+  font-size: 11px; /* تصغير خط الوصف */
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* شارة "جديد / مهم" النابضة */
+.badge-new {
+  background: #d32f2f; 
+  color: white;
+  font-size: 9px; /* تصغير الشارة الحمراء */
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-weight: bold;
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
+  70% { box-shadow: 0 0 0 4px rgba(211, 47, 47, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+}
+
+/* تنسيقات الروابط والقوائم المصغرة */
+.whats-new-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 4px 8px;
+  background-color: #fdf8e9;
+  color: #c7a33a;
+  border: 1px solid #c7a33a;
+  border-radius: 6px;
+  font-size: 11px; /* تصغير خط الرابط */
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.whats-new-link:hover {
+  background-color: #c7a33a;
+  color: #ffffff;
+  transform: translateX(-2px);
+}
+
+.new-models-list {
+  margin: 6px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.new-models-list li {
+  font-size: 11px; /* تصغير خط القائمة */
+  font-weight: 600;
+  color: #1e5631;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+
+.new-models-list li i {
+  font-size: 10px;
+  color: #c7a33a;
+}
+
+/* توافق الشاشات */
+@media (max-width: 900px) {
+  .whats-new-content { grid-template-columns: 1fr; }
+}

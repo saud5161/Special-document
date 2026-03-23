@@ -1316,3 +1316,62 @@ body.dark-mode .selected-banner strong {
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
   border: 1px solid #e2e8f0;
 }
+
+/* ==========================================================
+   تنبيه المعلومات الأمنية (أحمر خفيف ومريح للعين)
+========================================================== */
+.security-glowing-alert {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2); /* أحمر فاتح جداً ومريح */
+  color: #7f1d1d; /* أحمر داكن لضمان وضوح القراءة بدون إزعاج */
+  border: 2px solid #fca5a5; /* إطار أحمر هادئ */
+  border-radius: 16px;
+  padding: 18px 24px;
+  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 900;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15); /* ظل ناعم جداً */
+  animation: soft-pulse-alert 2s infinite alternate;
+  z-index: 10;
+}
+
+/* لون الأيقونة وحركتها */
+.security-glowing-alert i {
+  font-size: 30px;
+  color: #dc2626; /* أحمر بارز للأيقونة لجذب الانتباه بلطف */
+  animation: soft-shake-icon 2.5s infinite ease-in-out;
+}
+
+/* تأثير نبض هادئ ومريح */
+@keyframes soft-pulse-alert {
+  0% {
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
+  }
+  100% {
+    box-shadow: 0 4px 25px rgba(239, 68, 68, 0.25);
+    background: linear-gradient(135deg, #fee2e2, #fecaca); /* تغميق خفيف جداً للخلفية */
+  }
+}
+
+/* اهتزاز خفيف للأيقونة لا يزعج العين */
+@keyframes soft-shake-icon {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(-8deg) scale(1.05); }
+  20%, 40% { transform: rotate(8deg) scale(1.05); }
+  50% { transform: rotate(0deg) scale(1); }
+}
+
+/* التوافق مع الشاشات الصغيرة */
+@media (max-width: 600px) {
+  .security-glowing-alert {
+    font-size: 16px;
+    padding: 14px 16px;
+  }
+  .security-glowing-alert i {
+    font-size: 24px;
+  }
+}

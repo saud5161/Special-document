@@ -280,7 +280,71 @@
     </ol>
   </div>
 </div>
-            
+      <button id="feedback-toggle-btn" class="feedback-toggle-btn" onclick="toggleFeedbackBox()">
+    <i class="fas fa-comment-dots"></i> مساعدة واقتراحات
+</button>
+
+<div id="feedback-popup-box" class="feedback-popup-box">
+    <div class="feedback-header">
+        <h4><i class="fas fa-comment-dots"></i> تواصل مع المطور</h4>
+        <button class="close-feedback-btn" onclick="toggleFeedbackBox()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="feedback-body">
+        <p style="font-size: 11px; color: #64748b; margin-top: 0; margin-bottom: 10px; font-weight: bold;">سيتم إرسال رسالتك مباشرة للمطور</p>
+        
+        <label for="feedback-type">نوع الرسالة</label>
+        <select id="feedback-type">
+            <option value="اقتراح">💡 اقتراح</option>
+            <option value="مشكلة">⚠️ مشكلة</option>
+            <option value="تعديل">✏️ طلب تعديل</option>
+        </select>
+
+        <label for="feedback-message">التفاصيل</label>
+        <textarea id="feedback-message" rows="3" placeholder="اكتب تفاصيل الاقتراح أو المشكلة هنا..."></textarea>
+        
+        <button id="submit-feedback-btn" class="btn-primary" onclick="sendFeedbackToSupabase()">إرسال الرسالة</button>
+        <p id="feedback-status-msg" style="margin-top: 10px; font-weight: 800; font-size: 12px; text-align: center; display: none;"></p>
+    </div>
+</div>      
+<div class="whats-new-highlight-box">
+  <div class="whats-new-header">
+    <div class="whats-new-title">
+      <i class="fas fa-bullhorn" style="color: #1e5631;"></i>
+      <span>ما الجديد </span>
+    </div>
+    <span class="version-badge">إصدار حديث</span>
+  </div>
+  
+  <div class="whats-new-content">
+    <div class="update-item highlight-item">
+      <div class="update-icon database-icon">
+        <i class="fas fa-user-edit"></i>
+      </div>
+      <div class="update-text">
+        <h4>تحديث بيانات الأفراد <span class="badge-new">مهم</span></h4>
+        <p>تم إضافة إمكانية تعديل اسم الفرد/ ضابط ورتبته بكل سهولة، مع إضافة خانة مخصصة لحفظ رقم الهوية واستدعائه تلقائياً.</p>
+        <a href="control.html" target="_blank" class="whats-new-link">
+          <i class="fas fa-external-link-alt"></i> لتعديل البيانات اضغط هنا
+        </a>
+      </div>
+    </div>
+
+    <div class="update-item highlight-item">
+      <div class="update-icon docs-icon">
+        <i class="fas fa-file-signature"></i>
+      </div>
+      <div class="update-text">
+        <h4>خطابات ونماذج جديدة <span class="badge-new">جديد</span></h4>
+        <p>تم إضافة خطابات ونماذج جديدة كلياً لتسريع العمل، منها:</p>
+        <ul class="new-models-list">
+          <li><i class="fas fa-check-circle"></i> خطاب تعديل رحلة مرحل</li>
+                    <li><i class="fas fa-check-circle"></i> خطاب خروج نهائي منتهية</li>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="section-header highlight-style">
     <h2><i class="fas fa-calendar-check"></i> الحضور والانصراف</h2>
 </div>
@@ -387,6 +451,25 @@
         onclick="printFile('dic/نــماذج  اليومية/النموذج ( الكاونتر المتنقل).pdf');">
         <i class="fa-solid fa-print"></i>
       </a>
+    </div>
+  </div>
+
+<div class="model-card">
+    <div class="card-content">
+                    <span class="badge-new">جديد</span>
+      <div class="model-icon"><i class="fa-brands fa-cc-visa"></i></div>
+      <h3>خروج نهائي منتهي </h3>
+      <p>خروج نهائي منتهي خلال فترة الاوضاع الراهنة </p>
+    </div>
+    <div class="card-actions">
+        <a 
+          href="index.html" 
+          class="btn-icon word-icon" 
+          target="_top" 
+          title="خروج-نهائي"
+          onclick="localStorage.setItem('wordLinkChoice', 'خروج-نهائي')">
+        </a>
+      
     </div>
   </div>
 

@@ -623,16 +623,20 @@ app.on('browser-window-blur', () => {
     globalShortcut.unregister('Control+P');
 });
 
-// لما يكون التطبيق جاهز ننشئ النافذة
+// 1. استدعاء ملف المزامنة الذي قمنا بإنشائه
+const syncOfficersWithSupabase = require('./sync-supabase.js');
+
+// 2. عندما يكون إطار عمل Electron جاهزاً للعمل
 app.whenReady().then(() => {
-  createWindow();
-  startUpdateCheckInterval(); // إن كان لديك
-
-  // مرة عند تشغيل البرنامج
-  openAndCloseWord();
-
-  // كل 10 دقائق
-setInterval(openAndCloseWord, 60 * 1000);
+    
+    // 3. إنشاء وفتح النافذة الرئيسية للبرنامج
+    createWindow();
+    
+    // 4. تشغيل مزامنة الضباط فور فتح البرنامج للمرة الأولى
+    syncOfficersWithSupabase();
+    
+    // 5. فحص تحديثات الضباط في الخلفية كل ساعة (تلقائياً)
+    setInterval(syncOfficersWithSupabase, 60 * 60 * 1000); 
 });
 
 
@@ -778,6 +782,43 @@ function clearShiftIfMatchedTime() {
 clearShiftIfMatchedTime();
 
 
+// نستخدم مسار userData لضمان عدم حدوث مشاكل في الصلاحيات عند تثبيت التطبيق
+const cardsFilePath = path.join(__dirname, 'cards.json');
+// قراءة بيانات البطاقات
+ipcMain.handle('get-cards', async () => {
+    try {
+        if (!fs.existsSync(cardsFilePath)) {
+            // إنشاء ملف افتراضي فارغ إذا لم يكن موجوداً
+            fs.writeFileSync(cardsFilePath, JSON.stringify({}), 'utf8');
+        }
+        const data = fs.readFileSync(cardsFilePath, 'utf8');
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("خطأ في قراءة ملف البطاقات:", error);
+        return {};
+    }
+});
 
+// حفظ بطاقة جديدة
+ipcMain.handle('save-card', async (event, sectionId, newCard) => {
+    try {
+        let currentData = {};
+        if (fs.existsSync(cardsFilePath)) {
+            currentData = JSON.parse(fs.readFileSync(cardsFilePath, 'utf8'));
+        }
+        
+        // إذا لم يكن القسم موجوداً، نقوم بإنشائه
+        if (!currentData[sectionId]) {
+            currentData[sectionId] = [];
+        }
+        
+        currentData[sectionId].push(newCard);
+        fs.writeFileSync(cardsFilePath, JSON.stringify(currentData, null, 2), 'utf8');
+        return { success: true };
+    } catch (error) {
+        console.error("خطأ في حفظ البطاقة:", error);
+        return { success: false, error: error.message };
+    }
+});
 
 
