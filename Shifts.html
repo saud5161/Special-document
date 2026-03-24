@@ -20,6 +20,7 @@
       --danger:#dc2626;
       --violet:#7c3aed;
       --teal:#0f766e;
+      --orange:#ea580c;
       --font:'Tajawal',sans-serif;
     }
 
@@ -56,6 +57,21 @@
     .field select option{color:#111;background:#fff}
     .field input::placeholder{color:rgba(255,255,255,.75)}
 
+    /* التبويبات الجديدة (الأنظمة) */
+    .mode-tabs {
+      display: flex; gap: 6px; margin: 8px 8px 0; padding: 4px;
+      background: #e2e8f0; border-radius: 12px; overflow-x: auto; scrollbar-width: none;
+    }
+    .mode-tabs::-webkit-scrollbar { display: none; }
+    .mode-tab {
+      flex: 1; min-width: 100px; text-align: center; padding: 8px 6px; font-size: 0.75rem; font-weight: 800; font-family:var(--font);
+      color: #475569; background: transparent; border: none; border-radius: 8px; cursor: pointer;
+      transition: 0.2s; white-space: nowrap;
+    }
+    .mode-tab.active {
+      background: #fff; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
     /* المعاينة السريعة */
     .quick-preview-wrap{ background:rgba(255,255,255,.94); border:1px solid #e7ebf1; border-radius:12px; padding:7px; margin:8px; }
     .quick-preview-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; color:#334155; font-size:.74rem; font-weight:800; }
@@ -66,10 +82,10 @@
       display:flex; flex-direction:column; justify-content:center;
     }
     .mini-counter-title{ font-size:.7rem; font-weight:800; color:var(--primary); }
-    .mini-counter-names{ font-size:.66rem; color:#374151; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mini-counter-names{ font-size:.66rem; color:#374151; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; line-height: 1.4; }
 
-    /* شريط الكاونترات */
-    .counter-strip{ background:#fff; border:1px solid #e7ebf1; border-radius:12px; padding:8px; margin:0 8px 8px; }
+    /* شريط الكاونترات والمهام */
+    .counter-strip{ background:#fff; border:1px solid #e7ebf1; border-radius:12px; padding:8px; margin: 8px; }
     .strip-title{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:.75rem; font-weight:800; color:#334155; }
     .counter-scroll{ display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width: none; align-items: flex-start; }
     .counter-scroll::-webkit-scrollbar { display: none; }
@@ -131,6 +147,8 @@
     .emp-meta { font-size: 0.65rem; color: var(--muted); }
     .task-badge { font-size: 0.65rem; background: var(--primary); color: #fff; padding: 2px 6px; border-radius: 4px; }
     .task-badge.absent-badge { background: var(--danger); }
+    .task-badge.group-badge { background: var(--violet); }
+    .task-badge.break-badge { background: var(--orange); }
 
     .current-target-banner {
       background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 8px 12px;
@@ -191,6 +209,12 @@
     </div>
   </div>
 
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="tab-counters" onclick="setMode('counters')">الكونترات</button>
+    <button class="mode-tab" id="tab-groups" onclick="setMode('groups')">المجموعات</button>
+    <button class="mode-tab" id="tab-breaks" onclick="setMode('breaks')">البريكات</button>
+  </div>
+
   <div class="counter-strip">
     <div class="strip-title" id="stripTitle">
       <span>1. اختر الكاونتر أو المهمة للتوزيع عليها</span>
@@ -238,32 +262,56 @@
   <div id="pdf-report">
     <div class="pdf-header">
       <div class="pdf-header-left">
-        <div class="pdf-title">جدول توزيع الكاونترات</div>
+        <div class="pdf-title">جدول توزيع المناوبة</div>
         <div class="pdf-date" id="pdfDateStr"></div>
       </div>
       <div class="pdf-meta-box" id="pdfFilterInfo"></div>
     </div>
-    <div class="pdf-section-head">جدول الكاونترات</div>
-    <table class="pdf-table pdf-horizontal-counters">
-      <tbody id="pdf-counters-horizontal-body"></tbody>
-    </table>
-    <div class="pdf-section-head" style="margin-top:12px; background:#2c3e50;">المهام الإضافية</div>
-    <table class="pdf-extra-table">
-      <thead><tr><th width="30%">المهمة</th><th width="70%">الأسماء</th></tr></thead>
-      <tbody id="pdf-tasks-body"></tbody>
-    </table>
+    
+    <div id="pdf-counters-section">
+      <div class="pdf-section-head">جدول الكاونترات</div>
+      <table class="pdf-table pdf-horizontal-counters">
+        <tbody id="pdf-counters-horizontal-body"></tbody>
+      </table>
+    </div>
+
+    <div id="pdf-groups-section" style="display:none;">
+      <div class="pdf-section-head" style="margin-top:12px; background:#7c3aed;">نظام المجموعات</div>
+      <table class="pdf-extra-table">
+        <tbody id="pdf-groups-body"></tbody>
+      </table>
+    </div>
+
+    <div id="pdf-breaks-section" style="display:none;">
+      <div class="pdf-section-head" style="margin-top:12px; background:#ea580c;">نظام البريكات</div>
+      <table class="pdf-extra-table">
+        <tbody id="pdf-breaks-body"></tbody>
+      </table>
+    </div>
+
+    <div id="pdf-tasks-section">
+      <div class="pdf-section-head" style="margin-top:12px; background:#2c3e50;">المهام الإضافية والغياب</div>
+      <table class="pdf-extra-table">
+        <thead><tr><th width="30%">المهمة</th><th width="70%">الأسماء</th></tr></thead>
+        <tbody id="pdf-tasks-body"></tbody>
+      </table>
+    </div>
   </div>
 
   <script>
-    const PREFS_KEY = 'official_sched_mobile_v12_transfer';
+    const PREFS_KEY = 'official_sched_mobile_v13_transfer';
+    
     const DEFAULT_TASKS = ["إرشاد", "خدمة ذاتية", "بوابة", "بدون مهام/غياب"];
+    const DEFAULT_GROUPS = ["المجموعة الأولى", "المجموعة الثانية", "المجموعة الثالثة", "المجموعة الرابعة"];
+    const DEFAULT_BREAKS = ["البريك الأول", "البريك الثاني", "البريك الثالث", "البريك الرابع"];
     
     let employeesData = {}; 
     let savedCustomNames = [];
     let customTasksList = [];
+    let customGroupsList = [];
+    let customBreaksList = [];
     let hiddenItems = []; 
     
-    // متغيرات وضع الإخفاء المتعدد
     let isHideModeActive = false;
     let itemsSelectedForHide = [];
     
@@ -273,6 +321,7 @@
     
     let currentTask = null; 
     let selectedCountersForMerge = [];
+    let currentMode = 'counters'; 
 
     window.onload = () => {
         loadDataAndInitialize();
@@ -285,12 +334,12 @@
             employeesData = await response.json();
         } catch (error) {
             console.error(error);
-            alert("تعذر تحميل ملف الأسماء افتح الصفحة من المتصفح فقط ");
+            console.log("سيتم تشغيل التطبيق بدون ملف name.json");
         }
         
         loadPrefs();
         generateEmployees();
-        renderCounterStrip();
+        setMode('counters');
         onFilterChange();
     }
 
@@ -305,6 +354,8 @@
                 if(p.chosen) chosen = p.chosen;
                 if(p.savedCustomNames) savedCustomNames = p.savedCustomNames;
                 if(p.customTasksList) customTasksList = p.customTasksList;
+                if(p.customGroupsList) customGroupsList = p.customGroupsList;
+                if(p.customBreaksList) customBreaksList = p.customBreaksList;
                 if(p.hiddenItems) hiddenItems = p.hiddenItems;
             }
         } catch(e){}
@@ -318,6 +369,8 @@
             chosen: chosen,
             savedCustomNames: savedCustomNames,
             customTasksList: customTasksList,
+            customGroupsList: customGroupsList,
+            customBreaksList: customBreaksList,
             hiddenItems: hiddenItems
         };
         localStorage.setItem(PREFS_KEY, JSON.stringify(p));
@@ -342,6 +395,25 @@
         }
     }
 
+    function setMode(mode) {
+        currentMode = mode;
+        
+        document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(`tab-${mode}`).classList.add('active');
+
+        const titleEl = document.getElementById('stripTitle');
+        if(mode === 'counters') titleEl.innerHTML = "<span>1. اختر الكاونتر أو المهمة للتوزيع عليها</span>";
+        else if(mode === 'groups') titleEl.innerHTML = "<span>1. اختر المجموعة (العدد مفتوح)</span>";
+        else if(mode === 'breaks') titleEl.innerHTML = "<span>1. اختر البريك (العدد مفتوح)</span>";
+
+        isHideModeActive = false;
+        itemsSelectedForHide = [];
+        currentTask = null;
+        selectedCountersForMerge = [];
+        
+        renderCounterStrip();
+    }
+
     function addNewName() {
         const name = prompt("أدخل الاسم الجديد لإضافته للقائمة:");
         if (name && name.trim() !== '') {
@@ -358,9 +430,29 @@
                 customTasksList.push(t.trim());
                 savePrefs();
                 renderCounterStrip();
-            } else {
-                alert("هذه المهمة موجودة مسبقاً.");
-            }
+            } else { alert("موجودة مسبقاً."); }
+        }
+    }
+
+    function addNewGroup() {
+        const t = prompt("أدخل اسم المجموعة الجديدة:");
+        if (t && t.trim() !== '') {
+            if(!customGroupsList.includes(t.trim()) && !DEFAULT_GROUPS.includes(t.trim())) {
+                customGroupsList.push(t.trim());
+                savePrefs();
+                renderCounterStrip();
+            } else { alert("موجودة مسبقاً."); }
+        }
+    }
+
+    function addNewBreak() {
+        const t = prompt("أدخل اسم البريك الجديد:");
+        if (t && t.trim() !== '') {
+            if(!customBreaksList.includes(t.trim()) && !DEFAULT_BREAKS.includes(t.trim())) {
+                customBreaksList.push(t.trim());
+                savePrefs();
+                renderCounterStrip();
+            } else { alert("موجود مسبقاً."); }
         }
     }
 
@@ -393,7 +485,6 @@
         renderTransferLists();
     }
 
-    // دالة التحديد المتعدد لوضع الإخفاء
     function toggleHideSelectionMultiple(items) {
         let allSelected = items.every(item => itemsSelectedForHide.includes(String(item)));
         if (allSelected) {
@@ -415,155 +506,110 @@
 
         const stripTitleDiv = document.getElementById('stripTitle');
         if (isHideModeActive) {
-            stripTitleDiv.innerHTML = `<span style="color:var(--danger)">وضع الإخفاء: حدد الكاونترات/المهام لإخفائها</span>`;
-        } else {
-            stripTitleDiv.innerHTML = `<span>1. اختر الكاونتر أو المهمة للتوزيع عليها</span>`;
+            stripTitleDiv.innerHTML = `<span style="color:var(--danger)">وضع الإخفاء: حدد العناصر لإخفائها</span>`;
         }
 
-        for (let i = 1; i <= 20; i++) {
-            if (rendered.has(i)) continue;
-            if (hiddenItems.includes(String(i))) continue; 
+        if (currentMode === 'counters') {
+            for (let i = 1; i <= 20; i++) {
+                if (rendered.has(i)) continue;
+                if (hiddenItems.includes(String(i))) continue; 
 
-            const assignedMergedPerson = chosen.find(x => x.task && x.task.includes('&') && x.task.replace('كاونتر ', '').split('&').map(n => parseInt(n.trim())).includes(i));
-            
-            let isMergedAndCollapsed = false;
-            let partnerNum = null;
-            let mergedTaskName = null;
-            let assignedPeopleForMerged = [];
+                const assignedMergedPerson = chosen.find(x => x.task && x.task.includes('&') && x.task.replace('كاونتر ', '').split('&').map(n => parseInt(n.trim())).includes(i));
+                
+                let isMergedAndCollapsed = false;
+                let partnerNum = null;
+                let mergedTaskName = null;
+                let assignedPeopleForMerged = [];
 
-            if (assignedMergedPerson) {
-                mergedTaskName = assignedMergedPerson.task;
-                const nums = mergedTaskName.replace('كاونتر ', '').split('&').map(n => parseInt(n.trim()));
-                partnerNum = nums[0] === i ? nums[1] : nums[0];
-                assignedPeopleForMerged = chosen.filter(x => x.task === mergedTaskName);
-                
-                const isSelected = selectedCountersForMerge.includes(i) || selectedCountersForMerge.includes(partnerNum);
-                
-                if (!isSelected) {
-                    isMergedAndCollapsed = true;
+                if (assignedMergedPerson) {
+                    mergedTaskName = assignedMergedPerson.task;
+                    const nums = mergedTaskName.replace('كاونتر ', '').split('&').map(n => parseInt(n.trim()));
+                    partnerNum = nums[0] === i ? nums[1] : nums[0];
+                    assignedPeopleForMerged = chosen.filter(x => x.task === mergedTaskName);
+                    
+                    const isSelected = selectedCountersForMerge.includes(i) || selectedCountersForMerge.includes(partnerNum);
+                    if (!isSelected) isMergedAndCollapsed = true;
                 }
-            }
 
-            if (isMergedAndCollapsed) {
-                const wrapper = document.createElement('div');
-                wrapper.style.display = 'flex';
-                wrapper.style.flexDirection = 'column';
-                wrapper.style.alignItems = 'center';
-                wrapper.style.gap = '4px';
+                if (isMergedAndCollapsed) {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.display = 'flex'; wrapper.style.flexDirection = 'column'; wrapper.style.alignItems = 'center'; wrapper.style.gap = '4px';
 
-                const div = document.createElement('div');
-                div.className = 'cnt-btn';
-                div.style.width = 'auto';
-                div.style.padding = '0 10px';
-                
-                // تلوين حسب حالة وضع الإخفاء
-                if (isHideModeActive && (itemsSelectedForHide.includes(String(i)) || itemsSelectedForHide.includes(String(partnerNum)))) {
-                    div.classList.add('hide-selected');
+                    const div = document.createElement('div');
+                    div.className = 'cnt-btn';
+                    div.style.width = 'auto'; div.style.padding = '0 10px';
+                    
+                    if (isHideModeActive && (itemsSelectedForHide.includes(String(i)) || itemsSelectedForHide.includes(String(partnerNum)))) {
+                        div.classList.add('hide-selected');
+                    } else {
+                        div.style.background = '#eff6ff'; div.style.borderColor = '#93c5fd'; div.style.color = '#1d4ed8'; 
+                    }
+                    div.innerHTML = `<span style="font-size:0.9rem;">${i}</span><span style="font-size:0.65rem; margin:0 6px; padding:0 6px; border-right:1px solid #93c5fd; border-left:1px solid #93c5fd; color:#3b82f6;">مدمج مع</span><span style="font-size:0.9rem;">${partnerNum}</span>`;
+                    
+                    div.onclick = () => {
+                        if (isHideModeActive) toggleHideSelectionMultiple([String(i), String(partnerNum)]);
+                        else {
+                            selectedCountersForMerge = [i, partnerNum].sort((a,b)=>a-b);
+                            currentTask = `كاونتر ${selectedCountersForMerge[0]} & ${selectedCountersForMerge[1]}`;
+                            renderCounterStrip();
+                        }
+                    };
+                    wrapper.appendChild(div);
+
+                    if (assignedPeopleForMerged.length > 0 && !isHideModeActive) {
+                        const namesBox = document.createElement('div');
+                        namesBox.style.cssText = 'font-size:0.65rem; color:#1e3a8a; background:#dbeafe; border:1px solid #bfdbfe; border-radius:6px; padding:2px 6px; text-align:center; white-space:nowrap; line-height:1.4; font-weight:700;';
+                        namesBox.innerHTML = assignedPeopleForMerged.map(p => formatFirstAndLastName(p.name)).join('<br>');
+                        wrapper.appendChild(namesBox);
+                    }
+                    container.appendChild(wrapper);
+                    rendered.add(i); rendered.add(partnerNum);
+
                 } else {
-                    div.style.background = '#eff6ff'; 
-                    div.style.borderColor = '#93c5fd'; 
-                    div.style.color = '#1d4ed8'; 
-                }
-                
-                div.innerHTML = `<span style="font-size:0.9rem;">${i}</span><span style="font-size:0.65rem; margin:0 6px; padding:0 6px; border-right:1px solid #93c5fd; border-left:1px solid #93c5fd; color:#3b82f6;">مدمج مع</span><span style="font-size:0.9rem;">${partnerNum}</span>`;
-                
-                div.onclick = () => {
-                    if (isHideModeActive) {
-                        toggleHideSelectionMultiple([String(i), String(partnerNum)]);
-                    } else {
-                        selectedCountersForMerge = [i, partnerNum].sort((a,b)=>a-b);
-                        currentTask = `كاونتر ${selectedCountersForMerge[0]} & ${selectedCountersForMerge[1]}`;
-                        renderCounterStrip();
+                    const isSelected = selectedCountersForMerge.includes(i);
+                    if (isSelected && !isHideModeActive) { rendered.add(i); continue; }
+
+                    const allAssignedToThis = chosen.filter(x => {
+                        if(!x.task) return false;
+                        if(x.task === `كاونتر ${i}`) return true;
+                        if(x.task.includes('&')) return x.task.replace('كاونتر ','').split('&').map(n=>parseInt(n.trim())).includes(i);
+                        return false;
+                    });
+                    
+                    const isFilled = allAssignedToThis.length > 0;
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.style.display = 'flex'; wrapper.style.flexDirection = 'column'; wrapper.style.alignItems = 'center'; wrapper.style.gap = '4px';
+
+                    const div = document.createElement('div');
+                    div.className = `cnt-btn ${isFilled ? 'filled' : ''}`;
+                    if (isHideModeActive && itemsSelectedForHide.includes(String(i))) div.classList.add('hide-selected');
+                    div.style.flex = '0 0 36px'; div.style.width = '36px'; div.textContent = i;
+                    
+                    div.onclick = () => {
+                        if (isHideModeActive) toggleHideSelectionMultiple([String(i)]);
+                        else selectCounterNumber(i);
+                    };
+                    wrapper.appendChild(div);
+
+                    if (isFilled && !isHideModeActive) {
+                        const namesBox = document.createElement('div');
+                        namesBox.style.cssText = 'font-size:0.65rem; color:#15803d; background:#dcfce7; border:1px solid #bbf7d0; border-radius:6px; padding:2px 6px; text-align:center; white-space:nowrap; line-height:1.4; font-weight:700;';
+                        namesBox.innerHTML = allAssignedToThis.map(p => formatFirstAndLastName(p.name)).join('<br>');
+                        wrapper.appendChild(namesBox);
                     }
-                };
-                wrapper.appendChild(div);
-
-                if (assignedPeopleForMerged.length > 0 && !isHideModeActive) {
-                    const namesBox = document.createElement('div');
-                    namesBox.style.fontSize = '0.65rem';
-                    namesBox.style.color = '#1e3a8a';
-                    namesBox.style.background = '#dbeafe';
-                    namesBox.style.border = '1px solid #bfdbfe';
-                    namesBox.style.borderRadius = '6px';
-                    namesBox.style.padding = '2px 6px';
-                    namesBox.style.textAlign = 'center';
-                    namesBox.style.whiteSpace = 'nowrap';
-                    namesBox.style.lineHeight = '1.4';
-                    namesBox.style.fontWeight = '700';
-                    namesBox.innerHTML = assignedPeopleForMerged.map(p => formatFirstAndLastName(p.name)).join('<br>');
-                    wrapper.appendChild(namesBox);
-                }
-
-                container.appendChild(wrapper);
-                
-                rendered.add(i);
-                rendered.add(partnerNum);
-            } else {
-                const isSelected = selectedCountersForMerge.includes(i);
-                if (isSelected && !isHideModeActive) {
+                    container.appendChild(wrapper);
                     rendered.add(i);
-                    continue; 
                 }
-
-                const allAssignedToThis = chosen.filter(x => {
-                    if(!x.task) return false;
-                    if(x.task === `كاونتر ${i}`) return true;
-                    if(x.task.includes('&')) {
-                        const nums = x.task.replace('كاونتر ','').split('&').map(n=>parseInt(n.trim()));
-                        return nums.includes(i);
-                    }
-                    return false;
-                });
-                
-                const isFilled = allAssignedToThis.length > 0;
-                
-                const wrapper = document.createElement('div');
-                wrapper.style.display = 'flex';
-                wrapper.style.flexDirection = 'column';
-                wrapper.style.alignItems = 'center';
-                wrapper.style.gap = '4px';
-
-                const div = document.createElement('div');
-                div.className = `cnt-btn ${isFilled ? 'filled' : ''}`;
-                if (isHideModeActive && itemsSelectedForHide.includes(String(i))) {
-                    div.classList.add('hide-selected');
-                }
-                div.style.flex = '0 0 36px';
-                div.style.width = '36px';
-                div.textContent = i;
-                
-                div.onclick = () => {
-                    if (isHideModeActive) {
-                        toggleHideSelectionMultiple([String(i)]);
-                    } else {
-                        selectCounterNumber(i);
-                    }
-                };
-                wrapper.appendChild(div);
-
-                if (isFilled && !isHideModeActive) {
-                    const namesBox = document.createElement('div');
-                    namesBox.style.fontSize = '0.65rem';
-                    namesBox.style.color = '#15803d';
-                    namesBox.style.background = '#dcfce7';
-                    namesBox.style.border = '1px solid #bbf7d0';
-                    namesBox.style.borderRadius = '6px';
-                    namesBox.style.padding = '2px 6px';
-                    namesBox.style.textAlign = 'center';
-                    namesBox.style.whiteSpace = 'nowrap';
-                    namesBox.style.lineHeight = '1.4';
-                    namesBox.style.fontWeight = '700';
-                    namesBox.innerHTML = allAssignedToThis.map(p => formatFirstAndLastName(p.name)).join('<br>');
-                    wrapper.appendChild(namesBox);
-                }
-
-                container.appendChild(wrapper);
-                rendered.add(i);
             }
         }
 
-        const allTasks = [...DEFAULT_TASKS, ...customTasksList];
-        allTasks.forEach(t => {
+        let itemsToRender = [];
+        if (currentMode === 'counters') itemsToRender = [...DEFAULT_TASKS, ...customTasksList];
+        else if (currentMode === 'groups') itemsToRender = [...DEFAULT_GROUPS, ...customGroupsList];
+        else if (currentMode === 'breaks') itemsToRender = [...DEFAULT_BREAKS, ...customBreaksList];
+
+        itemsToRender.forEach(t => {
             if (hiddenItems.includes(t)) return;
 
             const isSelected = currentTask === t;
@@ -573,119 +619,80 @@
             const isFilled = assignedPeople.length > 0;
 
             const wrapper = document.createElement('div');
-            wrapper.style.display = 'flex';
-            wrapper.style.flexDirection = 'column';
-            wrapper.style.alignItems = 'center';
-            wrapper.style.gap = '4px';
+            wrapper.style.display = 'flex'; wrapper.style.flexDirection = 'column'; wrapper.style.alignItems = 'center'; wrapper.style.gap = '4px';
 
             const div = document.createElement('div');
             div.className = `cnt-btn task-cnt-btn ${isFilled ? 'filled' : ''}`;
-            if (isHideModeActive && itemsSelectedForHide.includes(t)) {
-                div.classList.add('hide-selected');
-            }
+            if (isHideModeActive && itemsSelectedForHide.includes(t)) div.classList.add('hide-selected');
             div.textContent = t;
             
             div.onclick = () => {
-                if (isHideModeActive) {
-                    toggleHideSelectionMultiple([t]);
-                } else {
-                    selectTask(t);
-                }
+                if (isHideModeActive) toggleHideSelectionMultiple([t]);
+                else selectTask(t);
             };
             wrapper.appendChild(div);
 
             if (isFilled && !isHideModeActive) {
                 const namesBox = document.createElement('div');
-                namesBox.style.fontSize = '0.65rem';
-                namesBox.style.color = '#15803d';
-                namesBox.style.background = '#dcfce7';
-                namesBox.style.border = '1px solid #bbf7d0';
-                namesBox.style.borderRadius = '6px';
-                namesBox.style.padding = '2px 6px';
-                namesBox.style.textAlign = 'center';
-                namesBox.style.whiteSpace = 'nowrap';
-                namesBox.style.lineHeight = '1.4';
-                namesBox.style.fontWeight = '700';
+                namesBox.style.cssText = 'font-size:0.65rem; color:#15803d; background:#dcfce7; border:1px solid #bbf7d0; border-radius:6px; padding:2px 6px; text-align:center; white-space:nowrap; line-height:1.4; font-weight:700;';
                 namesBox.innerHTML = assignedPeople.map(p => formatFirstAndLastName(p.name)).join('<br>');
                 wrapper.appendChild(namesBox);
             }
-
             container.appendChild(wrapper);
         });
 
-        // 1. حاوية الأزرار الإضافية
+        // أزرار التحكم
         const wrapperControls = document.createElement('div');
-        wrapperControls.style.display = 'flex';
-        wrapperControls.style.gap = '6px';
-        wrapperControls.style.alignItems = 'flex-start';
+        wrapperControls.style.display = 'flex'; wrapperControls.style.gap = '6px'; wrapperControls.style.alignItems = 'flex-start';
 
-        // 2. زر إضافة مهمة (دائم)
-        const btnAddTask = document.createElement('div');
-        btnAddTask.className = `cnt-btn task-cnt-btn add-task-btn`;
-        btnAddTask.textContent = 'إضافة مهمة';
-        btnAddTask.onclick = addNewTask;
-        wrapperControls.appendChild(btnAddTask);
+        const btnAdd = document.createElement('div');
+        btnAdd.className = `cnt-btn task-cnt-btn add-task-btn`;
+        if (currentMode === 'counters') { btnAdd.textContent = '+ مهمة'; btnAdd.onclick = addNewTask; }
+        else if (currentMode === 'groups') { btnAdd.textContent = '+ مجموعة'; btnAdd.onclick = addNewGroup; }
+        else if (currentMode === 'breaks') { btnAdd.textContent = '+ بريك'; btnAdd.onclick = addNewBreak; }
+        wrapperControls.appendChild(btnAdd);
 
-        // 3. أزرار وضع الإخفاء والإظهار
         if (isHideModeActive) {
             const btnConfirmHide = document.createElement('div');
             btnConfirmHide.className = `cnt-btn task-cnt-btn`;
-            btnConfirmHide.textContent = `إخفاء المحدد (${itemsSelectedForHide.length})`;
-            btnConfirmHide.style.background = '#fee2e2';
-            btnConfirmHide.style.color = '#991b1b';
-            btnConfirmHide.style.borderColor = '#f87171';
+            btnConfirmHide.textContent = `تأكيد الإخفاء (${itemsSelectedForHide.length})`;
+            btnConfirmHide.style.cssText = 'background:#fee2e2; color:#991b1b; border-color:#f87171;';
             btnConfirmHide.onclick = () => {
                 hiddenItems.push(...itemsSelectedForHide);
-                itemsSelectedForHide = [];
-                isHideModeActive = false;
-                savePrefs();
-                renderCounterStrip();
+                itemsSelectedForHide = []; isHideModeActive = false;
+                savePrefs(); renderCounterStrip();
             };
 
             const btnCancelHide = document.createElement('div');
             btnCancelHide.className = `cnt-btn task-cnt-btn`;
             btnCancelHide.textContent = 'إلغاء التحديد';
             btnCancelHide.onclick = () => {
-                itemsSelectedForHide = [];
-                isHideModeActive = false;
+                itemsSelectedForHide = []; isHideModeActive = false;
                 renderCounterStrip();
             };
-
-            wrapperControls.appendChild(btnConfirmHide);
-            wrapperControls.appendChild(btnCancelHide);
+            wrapperControls.appendChild(btnConfirmHide); wrapperControls.appendChild(btnCancelHide);
         } else {
-            // زر تفعيل وضع التحديد للإخفاء
             const btnEnterHideMode = document.createElement('div');
             btnEnterHideMode.className = `cnt-btn task-cnt-btn`;
             btnEnterHideMode.textContent = 'تحديد للإخفاء';
-            btnEnterHideMode.style.background = '#f8fafc';
-            btnEnterHideMode.style.color = '#475569';
+            btnEnterHideMode.style.cssText = 'background:#f8fafc; color:#475569;';
             btnEnterHideMode.onclick = () => {
-                isHideModeActive = true;
-                itemsSelectedForHide = [];
-                currentTask = null;
-                selectedCountersForMerge = [];
+                isHideModeActive = true; itemsSelectedForHide = []; currentTask = null; selectedCountersForMerge = [];
                 renderCounterStrip();
             };
             wrapperControls.appendChild(btnEnterHideMode);
 
-            // زر إظهار الكونترات المخفية (يظهر فقط إذا كان هناك مخفي)
             if (hiddenItems.length > 0) {
                 const btnShowHidden = document.createElement('div');
                 btnShowHidden.className = `cnt-btn task-cnt-btn`;
-                btnShowHidden.textContent = `إظهار الكونترات المخفية`;
-                btnShowHidden.style.background = '#e0f2fe';
-                btnShowHidden.style.color = '#0369a1';
-                btnShowHidden.style.borderColor = '#7dd3fc';
+                btnShowHidden.textContent = `إظهار المخفي`;
+                btnShowHidden.style.cssText = 'background:#e0f2fe; color:#0369a1; border-color:#7dd3fc;';
                 btnShowHidden.onclick = () => {
-                    hiddenItems = [];
-                    savePrefs();
-                    renderCounterStrip();
+                    hiddenItems = []; savePrefs(); renderCounterStrip();
                 };
                 wrapperControls.appendChild(btnShowHidden);
             }
         }
-
         container.appendChild(wrapperControls);
 
         updateCurrentTargetBanner();
@@ -693,8 +700,7 @@
 
     function selectCounterNumber(num) {
         if (currentTask && isNaN(parseInt(currentTask.replace('كاونتر ', '')))) {
-             currentTask = null;
-             selectedCountersForMerge = [];
+             currentTask = null; selectedCountersForMerge = [];
         }
 
         if (selectedCountersForMerge.includes(num)) {
@@ -710,16 +716,12 @@
             const sorted = [...selectedCountersForMerge].sort((a,b)=>a-b);
             currentTask = `كاونتر ${sorted[0]} & ${sorted[1]}`;
             chosen.forEach(p => {
-                if (p.task === `كاونتر ${sorted[0]}` || p.task === `كاونتر ${sorted[1]}`) {
-                    p.task = currentTask;
-                }
+                if (p.task === `كاونتر ${sorted[0]}` || p.task === `كاونتر ${sorted[1]}`) p.task = currentTask;
             });
-            savePrefs();
-            renderTransferLists();
+            savePrefs(); renderTransferLists();
         } else {
              currentTask = null;
         }
-
         renderCounterStrip();
     }
 
@@ -734,34 +736,19 @@
         banner.innerHTML = '';
 
         if (!currentTask || isHideModeActive) {
-            banner.style.background = '#fef2f2';
-            banner.style.color = '#991b1b';
-            banner.style.borderColor = '#fecaca';
-            banner.style.display = 'flex';
-            banner.style.justifyContent = 'center';
-            banner.style.alignItems = 'center';
-            banner.textContent = isHideModeActive ? 'أنت الآن في وضع الإخفاء، انقر لتحديد الكاونترات أو المهام' : 'يرجى اختيار كاونتر أو مهمة من الشريط الأعلى أولاً';
+            banner.style.cssText = 'background:#fef2f2; color:#991b1b; border-color:#fecaca; display:flex; justify-content:center; align-items:center; min-height:50px;';
+            banner.textContent = isHideModeActive ? 'أنت الآن في وضع الإخفاء، انقر لتحديد العناصر' : 'يرجى اختيار هدف من الشريط الأعلى أولاً لتفعيل التوزيع';
             return;
         }
 
-        banner.style.background = '#eef2ff';
-        banner.style.color = '#4338ca';
-        banner.style.borderColor = '#c7d2fe';
-        banner.style.display = 'flex';
-        banner.style.alignItems = 'center';
-        banner.style.justifyContent = 'space-between';
-        banner.style.textAlign = 'right';
+        banner.style.cssText = 'background:#eef2ff; color:#4338ca; border-color:#c7d2fe; display:flex; align-items:center; justify-content:space-between; text-align:right; min-height:50px;';
 
         const leftSide = document.createElement('div');
-        leftSide.style.display = 'flex';
-        leftSide.style.alignItems = 'center';
-        leftSide.style.gap = '8px';
-        leftSide.style.flexWrap = 'wrap';
+        leftSide.style.cssText = 'display:flex; align-items:center; gap:8px; flex-wrap:wrap;';
 
         const titleSpan = document.createElement('span');
         titleSpan.textContent = 'الهدف:';
-        titleSpan.style.fontSize = '0.75rem';
-        titleSpan.style.fontWeight = '800';
+        titleSpan.style.cssText = 'font-size:0.75rem; font-weight:800;';
         leftSide.appendChild(titleSpan);
 
         const allAssignedToThis = chosen.filter(x => x.task === currentTask);
@@ -770,27 +757,16 @@
             selectedCountersForMerge.forEach(num => {
                 const btn = document.createElement('div');
                 btn.className = 'cnt-btn active';
-                btn.style.flex = '0 0 36px';
-                btn.style.width = '36px';
-                btn.textContent = num;
-                btn.title = 'انقر لفك التحديد';
+                btn.style.cssText = 'flex:0 0 36px; width:36px;';
+                btn.textContent = num; btn.title = 'انقر لفك التحديد';
                 btn.onclick = () => selectCounterNumber(num); 
                 leftSide.appendChild(btn);
             });
             
-            if (selectedCountersForMerge.length === 1) {
-                const hint = document.createElement('span');
-                hint.style.fontSize = '0.65rem';
-                hint.style.color = '#6366f1';
-                hint.textContent = '(اختر آخر للدمج أو أضف اسماً)';
-                leftSide.appendChild(hint);
-            } else if (selectedCountersForMerge.length === 2) {
-                const hint = document.createElement('span');
-                hint.style.fontSize = '0.65rem';
-                hint.style.color = '#6366f1';
-                hint.textContent = '(تم دمج الكاونترين)';
-                leftSide.appendChild(hint);
-            }
+            const hint = document.createElement('span');
+            hint.style.cssText = 'font-size:0.65rem; color:#6366f1;';
+            hint.textContent = selectedCountersForMerge.length === 1 ? '(اختر آخر للدمج أو أضف اسماً)' : '(تم دمج الكاونترين)';
+            leftSide.appendChild(hint);
         } else {
             const btn = document.createElement('div');
             btn.className = 'cnt-btn task-cnt-btn active';
@@ -800,57 +776,42 @@
 
         if (allAssignedToThis.length > 0) {
             const namesBox = document.createElement('div');
-            namesBox.style.fontSize = '0.65rem';
-            namesBox.style.color = '#15803d';
-            namesBox.style.background = '#dcfce7';
-            namesBox.style.border = '1px solid #bbf7d0';
-            namesBox.style.borderRadius = '6px';
-            namesBox.style.padding = '2px 8px';
-            namesBox.style.fontWeight = '700';
+            namesBox.style.cssText = 'font-size:0.65rem; color:#15803d; background:#dcfce7; border:1px solid #bbf7d0; border-radius:6px; padding:2px 8px; font-weight:700;';
             namesBox.innerHTML = allAssignedToThis.map(p => formatFirstAndLastName(p.name)).join(' + ');
             leftSide.appendChild(namesBox);
         }
 
         const rightSide = document.createElement('div');
-        rightSide.style.display = 'flex';
-        rightSide.style.gap = '6px';
+        rightSide.style.display = 'flex'; rightSide.style.gap = '6px';
 
         const doneBtn = document.createElement('button');
         doneBtn.textContent = 'إغلاق للتعديل (تم)';
         doneBtn.className = 'mini-action';
-        doneBtn.style.background = '#4f46e5';
-        doneBtn.style.color = '#fff';
-        doneBtn.style.padding = '6px 14px';
-        doneBtn.style.fontSize = '0.75rem';
+        doneBtn.style.cssText = 'background:#4f46e5; color:#fff; padding:6px 14px; font-size:0.75rem;';
         doneBtn.onclick = () => {
-            currentTask = null;
-            selectedCountersForMerge = [];
-            renderCounterStrip();
+            currentTask = null; selectedCountersForMerge = []; renderCounterStrip();
         };
 
         rightSide.appendChild(doneBtn);
-
-        banner.appendChild(leftSide);
-        banner.appendChild(rightSide);
+        banner.appendChild(leftSide); banner.appendChild(rightSide);
     }
 
     function formatShortName(fullName) {
         if (!fullName) return '';
         const parts = fullName.trim().split(/\s+/);
-        if (parts.length >= 4) {
-            return `${parts[0]} ${parts[1]} ${parts[parts.length - 1]}`;
-        }
+        if (parts.length >= 4) return `${parts[0]} ${parts[1]} ${parts[parts.length - 1]}`;
         return fullName;
     }
 
     function formatFirstAndLastName(fullName) {
         if (!fullName) return '';
         const parts = fullName.trim().split(/\s+/);
-        if (parts.length > 1) {
-            return `${parts[0]} ${parts[parts.length - 1]}`;
-        }
+        if (parts.length > 1) return `${parts[0]} ${parts[parts.length - 1]}`;
         return fullName;
     }
+
+    function isGroup(task) { return DEFAULT_GROUPS.includes(task) || customGroupsList.includes(task); }
+    function isBreak(task) { return DEFAULT_BREAKS.includes(task) || customBreaksList.includes(task); }
 
     function renderTransferLists() {
         const pList = document.getElementById('list-pool');
@@ -881,12 +842,16 @@
         } else {
             const sortedChosen = [...chosen].sort((a,b) => a.task.localeCompare(b.task, 'ar'));
             sortedChosen.forEach((e) => {
-                const isAbsent = e.task === "بدون مهام/غياب";
+                let badgeClass = '';
+                if (e.task === "بدون مهام/غياب") badgeClass = 'absent-badge';
+                else if (isGroup(e.task)) badgeClass = 'group-badge';
+                else if (isBreak(e.task)) badgeClass = 'break-badge';
+
                 const div = document.createElement('div');
                 div.className = 'list-item-compact'; 
                 div.innerHTML = `
                     <div style="font-weight:800;">${formatShortName(e.name)}</div>
-                    <div class="task-badge ${isAbsent ? 'absent-badge' : ''}">${e.task}</div>
+                    <div class="task-badge ${badgeClass}">${e.task}</div>
                 `;
                 div.onclick = () => unassignPerson(e.id);
                 cList.appendChild(div);
@@ -899,18 +864,17 @@
 
     function assignPerson(emp) {
         if (!currentTask) {
-            alert("الرجاء اختيار كاونتر أو مهمة من الأعلى قبل اختيار الاسم.");
+            alert("الرجاء اختيار هدف من الأعلى قبل تحديد الاسم.");
             return;
         }
 
+        // تطبيق الحد 3 فقط على الكاونترات، وتجاهل المجموعات والبريكات والمهام
         if (currentTask.startsWith('كاونتر')) {
             const currentCount = chosen.filter(x => x.task === currentTask).length;
             if (currentCount >= 3) {
                 const confirmAdd = confirm(`هذا الكاونتر يحتوي على ${currentCount} أفراد مسبقاً، هل تريد إضافة هذا الاسم معهم؟\n\n- اضغط (موافق) للإضافة.\n- اضغط (إلغاء) للتراجع.`);
                 if (!confirmAdd) {
-                    currentTask = null;
-                    selectedCountersForMerge = [];
-                    renderCounterStrip();
+                    currentTask = null; selectedCountersForMerge = []; renderCounterStrip();
                     return;
                 }
             }
@@ -922,8 +886,7 @@
         if (currentTask.startsWith('كاونتر')) {
             const newCount = chosen.filter(x => x.task === currentTask).length;
             if (newCount >= 3) {
-                currentTask = null;
-                selectedCountersForMerge = [];
+                currentTask = null; selectedCountersForMerge = [];
             }
         }
 
@@ -956,9 +919,15 @@
     function generateStructuredData() {
         let cardsMap = {}; 
         let tasksMap = {}; 
+        let groupsMap = {};
+        let breaksMap = {};
 
         chosen.forEach(p => {
-            if (p.task === "بدون مهام/غياب") return; 
+            if (p.task === "بدون مهام/غياب") {
+                 if(!tasksMap[p.task]) tasksMap[p.task] = { title: p.task, people: [] };
+                 tasksMap[p.task].people.push(p);
+                 return;
+            }
 
             if(p.task.startsWith('كاونتر')) {
                 if(!cardsMap[p.task]) {
@@ -968,17 +937,27 @@
                     cardsMap[p.task] = { id: p.task, nums: nums, type: isMerged ? 'merged' : 'single', people: [] };
                 }
                 cardsMap[p.task].people.push(p);
+            } else if (isGroup(p.task)) {
+                if(!groupsMap[p.task]) groupsMap[p.task] = { title: p.task, people: [] };
+                groupsMap[p.task].people.push(p);
+            } else if (isBreak(p.task)) {
+                if(!breaksMap[p.task]) breaksMap[p.task] = { title: p.task, people: [] };
+                breaksMap[p.task].people.push(p);
             } else {
-                if(!tasksMap[p.task]) {
-                    tasksMap[p.task] = { title: p.task, people: [] };
-                }
+                if(!tasksMap[p.task]) tasksMap[p.task] = { title: p.task, people: [] };
                 tasksMap[p.task].people.push(p);
             }
         });
 
+        // ترتيب المجموعات والبريكات لضمان التناسق
+        const allGroups = [...DEFAULT_GROUPS, ...customGroupsList];
+        const allBreaks = [...DEFAULT_BREAKS, ...customBreaksList];
+
         return { 
             cards: Object.values(cardsMap).sort((a,b) => a.nums[0] - b.nums[0]), 
-            tasks: Object.values(tasksMap) 
+            tasks: Object.values(tasksMap),
+            groups: Object.values(groupsMap).sort((a,b) => allGroups.indexOf(a.title) - allGroups.indexOf(b.title)),
+            breaks: Object.values(breaksMap).sort((a,b) => allBreaks.indexOf(a.title) - allBreaks.indexOf(b.title))
         };
     }
 
@@ -987,19 +966,19 @@
         const countSpan = document.getElementById('quickPreviewCount');
         
         const data = generateStructuredData();
-        const allItems = [...data.cards, ...data.tasks];
+        const allItems = [...data.cards, ...data.tasks, ...data.groups, ...data.breaks];
         
-        countSpan.textContent = `(${allItems.length} عناصر)`;
+        countSpan.textContent = `(${chosen.length} موزع)`;
         grid.innerHTML = '';
 
         if(allItems.length === 0) {
-            grid.innerHTML = `<div style="width:100%; text-align:center; color:#94a3b8; font-size:0.75rem; padding:10px;">فارغ (الأشخاص بدون مهام/غياب لا يظهرون هنا)</div>`;
+            grid.innerHTML = `<div style="width:100%; text-align:center; color:#94a3b8; font-size:0.75rem; padding:10px;">لم يتم توزيع أحد (الغياب لا يظهر هنا)</div>`;
             return;
         }
 
         data.cards.forEach(c => {
             const title = c.type === 'merged' ? `كاونتر ${c.nums[0]} & ${c.nums[1]}` : `كاونتر ${c.nums[0]}`;
-            const names = c.people.map(p => formatFirstAndLastName(p.name)).join(' + ');
+            const names = c.people.map(p => formatFirstAndLastName(p.name)).join('<br>');
             grid.innerHTML += `
                 <div class="mini-counter-card">
                     <div class="mini-counter-title">${title}</div>
@@ -1008,8 +987,29 @@
             `;
         });
 
+        data.groups.forEach(g => {
+            const names = g.people.map(p => formatFirstAndLastName(p.name)).join('<br>');
+            grid.innerHTML += `
+                <div class="mini-counter-card" style="border-top:2px solid var(--violet)">
+                    <div class="mini-counter-title" style="color:var(--violet)">${g.title} (${g.people.length})</div>
+                    <div class="mini-counter-names">${names || 'فارغ'}</div>
+                </div>
+            `;
+        });
+
+        data.breaks.forEach(b => {
+            const names = b.people.map(p => formatFirstAndLastName(p.name)).join('<br>');
+            grid.innerHTML += `
+                <div class="mini-counter-card" style="border-top:2px solid var(--orange)">
+                    <div class="mini-counter-title" style="color:var(--orange)">${b.title} (${b.people.length})</div>
+                    <div class="mini-counter-names">${names || 'فارغ'}</div>
+                </div>
+            `;
+        });
+
         data.tasks.forEach(t => {
-            const names = t.people.map(p => formatFirstAndLastName(p.name)).join(' + ');
+            if (t.title === "بدون مهام/غياب") return;
+            const names = t.people.map(p => formatFirstAndLastName(p.name)).join('<br>');
             grid.innerHTML += `
                 <div class="mini-counter-card" style="border-top:2px solid var(--teal)">
                     <div class="mini-counter-title" style="color:var(--teal)">${t.title}</div>
@@ -1045,7 +1045,10 @@
     function populatePDF(data) {
       const dateEl = document.getElementById('pdfDateStr');
       const infoEl = document.getElementById('pdfFilterInfo');
+      
       const countersBody = document.getElementById('pdf-counters-horizontal-body');
+      const groupsBody = document.getElementById('pdf-groups-body');
+      const breaksBody = document.getElementById('pdf-breaks-body');
       const tasksBody = document.getElementById('pdf-tasks-body');
 
       dateEl.innerText = `التاريخ: ${new Date().toLocaleDateString('ar-SA')}`;
@@ -1055,16 +1058,11 @@
         <div><strong>عدد القوة:</strong> ${document.getElementById('forceCountInput').value || '-'}</div>
       `;
 
-      countersBody.innerHTML = '';
-      tasksBody.innerHTML = '';
+      countersBody.innerHTML = ''; groupsBody.innerHTML = ''; breaksBody.innerHTML = ''; tasksBody.innerHTML = '';
 
+      // 1. الكاونترات
       if (data.cards.length === 0) {
-        countersBody.innerHTML = `
-          <tr><td class="row-label">رقم الكونتر</td><td colspan="10" style="text-align:center;">لا يوجد</td></tr>
-          <tr><td class="row-label">الفرد الأول</td><td colspan="10" style="text-align:center;">-</td></tr>
-          <tr><td class="row-label">الفرد الثاني</td><td colspan="10" style="text-align:center;">-</td></tr>
-          <tr><td class="row-label">فرد التغطية</td><td colspan="10" style="text-align:center;">-</td></tr>
-        `;
+        countersBody.innerHTML = `<tr><td colspan="10" style="text-align:center;">لا يوجد كاونترات موزعة</td></tr>`;
       } else {
         const trCounters = document.createElement('tr'); trCounters.innerHTML = `<td class="row-label">رقم الكونتر</td>`;
         const trFirst   = document.createElement('tr'); trFirst.innerHTML = `<td class="row-label">الفرد الأول</td>`;
@@ -1100,20 +1098,43 @@
             trFirst.appendChild(tdFirst); trSecond.appendChild(tdSecond); trCover.appendChild(tdCover);
           }
         });
-
         countersBody.appendChild(trCounters); countersBody.appendChild(trFirst); countersBody.appendChild(trSecond); countersBody.appendChild(trCover);
       }
 
+      // 2. المجموعات
+      if(data.groups.length > 0) {
+          document.getElementById('pdf-groups-section').style.display = 'block';
+          data.groups.forEach(g => {
+            const namesHtml = g.people.map(p => `<span style="display:inline-block; padding:2px 8px; background:#f1f5f9; border-radius:4px; margin:2px;">${formatShortName(p.name)}</span>`).join(' ');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="pdf-extra-label">${g.title}</td><td class="name-cell" style="text-align:right;">${namesHtml || '-'}</td>`;
+            groupsBody.appendChild(tr);
+          });
+      } else {
+          document.getElementById('pdf-groups-section').style.display = 'none';
+      }
+
+      // 3. البريكات
+      if(data.breaks.length > 0) {
+          document.getElementById('pdf-breaks-section').style.display = 'block';
+          data.breaks.forEach(b => {
+            const namesHtml = b.people.map(p => `<span style="display:inline-block; padding:2px 8px; background:#fff7ed; border-radius:4px; margin:2px;">${formatShortName(p.name)}</span>`).join(' ');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="pdf-extra-label">${b.title}</td><td class="name-cell" style="text-align:right;">${namesHtml || '-'}</td>`;
+            breaksBody.appendChild(tr);
+          });
+      } else {
+          document.getElementById('pdf-breaks-section').style.display = 'none';
+      }
+
+      // 4. المهام الإضافية
       if (data.tasks.length === 0) {
         tasksBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">لا توجد مهام إضافية</td></tr>`;
       } else {
         data.tasks.forEach(task => {
-          const namesHtml = task.people.map(p => `<div>${formatShortName(p.name)}</div>`).join('');
+          const namesHtml = task.people.map(p => `<span style="display:inline-block; padding:2px 8px; background:#f8fafc; border-radius:4px; margin:2px;">${formatShortName(p.name)}</span>`).join(' ');
           const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="pdf-extra-label">${task.title}</td>
-            <td class="name-cell" style="text-align:right; padding-right:15px;">${namesHtml || '-'}</td>
-          `;
+          tr.innerHTML = `<td class="pdf-extra-label">${task.title}</td><td class="name-cell" style="text-align:right;">${namesHtml || '-'}</td>`;
           tasksBody.appendChild(tr);
         });
       }
