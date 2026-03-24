@@ -76,18 +76,19 @@ async function fetchLiveIndividuals() {
         }
     } catch (e) { console.error("فشل جلب الأفراد:", e); }
 }
-
 // === مراقبة جميع حقول الأسماء (الضباط والأفراد) ===
 const inputGroups = [
     // حقول الضباط
-    { type: 'officer', name: 'officer-name', rank: 'officer-rank' },
-    { type: 'officer', name: 'commander-name', rank: 'commander-rank' },
-    { type: 'officer', name: 'ListOfficerName', rank: 'ListOfficerRank' },
-    { type: 'officer', name: 'AdminOfficerName', rank: 'AdminOfficerRank' },
-    // حقول الأفراد
-    { type: 'individual', name: 'IndividualName', rank: 'IndividualRank', idField: 'IndividualID' },
-    { type: 'individual', name: 'IndividualName2', rank: 'IndividualRank2', idField: 'IndividualID2' },
-    { type: 'individual', name: 'IndividualName3', rank: 'IndividualRank3', idField: 'IndividualID3' }
+    // لاحظ إضافة canInsert: true لحقل الضابط فقط، و false للبقية لمنع حفظها في القاعدة
+    { type: 'officer', name: 'officer-name', rank: 'officer-rank', canInsert: true },
+    { type: 'officer', name: 'commander-name', rank: 'commander-rank', canInsert: false },
+    { type: 'officer', name: 'ListOfficerName', rank: 'ListOfficerRank', canInsert: false },
+    { type: 'officer', name: 'AdminOfficerName', rank: 'AdminOfficerRank', canInsert: false },
+    
+    // حقول الأفراد (مسموح لها بالإضافة للقاعدة)
+    { type: 'individual', name: 'IndividualName', rank: 'IndividualRank', idField: 'IndividualID', canInsert: true },
+    { type: 'individual', name: 'IndividualName2', rank: 'IndividualRank2', idField: 'IndividualID2', canInsert: true },
+    { type: 'individual', name: 'IndividualName3', rank: 'IndividualRank3', idField: 'IndividualID3', canInsert: true }
 ];
 
 inputGroups.forEach(group => {
@@ -97,7 +98,7 @@ inputGroups.forEach(group => {
     
     if (nameInput && rankInput) {
         
-        // التعبئة التلقائية السريعة
+        // التعبئة التلقائية السريعة (ستستمر بالعمل لجميع الخانات)
         nameInput.addEventListener('change', () => {
             const val = nameInput.value.trim();
             if (group.type === 'officer') {
@@ -114,6 +115,9 @@ inputGroups.forEach(group => {
 
         // دالة الفحص (تشتغل عند الخروج من حقل الرتبة أو رقم الهوية)
         const handleBlur = () => {
+            // ✅ التعديل الجوهري: إيقاف الدالة فوراً إذا كان الحقل غير مصرح له بالحفظ في القاعدة
+            if (!group.canInsert) return; 
+
             const nameVal = nameInput.value.trim();
             const rankVal = rankInput.value.trim();
             const idVal = idInput ? idInput.value.trim() : "";
@@ -125,7 +129,7 @@ inputGroups.forEach(group => {
                 if (!liveOfficersList.some(o => o.name === nameVal)) {
                     liveOfficersList.push({ name: nameVal, rank: rankVal });
                     
-                    // 💡 السحر هنا: حفظ الاسم فوراً في الذاكرة ليعمل البرنامج بدون إنترنت وبعد التثبيت!
+                    // حفظ الاسم فوراً في الذاكرة
                     localStorage.setItem('local_officers_db', JSON.stringify(liveOfficersList));
                     updateOfficersUI(); // تحديث الواجهة مباشرة
                     
