@@ -1,31 +1,70 @@
+/**
+ * ====================================================================
+ * ملف جافاسكربت الرئيسي - واجهة المستخدم (Departure)
+ * تم الإصلاح والتنظيف ليتوافق مع بيئة Electron
+ * ====================================================================
+ */
+
+// ======================== 1. نظام الحماية والرقم السري ===========================
 const storedHash = "96cae35ce8a9b0244178bf28e4966c2ce1b8385723a96a6b838858cdd6ca0a1e"; 
 
-// دالة تُرجع SHA-256 للنص المُدخل بصيغة hex
 async function sha256Hex(text) {
-  const data = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const data = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-// ======================== نظام صندوق الاقتراحات (Supabase) ===========================
+async function checkPassword() {
+    const passwordInput = document.getElementById("page-password");
+    const errorMsg = document.getElementById("error-msg");
+    const container = document.getElementById("password-container");
+
+    if (!passwordInput || !errorMsg || !container) return;
+
+    try {
+        const inputHash = await sha256Hex(passwordInput.value);
+        if (inputHash === storedHash) {
+            localStorage.setItem("departureAccess", "granted");
+            container.style.display = "none";
+        } else {
+            errorMsg.textContent = "الرقم السري غير صحيح، في حال عدم توفر الرقم السري التواصل معي";
+            errorMsg.style.display = "block";
+            passwordInput.value = "";
+        }
+    } catch (e) {
+        console.error("Hash error:", e);
+        errorMsg.textContent = "حدث خطأ تقني أثناء التحقق. جرّب تحديث الصفحة.";
+        errorMsg.style.display = "block";
+    }
+}
+
+function redirectToExit() {
+    window.location.href = "passport-d.html";
+}
+
+// ======================== 2. صندوق الاقتراحات والمساعدة ===========================
 const SUPABASE_URL = "https://dkrtiuelioyshbjoocqm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_ts5SGrWhODsG6EH5dUt9Wg_KUvsf-CF";
 
 async function sendFeedbackToSupabase() {
-    const type = document.getElementById("feedback-type").value;
-    const message = document.getElementById("feedback-message").value.trim();
+    const typeEl = document.getElementById("feedback-type");
+    const messageEl = document.getElementById("feedback-message");
     const statusMsg = document.getElementById("feedback-status-msg");
     const submitBtn = document.getElementById("submit-feedback-btn");
 
+    if (!typeEl || !messageEl || !statusMsg || !submitBtn) return;
+
+    const type = typeEl.value;
+    const message = messageEl.value.trim();
+
     if (!message) {
         statusMsg.style.display = "block";
-        statusMsg.style.color = "#d32f2f"; // أحمر
+        statusMsg.style.color = "#d32f2f"; 
         statusMsg.textContent = "❗ يرجى كتابة التفاصيل قبل الإرسال.";
         return;
     }
 
-    // تغيير حالة الزر أثناء الإرسال
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
     statusMsg.style.display = "none";
@@ -35,66 +74,47 @@ async function sendFeedbackToSupabase() {
             method: "POST",
             headers: {
                 "apikey": SUPABASE_KEY,
-                // السطر المهم جداً: يجب تمرير المفتاح في Authorization كـ Bearer
                 "Authorization": `Bearer ${SUPABASE_KEY}`,
                 "Content-Type": "application/json",
                 "Prefer": "return=minimal" 
             },
-            body: JSON.stringify({
-                type: type,
-                message: message
-            })
+            body: JSON.stringify({ type: type, message: message })
         });
 
         if (response.ok) {
             statusMsg.style.display = "block";
-            statusMsg.style.color = "#1e5631"; // أخضر
+            statusMsg.style.color = "#1e5631"; 
             statusMsg.innerHTML = "✅ تم الإرسال بنجاح، شكراً لك!";
-            document.getElementById("feedback-message").value = ""; // تفريغ الحقل
+            messageEl.value = ""; 
         } else {
-            // جلب الخطأ التفصيلي من السيرفر
             const errorData = await response.json();
-            console.error("Supabase Error Details:", errorData);
-            throw new Error(errorData.message || "تأكد من إعدادات الـ RLS في Supabase.");
+            throw new Error(errorData.message || "فشل الاتصال بقاعدة البيانات.");
         }
     } catch (error) {
-        console.error("Fetch Error:", error);
         statusMsg.style.display = "block";
         statusMsg.style.color = "#d32f2f";
         statusMsg.textContent = "❌ حدث خطأ: " + error.message;
     } finally {
-        // إعادة الزر لحالته الطبيعية
         submitBtn.disabled = false;
         submitBtn.textContent = "إرسال الرسالة";
-        
-        // إخفاء الرسالة بعد 6 ثواني
-        setTimeout(() => {
-            statusMsg.style.display = "none";
-        }, 6000);
+        setTimeout(() => { statusMsg.style.display = "none"; }, 6000);
     }
 }
-// دالة لفتح وإغلاق صندوق الاقتراحات العائم
+
 function toggleFeedbackBox() {
     const box = document.getElementById('feedback-popup-box');
-    box.classList.toggle('show');
+    if (box) box.classList.toggle('show');
 }
-  // تحقق من وجود إذن مسبق
-  window.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("departureAccess") === "granted") {
-      document.getElementById("password-container").style.display = "none";
-    }
-  });
-// ======================== الوضع الداكن (Theme Toggle - Time Based) ===========================
-// ======================== الوضع الداكن الذكي (يعود للنهاري تلقائياً) ===========================
-document.addEventListener("DOMContentLoaded", () => {
+
+// ======================== 3. الوضع الداكن (Dark Theme) ===========================
+function initThemeManager() {
     const btn = document.getElementById("theme-toggle");
     if (!btn) return;
 
     const DARK_CLASS = "theme-dark";
     const OVERRIDE_KEY = "theme_manual_choice"; 
-    const PHASE_KEY = "theme_time_phase"; // لتسجيل هل نحن في ليل أم نهار
+    const PHASE_KEY = "theme_time_phase"; 
 
-    // دالة لتطبيق الألوان وتغيير شكل الزر
     function applyTheme(makeDark) {
         if (makeDark) {
             document.body.classList.add(DARK_CLASS);
@@ -105,27 +125,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // دالة فحص الوقت وتطبيق الوضع
     function checkAndApplyTime() {
         const hour = new Date().getHours();
-        
-        // تحديد هل الوقت الحالي ليل أم نهار
         const isNight = (hour >= 19 || hour < 6);
         const currentPhase = isNight ? "night" : "day";
-
-        // جلب الفترة الزمنية المسجلة سابقاً
         const savedPhase = localStorage.getItem(PHASE_KEY);
 
-        // إذا تغيرت الفترة (مثلاً دخلنا الساعة 6 صباحاً أو 7 مساءً)
         if (savedPhase !== null && savedPhase !== currentPhase) {
-            // نمسح الاختيار اليدوي لكي يستعيد النظام السيطرة التلقائية
             localStorage.removeItem(OVERRIDE_KEY);
             localStorage.setItem(PHASE_KEY, currentPhase);
         } else if (savedPhase === null) {
             localStorage.setItem(PHASE_KEY, currentPhase);
         }
 
-        // تطبيق الوضع بناءً على الاختيار اليدوي (إن وُجد) أو الوقت الفعلي
         const userChoice = localStorage.getItem(OVERRIDE_KEY);
         if (userChoice !== null) {
             applyTheme(userChoice === "dark");
@@ -134,360 +146,160 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 1. تشغيل الفحص فور فتح الصفحة
     checkAndApplyTime();
-
-    // 2. فحص الوقت كل دقيقة (لكي يتحول تلقائياً إذا تركت الصفحة مفتوحة وجاءت الساعة 6ص أو 7م)
     setInterval(checkAndApplyTime, 60000);
 
-    // 3. تشغيل الزر عند النقر اليدوي
     btn.addEventListener("click", (e) => {
         e.preventDefault(); 
-        
         const isCurrentlyDark = document.body.classList.contains(DARK_CLASS);
-        const newState = !isCurrentlyDark; // عكس الحالة الحالية
+        const newState = !isCurrentlyDark; 
         
         applyTheme(newState);
-        
-        // حفظ اختيارك اليدوي + حفظ الفترة الحالية
         localStorage.setItem(OVERRIDE_KEY, newState ? "dark" : "light");
         
         const hour = new Date().getHours();
         const currentPhase = (hour >= 19 || hour < 6) ? "night" : "day";
         localStorage.setItem(PHASE_KEY, currentPhase);
     });
-});
-// ===================================================================================
-
-
-async function checkPassword() {
-  const password = document.getElementById("page-password").value;
-  const errorMsg = document.getElementById("error-msg");
-
-  try {
-    const inputHash = await sha256Hex(password);
-    if (inputHash === storedHash) {
-      localStorage.setItem("departureAccess", "granted");
-      document.getElementById("password-container").style.display = "none";
-    } else {
-      errorMsg.textContent = "الرقم السري غير صحيح، في حال عدم توفر الرقم السري التواصل معي";
-      errorMsg.style.display = "block";
-      document.getElementById("page-password").value = "";
-    }
-  } catch (e) {
-    // في حال عدم دعم Web Crypto (نادرًا جدًا)
-    console.error("Hash error:", e);
-    errorMsg.textContent = "حدث خطأ تقني أثناء التحقق. جرّب تحديث الصفحة.";
-    errorMsg.style.display = "block";
-  }
 }
-// توسّع الشريط الجانبي عند المرور بالماوس وهو مخفي (hidden)
-// جعل الشريط الجانبي يبدأ كأيقونات فقط + توسع عند الـ hover
-document.addEventListener("DOMContentLoaded", function () {
-  const sidebar = document.getElementById("sidebar");
-  if (!sidebar) return;
 
-  // ✅ عند فتح الصفحة: أيقونات فقط
-  sidebar.classList.add("hidden");
-  sidebar.classList.remove("expanded");
+// ======================== 4. الشريط الجانبي (Sidebar) ===========================
+function initSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    if (!sidebar) return;
 
-  let hoverTimer = null;
-
-  // عند دخول الماوس على الشريط
-  sidebar.addEventListener("mouseenter", function () {
-    if (hoverTimer) clearTimeout(hoverTimer);
-
-    hoverTimer = setTimeout(() => {
-      // نزيل hidden ونفعّل expanded ليظهر النص ويكبر الشريط
-      sidebar.classList.remove("hidden");
-      sidebar.classList.add("expanded");
-    }, 120); // تأخير بسيط فقط لتفادي الوميض
-  });
-
-  // عند خروج الماوس من الشريط
-  sidebar.addEventListener("mouseleave", function () {
-    if (hoverTimer) {
-      clearTimeout(hoverTimer);
-      hoverTimer = null;
-    }
-
-    // نرجع للوضع المصغّر (أيقونات فقط)
-    sidebar.classList.remove("expanded");
     sidebar.classList.add("hidden");
-  });
-
-  // عندما يخرج الماوس من الشريط
-  sidebar.addEventListener("mouseleave", function () {
-    if (hoverTimer) {
-      clearTimeout(hoverTimer);
-      hoverTimer = null;
-    }
-
-    // شيل التوسيع دائماً
     sidebar.classList.remove("expanded");
 
-    // لو كان الشريط hidden قبل دخول الماوس → رجّعه hidden
-    if (wasHiddenOnEnter) {
-      sidebar.classList.add("hidden");
-    }
-  });
-});
+    let hoverTimer = null;
 
+    sidebar.addEventListener("mouseenter", function () {
+        if (hoverTimer) clearTimeout(hoverTimer);
+        hoverTimer = setTimeout(() => {
+            sidebar.classList.remove("hidden");
+            sidebar.classList.add("expanded");
+        }, 120); 
+    });
 
+    sidebar.addEventListener("mouseleave", function () {
+        if (hoverTimer) {
+            clearTimeout(hoverTimer);
+            hoverTimer = null;
+        }
+        sidebar.classList.remove("expanded");
+        sidebar.classList.add("hidden");
+    });
+}
 
-  function redirectToExit() {
-    window.location.href = "passport-d.html";
-  }
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar) sidebar.classList.toggle("hidden");
+}
 
+function setActive(element) {
+    document.querySelectorAll(".sidebar li").forEach(item => item.classList.remove("active"));
+    if (element) element.classList.add("active");
+}
 
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    const today = new Date();
-    const hours = today.getHours();
-
-    if (hours >= 0 && hours < 5) {
-        today.setDate(today.getDate() - 1);
-        document.getElementById("timeNote").style.display = "inline";
-    }
-
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    let formattedDate = today.toLocaleDateString('ar-SA', options).replace(/\d+/g, d => ('0' + d).slice(-2));
-    const weekday = today.toLocaleDateString('ar-SA', { weekday: 'long' });
-
-    document.getElementById("custom-hijri-date").value = toArabicNumbers(formattedDate);
-    document.getElementById("custom-weekday").value = weekday;
-});
-
+// ======================== 5. الوقت والتاريخ ===========================
 function toArabicNumbers(str) {
     return str.replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 }
-//الخطوط
-function openFolder() {
-  if (window.electronAPI && window.electronAPI.openFontFolder) {
-    window.electronAPI.openFontFolder();
-  } else {
-    alert("⚠️ لا يمكن فتح المجلد، تحقق من إعدادات التطبيق");
-  }
-}
-// دالة لإظهار أو إخفاء الشريط الجانبي
-function toggleSidebar() {
-    var sidebar = document.getElementById("sidebar");
-    var content = document.querySelector(".content");
-    sidebar.classList.toggle("hidden");
-    // إذا كانت هناك أي إجراءات أخرى عند إظهار أو إخفاء الشريط الجانبي، يمكن إضافتها هنا
-}
-window.addEventListener("load", function () {
-    document.querySelectorAll('.quick-links a').forEach(link => {
-        link.addEventListener('click', function(event) {
-            event.preventDefault();
 
-            const text = this.textContent.trim();
-            const searchInput = document.getElementById("search-input");
-            searchInput.value = text;
-
-            performSearch();
-        });
-    });
-});
-document.addEventListener("DOMContentLoaded", () => {
- 
-autoFillOfficerDetails();
-
-  if (!button) {
-    console.error("❌ الزر لم يتم العثور عليه!");
-    return;
-  }
-
-  button.addEventListener("click", () => {
-    console.log("📥 تم الضغط على زر الإرسال");
-
-    if (!name.value || !rank.value || !shift.value || !hall.value) {
-      alert("❗ يرجى تعبئة جميع الحقول");
-      return;
+function initDateTime() {
+    const dateDisplay = document.getElementById("date");
+    if (dateDisplay) {
+        const today = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateDisplay.textContent = today.toLocaleDateString('ar-SA', options);
     }
 
-    const fullData = `ComboBox1=${shift.value}\nComboBox2=${hall.value}\nComboBox5=${rank.value}\nComboBox6=${name.value}`;
-
-    if (window.electronAPI && window.electronAPI.saveShift) {
-      window.electronAPI.saveShift(fullData);
-      alert("✅ تم الحفظ بنجاح وادراج المعلومات في كل الخطابات");
-    } else {
-      console.error("⚠️ لم يتم تحميل electronAPI");
-      alert("⚠️ فشل الاتصال بـ Electron لحفظ البيانات.");
-    }
-  });
-});
-// دالة لتعيين العنصر النشط في الشريط الجانبي
-function setActive(element) {
-    var items = document.querySelectorAll(".sidebar li");
-    items.forEach(function(item) {
-        item.classList.remove("active");
-    });
-    element.classList.add("active");
-}
-
-// دالة لفتح ملف PDF في نافذة جديدة
-function openPDF(event) {
-    event.preventDefault();
-    var url = event.target.closest("a").href;
-    var pdfWindow = window.open(url, '_blank');
-    pdfWindow.focus();
-}
-
-// دالة لتغيير رابط ملف العرض عند اختيار ملف جديد
-function changeFile(event, viewLinkId) {
-    var fileInput = event.target;
-    var file = fileInput.files[0];
-    if (file) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            var viewLink = document.getElementById(viewLinkId);
-            viewLink.href = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-//تفريغ الخانات
-document.addEventListener('DOMContentLoaded', () => {
-  const clearBtn = document.getElementById('clear-officer-info');
-  const form = document.querySelector('.shift-form');
-
-  if (clearBtn && form) {
-    clearBtn.addEventListener('click', () => {
-      form.querySelectorAll('input').forEach(input => {
-        if (
-          input.id !== 'custom-hijri-date' &&
-          input.id !== 'custom-weekday'
-        ) {
-          input.value = '';
-        }
-      });
-    });
-  }
-
-  clearShiftFormAtSpecificTimes(); // ← يستمر عمل التفريغ التلقائي أيضًا
-});
-
-
-// دالة لإعداد التاريخ الحالي وعرضه في العنصر الذي يحتوي على المعرف "date"
-document.addEventListener("DOMContentLoaded", function() {
-    var today = new Date();
-    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    var formattedDate = today.toLocaleDateString('ar-SA', options);
-    document.getElementById("date").textContent = formattedDate;
-});
-setInterval(() => {
-    const now = new Date();
-    const hours = now.getHours();
-
-    if ((hours === 0 || hours < 5) || (hours === 5 && minutes < 40)) {
-    now.setDate(now.getDate() - 1);
-        const timeNote = document.getElementById("timeNote");
-        if (timeNote) timeNote.style.display = "inline";
-    } else {
-        if (timeNote) timeNote.style.display = "none";
-    }
-
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    const formattedDate = now.toLocaleDateString('ar-SA', options).replace(/\d+/g, d => ('0' + d).slice(-2));
-    const weekday = now.toLocaleDateString('ar-SA', { weekday: 'long' });
-
-    const dateEl = document.getElementById("custom-hijri-date");
-    const dayEl = document.getElementById("custom-weekday");
-
-    if (dateEl && dayEl) {
-        dateEl.value = toArabicNumbers(formattedDate);
-        dayEl.value = weekday;
-    }
-}, 1000); // ← كل 1000 ملي ثانية = 1 ثانية
-
-// دالة لتفعيل حقل إدخال الملف عند النقر على الزر
-function toggleFileInput(button) {
-    var fileInput = button.nextElementSibling;
-    fileInput.click();
-}
-document.addEventListener("DOMContentLoaded", function() {
-    var unavailableButtons = document.querySelectorAll(".unavailable");
-
-    unavailableButtons.forEach(function(button) {
-        button.addEventListener("click", function(event) {
-            event.preventDefault();
-            alert("سوف يتم توفيره قريباً");
-        });
-    });
- });
-
-
-document.getElementById("print-button").addEventListener("click", function() {
-    window.print();
-});   
-let slideIndex = 0;
-const slides = document.querySelectorAll('.slide');
-const totalSlides = slides.length;
-
-function showSlide(index) {
-    if (index >= totalSlides) {
-        slideIndex = 0;
-    } else if (index < 0) {
-        slideIndex = totalSlides - 1;
-    } else {
-        slideIndex = index;
-    }
-    const offset = -slideIndex * 100;
-    document.querySelector('.slider').style.transform = `translateX(${offset}%)`;
-}
-
-function moveSlide(direction) {
-    showSlide(slideIndex + direction);
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-    showSlide(slideIndex);
-
-    // تعيين الحركة التلقائية كل 20 ثانية
     setInterval(() => {
-        moveSlide(1);
-    }, 20000);
-});
-document.getElementById("search-button").addEventListener("click", performSearch);
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes(); // تم إضافة المتغير الذي كان مفقوداً
 
-document.getElementById("search-input").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        performSearch();
-    }
-});
+        if ((hours === 0 || hours < 5) || (hours === 5 && minutes < 40)) {
+            now.setDate(now.getDate() - 1);
+            const timeNote = document.getElementById("timeNote");
+            if (timeNote) timeNote.style.display = "inline";
+        } else {
+            const timeNote = document.getElementById("timeNote");
+            if (timeNote) timeNote.style.display = "none";
+        }
 
+        const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+        const formattedDate = now.toLocaleDateString('ar-SA', options).replace(/\d+/g, d => ('0' + d).slice(-2));
+        const weekday = now.toLocaleDateString('ar-SA', { weekday: 'long' });
+
+        const dateEl = document.getElementById("custom-hijri-date");
+        const dayEl = document.getElementById("custom-weekday");
+
+        if (dateEl && dayEl) {
+            dateEl.value = toArabicNumbers(formattedDate);
+            dayEl.value = weekday;
+        }
+    }, 1000);
+}
+
+// ======================== 6. البحث والروابط السريعة ===========================
 function performSearch() {
-    var searchTerm = document.getElementById("search-input").value.toLowerCase();
-    // نبحث الآن في عناوين H3 داخل card-content
-    var headings = document.querySelectorAll(".card-content h3");
-    var found = false;
+    const searchInput = document.getElementById("search-input");
+    if (!searchInput) return;
+
+    const searchTerm = searchInput.value.toLowerCase();
+    const headings = document.querySelectorAll(".card-content h3");
+    let found = false;
 
     headings.forEach(function(heading) {
-        heading.style.backgroundColor = ""; // إعادة اللون الافتراضي
-
-        if (heading.textContent.toLowerCase().includes(searchTerm)) {
+        heading.style.backgroundColor = ""; 
+        if (searchTerm && heading.textContent.toLowerCase().includes(searchTerm)) {
             if (!found) {
                 heading.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 found = true;
             }
             heading.style.backgroundColor = "#badf19ff";
-            setTimeout(function() {
+            setTimeout(() => {
                 heading.style.backgroundColor = "";
-                document.getElementById("search-input").value = "";
+                searchInput.value = "";
             }, 7000);
         }
     });
 }
 
+function initSearchAndLinks() {
+    const searchBtn = document.getElementById("search-button");
+    const searchInput = document.getElementById("search-input");
 
+    if (searchBtn) searchBtn.addEventListener("click", performSearch);
+    if (searchInput) {
+        searchInput.addEventListener("keypress", function(event) {
+            if (event.key === "Enter") performSearch();
+        });
+    }
 
+    document.querySelectorAll('.quick-links a').forEach(link => {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            if (searchInput) {
+                searchInput.value = this.textContent.trim();
+                performSearch();
+            }
+        });
+    });
+}
 
+// ======================== 7. تفاعل واجهة Electron والطباعة ===========================
+function openFolder() {
+    if (window.electronAPI && window.electronAPI.openFontFolder) {
+        window.electronAPI.openFontFolder();
+    } else {
+        alert("⚠️ لا يمكن فتح المجلد، تحقق من إعدادات التطبيق");
+    }
+}
 
-// دالة الطباعة
 function printFile(filePath) {
-    var iframe = document.createElement('iframe');
+    const iframe = document.createElement('iframe');
     iframe.style.position = 'absolute';
     iframe.style.width = '0';
     iframe.style.height = '0';
@@ -497,170 +309,129 @@ function printFile(filePath) {
 
     iframe.onload = function() {
         iframe.contentWindow.print();
+        setTimeout(() => document.body.removeChild(iframe), 5000); // تنظيف الـ iframe بعد الطباعة
     };
 }
 
 function toggleInstructions() {
-  var content = document.getElementById("instruction-content");
-  var icon = document.getElementById("arrow-icon").firstElementChild;
-
-  if (content.style.display === "none") {
-    content.style.display = "block";
-    icon.classList.remove("fa-chevron-down");
-    icon.classList.add("fa-chevron-up");
-  } else {
-    content.style.display = "none";
-    icon.classList.remove("fa-chevron-up");
-    icon.classList.add("fa-chevron-down");
-  }
+    const content = document.getElementById("instruction-content");
+    const iconWrapper = document.getElementById("arrow-icon");
+    if (!content || !iconWrapper) return;
+    
+    const icon = iconWrapper.firstElementChild;
+    if (content.style.display === "none") {
+        content.style.display = "block";
+        icon.classList.replace("fa-chevron-down", "fa-chevron-up");
+    } else {
+        content.style.display = "none";
+        icon.classList.replace("fa-chevron-up", "fa-chevron-down");
+    }
 }
 
-// ======================== تحديث الملفات ===========================
-// رابط المستودع الأساسي على GitHub
-const repoBase = "https://raw.githubusercontent.com/saud5161/Special-document/main/";
-const filesJsonUrl = "files.json";
+function toggleHeadsetNotification(event) {
+    event.preventDefault();
+    const content = document.getElementById("headset-notification-content");
+    if (content) {
+        content.style.display = content.style.display === "none" ? "block" : "none";
+    }
+}
 
-// ملف الكاش المحلي (للتوافق فقط — لم نعد نستخدمه فعليًا)
-const localFilesJsonPath = path.join(__dirname, "files_local_cache.json");
+// ======================== 8. بيانات الأفراد (التعبئة التلقائية) ===========================
+function autoFillOfficerDetails() {
+    const officerMap = {
+        "ماجد عبدالعزيز السحيم": { rank: "نقيب", shift: "ا", hall: "3" },
+        "فيصل عبدالإله الهرف": { rank: "ملازم أول", shift: "د", hall: "1" }
+    };
 
-// التحديث الكامل لجميع الملفات عند النقر
-async function updateDocuments() {
-    if (!navigator.onLine) {
-        showMessage("⚠️ لا يوجد اتصال بالإنترنت", true);
-        return;
+    const officerInput = document.getElementById('officer-name');
+    const rankInput = document.getElementById('officer-rank');
+    const shiftInput = document.getElementById('shift-number');
+    const hallInput = document.getElementById('hall-number');
+
+    if (officerInput && rankInput && shiftInput && hallInput) {
+        officerInput.addEventListener('change', () => {
+            const selectedName = officerInput.value.trim();
+            const data = officerMap[selectedName];
+
+            if (data) {
+                rankInput.value = data.rank;
+                shiftInput.value = data.shift;
+                hallInput.value = data.hall;
+            } else {
+                rankInput.value = '';
+                shiftInput.value = '';
+                hallInput.value = '';
+            }
+        });
     }
 
-    showMessage("🔄 جاري التحديث...");
-
-    try {
-        // تحميل قائمة الملفات
-        const res = await fetch(filesJsonUrl);
-        if (!res.ok) throw new Error(`تعذر تحميل files.json: الحالة ${res.status}`);
-
-        const remoteFiles = await res.json();
-        const filePaths = Object.keys(remoteFiles);
-
-        for (let filePath of filePaths) {
-            const fileName = path.basename(filePath);
-
-            // تجاهل ملفات النظام
-            if (fileName.startsWith('~$') || fileName.toLowerCase() === 'desktop.ini') {
-                console.log(`⏭️ تم تجاهل الملف: ${filePath}`);
-                continue;
+    // زر إرسال البيانات
+    const saveButton = document.getElementById('save-officer-info');
+    if (saveButton) {
+        saveButton.addEventListener("click", () => {
+            if (!officerInput || !rankInput || !shiftInput || !hallInput || !officerInput.value || !rankInput.value || !shiftInput.value || !hallInput.value) {
+                alert("❗ يرجى تعبئة جميع الحقول");
+                return;
             }
 
-            const localPath = path.join(__dirname, filePath);
-            await downloadAndReplaceFile(repoBase + encodeURIComponent(filePath), localPath);
-        }
+            const fullData = `ComboBox1=${shiftInput.value}\nComboBox2=${hallInput.value}\nComboBox5=${rankInput.value}\nComboBox6=${officerInput.value}`;
 
-        // حفظ نسخة الكاش الجديدة
-        fs.writeFileSync(localFilesJsonPath, JSON.stringify(remoteFiles, null, 2));
-
-        showMessage(`✅ تم تحديث ${filePaths.length} ملف${filePaths.length > 1 ? 'ات' : ''}`);
-    } catch (error) {
-        console.error("❌ خطأ أثناء التحديث:", error);
-        showMessage("❌ حدث خطأ أثناء التحديث، الرجاء المحاولة لاحقًا", true);
+            if (window.electronAPI && window.electronAPI.saveShift) {
+                window.electronAPI.saveShift(fullData);
+                alert("✅ تم الحفظ بنجاح وإدراج المعلومات في كل الخطابات");
+            } else {
+                alert("⚠️ فشل الاتصال بـ Electron لحفظ البيانات.");
+            }
+        });
     }
 }
 
-// تحميل ملف وتخزينه
-async function downloadAndReplaceFile(fileUrl, localPath) {
-    const res = await fetch(fileUrl);
-    if (!res.ok) throw new Error(`تعذر تحميل الملف: ${fileUrl}`);
+function initFormClearing() {
+    const clearBtn = document.getElementById('clear-officer-info');
+    const form = document.querySelector('.shift-form');
 
-    const buffer = await res.arrayBuffer();
-    fs.mkdirSync(path.dirname(localPath), { recursive: true });
-    fs.writeFileSync(localPath, Buffer.from(buffer));
-}
-
-// عرض الرسائل على الواجهة
-function showMessage(message, isError = false) {
-    const el = document.getElementById("messageBox");
-    if (el) {
-        el.textContent = message;
-        el.style.color = isError ? "red" : "blue";
-    } else {
-        console.log(message);
+    if (clearBtn && form) {
+        clearBtn.addEventListener('click', () => {
+            form.querySelectorAll('input').forEach(input => {
+                if (input.id !== 'custom-hijri-date' && input.id !== 'custom-weekday') {
+                    input.value = '';
+                }
+            });
+        });
     }
 }
 
-
-
-
-async function downloadAndReplaceFile(fileUrl, localPath) {
-    const res = await fetch(fileUrl);
-    if (!res.ok) throw new Error(`تعذر تحميل الملف: ${fileUrl}`);
-
-    const buffer = await res.arrayBuffer();
-    fs.mkdirSync(path.dirname(localPath), { recursive: true });
-    fs.writeFileSync(localPath, Buffer.from(buffer));
-}
-
-function showMessage(message, isError = false) {
-    const el = document.getElementById("messageBox");
-    if (el) {
-        el.textContent = message;
-        el.style.color = isError ? "red" : "blue";
-    } else {
-        console.log(message);
-    }
-}
-
-setInterval(() => {
-    updateDocuments(true);
-}, 24 * 60 * 60 * 1000); // ← كل 24 ساعة = 86,400,000 مللي ثانية
-
-
+// ======================== 9. التهيئة عند تحميل الصفحة ===========================
 document.addEventListener("DOMContentLoaded", () => {
-    updateDocuments();
-});
-
-//معطيات الرتبة
-function autoFillOfficerDetails() {
-  const officerMap = {
-    "ماجد عبدالعزيز السحيم": {
-      rank: "نقيب",
-      shift: "ا",
-      hall: "3"
-    },
-    "فيصل عبدالإله الهرف": {
-      rank: "ملازم أول",
-      shift: "د",
-      hall: "1"
+    // 1. فحص إذن الدخول لتجاوز شاشة الرقم السري
+    if (localStorage.getItem("departureAccess") === "granted") {
+        const passContainer = document.getElementById("password-container");
+        if (passContainer) passContainer.style.display = "none";
     }
-  };
 
-  const officerInput = document.getElementById('officer-name');
-  const rankInput = document.getElementById('officer-rank');
-  const shiftInput = document.getElementById('shift-number');
-  const hallInput = document.getElementById('hall-number');
+    // 2. تشغيل وظائف الواجهة
+    initThemeManager();
+    initSidebar();
+    initDateTime();
+    initSearchAndLinks();
+    autoFillOfficerDetails();
+    initFormClearing();
 
-  if (officerInput) {
-    officerInput.addEventListener('change', () => {
-      const selectedName = officerInput.value.trim();
-      const data = officerMap[selectedName];
-
-      if (data) {
-        rankInput.value = data.rank;
-        shiftInput.value = data.shift;
-        hallInput.value = data.hall;
-      } else {
-        // إذا لم يكن الاسم موجودًا، فرّغ الحقول
-        rankInput.value = '';
-        shiftInput.value = '';
-        hallInput.value = '';
-      }
+    // 3. رسالة الأزرار غير المتوفرة
+    document.querySelectorAll(".unavailable").forEach(button => {
+        button.addEventListener("click", event => {
+            event.preventDefault();
+            alert("سوف يتم توفيره قريباً");
+        });
     });
-  }
-}
- window.addEventListener('pageshow', function(){
+
+    // 4. زر الطباعة العام
+    const printBtn = document.getElementById("print-button");
+    if (printBtn) printBtn.addEventListener("click", () => window.print());
+
+    // 5. مسح خيارات الوورد المحفوظة عند فتح الصفحة لضمان تجربة نظيفة
     try {
-      localStorage.removeItem('wordLinkChoice');
-      localStorage.removeItem('lastWordLinkChoice');
-    } catch(e){}
-  });
-
-
-
-
-
+        localStorage.removeItem('wordLinkChoice');
+        localStorage.removeItem('lastWordLinkChoice');
+    } catch(e) {}
+});
