@@ -677,6 +677,14 @@ ipcMain.on('save-shift', (event, data) => {
 
   fs.writeFileSync(filePath, encodedData);
 });
+// استقبال إشارة لتحديث الملفات المحلية فوراً
+ipcMain.on('trigger-sync', () => {
+    console.log("🔄 تم طلب تحديث الملفات المحلية... ننتظر ثانية لضمان الحفظ في السحابة");
+    setTimeout(() => {
+        const syncAllWithSupabase = require('./sync-supabase.js');
+        syncAllWithSupabase();
+    }, 1000); // 1000 تعني تأخير ثانية واحدة
+});
 ipcMain.on('send-date-info', (event, { date, day }) => {
   const filePath = path.join(app.getPath('downloads'), 'deta.txt');
 

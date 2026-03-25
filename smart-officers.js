@@ -179,7 +179,14 @@ async function processInsert(tableName, dataObj) {
                 },
                 body: JSON.stringify(dataObj)
             });
-            if (!response.ok) saveToOfflineQueue('INSERT', tableName, dataObj);
+            if (!response.ok) {
+                saveToOfflineQueue('INSERT', tableName, dataObj);
+            } else {
+                // ✨ تمت الإضافة بنجاح في السحابة! نطلب تحديث الملفات المحلية فوراً ✨
+                if (window.customAPI && window.customAPI.triggerSync) {
+                    window.customAPI.triggerSync();
+                }
+            }
         } catch (e) { saveToOfflineQueue('INSERT', tableName, dataObj); }
     } else {
         saveToOfflineQueue('INSERT', tableName, dataObj);
