@@ -1,0 +1,13 @@
+$word = New-Object -ComObject Word.Application
+$word.Visible = $false
+$word.DisplayAlerts = 0
+
+try {
+    $doc = $word.Documents.Open("C:\Users\smh20\Desktop\‏‏APPcopy\NORMAL.docm", $false, $false)
+    $word.Run("'C:\Users\smh20\Desktop\‏‏APPcopy\NORMAL.docm'!ForceCloseUserForms")
+    $doc.Close($true)
+} catch {
+    Write-Host "فشل تشغيل الماكرو: $($_.Exception.Message)"
+} finally {
+    $word.Quit()
+}
