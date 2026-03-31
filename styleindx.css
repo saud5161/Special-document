@@ -1375,3 +1375,32 @@ body.dark-mode .selected-banner strong {
     font-size: 24px;
   }
 }
+/* تنسيقات كشف الحالات (Kashf Leaves) */
+.kashf-status-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #dbe2ea;
+  background: #f8fafc;
+  color: #2c3e50;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-family: inherit;
+}
+.kashf-status-btn.active {
+  background: #1f3a5f;
+  color: #fff;
+  border-color: #1f3a5f;
+}
+.kashf-list-item {
+  background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;
+  font-size: 0.8rem; font-weight: 700; color: #1e293b; cursor: pointer; 
+  display: flex; justify-content: space-between; align-items: center; transition: 0.1s;
+}
+.kashf-list-item:active { transform: scale(0.98); }
+.kashf-list-item.selected { border-color: #16a34a; background: #f0fdf4; }
+.kashf-badge {
+  font-size: 0.65rem; background: #1f3a5f; color: #fff; padding: 3px 6px; border-radius: 4px;
+}
+.kashf-badge.absence { background: #dc2626; } /* أحمر للغياب */

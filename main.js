@@ -226,33 +226,46 @@ function createWindow() {
         checkForUpdates(); // التحقق من التحديثات عند تشغيل التطبيق
     });
 
-    // معالجة التنزيل التلقائي
-mainWindow.webContents.session.on('will-download', (event, item) => {
-  const downloads = app.getPath('downloads');
-  const targetPath = path.join(downloads, item.getFilename());
-  item.setSavePath(targetPath);
-
-  item.on('done', (e, state) => {
-    if (state === 'completed') {
-      // إذا كان هو form.txt نحذفه بعد دقيقة
-      if (item.getFilename() === 'form.txt') {
-        setTimeout(() => {
-          fs.unlink(targetPath, (err) => {
-            if (err && err.code !== 'ENOENT') {
-              console.error('❌ فشل حذف form.txt (will-download):', err);
-            } else {
-              console.log('✔ حُذف form.txt (will-download) بعد دقيقة');
-            }
-          });
-        }, 60_000);
-        return; // لا نفتحه ولا ننسخه
+   // معالجة التنزيل التلقائي (منع إضافة 1، ومنع الفتح لبعض الملفات، والحذف التلقائي)
+    mainWindow.webContents.session.on('will-download', (event, item) => {
+      const downloads = app.getPath('downloads');
+      
+      // 1. التقاط اسم الملف وتثبيته لمنع المتصفح من إضافة (1)
+      let fileName = item.getFilename();
+      if (fileName.includes('kashf_status')) {
+        fileName = 'kashf_status.txt';
       }
-      // السلوك الأصلي
-      openFile(targetPath);
-    }
-  });
-});
 
+      const targetPath = path.join(downloads, fileName);
+      
+      // 2. إجبار النظام على الحفظ بنفس المسار (للاستبدال الفوري)
+      item.setSavePath(targetPath);
+
+      item.on('done', (e, state) => {
+        if (state === 'completed') {
+          
+          // 3. استثناء form.txt و kashf_status.txt (كلاهما يخزن ولا يفتح، ويُحذف بعد 60 ثانية)
+          if (fileName === 'form.txt' || fileName === 'kashf_status.txt') {
+            console.log(`✔ حُفظ ${fileName} بصمت وباستبدال القديم، وسيتم حذفه بعد دقيقة`);
+            
+            // مؤقت الحذف (60 ألف ملي ثانية = دقيقة واحدة)
+            setTimeout(() => {
+              fs.unlink(targetPath, (err) => {
+                if (err && err.code !== 'ENOENT') {
+                  console.error(`❌ فشل حذف ${fileName}:`, err);
+                } else {
+                  console.log(`🗑️ تم حذف ${fileName} التلقائي بنجاح`);
+                }
+              });
+                }, 20_000);             
+            return; // ⛔ الخروج هنا يمنع تشغيل الدالة المسؤولة عن فتح الملف
+          }
+
+          // السلوك الأصلي لبقية الملفات (الفتح بشكل طبيعي)
+          openFile(targetPath);
+        }
+      });
+    });
     
 
     // معالجة قائمة السياق للطباعة
@@ -743,7 +756,21 @@ const AUTO_DELETE_MS = 120_000; // دقيقتان
       }
     });
   }
+ipcMain.handle('save-kashf-status', async (event, text) => {
+  const downloads = app.getPath('downloads');
+  const filePath = path.join(downloads, 'kashf_status.txt');
 
+  try {
+    // نستخدم نفس ترميز الويندوز 1256 ليدعمه الوورد بدون مشاكل باللغة العربية
+    const buf = iconv.encode(text, 'windows-1256'); 
+    fs.writeFileSync(filePath, buf); // هذه الدالة تقوم بالاستبدال فوراً إن وجد
+    console.log('✔ تم إنشاء/استبدال kashf_status.txt بنجاح');
+    return { ok: true, filePath };
+  } catch (e) {
+    console.error('❌ فشل حفظ kashf_status.txt:', e);
+    return { ok: false, error: String(e) };
+  }
+});
 
 
 

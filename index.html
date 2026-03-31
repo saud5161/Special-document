@@ -170,7 +170,7 @@
             <!-- المناوبة مع أزرار اختصار -->
             <label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
             <div class="with-chips">
-              <input id="shift-number" list="shifts" placeholder="أ / ب / ج / د" />
+              <input id="shift-number" list="shifts" placeholder="ا/ ب / ج / د" />
               
             </div>
 
@@ -741,7 +741,41 @@
 
           </div>
         </section>
+<section class="card" id="card-kashf-leaves" style="display:none;">
+  <h3 class="card__title"><i class="fas fa-users-slash"></i> إسناد الحالات (إجازات، غياب، راحة)</h3>
+  <div class="card__body">
+    
+    <div style="margin-bottom: 12px;">
+      <span style="font-size: 0.85rem; font-weight: bold; color: #6b7280; display: block; margin-bottom: 6px;">1. اختر الحالة أولاً:</span>
+      <div id="kashf-status-controls" style="display: flex; gap: 8px; flex-wrap: wrap;">
+        </div>
+    </div>
 
+    <div id="kashf-target-banner" style="background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 8px 12px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; text-align: center; margin-bottom: 12px;">
+      الرجاء اختيار الحالة من الأعلى أولاً
+    </div>
+
+    <div class="transfer-area" style="display: flex; gap: 10px;">
+      
+      <div class="list-panel" style="flex:1; display:flex; flex-direction:column; border:1px solid #c8d6ff; border-radius:12px; background:#fff; height:320px; overflow:hidden;">
+        <div style="background:#f8fafc; padding:10px; font-weight:bold; font-size:0.85rem; color:#1f3a5f; border-bottom:1px solid #c8d6ff; display:flex; justify-content:space-between; align-items:center;">
+          <span>القوة المتاحة</span>
+          <span id="kashf-avail-count" style="background:#0d6efd; color:#fff; padding:2px 8px; border-radius:10px; font-size:0.75rem;">0</span>
+        </div>
+        <div id="kashf-avail-list" style="flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:6px; background:#fcfcfc;"></div>
+      </div>
+
+      <div class="list-panel" style="flex:1; display:flex; flex-direction:column; border:1px solid #16a34a; border-radius:12px; background:#fff; height:320px; overflow:hidden;">
+        <div style="background:#f0fdf4; padding:10px; font-weight:bold; font-size:0.85rem; color:#15803d; border-bottom:1px solid #16a34a; display:flex; justify-content:space-between; align-items:center;">
+          <span>الحالة في الكشف</span>
+          <span id="kashf-chosen-count" style="background:#16a34a; color:#fff; padding:2px 8px; border-radius:10px; font-size:0.75rem;">0</span>
+        </div>
+        <div id="kashf-chosen-list" style="flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:6px; background:#fcfcfc;"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
 
         
 
@@ -863,7 +897,7 @@
   <label class="mc-check" style="display:block">
     <span style="white-space:nowrap; display:inline-block;">
       الإشارة خطاب: مناوبة (
-      <input class="mc-mini" id="mc-shift" list="shifts" placeholder="أ / ب / ج / د">
+      <input class="mc-mini" id="mc-shift" list="shifts" placeholder="ا / ب / ج / د">
       ) صالة (
       <input class="mc-mini" id="mc-hall" list="halls" placeholder="1 / 2 / 3 / 4">
       ) صادر رقم
@@ -952,7 +986,7 @@
   </datalist>
 
   <datalist id="shifts">
-    <option value="أ">
+    <option value="ا">
     <option value="ب">
     <option value="ج">
     <option value="د">
@@ -972,5 +1006,6 @@
   ========================== -->
   <script src="sscrpt.js"></script>
   <script src="smart-officers.js"></script>
+  <script src="kshhf.js"></script>
 </body>
 </html>
