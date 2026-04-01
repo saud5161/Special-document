@@ -13,7 +13,12 @@ async function syncAllWithSupabase() {
         const officersRes = await fetch(`${SUPABASE_URL}/rest/v1/officers?select=name,rank`, { headers });
         if (officersRes.ok) {
             const officersData = await officersRes.json();
-            fs.writeFileSync(path.join(__dirname, 'officers.json'), JSON.stringify(officersData, null, 2), 'utf8');
+            
+            // تحويل البيانات إلى نص، ثم دمج سطور الضابط في سطر واحد
+            let officersStr = JSON.stringify(officersData, null, 2);
+            officersStr = officersStr.replace(/\{\s+"name":\s+"([^"]*)",\s+"rank":\s+"([^"]*)"\s+\}/g, '{ "name": "$1", "rank": "$2" }');
+
+            fs.writeFileSync(path.join(__dirname, 'officers.json'), officersStr, 'utf8');
             console.log("✅ تم تحديث officers.json");
         }
 
@@ -37,7 +42,11 @@ async function syncAllWithSupabase() {
                 });
             });
 
-            fs.writeFileSync(path.join(__dirname, 'name.json'), JSON.stringify(nestedIndividuals, null, 2), 'utf8');
+            // تحويل البيانات إلى نص، ثم دمج سطور الفرد في سطر واحد
+            let individualsStr = JSON.stringify(nestedIndividuals, null, 2);
+            individualsStr = individualsStr.replace(/\{\s+"name":\s+"([^"]*)",\s+"rank":\s+"([^"]*)",\s+"id":\s+"([^"]*)"\s+\}/g, '{ "name": "$1", "rank": "$2", "id": "$3" }');
+
+            fs.writeFileSync(path.join(__dirname, 'name.json'), individualsStr, 'utf8');
             console.log("✅ تم تحديث name.json بنجاح!");
         }
     } catch (error) {
