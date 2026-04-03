@@ -742,6 +742,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تعديل رحلة مرحل.docm";
   } else if (choice === "خروج-نهائي") {
   wordLink.href = "dic/نــماذج  اليومية/خروج نهائي.docm";
+  } else if (choice === "تعديل-جواز") {
+  wordLink.href = "dic/نــماذج  اليومية/تعديل جواز مقيم.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -1768,6 +1770,7 @@ document.querySelectorAll('.card').forEach(card => {
 });
 
 }
+
 // ===== وضع حذف-السجلات =====
 if (choice === "حذف-السجلات") {
   // 1) إظهار بطاقة أسماء القوائم (القسم كاملًا)
@@ -1801,6 +1804,47 @@ if (choice === "حذف-السجلات") {
   if (cmdRL) cmdRL.style.display = "none";
 }
 
+// ===== وضع تعديل-جواز =====
+if (choice === "تعديل-جواز") {
+  // 1) إخفاء اسم الآمر المناوب ورتبته
+  ["commander-name", "commander-rank"].forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+    if (el)  el.style.setProperty('display', 'none', 'important');
+    if (lbl) lbl.style.setProperty('display', 'none', 'important');
+  });
+
+  // 2) إخفاء بطاقة بيانات المسافر وبطاقة بيانات الرحلة
+  const travelerCard = document.getElementById("card-traveler");
+  const flightCard   = document.getElementById("card-flight");
+  if (travelerCard) travelerCard.style.setProperty('display', 'none', 'important');
+  if (flightCard)   flightCard.style.setProperty('display', 'none', 'important');
+
+  // 3) إظهار بطاقة "أسماء القوائم والأعمال الإدارية"
+  const listsCard = document.getElementById("card-lists-admin");
+  if (listsCard) listsCard.style.setProperty('display', 'block', 'important');
+
+  // 4) استخدام CSS قوي لإجبار حقول القائمة على الظهور ومنع أي كود آخر من إخفائها
+  if (!document.getElementById("force-taadeel-jawaz-style")) {
+    const styleEl = document.createElement("style");
+    styleEl.id = "force-taadeel-jawaz-style";
+    styleEl.textContent = `
+      /* إظهار اسم القائمة ورتبتها بقوة */
+      #ListOfficerName, label[for="ListOfficerName"],
+      #ListOfficerRank, label[for="ListOfficerRank"] {
+        display: block !important;
+      }
+      
+      /* إخفاء الأعمال الإدارية بالكامل بقوة */
+      #AdminOfficerName, label[for="AdminOfficerName"],
+      #AdminOfficerRank, label[for="AdminOfficerRank"],
+      #AdminOfficerSuggestions {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(styleEl);
+  }
+}
   // ===== وضع "خطاب-فرد" =====
   if (
   choice === "خطاب-فرد" ||
