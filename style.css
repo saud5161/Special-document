@@ -750,3 +750,16 @@ body.theme-dark .feedback-body select:focus, body.theme-dark .feedback-body text
 @media (max-width: 900px) {
   .whats-new-content { grid-template-columns: 1fr; }
 }
+/* تنسيق زر رسائل التوجيه في الشريط العلوي */
+.top-bar .left a.whatsapp-top-btn {
+    background: linear-gradient(45deg, #25d366, #128c7e);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    color: #ffffff;
+}
+.top-bar .left a.whatsapp-top-btn:hover {
+    background: linear-gradient(45deg, #1ebe57, #0f7669);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.5);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
