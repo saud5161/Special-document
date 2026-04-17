@@ -107,14 +107,14 @@ function toggleFeedbackBox() {
 }
 
 // ======================== 3. الوضع الداكن (Dark Theme) ===========================
+// ======================== 3. الوضع الداكن (Dark Theme) ===========================
 function initThemeManager() {
     const btn = document.getElementById("theme-toggle");
     if (!btn) return;
 
     const DARK_CLASS = "theme-dark";
-    const OVERRIDE_KEY = "theme_manual_choice"; 
-    const PHASE_KEY = "theme_time_phase"; 
 
+    // دالة تطبيق الوضع (الداكن أو الفاتح)
     function applyTheme(makeDark) {
         if (makeDark) {
             document.body.classList.add(DARK_CLASS);
@@ -125,41 +125,14 @@ function initThemeManager() {
         }
     }
 
-    function checkAndApplyTime() {
-        const hour = new Date().getHours();
-        const isNight = (hour >= 19 || hour < 6);
-        const currentPhase = isNight ? "night" : "day";
-        const savedPhase = localStorage.getItem(PHASE_KEY);
+    // تحديد الوضع الفاتح بشكل تلقائي دائماً عند فتح الصفحة
+    applyTheme(false);
 
-        if (savedPhase !== null && savedPhase !== currentPhase) {
-            localStorage.removeItem(OVERRIDE_KEY);
-            localStorage.setItem(PHASE_KEY, currentPhase);
-        } else if (savedPhase === null) {
-            localStorage.setItem(PHASE_KEY, currentPhase);
-        }
-
-        const userChoice = localStorage.getItem(OVERRIDE_KEY);
-        if (userChoice !== null) {
-            applyTheme(userChoice === "dark");
-        } else {
-            applyTheme(isNight);
-        }
-    }
-
-    checkAndApplyTime();
-    setInterval(checkAndApplyTime, 60000);
-
+    // زر التبديل اليدوي (للتغيير المؤقت أثناء استخدام الصفحة)
     btn.addEventListener("click", (e) => {
         e.preventDefault(); 
         const isCurrentlyDark = document.body.classList.contains(DARK_CLASS);
-        const newState = !isCurrentlyDark; 
-        
-        applyTheme(newState);
-        localStorage.setItem(OVERRIDE_KEY, newState ? "dark" : "light");
-        
-        const hour = new Date().getHours();
-        const currentPhase = (hour >= 19 || hour < 6) ? "night" : "day";
-        localStorage.setItem(PHASE_KEY, currentPhase);
+        applyTheme(!isCurrentlyDark); // التبديل لعكس الوضع الحالي
     });
 }
 
