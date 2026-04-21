@@ -2345,7 +2345,7 @@ function bindReceiveTimeEditGuards(){
 
 
 // ===== حفظ / تحميل حقول المناوبة المحددة فقط =====
-const SHIFT_KEYS = ['officer-name','officer-rank','shift-number','hall-number','summary'];
+const SHIFT_KEYS = ['officer-name','officer-rank','commander-name','commander-rank','shift-number','hall-number','summary'];
 const SHIFT_STORAGE_KEY = 'shift_fields_payload';
 const LAST_CLEAR_KEY = 'lastShiftClearTime';
 
@@ -4297,7 +4297,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================================================
-// ✅ الوضع الليلي الذكي (يعود للنهاري تلقائياً) - مطابق لصفحة المغادرة
+// ✅ الوضع الليلي (الوضع الفاتح دائماً كافتراضي)
 // =========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('dark-mode-toggle');
@@ -4305,74 +4305,243 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const body = document.body;
   const icon = btn.querySelector('i');
-  const textSpan = btn.querySelector('span'); // للتحكم بالنص
 
   const DARK_CLASS = 'dark-mode'; // الكلاس الخاص بصفحة index
-  const OVERRIDE_KEY = 'index_theme_manual'; 
-  const PHASE_KEY = 'index_theme_phase'; // لتسجيل هل نحن في ليل أم نهار
 
-  // دالة لتطبيق الوضع (ليلي أو نهاري)
+  // دالة تطبيق الوضع (الداكن أو الفاتح)
   function applyTheme(isDark) {
     if (isDark) {
       body.classList.add(DARK_CLASS);
       if (icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
-      if (textSpan) textSpan.textContent = 'الوضع النهاري';
+      btn.title = 'الوضع الفاتح'; // تغيير عنوان التلميح
     } else {
       body.classList.remove(DARK_CLASS);
       if (icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
-      if (textSpan) textSpan.textContent = 'الوضع الليلي';
+      btn.title = 'الوضع الليلي'; // تغيير عنوان التلميح
     }
   }
 
-  // دالة فحص الوقت وتطبيق الوضع
-  function checkAndApplyTime() {
-    const hour = new Date().getHours();
-    
-    // تحديد هل الوقت الحالي ليل أم نهار (من 19 مساءً إلى 5:59 صباحاً)
-    const isNight = (hour >= 19 || hour < 6);
-    const currentPhase = isNight ? "night" : "day";
+  // 1. تحديد الوضع الفاتح بشكل تلقائي دائماً عند فتح الصفحة
+  applyTheme(false);
 
-    // جلب الفترة الزمنية المسجلة سابقاً
-    const savedPhase = localStorage.getItem(PHASE_KEY);
-
-    // إذا تغيرت الفترة (مثلاً دخلنا الساعة 6 صباحاً أو 7 مساءً)
-    if (savedPhase !== null && savedPhase !== currentPhase) {
-        // نمسح الاختيار اليدوي لكي يستعيد النظام السيطرة التلقائية
-        localStorage.removeItem(OVERRIDE_KEY);
-        localStorage.setItem(PHASE_KEY, currentPhase);
-    } else if (savedPhase === null) {
-        localStorage.setItem(PHASE_KEY, currentPhase);
-    }
-
-    // تطبيق الوضع بناءً على الاختيار اليدوي (إن وُجد) أو الوقت الفعلي
-    const userChoice = localStorage.getItem(OVERRIDE_KEY);
-    if (userChoice !== null) {
-        applyTheme(userChoice === "dark");
-    } else {
-        applyTheme(isNight);
-    }
-  }
-
-  // 1. تطبيق الوضع فور فتح الصفحة
-  checkAndApplyTime();
-
-  // 2. فحص الوقت كل دقيقة لتبديل الوضع تلقائياً أو إعادة الضبط
-  setInterval(checkAndApplyTime, 60000);
-
-  // 3. وظيفة الزر عند النقر (تغيير يدوي)
+  // 2. زر التبديل اليدوي (للتغيير المؤقت أثناء استخدام الصفحة)
   btn.addEventListener('click', (e) => {
     e.preventDefault();
-
     const isCurrentlyDark = body.classList.contains(DARK_CLASS);
-    const newState = !isCurrentlyDark; // عكس الحالة الحالية
-    
-    applyTheme(newState);
-    
-    // حفظ التغيير اليدوي + حفظ الفترة الحالية
-    localStorage.setItem(OVERRIDE_KEY, newState ? "dark" : "light");
-    
-    const hour = new Date().getHours();
-    const currentPhase = (hour >= 19 || hour < 6) ? "night" : "day";
-    localStorage.setItem(PHASE_KEY, currentPhase);
+    applyTheme(!isCurrentlyDark); // التبديل لعكس الوضع الحالي
   });
+});
+// =========================================================
+// نظام الحفظ التلقائي للقائمة في الكشف (Kashf Saved Roster)
+// مرتبط بالمناوبة والصالة المحددة - (نظام الدمج الآمن ضد التحديث)
+// =========================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const savedListContainer = document.getElementById("kashf-saved-list");
+  const btnRestore = document.getElementById("btn-restore-kashf");
+  const btnDelete = document.getElementById("btn-delete-kashf");
+  const chosenList = document.getElementById("kashf-chosen-list");
+  const shiftEl = document.getElementById("shift-number");
+  const hallEl = document.getElementById("hall-number");
+
+  if (!savedListContainer || !chosenList) return;
+
+  let isRestoring = false;
+  let hasUserInteracted = false;
+
+  // التقاط أي تفاعل للمستخدم لتفعيل الحفظ
+  document.body.addEventListener('click', () => { hasUserInteracted = true; });
+
+  // 1. مفتاح التخزين
+  function getStorageKey() {
+    const shift = (shiftEl ? shiftEl.value.trim() : "");
+    const hall = (hallEl ? hallEl.value.trim() : "");
+    if (!shift || !hall) return "kashf_permanent_roster_default";
+    return `kashf_permanent_roster_${shift}_${hall}`;
+  }
+
+  // 2. تحميل القائمة
+  function loadSavedRoster() {
+    savedListContainer.innerHTML = "";
+    const key = getStorageKey();
+    let saved = JSON.parse(localStorage.getItem(key) || "[]");
+
+    if (saved.length === 0) {
+        let msg = (key.includes("default")) ? "حدد المناوبة والصالة لعرض الأسماء" : "لا توجد أسماء محفوظة";
+        savedListContainer.innerHTML = `<div style="text-align:center; color:#999; font-size:0.8rem; margin-top:20px;">${msg}</div>`;
+        return;
+    }
+
+    saved.forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "kashf-list-item saved-item";
+      div.dataset.name = item.name;
+      div.dataset.status = item.status;
+      
+      div.innerHTML = `
+        <span>${item.name}</span>
+        <span class="kashf-badge ${item.status === 'غياب' ? 'absence' : ''}">${item.status}</span>
+      `;
+
+      div.addEventListener("click", () => {
+        div.classList.toggle("selected-saved-item");
+      });
+
+      savedListContainer.appendChild(div);
+    });
+  }
+
+  // 3. الحفظ بنظام (الدمج) لعدم مسح الأسماء عند التحديث
+  function autoSaveRoster() {
+    if (isRestoring || !hasUserInteracted) return; 
+    
+    const key = getStorageKey();
+    if (key.includes("default")) return; 
+
+    const chosenItems = document.querySelectorAll("#kashf-chosen-list .kashf-list-item");
+    
+    // إذا الكشف فارغ لا نفعل شيئاً (حماية للبيانات المحفوظة عند التحديث)
+    if (chosenItems.length === 0) return; 
+
+    let saved = JSON.parse(localStorage.getItem(key) || "[]");
+    let updated = false;
+
+    chosenItems.forEach(el => {
+      let clone = el.cloneNode(true);
+      let statusBadge = clone.querySelector(".kashf-badge");
+      
+      let status = "";
+      if (statusBadge) {
+          status = statusBadge.textContent.trim();
+          statusBadge.remove(); 
+      }
+      
+      let name = clone.textContent.trim(); 
+
+      if (name && status) {
+        let existingIndex = saved.findIndex(item => item.name === name);
+        
+        if (existingIndex !== -1) {
+          // إذا الاسم موجود، نحدث حالته فقط
+          if (saved[existingIndex].status !== status) {
+            saved[existingIndex].status = status;
+            updated = true;
+          }
+        } else {
+          // إذا اسم جديد، نضيفه
+          saved.push({ name, status });
+          updated = true;
+        }
+      }
+    });
+
+    // نحفظ فقط لو صار فيه تحديث أو إضافة جديدة
+    if (updated) {
+      localStorage.setItem(key, JSON.stringify(saved));
+      loadSavedRoster(); 
+    }
+  }
+
+  // 4. مراقبة "الحالة في الكشف"
+  const observer = new MutationObserver(() => {
+    autoSaveRoster();
+  });
+  observer.observe(chosenList, { childList: true, subtree: true });
+
+  // 5. تحديث القائمة فور تغيير المناوبة أو الصالة
+  if (shiftEl) { shiftEl.addEventListener("change", loadSavedRoster); shiftEl.addEventListener("input", loadSavedRoster); }
+  if (hallEl) { hallEl.addEventListener("change", loadSavedRoster); hallEl.addEventListener("input", loadSavedRoster); }
+
+  // 6. استرجاع المحدد أو الكل
+  if (btnRestore) {
+    btnRestore.addEventListener("click", () => {
+      const selected = document.querySelectorAll("#kashf-saved-list .saved-item.selected-saved-item");
+      const itemsToRestore = selected.length > 0 ? selected : document.querySelectorAll("#kashf-saved-list .saved-item");
+
+      if (itemsToRestore.length === 0) return;
+
+      isRestoring = true; 
+      hasUserInteracted = true;
+
+      itemsToRestore.forEach((item, index) => {
+        const name = item.dataset.name;
+        const status = item.dataset.status;
+
+        setTimeout(() => {
+            const statusBtns = document.querySelectorAll("#kashf-status-controls button");
+            let targetStatusBtn = Array.from(statusBtns).find(b => b.textContent.trim() === status || b.value === status);
+            
+            if (targetStatusBtn) targetStatusBtn.click();
+
+            setTimeout(() => {
+                const availItems = document.querySelectorAll("#kashf-avail-list .kashf-list-item");
+                let targetAvailItem = Array.from(availItems).find(el => {
+                    let elClone = el.cloneNode(true);
+                    let b = elClone.querySelector(".kashf-badge");
+                    if(b) b.remove();
+                    return elClone.textContent.trim().includes(name);
+                });
+
+                if (targetAvailItem) targetAvailItem.click(); 
+            }, 30); 
+            
+        }, index * 80); 
+      });
+
+      setTimeout(() => {
+          isRestoring = false;
+          autoSaveRoster(); 
+          itemsToRestore.forEach(item => item.classList.remove("selected-saved-item"));
+      }, itemsToRestore.length * 80 + 100);
+    });
+  }
+
+  // 7. الحذف الآمن
+  if (btnDelete) {
+    btnDelete.addEventListener("click", () => {
+      const selected = document.querySelectorAll("#kashf-saved-list .saved-item.selected-saved-item");
+      const key = getStorageKey();
+      let saved = JSON.parse(localStorage.getItem(key) || "[]");
+
+      if (selected.length > 0) {
+        const selectedNames = Array.from(selected).map(el => el.dataset.name);
+        saved = saved.filter(item => !selectedNames.includes(item.name));
+        localStorage.setItem(key, JSON.stringify(saved));
+        loadSavedRoster();
+      } else {
+        if (confirm("هل أنت متأكد من رغبتك في حذف القائمة المحفوظة بالكامل لهذه المناوبة والصالة؟")) {
+          localStorage.removeItem(key);
+          loadSavedRoster();
+        }
+      }
+    });
+  }
+
+  // تحميل أولي
+  setTimeout(loadSavedRoster, 500); 
+});
+// =========================================================
+// ميزة البحث في "القوة المتاحة"
+// =========================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const searchInput = document.getElementById("kashf-search-avail");
+  const availList = document.getElementById("kashf-avail-list");
+
+  if (searchInput && availList) {
+    searchInput.addEventListener("input", function() {
+      const filter = this.value.trim().toLowerCase();
+      const items = availList.querySelectorAll(".kashf-list-item");
+      
+      items.forEach(item => {
+        // استخراج نص الاسم للمقارنة
+        const name = item.textContent.toLowerCase();
+        
+        // إظهار العنصر إذا كان يحتوي على الحروف المدخلة، أو إخفائه
+        if (name.includes(filter)) {
+          item.style.display = ""; 
+        } else {
+          item.style.display = "none";
+        }
+      });
+    });
+  }
 });
