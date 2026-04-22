@@ -744,6 +744,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/خروج نهائي.docm";
   } else if (choice === "تعديل-جواز") {
   wordLink.href = "dic/نــماذج  اليومية/تعديل جواز مقيم.docm";
+  } else if (choice === "خطاب-للافراد") {
+  wordLink.href = "dic/نــماذج  اليومية/خطاب لفرد.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -1848,6 +1850,7 @@ if (choice === "تعديل-جواز") {
   // ===== وضع "خطاب-فرد" =====
   if (
   choice === "خطاب-فرد" ||
+   choice === "خطاب-للافراد" ||
   choice === "خطاب-المناوبات"
 ) {
     // 1) إظهار فقط البطاقات المطلوبة
