@@ -168,18 +168,26 @@
               <option value="رئيس رقباء"></option>
             </datalist>
             <!-- المناوبة مع أزرار اختصار -->
-            <label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
-            <div class="with-chips">
-              <input id="shift-number" list="shifts" placeholder="ا/ ب / ج / د" />
-              
-            </div>
+<label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
+<div class="with-chips" data-target="#shift-number">
+  <input id="shift-number" list="shifts" placeholder="ا / ب / ج / د" />
+  <div class="chips-container">
+    <button type="button" class="chip" data-value="ا">ا</button>
+    <button type="button" class="chip" data-value="ب">ب</button>
+    <button type="button" class="chip" data-value="ج">ج</button>
+    <button type="button" class="chip" data-value="د">د</button>
+  </div>
+</div>
 
-            <!-- رقم الصالة مع أزرار اختصار -->
-            <label for="hall-number"><i class="fas fa-building"></i> الصالة</label>
-            <div class="with-chips">
-              <input id="hall-number" list="halls" placeholder="1 / 2 / 3 / 4" />
-             
-            </div>
+<label for="hall-number"><i class="fas fa-building"></i> الصالة</label>
+<div class="with-chips" data-target="#hall-number">
+  <input id="hall-number" list="halls" placeholder="1 / 2 / 5" />
+  <div class="chips-container">
+    <button type="button" class="chip" data-value="1">1</button>
+    <button type="button" class="chip" data-value="2">2</button>
+    <button type="button" class="chip" data-value="5">5</button>
+  </div>
+</div>
 
             <!-- ملاحظة تعبئة تلقائية -->
             <span id="timeNote" class="muted row-span-2" style="display:none">
@@ -232,7 +240,7 @@
   >
 
   <div id="AdminOfficerSuggestions" class="name-suggest" hidden>
-    <span class="name-suggest__title">تم اقتراح :</span>
+    <span class="name-suggest__title"> اقتراح :</span>
     <div
       id="AdminOfficerSuggestionsItems"
       class="name-suggest__items"
