@@ -4548,3 +4548,16 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+// === إظهار تنبيه الطباعة لنموذج تخلف-مغادرة فقط ===
+document.addEventListener("DOMContentLoaded", () => {
+  const choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
+  const printAlert = document.getElementById("print-alert-msg");
+
+  if (printAlert) {
+    if (choice === "تخلف-مغادرة") {
+      printAlert.style.display = "flex";
+    } else {
+      printAlert.style.display = "none";
+    }
+  }
+});
