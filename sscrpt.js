@@ -1997,12 +1997,36 @@ $('close-btn')?.addEventListener('click', ()=>{
 });
 
 
-// اختياري: تبديل لغة الإدخال في رقم الجواز (إن وُجد دعم بالـ preload)
 (function bindPassportLangToggle(){
-  const passportInput = $('PassportNumber');
+  const passportInput = document.getElementById('PassportNumber');
   if (!passportInput) return;
-  passportInput.addEventListener("focus", () => { window.electronAPI?.switchLang?.(); });
-  passportInput.addEventListener("blur",  () => { window.electronAPI?.switchLang?.(); });
+
+  // خريطة تحويل الكيبورد من عربي إلى إنجليزي
+  const arToEnMap = {
+    'ض':'q','ص':'w','ث':'e','ق':'r','ف':'t','غ':'y','ع':'u','ه':'i','خ':'o','ح':'p','ج':'[','د':']',
+    'ش':'a','س':'s','ي':'d','ب':'f','ل':'g','ا':'h','ت':'j','ن':'k','م':'l','ك':';','ط':'\'',
+    'ئ':'z','ء':'x','ؤ':'c','ر':'v','لا':'b','ى':'n','ة':'m','و':',','ز':'.','ظ':'/',
+    'أ':'h','إ':'y','آ':'h'
+  };
+
+  passportInput.addEventListener('input', function(e) {
+    let val = this.value;
+    let convertedVal = '';
+    
+    for(let i = 0; i < val.length; i++) {
+      let char = val[i];
+      // إذا كان الحرف موجوداً في الخريطة، حوّله للإنجليزية وكبّره (Uppercase)، وإلا اتركه كما هو
+      convertedVal += arToEnMap[char] ? arToEnMap[char].toUpperCase() : char.toUpperCase();
+    }
+    
+    this.value = convertedVal;
+  });
+
+  // توجيه النص لليسار (LTR) لتسهيل القراءة
+  passportInput.addEventListener("focus", () => {
+    passportInput.style.direction = 'ltr';
+    passportInput.style.textAlign = 'left';
+  });
 })();
 
 // تهيئة الصفحة
@@ -2390,31 +2414,7 @@ function clearShiftFieldsStorage(){
   try { localStorage.removeItem(SHIFT_STORAGE_KEY); } catch(e){}
 }
 
-// منظّم التنظيف
-function scheduleShiftStorageCleaner(){
-  const TARGET_HOURS = [6,14,22];
 
-  function runCheck(){
-    const now = new Date();
-    const h = now.getHours();
-    const m = now.getMinutes();
-    // فقط ساعات دقيقة 00
-    if (!TARGET_HOURS.includes(h) || m !== 0) return;
-
-    const key = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-${h}-${m}`;
-    const last = localStorage.getItem(LAST_CLEAR_KEY);
-    if (last !== key){
-      // نظّف الحقول والتخزين
-      SHIFT_KEYS.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-      clearShiftFieldsStorage();
-      localStorage.setItem(LAST_CLEAR_KEY, key);
-      console.info('تم تنظيف حقول المناوبة والتخزين عند', now.toISOString());
-    }
-  }
-
-  runCheck(); // فوري عند التحميل
-  setInterval(runCheck, 30*1000); // تحقق كل 30 ثانية
-}
 
 // الحفظ التلقائي
 function bindAutoSaveForShiftFields(){
@@ -2455,7 +2455,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   bindAutoSaveForShiftFields();
-  scheduleShiftStorageCleaner();
 });
 
 
