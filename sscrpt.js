@@ -584,7 +584,55 @@ async function saveAll() {
 const choice =
   (localStorage.getItem('wordLinkChoice') ||
    localStorage.getItem('lastWordLinkChoice') || '').trim();
+// ==========================================================
+  // إضافة: معالجة غياب الأفراد (ملف txt منفصل لكل فرد + 5 ثواني)
+  // ==========================================================
+  if (choice === "غياب-افراد") {
+    const count = parseInt(document.getElementById('absence-count')?.value) || 1;
+    const baseData = collect(); // جمع كل البيانات الأساسية
 
+    for (let i = 1; i <= count; i++) {
+      let nameEl = document.getElementById('IndividualName_Dyn' + i);
+      let rankEl = document.getElementById('IndividualRank_Dyn' + i);
+      let issuedEl = document.getElementById('IssuedNumber_Dyn' + i);
+      
+      // وضع اسم ورتبة ورقم صادر الفرد الحالي فقط في البيانات
+      baseData.IndividualName = nameEl ? nameEl.value : '';
+      baseData.IndividualRank = rankEl ? rankEl.value : '';
+      baseData.IssuedNumber   = issuedEl ? issuedEl.value : ''; // 👈 جلب رقم الصادر
+
+      const currentIni = payloadToIni(baseData);
+
+      // تنزيل ملف txt للفرد الحالي
+      if (window.electronAPI?.saveFormFile) {
+        try { await window.electronAPI.saveFormFile(currentIni); } catch (e) {}
+      } else {
+        const blob = new Blob([currentIni], { type: 'text/plain;charset=windows-1256' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'form.txt';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+  // فتح نموذج الوورد ليقرأ ملف الـ txt
+      const link = document.createElement("a");
+      link.href = "dic/نماذج الافراد/غياب افراد.docm";
+      link.target = "_top"; // 👈 هذا التعديل يمنع ظهور الصفحة المنبثقة الفارغة
+      link.click();
+
+      // انتظار 5 ثواني قبل تكرار العملية للفرد التالي
+      if (i < count) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+      }
+    }
+
+    clearIndividualFields();
+    const keepOpen = document.getElementById("KeepPageOpen");
+    if (!keepOpen || !keepOpen.checked) scheduleAutoBack(AUTO_BACK_MS);
+    return; // إيقاف إكمال الدالة الأصلية لكي لا تتعارض
+  }
+  // ==========================================================
 // إن لم تكن استلام-اليوم نحذف التخزين ونخفي القسم، وإلا نخزّن ونُظهره
 const issuedCard = document.getElementById('card-issued-data');
 
@@ -816,6 +864,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (lbl) lbl.style.display = "none";
     });
   }
+  
   // [FIX] "بيانات الصادر" مربوطة بالاختيار الحالي فقط
 (() => {
   const issuedCard = document.getElementById('card-issued-data');
@@ -4559,4 +4608,85 @@ document.addEventListener("DOMContentLoaded", () => {
       printAlert.style.display = "none";
     }
   }
+});
+// =========================================================
+// وظائف الغياب الديناميكية (العدد + جلب الرتب)
+// =========================================================
+function renderAbsenceFields(count) {
+  const container = document.getElementById('absence-fields-container');
+  if (!container) return;
+  container.innerHTML = ''; 
+
+  for (let i = 1; i <= count; i++) {
+    container.innerHTML += `
+      <div class="individual-separator" style="grid-column: 1 / -1; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;">فرد غائب رقم (${i})</div>
+      <label><i class="fas fa-user"></i> اسم الفرد (${i})</label>
+      <input id="IndividualName_Dyn${i}" list="individual-list" class="absence-name-input" data-index="${i}" placeholder="اكتب الاسم">
+      <label><i class="fas fa-medal"></i> الرتبة (${i})</label>
+      <input id="IndividualRank_Dyn${i}" placeholder="الرتبة">
+      
+      <label><i class="fas fa-hashtag"></i> رقم الصادر (${i})</label>
+      <input id="IssuedNumber_Dyn${i}" placeholder="رقم الصادر">
+    
+    `;
+  }
+
+  // ربط الحقول الجديدة بقاعدة الأسماء NAME_DB لملء الرتبة تلقائياً
+  document.querySelectorAll('.absence-name-input').forEach(input => {
+    input.addEventListener('change', function() {
+      const index = this.getAttribute('data-index');
+      const nameVal = this.value.trim();
+      const rankInput = document.getElementById('IndividualRank_Dyn' + index);
+      const shiftEl = document.getElementById("shift-number");
+      const hallEl  = document.getElementById("hall-number");
+      
+      if (!shiftEl || !hallEl || typeof NAME_DB === 'undefined' || !NAME_DB || !rankInput) return;
+      
+      const shift = shiftEl.value.trim();
+      const hall = hallEl.value.trim();
+      
+      if (NAME_DB[shift] && NAME_DB[shift][hall]) {
+        const hit = NAME_DB[shift][hall].find(e => e.name === nameVal);
+        if (hit && hit.rank) rankInput.value = hit.rank;
+      }
+    });
+  });
+}
+
+// إظهار القسم تلقائياً عند الدخول على غياب أفراد
+document.addEventListener("DOMContentLoaded", () => {
+  const choice = (localStorage.getItem("wordLinkChoice") || "").trim();
+  if (choice === "غياب-افراد") {
+    const selector = document.getElementById('card-absence-selector');
+    const dynamicCard = document.getElementById('card-dynamic-absence');
+    if (selector) selector.style.display = 'block';
+    if (dynamicCard) dynamicCard.style.display = 'block';
+    
+    // إخفاء الكرت القديم
+    const oldCard = document.getElementById('card-individual');
+    if (oldCard) oldCard.style.display = 'none';
+
+    // 👈 إخفاء قسم بيانات الصادر الأساسي نهائياً في هذا النموذج
+    const issuedCard1 = document.getElementById('card-issued');
+    const issuedCard2 = document.getElementById('card-issued-data');
+    if (issuedCard1) issuedCard1.style.setProperty('display', 'none', 'important');
+    if (issuedCard2) issuedCard2.style.setProperty('display', 'none', 'important');
+
+    renderAbsenceFields(1); // البدء بحقل واحد
+  }
+});
+
+// تشغيل النقر على أزرار الأعداد (1-5)
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('#absence-chips .chip');
+  if (!btn) return;
+  
+  const val = btn.getAttribute('data-value');
+  const hiddenInput = document.getElementById('absence-count');
+  if (hiddenInput) hiddenInput.value = val;
+  
+  document.querySelectorAll('#absence-chips .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  
+  renderAbsenceFields(parseInt(val));
 });

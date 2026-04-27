@@ -297,6 +297,27 @@
              - اختيار اسم الفرد
              - تعبئة الرتبة تلقائيًا مع إمكانية التعديل
         ========================================================== -->
+        <section class="card" id="card-absence-selector" style="display:none">
+    <h3 class="card__title"><i class="fas fa-users"></i> تحديد عدد الغياب</h3>
+    <div class="card__body">
+      <div class="actions" data-target="#absence-count">
+        <div class="chips-container" id="absence-chips">
+          <button type="button" class="chip active" data-value="1">1</button>
+          <button type="button" class="chip" data-value="2">2</button>
+          <button type="button" class="chip" data-value="3">3</button>
+          <button type="button" class="chip" data-value="4">4</button>
+          <button type="button" class="chip" data-value="5">5</button>
+        </div>
+        <input type="hidden" id="absence-count" value="1">
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="card-dynamic-absence" style="display:none">
+    <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الغائبين</h3>
+    <div class="card__body form-grid" id="absence-fields-container">
+      </div>
+  </section>
        <section class="card" id="card-individual" style="display:none">
   <h3 class="card__title"><i class="fas fa-id-badge"></i> بيانات الفرد</h3>
 
