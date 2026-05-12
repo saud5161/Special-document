@@ -2046,37 +2046,7 @@ $('close-btn')?.addEventListener('click', ()=>{
 });
 
 
-(function bindPassportLangToggle(){
-  const passportInput = document.getElementById('PassportNumber');
-  if (!passportInput) return;
 
-  // خريطة تحويل الكيبورد من عربي إلى إنجليزي
-  const arToEnMap = {
-    'ض':'q','ص':'w','ث':'e','ق':'r','ف':'t','غ':'y','ع':'u','ه':'i','خ':'o','ح':'p','ج':'[','د':']',
-    'ش':'a','س':'s','ي':'d','ب':'f','ل':'g','ا':'h','ت':'j','ن':'k','م':'l','ك':';','ط':'\'',
-    'ئ':'z','ء':'x','ؤ':'c','ر':'v','لا':'b','ى':'n','ة':'m','و':',','ز':'.','ظ':'/',
-    'أ':'h','إ':'y','آ':'h'
-  };
-
-  passportInput.addEventListener('input', function(e) {
-    let val = this.value;
-    let convertedVal = '';
-    
-    for(let i = 0; i < val.length; i++) {
-      let char = val[i];
-      // إذا كان الحرف موجوداً في الخريطة، حوّله للإنجليزية وكبّره (Uppercase)، وإلا اتركه كما هو
-      convertedVal += arToEnMap[char] ? arToEnMap[char].toUpperCase() : char.toUpperCase();
-    }
-    
-    this.value = convertedVal;
-  });
-
-  // توجيه النص لليسار (LTR) لتسهيل القراءة
-  passportInput.addEventListener("focus", () => {
-    passportInput.style.direction = 'ltr';
-    passportInput.style.textAlign = 'left';
-  });
-})();
 
 // تهيئة الصفحة
 document.addEventListener("DOMContentLoaded", () => {
