@@ -4660,3 +4660,31 @@ document.addEventListener('click', (e) => {
   
   renderAbsenceFields(parseInt(val));
 });
+
+
+function toggleBalanceNightVisibility() {
+  const now = new Date();
+  const hour = now.getHours();
+  
+  // المدى المطلوب: من 21:00 (9 مساءً) إلى 05:00 فجراً
+  const isNightTime = (hour >= 21 || hour < 5);
+
+  const balDateInput = document.getElementById('BalanceDateNight');
+  const balDayInput  = document.getElementById('BalanceWeekday');
+  const balDateLabel = document.querySelector("label[for='BalanceDateNight']");
+  const balDayLabel  = document.querySelector("label[for='BalanceWeekday']");
+
+  const displayStyle = isNightTime ? 'block' : 'none';
+
+  if (balDateInput) balDateInput.style.display = displayStyle;
+  if (balDayInput)  balDayInput.style.display  = displayStyle;
+  if (balDateLabel) balDateLabel.style.display = displayStyle;
+  if (balDayLabel)  balDayLabel.style.display  = displayStyle;
+}
+
+// أضف الاستدعاء داخل مستمع التحميل القائم لديك
+document.addEventListener('DOMContentLoaded', () => {
+  toggleBalanceNightVisibility();
+  // تحديث كل دقيقة لضمان الاستجابة عند تغير الوقت
+  setInterval(toggleBalanceNightVisibility, 60000); 
+});
