@@ -4666,25 +4666,40 @@ function toggleBalanceNightVisibility() {
   const now = new Date();
   const hour = now.getHours();
   
-  // المدى المطلوب: من 21:00 (9 مساءً) إلى 05:00 فجراً
+  // المدى المسموح به: من 21:00 (9 مساءً) إلى 05:00 فجراً
   const isNightTime = (hour >= 21 || hour < 5);
 
   const balDateInput = document.getElementById('BalanceDateNight');
   const balDayInput  = document.getElementById('BalanceWeekday');
-  const balDateLabel = document.querySelector("label[for='BalanceDateNight']");
-  const balDayLabel  = document.querySelector("label[for='BalanceWeekday']");
+  
+  // جلب العناصر (العناوين والحقول)
+  const elementsToToggle = [
+    balDateInput, 
+    balDayInput,
+    document.querySelector("label[for='BalanceDateNight']"),
+    document.querySelector("label[for='BalanceWeekday']")
+  ];
 
-  const displayStyle = isNightTime ? 'block' : 'none';
-
-  if (balDateInput) balDateInput.style.display = displayStyle;
-  if (balDayInput)  balDayInput.style.display  = displayStyle;
-  if (balDateLabel) balDateLabel.style.display = displayStyle;
-  if (balDayLabel)  balDayLabel.style.display  = displayStyle;
+  elementsToToggle.forEach(el => {
+    if (el) {
+      // 1. الإخفاء البصري
+      el.style.display = isNightTime ? 'block' : 'none';
+      
+      // 2. التعطيل البرمجي (للحقول فقط)
+      if (el.tagName === 'INPUT') {
+        el.disabled = !isNightTime;
+        
+        // 3. مسح القيمة إذا كان خارج الوقت لضمان عدم ترحيل بيانات قديمة
+        if (!isNightTime) {
+          el.value = "";
+        }
+      }
+    }
+  });
 }
 
-// أضف الاستدعاء داخل مستمع التحميل القائم لديك
+// التأكد من التشغيل عند تحميل الصفحة وكل دقيقة
 document.addEventListener('DOMContentLoaded', () => {
   toggleBalanceNightVisibility();
-  // تحديث كل دقيقة لضمان الاستجابة عند تغير الوقت
   setInterval(toggleBalanceNightVisibility, 60000); 
 });
