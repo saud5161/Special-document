@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصتي الاحترافية لتعلم الإنجليزية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #3730A3;
+            --secondary: #818CF8;
+            --bg: #F3F4F6;
+            --surface: #FFFFFF;
+            --text: #1F2937;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 50px; }
+
+        /* شريط التنقل */
+        nav {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .nav-links button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid transparent;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .nav-links button:hover, .nav-links button.active {
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* الحاوية والأقسام */
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .section { display: none; animation: fadeIn 0.4s ease-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* البطاقات العامة */
+        .card {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            border: 1px solid #E5E7EB;
+        }
+
+        /* الأزرار والنماذج */
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: bold; color: #4B5563; }
+        .form-group input {
+            width: 100%; padding: 1rem; border: 2px solid #E5E7EB;
+            border-radius: 10px; font-size: 1.1rem; transition: 0.3s;
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79,70,229,0.2); }
+        
+        .btn {
+            background: var(--primary); color: white; border: none;
+            padding: 0.8rem 2rem; font-size: 1rem; border-radius: 10px;
+            cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: bold;
+        }
+        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: #DC2626; }
+        .btn-success { background: var(--success); }
+        .btn-success:hover { background: #059669; }
+
+        /* بطاقات التعلم (Flashcards) */
+        .flashcard-wrapper { perspective: 1000px; margin: 2rem auto; max-width: 600px; }
+        .flashcard {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 4rem 2rem; border-radius: 20px;
+            text-align: center; cursor: pointer; position: relative;
+            min-height: 300px; display: flex; flex-direction: column; justify-content: center;
+            box-shadow: 0 15px 30px rgba(79, 70, 229, 0.3); transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped { transform: rotateX(180deg); }
+        .card-front, .card-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; backface-visibility: hidden; padding: 2rem; border-radius: 20px; }
+        .card-back { background: linear-gradient(135deg, var(--success), #34D399); transform: rotateX(180deg); }
+        
+        .english-text { font-size: 2.8rem; font-weight: 900; }
+        .arabic-text { font-size: 2.2rem; font-weight: bold; }
+        
+        .controls { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+        .session-progress { text-align: center; margin-bottom: 1rem; font-weight: bold; color: var(--primary); font-size: 1.2rem; }
+
+        /* الجداول */
+        .table-responsive { overflow-x: auto; margin-top: 1.5rem; border-radius: 10px; border: 1px solid #E5E7EB; }
+        table { width: 100%; border-collapse: collapse; text-align: right; }
+        th, td { padding: 1rem; border-bottom: 1px solid #E5E7EB; }
+        th { background: #F9FAFB; font-weight: bold; color: #374151; }
+        tr:hover { background: #F3F4F6; }
+        .action-btn { padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer; font-size: 0.9rem; margin-left: 0.5rem; color: white; }
+        .edit-btn { background: var(--warning); }
+        .del-btn { background: var(--danger); }
+        .status-badge { padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .status-new { background: #DBEAFE; color: #1E40AF; }
+        .status-learned { background: #D1FAE5; color: #065F46; }
+        .status-review { background: #FEF3C7; color: #92400E; }
+
+        /* إحصائيات */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .stat-card { background: var(--surface); padding: 1.5rem; border-radius: 12px; text-align: center; border: 1px solid #E5E7EB; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .stat-card h3 { font-size: 2.5rem; color: var(--primary); margin-bottom: 0.5rem; }
+
+        /* الاختبارات */
+        .test-word { font-size: 2rem; font-weight: bold; text-align: center; margin-bottom: 1.5rem; color: var(--primary); }
+        .feedback { text-align: center; font-weight: bold; margin-top: 1rem; font-size: 1.2rem; display: none; }
+        .mcq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+        .mcq-btn { padding: 1.5rem; font-size: 1.2rem; border: 2px solid #E5E7EB; background: white; border-radius: 12px; cursor: pointer; transition: 0.2s; font-weight: bold; }
+        .mcq-btn:hover { border-color: var(--primary); background: #EEF2FF; }
+
+        #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1F2937; color: white; padding: 1rem 2rem; border-radius: 8px; display: none; z-index: 1000; box-shadow: 0 10px 15px rgba(0,0,0,0.2); }
+        
+        .keyboard-hints { text-align: center; color: #6B7280; font-size: 0.9rem; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h2><i class="fa-solid fa-graduation-cap"></i> إنجليزي برو</h2>
+        <div class="nav-links">
+            <button class="active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> الخطة والقاموس</button>
+            <button onclick="showSection('add-words', this)"><i class="fa-solid fa-plus"></i> إضافة جمل</button>
+            <button onclick="showSection('learn-today', this)"><i class="fa-solid fa-book-open"></i> تعلم اليوم</button>
+            <button onclick="showSection('daily-test', this)"><i class="fa-solid fa-keyboard"></i> اختبار الكتابة</button>
+            <button onclick="showSection('weekly-test', this)"><i class="fa-solid fa-list-check"></i> اختبار الخيارات</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- 1. قسم الخطة والقاموس -->
+        <div id="dashboard" class="section active">
+            <div class="card">
+                <h2>خطة الـ 3 أشهر (90 يوماً) 🚀</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 id="totalWords">0</h3><p>إجمالي الجمل</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="learnedWords">0</h3><p>الجمل المكتسبة</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3 id="dueReview">0</h3><p>بانتظار المراجعة</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>قاموس الكلمات (إدارة البيانات) 📚</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الإنجليزية</th>
+                                <th>العربية</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dictionaryTable">
+                            <!-- سيتم حقن البيانات هنا -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. قسم الإضافة -->
+        <div id="add-words" class="section">
+            <div class="card">
+                <h2>إضافة جملة جديدة ✍️</h2>
+                <div class="form-group">
+                    <label>الجملة بالإنجليزية</label>
+                    <input type="text" id="engInput" placeholder="Good night" dir="ltr">
+                </div>
+                <div class="form-group">
+                    <label>الترجمة بالعربية</label>
+                    <input type="text" id="arInput" placeholder="تصبح على خير">
+                </div>
+                <button class="btn" onclick="saveWord()">
+                    <i class="fa-solid fa-save"></i> حفظ الجملة
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. قسم تعلم اليوم -->
+        <div id="learn-today" class="section">
+            <div class="card">
+                <h2>مهمة اليوم: حفظ 6 جمل جديدة 🎯</h2>
+                <div class="session-progress" id="sessionProgress">أنجزت: 0 / 6</div>
+                
+                <div id="flashcardContainer" style="display: none;">
+                    <div class="flashcard-wrapper">
+                        <div class="flashcard" id="currentCard" onclick="toggleTranslation()">
+                            <div class="card-front">
+                                <button class="btn" style="position: absolute; top:1rem; right:1rem; border-radius:50%; padding:0.5rem 1rem;" onclick="playAudio(event, 'cardEng')">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                </button>
+                                <div class="english-text" id="cardEng">Loading...</div>
+                                <div style="margin-top: 2rem; opacity: 0.8;">انقر لقلب البطاقة أو اضغط Space</div>
+                            </div>
+                            <div class="card-back">
+                                <div class="arabic-text" id="cardAr">جاري التحميل...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="btn btn-danger" onclick="nextFlashcard('hard')">صعبة (⬅️)</button>
+                        <button class="btn btn-success" onclick="nextFlashcard('easy')">سهلة (➡️)</button>
+                    </div>
+                    <div class="keyboard-hints">يمكنك استخدام الأسهم يمين/يسار والمسافة من لوحة المفاتيح</div>
+                </div>
+
+                <div id="noWordsMessage" style="text-align: center; padding: 3rem; display:none;">
+                    <h2 style="color: var(--success); font-size: 2rem; margin-bottom: 1rem;">🎉 أسطورة! أنجزت هدفك اليوم!</h2>
+                    <p>لقد قمت بحفظ 6 جمل. يمكنك أخذ راحة أو الذهاب لاختبار الكتابة.</p>
+                </div>
+                <div id="emptyQueueMessage" style="text-align: center; padding: 3rem; display:none;">
+                    <h3>لا يوجد كلمات جديدة حالياً. أضف المزيد!</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. قسم اختبار الكتابة -->
+        <div id="daily-test" class="section">
+            <div class="card" style="max-width: 600px; margin: auto;">
+                <h2>اختبار الإملاء اليومي 📝</h2>
+                <p style="color: #6B7280; text-align: center; margin-bottom: 2rem;">اكتب الترجمة الإنجليزية الصحيحة لهذه الجملة:</p>
+                
+                <div id="typingTestContainer">
+                    <div class="test-word" id="dictationAr">...</div>
+                    <div class="form-group">
+                        <input type="text" id="dictationInput" placeholder="Type here in English..." dir="ltr" autocomplete="off">
+                    </div>
+                    <button class="btn" style="width: 100%; justify-content: center;" onclick="checkDictation()">تحقق (Enter)</button>
+                    <div id="dictationFeedback" class="feedback"></div>
+                </div>
+                <div id="noDictationWords" style="display:none; text-align:center;">
+                    <p>يجب أن تتعلم بعض الكلمات أولاً لتتمكن من اختبار نفسك!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. قسم الاختبار الأسبوعي (خيارات) -->
+        <div id="weekly-test" class="section">
+            <div class="card">
+                <h2>تحدي الخيارات المتعددة 🧠</h2>
+                <p style="text-align: center; margin-bottom: 1rem;">اختر الترجمة الإنجليزية الصحيحة</p>
+                
+                <div id="mcqContainer">
+                    <div class="test-word" id="mcqAr" style="font-size: 2.5rem;">...</div>
+                    <div class="mcq-grid" id="mcqOptions">
+                        <!-- الأزرار ستضاف هنا -->
+                    </div>
+                </div>
+                <div id="noMcqWords" style="display:none; text-align:center;">
+                    <p>تحتاج إلى 4 كلمات مكتسبة على الأقل لتوليد هذا الاختبار.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toast">تم الحفظ بنجاح!</div>
+
+    <script>
+        // 1. إعدادات Supabase (تم الإصلاح هنا باستخدام supabaseClient)
+        const SUPABASE_URL = "https://dkrtiuelioyshbjoocqm.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_ts5SGrWhODsG6EH5dUt9Wg_KUvsf-CF";
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let allWords = [];
+        let flashcardQueue = [];
+        let currentFlashcardIndex = 0;
+        let sessionLearnedCount = 0;
+        const TARGET_DAILY_WORDS = 6;
+
+        let dictationWord = null;
+        let mcqCorrectWord = null;
+
+        // 2. التنقل بين الأقسام
+        function showSection(sectionId, btn) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if(btn) btn.classList.add('active');
+
+            if(sectionId === 'dashboard') loadDashboard();
+            if(sectionId === 'learn-today') startLearnSession();
+            if(sectionId === 'daily-test') loadDictationTest();
+            if(sectionId === 'weekly-test') loadMcqTest();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => toast.style.display = 'none', 3000);
+        }
+
+        // الصوت
+        function playAudio(e, elementId) {
+            if(e) e.stopPropagation();
+            const text = document.getElementById(elementId).innerText;
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US'; u.rate = 0.85;
+            window.speechSynthesis.speak(u);
+        }
+
+        // ================= القسم 1: الخطة والقاموس =================
+        async function loadDashboard() {
+            const { data, error } = await supabaseClient.from('vocabulary').select('*').order('id', {ascending: false});
+            if (data) {
+                allWords = data;
+                const learned = data.filter(w => w.status === 'learned').length;
+                document.getElementById('totalWords').innerText = data.length;
+                document.getElementById('learnedWords').innerText = learned;
+                document.getElementById('dueReview').innerText = data.filter(w => w.status === 'review').length;
+
+                const tbody = document.getElementById('dictionaryTable');
+                tbody.innerHTML = '';
+                data.forEach(word => {
+                    let statusClass = word.status === 'new' ? 'status-new' : (word.status === 'learned' ? 'status-learned' : 'status-review');
+                    let statusText = word.status === 'new' ? 'جديدة' : (word.status === 'learned' ? 'مكتسبة' : 'مراجعة');
+                    
+                    tbody.innerHTML += `
+                        <tr>
+                            <td dir="ltr" style="text-align: left; font-weight: bold;">${word.english}</td>
+                            <td>${word.arabic}</td>
+                            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                            <td>
+                                <button class="action-btn edit-btn" onclick="editWord(${word.id}, '${word.english.replace(/'/g,"\\'")}', '${word.arabic.replace(/'/g,"\\'")}')"><i class="fa-solid fa-pen"></i></button>
+                                <button class="action-btn del-btn" onclick="deleteWord(${word.id})"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        async function saveWord() {
+            const eng = document.getElementById('engInput').value.trim();
+            const ar = document.getElementById('arInput').value.trim();
+            if (!eng || !ar) return alert("أدخل الجملة والترجمة!");
+
+            await supabaseClient.from('vocabulary').insert([{ english: eng, arabic: ar }]);
+            showToast("تم الحفظ! ✅");
+            document.getElementById('engInput').value = '';
+            document.getElementById('arInput').value = '';
+            // تحديث الجدول إذا كنا في نفس الصفحة
+            if(document.getElementById('dashboard').classList.contains('active')) loadDashboard();
+        }
+
+        async function deleteWord(id) {
+            if(confirm("هل أنت متأكد من حذف هذه الجملة؟")) {
+                await supabaseClient.from('vocabulary').delete().eq('id', id);
+                showToast("تم الحذف 🗑️");
+                loadDashboard();
+            }
+        }
+
+        async function editWord(id, oldEng, oldAr) {
+            const newEng = prompt("تعديل الإنجليزية:", oldEng);
+            if(newEng === null) return;
+            const newAr = prompt("تعديل العربية:", oldAr);
+            if(newAr === null) return;
+
+            if(newEng.trim() && newAr.trim()) {
+                await supabaseClient.from('vocabulary').update({english: newEng, arabic: newAr}).eq('id', id);
+                showToast("تم التعديل ✏️");
+                loadDashboard();
+            }
+        }
+
+        // ================= القسم 2: تعلم اليوم =================
+        async function startLearnSession() {
+            sessionLearnedCount = 0;
+            updateSessionProgress();
+            
+            // جلب كلمات جديدة أو للمراجعة
+            const { data } = await supabaseClient.from('vocabulary')
+                .select('*')
+                .in('status', ['new', 'review'])
+                .limit(20);
+
+            if (data && data.length > 0) {
+                flashcardQueue = data;
+                currentFlashcardIndex = 0;
+                showFlashcardUI();
+                renderCurrentFlashcard();
+            } else {
+                document.getElementById('flashcardContainer').style.display = 'none';
+                document.getElementById('noWordsMessage').style.display = 'none';
+                document.getElementById('emptyQueueMessage').style.display = 'block';
+            }
+        }
+
+        function updateSessionProgress() {
+            document.getElementById('sessionProgress').innerText = `أنجزت: ${sessionLearnedCount} / ${TARGET_DAILY_WORDS}`;
+        }
+
+        function showFlashcardUI() {
+            document.getElementById('flashcardContainer').style.display = 'block';
+            document.getElementById('noWordsMessage').style.display = 'none';
+            document.getElementById('emptyQueueMessage').style.display = 'none';
+        }
+
+        function toggleTranslation() {
+            document.getElementById('currentCard').classList.toggle('flipped');
+        }
+
+        function renderCurrentFlashcard() {
+            if (sessionLearnedCount >= TARGET_DAILY_WORDS) {
+                document.getElementById('flashcardContainer').style.display = 'none';
+                document.getElementById('noWordsMessage').style.display = 'block';
+                return;
+            }
+
+            if (currentFlashcardIndex >= flashcardQueue.length) {
+                document.getElementById('flashcardContainer').style.display = 'none';
+                document.getElementById('emptyQueueMessage').style.display = 'block';
+                document.getElementById('emptyQueueMessage').innerHTML = '<h3>انتهت الكلمات المتاحة حالياً. أضف المزيد للوصول للهدف!</h3>';
+                return;
+            }
+
+            const word = flashcardQueue[currentFlashcardIndex];
+            document.getElementById('currentCard').classList.remove('flipped');
+            document.getElementById('cardEng').innerText = word.english;
+            document.getElementById('cardAr').innerText = word.arabic;
+            
+            setTimeout(() => playAudio(null, 'cardEng'), 300);
+        }
+
+        async function nextFlashcard(difficulty) {
+            if(currentFlashcardIndex >= flashcardQueue.length) return;
+            const word = flashcardQueue[currentFlashcardIndex];
+            
+            if (difficulty === 'easy') {
+                await supabaseClient.from('vocabulary').update({ status: 'learned' }).eq('id', word.id);
+                sessionLearnedCount++;
+                updateSessionProgress();
+            } else {
+                await supabaseClient.from('vocabulary').update({ status: 'review' }).eq('id', word.id);
+                flashcardQueue.push(word);
+            }
+
+            currentFlashcardIndex++;
+            renderCurrentFlashcard();
+        }
+
+        // ================= القسم 3: اختبار الكتابة (الإملاء) =================
+        async function loadDictationTest() {
+            document.getElementById('dictationInput').value = '';
+            document.getElementById('dictationFeedback').style.display = 'none';
+            
+            const { data } = await supabaseClient.from('vocabulary')
+                .select('*')
+                .in('status', ['learned', 'review']);
+
+            if (data && data.length > 0) {
+                document.getElementById('typingTestContainer').style.display = 'block';
+                document.getElementById('noDictationWords').style.display = 'none';
+                
+                dictationWord = data[Math.floor(Math.random() * data.length)];
+                document.getElementById('dictationAr').innerText = dictationWord.arabic;
+                document.getElementById('dictationInput').focus();
+            } else {
+                document.getElementById('typingTestContainer').style.display = 'none';
+                document.getElementById('noDictationWords').style.display = 'block';
+            }
+        }
+
+        function checkDictation() {
+            if(!dictationWord) return;
+            const userInput = document.getElementById('dictationInput').value.trim().toLowerCase();
+            const correctAns = dictationWord.english.trim().toLowerCase();
+            const feedback = document.getElementById('dictationFeedback');
+            
+            feedback.style.display = 'block';
+            const cleanUser = userInput.replace(/[.,!?]/g, "");
+            const cleanCorrect = correctAns.replace(/[.,!?]/g, "");
+
+            if (cleanUser === cleanCorrect) {
+                feedback.style.color = 'var(--success)';
+                feedback.innerText = 'ممتاز! إجابة صحيحة 👏';
+                setTimeout(loadDictationTest, 1500);
+            } else {
+                feedback.style.color = 'var(--danger)';
+                feedback.innerHTML = `خطأ ❌ <br> الإجابة الصحيحة هي: <br><span style="color:var(--primary); font-size:1.5rem;" dir="ltr">${dictationWord.english}</span>`;
+            }
+        }
+
+        // ================= القسم 4: اختبار الخيارات (MCQ) =================
+        async function loadMcqTest() {
+            const { data } = await supabaseClient.from('vocabulary').select('*').eq('status', 'learned');
+            
+            if (data && data.length >= 4) {
+                document.getElementById('mcqContainer').style.display = 'block';
+                document.getElementById('noMcqWords').style.display = 'none';
+
+                mcqCorrectWord = data[Math.floor(Math.random() * data.length)];
+                document.getElementById('mcqAr').innerText = mcqCorrectWord.arabic;
+
+                let options = [mcqCorrectWord.english];
+                let shuffledData = data.sort(() => 0.5 - Math.random());
+                for(let w of shuffledData) {
+                    if(w.id !== mcqCorrectWord.id && options.length < 4) {
+                        options.push(w.english);
+                    }
+                }
+
+                options.sort(() => 0.5 - Math.random());
+
+                const btnContainer = document.getElementById('mcqOptions');
+                btnContainer.innerHTML = '';
+                options.forEach(opt => {
+                    btnContainer.innerHTML += `<button class="mcq-btn" dir="ltr" onclick="checkMcq('${opt.replace(/'/g,"\\'")}', this)">${opt}</button>`;
+                });
+
+            } else {
+                document.getElementById('mcqContainer').style.display = 'none';
+                document.getElementById('noMcqWords').style.display = 'block';
+            }
+        }
+
+        function checkMcq(selectedText, btnElement) {
+            const buttons = document.querySelectorAll('.mcq-btn');
+            buttons.forEach(b => b.disabled = true);
+
+            if (selectedText === mcqCorrectWord.english) {
+                btnElement.style.background = 'var(--success)';
+                btnElement.style.color = 'white';
+                setTimeout(loadMcqTest, 1000);
+            } else {
+                btnElement.style.background = 'var(--danger)';
+                btnElement.style.color = 'white';
+                buttons.forEach(b => {
+                    if(b.innerText === mcqCorrectWord.english) {
+                        b.style.background = 'var(--success)';
+                        b.style.color = 'white';
+                    }
+                });
+                setTimeout(loadMcqTest, 2000);
+            }
+        }
+
+        // ================= أحداث لوحة المفاتيح (Shortcuts) =================
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('learn-today').classList.contains('active') && document.getElementById('flashcardContainer').style.display === 'block') {
+                if (e.code === 'Space') { e.preventDefault(); toggleTranslation(); }
+                if (e.code === 'ArrowRight') { nextFlashcard('easy'); }
+                if (e.code === 'ArrowLeft') { nextFlashcard('hard'); }
+            }
+            if (document.getElementById('daily-test').classList.contains('active')) {
+                if (e.code === 'Enter') { checkDictation(); }
+            }
+        });
+
+        // التشغيل المبدئي
+        window.onload = loadDashboard;
+    </script>
+</body>
+</html>
