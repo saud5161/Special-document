@@ -45,6 +45,8 @@
       background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.18);
     }
     .btn-pdf{ background:var(--accent); color:#1f2937; border:none; }
+    .btn-danger{ background:var(--danger); color:#fff; border:none; }
+
 
     .top-controls{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:8px; }
     .field{ display:flex; flex-direction:column; gap:4px; min-width:0; }
@@ -178,6 +180,7 @@
       <h1 class="app-title">توزيع الكاونترات</h1>
       <div class="header-actions">
         <button class="icon-btn" onclick="resetSchedule()" title="تصفير التوزيع">مسح الكل</button>
+        <button class="icon-btn btn-danger" onclick="clearCustomNames()" title="حذف الأسماء المضافة يدوياً">حذف الأسماء اليدوي</button>
         <button class="icon-btn btn-pdf" onclick="downloadPDF()" title="طباعة PDF">PDF</button>
       </div>
     </div>
@@ -301,7 +304,7 @@
   <script>
     const PREFS_KEY = 'official_sched_mobile_v13_transfer';
     
-    const DEFAULT_TASKS = ["إرشاد", "خدمة ذاتية", "بوابة", "بدون مهام/غياب"];
+    const DEFAULT_TASKS = ["كاونتر ذاتية 1", "كاونتر ذاتية 2", "إرشاد", "خدمة ذاتية", "بوابة", "بدون مهام/غياب"];
     const DEFAULT_GROUPS = ["المجموعة الأولى", "المجموعة الثانية", "المجموعة الثالثة", "المجموعة الرابعة"];
     const DEFAULT_BREAKS = ["البريك الأول", "البريك الثاني", "البريك الثالث", "البريك الرابع"];
     
@@ -915,7 +918,15 @@
         onFilterChange(); 
         renderCounterStrip();
     }
-
+    function clearCustomNames() {
+    if (confirm('هل أنت متأكد من حذف جميع الأسماء المضافة يدوياً؟')) {
+        savedCustomNames = [];
+        // إزالة الأسماء اليدوية من التوزيع إذا كانت موزعة مسبقاً
+        chosen = chosen.filter(c => !String(c.id).startsWith('custom_name_'));
+        savePrefs();
+        onFilterChange();
+    }
+}
     function generateStructuredData() {
         let cardsMap = {}; 
         let tasksMap = {}; 
@@ -929,12 +940,20 @@
                  return;
             }
 
-            if(p.task.startsWith('كاونتر')) {
+           if(p.task.startsWith('كاونتر')) {
                 if(!cardsMap[p.task]) {
                     let isMerged = p.task.includes('&');
                     let numsStr = p.task.replace('كاونتر ', '');
-                    let nums = isMerged ? numsStr.split('&').map(n=>parseInt(n.trim())) : [parseInt(numsStr.trim())];
-                    cardsMap[p.task] = { id: p.task, nums: nums, type: isMerged ? 'merged' : 'single', people: [] };
+                    let parsedNums = isMerged ? numsStr.split('&').map(n=>n.trim()) : [numsStr.trim()];
+                    let sortNum = parseInt(parsedNums[0]);
+                    
+                    cardsMap[p.task] = { 
+                        id: p.task, 
+                        nums: parsedNums, 
+                        sortVal: isNaN(sortNum) ? (parsedNums[0] === 'ذاتية 1' ? 21 : (parsedNums[0] === 'ذاتية 2' ? 22 : 999)) : sortNum,
+                        type: isMerged ? 'merged' : 'single', 
+                        people: [] 
+                    };
                 }
                 cardsMap[p.task].people.push(p);
             } else if (isGroup(p.task)) {
@@ -954,7 +973,7 @@
         const allBreaks = [...DEFAULT_BREAKS, ...customBreaksList];
 
         return { 
-            cards: Object.values(cardsMap).sort((a,b) => a.nums[0] - b.nums[0]), 
+            cards: Object.values(cardsMap).sort((a,b) => a.sortVal - b.sortVal),
             tasks: Object.values(tasksMap),
             groups: Object.values(groupsMap).sort((a,b) => allGroups.indexOf(a.title) - allGroups.indexOf(b.title)),
             breaks: Object.values(breaksMap).sort((a,b) => allBreaks.indexOf(a.title) - allBreaks.indexOf(b.title))
