@@ -408,3 +408,65 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.removeItem('lastWordLinkChoice');
     } catch(e) {}
 });
+// ======================== 13. نظام جلب الملفات عبر الـ Local API ===========================
+
+async function loadRecentFiles() {
+    const listElement = document.getElementById('recent-docm-list');
+    if (!listElement) return;
+
+    // التأكد من أن المنفذ تم إرساله من main.js
+    if (!window.LOCAL_API_PORT) {
+        setTimeout(loadRecentFiles, 500); // أعد المحاولة بعد نصف ثانية إذا لم يجهز
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:${window.LOCAL_API_PORT}/get-recent`);
+        const docmFiles = await response.json();
+
+        listElement.innerHTML = ''; 
+
+        if (docmFiles.length === 0) {
+            listElement.innerHTML = '<li style="text-align: center; color: #64748b; font-size: 12px; justify-content: center;">لا توجد نماذج DOCM حديثة</li>';
+            return;
+        }
+
+        docmFiles.forEach(file => {
+            const li = document.createElement('li');
+            li.title = "اضغط لفتح الملف بالوورد فوراً";
+            
+            // عند الضغط، أرسل طلب للـ API المحلي لفتح الملف
+            li.onclick = () => fetch(`http://127.0.0.1:${window.LOCAL_API_PORT}/open-file?path=${encodeURIComponent(file.path)}`);
+            
+            li.innerHTML = `
+                <div class="file-icon"><i class="fa-solid fa-file-word" style="color: #1b65c2; font-size: 18px;"></i></div>
+                <div class="file-info" style="flex: 1; min-width: 0; text-align: right;">
+                    <span class="file-name" style="display: block; font-size: 13px; font-weight: 800; color: #2b3d34; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${file.name}</span>
+                    <span class="file-date" style="display: block; font-size: 11px; color: #64748b; margin-top: 2px;">${file.dateStr}</span>
+                </div>
+            `;
+            listElement.appendChild(li);
+        });
+    } catch (error) {
+        console.error("Error fetching recent files:", error);
+        listElement.innerHTML = '<li style="color: red; font-size: 12px;">حدث خطأ في الاتصال بالنظام</li>';
+    }
+}
+
+// دالة تفعيل زر "فتح" العلوي للمجلد بالكامل
+function openDownloadsFolderDirect() {
+    if (window.LOCAL_API_PORT) {
+        fetch(`http://127.0.0.1:${window.LOCAL_API_PORT}/open-folder`);
+    }
+}
+
+// تشغيل الجلب بمجرد تحميل الصفحة
+document.addEventListener("DOMContentLoaded", () => {
+    // ... أكوادك السابقة ...
+    
+    // تشغيل النظام
+    loadRecentFiles();
+    
+    // تحديث القائمة تلقائياً كل 30 ثانية لتظل حية ومتزامنة
+    setInterval(loadRecentFiles, 30000);
+});

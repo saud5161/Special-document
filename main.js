@@ -857,3 +857,70 @@ ipcMain.handle('save-card', async (event, sectionId, newCard) => {
 });
 
 
+const http = require('http');
+
+// إنشاء خادم API محلي صغير للتواصل مع الواجهة بدون IPC أو Preload
+const localServer = http.createServer((req, res) => {
+    // السماح للواجهة بالاتصال
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+    if (req.url === '/get-recent') {
+        try {
+            const downloadsPath = app.getPath('downloads');
+            if (!fs.existsSync(downloadsPath)) {
+                return res.end(JSON.stringify([]));
+            }
+            
+            const files = fs.readdirSync(downloadsPath);
+            const docmFiles = files
+                .filter(f => f.toLowerCase().endsWith('.docm'))
+                .map(f => {
+                    const fullPath = path.join(downloadsPath, f);
+                    const stats = fs.statSync(fullPath);
+                    return {
+                        name: f,
+                        path: fullPath,
+                        time: stats.mtime.getTime(),
+                        dateStr: stats.mtime.toLocaleString('ar-SA', { 
+                            year: 'numeric', month: '2-digit', day: '2-digit', 
+                            hour: '2-digit', minute: '2-digit'
+                        })
+                    };
+                })
+                .sort((a, b) => b.time - a.time)
+                .slice(0, 10);
+                
+            res.end(JSON.stringify(docmFiles));
+        } catch (e) {
+            console.error("API Error:", e);
+            res.end(JSON.stringify([]));
+        }
+    } else if (req.url.startsWith('/open-file')) {
+        const filePath = decodeURIComponent(req.url.split('?path=')[1] || '');
+        if (filePath && fs.existsSync(filePath)) {
+            const { shell } = require('electron');
+            shell.openPath(filePath);
+        }
+        res.end(JSON.stringify({ok: true}));
+    } else if (req.url === '/open-folder') {
+        const { shell } = require('electron');
+        shell.openPath(app.getPath('downloads'));
+        res.end(JSON.stringify({ok: true}));
+    } else {
+        res.end(JSON.stringify({error: 'Not found'}));
+    }
+});
+
+// تشغيل الخادم على منفذ عشوائي لضمان عدم التعارض
+localServer.listen(0, '127.0.0.1', () => {
+    const port = localServer.address().port;
+    console.log(`🚀 Local Internal API running on port ${port}`);
+    
+    // حقن رقم المنفذ للواجهة بمجرد تحميلها
+    app.on('web-contents-created', (event, contents) => {
+        contents.on('did-finish-load', () => {
+            contents.executeJavaScript(`window.LOCAL_API_PORT = ${port};`);
+        });
+    });
+});

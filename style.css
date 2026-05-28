@@ -503,3 +503,29 @@ body.theme-dark .feedback-body select:focus, body.theme-dark .feedback-body text
 @media (max-width: 900px) { .whats-new-content { grid-template-columns: 1fr; } }
 .top-bar .left a.whatsapp-top-btn { background: linear-gradient(45deg, #25d366, #128c7e); border-color: transparent; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); color: #ffffff; }
 .top-bar .left a.whatsapp-top-btn:hover { background: linear-gradient(45deg, #1ebe57, #0f7669); box-shadow: 0 6px 16px rgba(37, 211, 102, 0.5); color: #ffffff; transform: translateY(-2px); }
+/* =========================================================
+   14. تنسيق قائمة أحدث الملفات المحملة
+   ========================================================= */
+.recent-files-widget { display: inline-flex; flex-direction: column; height: 310px; }
+.recent-files-list-container { flex: 1; overflow-y: auto; padding-left: 5px; }
+
+/* تخصيص مظهر شريط التمرير */
+.recent-files-list-container::-webkit-scrollbar { width: 5px; }
+.recent-files-list-container::-webkit-scrollbar-track { background: #f0f4f2; border-radius: 10px; }
+.recent-files-list-container::-webkit-scrollbar-thumb { background: #c7a33a; border-radius: 10px; }
+
+.recent-files-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.recent-files-list li {
+    background: #f8faf9; border: 1px solid #eef2f5; border-radius: 8px;
+    padding: 8px 12px; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: all 0.2s ease;
+}
+.recent-files-list li:hover {
+    background: #ffffff; border-color: #c7a33a; box-shadow: 0 4px 10px rgba(199, 163, 58, 0.1); transform: translateX(-3px);
+}
+
+body.theme-dark .recent-files-list li { background: #0f172a; border-color: rgba(255,255,255,0.05); }
+body.theme-dark .recent-files-list li:hover { background: #1e293b; border-color: #c7a33a; }
+body.theme-dark .recent-files-list li .file-name { color: #cbd5e1; }
+body.theme-dark .recent-files-list li .file-date { color: #94a3b8; }
+body.theme-dark .recent-files-list-container::-webkit-scrollbar-track { background: #0f172a; }

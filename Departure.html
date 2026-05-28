@@ -264,6 +264,7 @@
       </li>
     </ol>
   </div>
+  
 </div>
       <button id="feedback-toggle-btn" class="feedback-toggle-btn" onclick="toggleFeedbackBox()">
     <i class="fas fa-comment-dots"></i> مساعدة واقتراحات
@@ -332,6 +333,23 @@
     </div>
   </div>
 </div>
+<div class="shift-form recent-files-widget">
+  <div class="instruction-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+    <h3 style="margin: 0;">
+      <i class="fa-solid fa-clock-rotate-left" style="color: #c7a33a; margin-left: 8px;"></i>
+      <span> اخر ملفات الوورد التي تم حفظها</span>
+    </h3>
+    <button class="btn-green" onclick="openDownloadsFolderDirect()" style="margin: 0; padding: 6px 12px; font-size: 11px; cursor: pointer;">
+      <i class="fa-solid fa-folder-open"></i> فتح 
+    </button>
+  </div>
+  
+  <div class="recent-files-list-container">
+    <ul id="recent-docm-list" class="recent-files-list">
+      <li style="text-align: center; color: #64748b; font-size: 12px;"><i class="fas fa-spinner fa-spin"></i> جاري الاتصال وجلب الملفات...</li>
+    </ul>
+  </div>
+</div>
 <div class="section-header highlight-style">
     <h2><i class="fas fa-calendar-check"></i> الحضور والانصراف</h2>
 </div>
@@ -347,7 +365,7 @@
 
             <div class="update-note">
               <i class="fas fa-circle-check"></i>
-              تم تحديث الكشوفات بتاريخ 1447/11/17
+              تم تحديث الكشوفات بتاريخ 1447/10/11
             </div>
 
             <p>كشف لجميع الصالات</p>
