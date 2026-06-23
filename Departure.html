@@ -2185,11 +2185,12 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-      <a
-        href="dic/السعودين/تعهد .docx"
-        class="btn-icon word-icon"
-        target="_top"
-        title="تعديل Word">
+      <a 
+        href="index.html" 
+        class="btn-icon word-icon" 
+        target="_top" 
+        title="تعديل Word"
+        onclick="localStorage.setItem('wordLinkChoice', 'تخلف-تعهد')">
       </a>
       <a
         href="javascript:void(0);"
@@ -2233,6 +2234,25 @@
         title="طباعة"
         onclick="printFile('dic/السعودين/مواطن مغادر.pdf');">
         <i class="fa-solid fa-print"></i>
+      </a>
+    </div>
+  </div>
+  <div class="model-card">
+    <div class="card-content">
+      <div class="model-icon">
+          <i class="fa-solid fa-passport"></i>
+          <i class="fa-solid fa-id-card badge-icon badge-green"></i>
+      </div>
+      <h3>مقيم يحمل جواز سعودي</h3>
+      <p>مقيم لديه جواز سعودي</p>
+    </div>
+    <div class="card-actions">
+      <a
+        href="index.html"
+        class="btn-icon word-icon"
+        target="_top"
+        title="تعديل Word"
+        onclick="localStorage.setItem('wordLinkChoice', 'مقيم-جواز-سعودي')">
       </a>
     </div>
   </div>

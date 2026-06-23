@@ -236,12 +236,17 @@ function collect(){
     OfficerName:      $('officer-name')?.value      || '',
     Rank:             $('officer-rank')?.value      || '',
     // المسافر
-    TravelerName:     $('TravelerName')?.value      || '',
+    TravelerName:     $('TravelerName')?.value      || $('PledgeTravelerName')?.value || '',
     Nationality:      $('Nationality')?.value       || '',
-    PassportNumber:   $('PassportNumber')?.value    || '',
-    TravelerID:       $('id')?.value                || '', // جديد: رقم (الحدود/الإقامة/الهوية) - مفتاح واضح بدل id
+    PassportNumber:   $('PassportNumber')?.value    || $('PledgeDocumentNumber')?.value || '',
+    TravelerID:       $('id')?.value                || $('PledgeDocumentNumber')?.value || '', // جديد: رقم (الحدود/الإقامة/الهوية) - مفتاح واضح بدل id
     VisaType:         $('VisaType')?.value          || '', // جديد: نوع التأشيرة
     Gender:           $('Gender')?.value            || '',
+    PledgeTravelerName: $('PledgeTravelerName')?.value || '',
+    PledgeDocumentNumber: $('PledgeDocumentNumber')?.value || '',
+    PledgeTravelReason: $('PledgeTravelReason')?.value || '',
+    PledgeDays: $('PledgeDays')?.value || '',
+    PledgeMonths: $('PledgeMonths')?.value || '',
     // الرحلة
     AirlineName:      $('AirlineName')?.value       || '',
     FlightNumber:     $('FlightNumber')?.value      || '',
@@ -735,6 +740,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/خطاب بدون اسم.docm";
 } else if (choice === "مغادرة-مواطن") {
   wordLink.href = "dic/السعودين/مواطن مغادر.docm";
+} else if (choice === "مقيم-جواز-سعودي") {
+  wordLink.href = "dic/السعودين/مقيم لدية جواز سعودي.docm";
 } else if (choice === "تعذر-مغادرة") {
   wordLink.href = "dic/نــماذج  اليومية/تعذر مغادرة.docm";
 } else if (choice === "غياب-افراد") {
@@ -760,6 +767,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/مواليد.docm";
   } else if (choice === "تخلف-مغادرة") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تخلف على الرحلة فقط.docm";
+  } else if (choice === "تخلف-تعهد" || choice === "تعهد") {
+  wordLink.href = "dic/السعودين/تعهد.docm";
   } else if (choice === "تعقب-مغادرة") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/خطاب اشارة الى تخلف.docm";
 } else if (choice === "تاشيرات-المشاريع") {
@@ -997,6 +1006,15 @@ if (choice === "كشف") {
   const note = document.getElementById("note-shift-balance-now");
   if (note) note.style.display = "none";
   
+}
+
+if (choice === "تخلف-تعهد" || choice === "تعهد") {
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = "none";
+  });
+
+  const pledgeCard = document.getElementById("card-pledge-passport-expiry");
+  if (pledgeCard) pledgeCard.style.display = "block";
 }
 // ===== وضع تعديل-مرحل =====
 if (choice === "تعديل-مرحل") {
@@ -1492,6 +1510,19 @@ if (choice === "مغادرة-مواطن") {
   }
 
 
+}
+if (choice === "مقيم-جواز-سعودي") {
+  const keepIds = new Set(["card-receipt", "card-traveler", "card-flight", "card-issued"]);
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = keepIds.has(card.id) ? "" : "none";
+  });
+
+  ["commander-name", "commander-rank", "VisaType"].forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el) el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
 }
 if (choice === "عسكري-رحلة-مواصلة") {
   // إخفاء اسم الآمر المناوب ورتبته
@@ -2800,7 +2831,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderChoice = () => {
     const choice = (getChoice() || '').trim();
     if (choice) {
-      nameEl.textContent = choice;  // مثال: "تعقب-مغادرة"
+      const displayNames = {
+        "تخلف-تعهد": "تعهد انتهى جواز السفر",
+        "تعهد": "تعهد انتهى جواز السفر",
+        "مقيم-جواز-سعودي": "مقيم لدية جواز سعودي"
+      };
+      nameEl.textContent = displayNames[choice] || choice;  // مثال: "تعقب-مغادرة"
       banner.hidden = false;
     } else {
       banner.hidden = true;
