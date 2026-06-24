@@ -741,7 +741,7 @@ if (choice === "خطاب-باسم") {
 } else if (choice === "مغادرة-مواطن") {
   wordLink.href = "dic/السعودين/مواطن مغادر.docm";
 } else if (choice === "مقيم-جواز-سعودي") {
-  wordLink.href = "dic/السعودين/مقيم لدية جواز سعودي.docm";
+  wordLink.href = "dic/السعودين/مقيم يحمل جواز سعودي.docm";
 } else if (choice === "تعذر-مغادرة") {
   wordLink.href = "dic/نــماذج  اليومية/تعذر مغادرة.docm";
 } else if (choice === "غياب-افراد") {
