@@ -755,6 +755,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نماذج الممنوعين/اشعار مباحث.docm";
 } else if (choice === "قبض") {
   wordLink.href = "dic/نماذج الممنوعين/قبض.docm";
+  } else if (choice === "تفتيش") {
+  wordLink.href = "dic/نماذج الممنوعين/تفتيش.docm";
 } else if (choice === "اشعار-منع") {
   wordLink.href = "dic/نماذج الممنوعين/منع سفر مباحث.docm";
 } else if (choice === "عسكري-رحلة-مواصلة") {
@@ -4738,4 +4740,76 @@ function toggleBalanceNightVisibility() {
 document.addEventListener('DOMContentLoaded', () => {
   toggleBalanceNightVisibility();
   setInterval(toggleBalanceNightVisibility, 60000); 
+});
+
+// ===== وضع "تفتيش": عرض الحقول المطلوبة فقط لمحضر التفتيش =====
+function applyInspectionMode() {
+  const choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
+  if (choice !== "تفتيش") return;
+
+  const showElement = (el, display = "block") => {
+    if (el) el.style.setProperty("display", display, "important");
+  };
+
+  const hideElement = (el) => {
+    if (el) el.style.setProperty("display", "none", "important");
+  };
+
+  const showField = (id) => {
+    showElement(document.getElementById(id));
+    showElement(document.querySelector(`label[for='${id}']`));
+  };
+
+  const hideField = (id) => {
+    hideElement(document.getElementById(id));
+    hideElement(document.querySelector(`label[for='${id}']`));
+  };
+
+  // إظهار الأقسام المطلوبة فقط
+  const keepCards = new Set(["card-receipt", "card-command", "card-traveler", "card-flight", "card-issued"]);
+  document.querySelectorAll(".card").forEach(card => {
+    if (!card.id) return;
+    if (keepCards.has(card.id)) {
+      showElement(card);
+    } else {
+      hideElement(card);
+    }
+  });
+
+  // بيانات التاريخ والمستلم: تظهر، باستثناء اسم/رتبة الآمر المناوب
+  hideField("commander-name");
+  hideField("commander-rank");
+
+  // معلومات الأمر: إظهار جهة الخطاب فقط
+  document
+    .querySelectorAll("#card-command input, #card-command select, #card-command textarea, #card-command label")
+    .forEach(el => {
+      const id = el.tagName === "LABEL" ? el.getAttribute("for") : el.id;
+      if (id === "RequestingAgency") {
+        showElement(el);
+      } else {
+        hideElement(el);
+      }
+    });
+
+  // بيانات المسافر: إظهار الاسم + الجنسية + رقم الجواز فقط
+  const travelerFieldsToShow = new Set(["TravelerName", "Nationality", "PassportNumber"]);
+  document
+    .querySelectorAll("#card-traveler input, #card-traveler select, #card-traveler textarea, #card-traveler label")
+    .forEach(el => {
+      const id = el.tagName === "LABEL" ? el.getAttribute("for") : el.id;
+      if (travelerFieldsToShow.has(id)) {
+        showElement(el);
+      } else {
+        hideElement(el);
+      }
+    });
+
+  // تأكيد ظهور بطاقة الرحلة وبيانات الصادر الأساسية
+  ["card-flight", "card-issued"].forEach(id => showElement(document.getElementById(id)));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // تأخير بسيط حتى تكون قواعد الإظهار/الإخفاء الأخرى انتهت، ثم نطبق وضع التفتيش كقاعدة نهائية.
+  setTimeout(applyInspectionMode, 0);
 });
