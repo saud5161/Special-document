@@ -44,7 +44,7 @@
     </style>
     
 </head>
-<body>
+<body class="forms-list-page">
     <div id="password-container" style="
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0;
@@ -125,6 +125,7 @@
         <div style="margin: 20px;"></div>
         <input type="text" id="search-input" placeholder="ابحث هنا...">
         <button id="search-button">بحث</button>
+        <button id="clear-search-button" type="button" title="تفريغ البحث">تفريغ</button>
         <div id="search-feedback" class="search-feedback" aria-live="polite" style="display:none;"></div>
         <div style="margin: 20px;"></div>
     </div>
@@ -208,6 +209,7 @@
         </div>
         
         <div class="content">
+          <div class="departure-hero" role="img" aria-label="مطار الملك خالد الدولي"></div>
           
            <div class="quick-links">
     <span>انتقال سريع:</span>
@@ -292,8 +294,8 @@
         <p id="feedback-status-msg" style="margin-top: 10px; font-weight: 800; font-size: 12px; text-align: center; display: none;"></p>
     </div>
 </div>      
-<div class="whats-new-highlight-box">
-  <div class="whats-new-header">
+<div class="whats-new-highlight-box is-collapsed">
+  <div class="whats-new-header" onclick="this.closest('.whats-new-highlight-box').classList.toggle('is-collapsed')">
     <div class="whats-new-title">
       <i class="fas fa-bullhorn" style="color: #1e5631;"></i>
       <span>ما الجديد </span>
@@ -899,10 +901,6 @@
         target="_blank"
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
-      </a>
-      <a
-        class="btn-icon word-icon unavailable"
-        title="غير متوفر">
       </a>
       <a
         href="javascript:void(0);"
@@ -1795,12 +1793,6 @@
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
       <a
-        href="dic/خطابات جاهزة لتعديل/اختلاف خصائص حيوية.docx"
-        class="btn-icon word-icon unavailable"
-        target="_top"
-        title="تعديل Word">
-      </a>
-      <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
         title="طباعة"
@@ -1823,12 +1815,6 @@
         target="_blank"
         title="غير متوفر"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
-      </a>
-      <a
-        href="dic/خطابات جاهزة لتعديل/خطاب عدم تسديد خروج راكب .docx"
-        class="btn-icon word-icon unavailable"
-        target="_top"
-        title="تعديل Word">
       </a>
       <a
         href="javascript:void(0);"
@@ -2118,10 +2104,6 @@
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
       <a
-        class="btn-icon word-icon unavailable"
-        title="غير متوفر">
-      </a>
-      <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
         title="طباعة"
@@ -2144,10 +2126,6 @@
         target="_blank"
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
-      </a>
-      <a
-        class="btn-icon word-icon unavailable"
-        title="غير متوفر">
       </a>
       <a
         href="javascript:void(0);"
@@ -2284,10 +2262,6 @@
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
       <a
-        class="btn-icon word-icon unavailable"
-        title="غير متوفر">
-      </a>
-      <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
         title="طباعة"
@@ -2349,10 +2323,6 @@
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
       <a
-        class="btn-icon word-icon unavailable"
-        title="غير متوفر">
-      </a>
-      <a
         href="javascript:void(0);"
         class="btn-icon print-icon"
         title="طباعة"
@@ -2375,10 +2345,6 @@
         target="_blank"
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
-      </a>
-      <a
-        class="btn-icon word-icon unavailable"
-        title="غير متوفر">
       </a>
       <a
         href="javascript:void(0);"

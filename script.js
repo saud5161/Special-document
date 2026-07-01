@@ -220,35 +220,121 @@ function performSearch() {
     const searchInput = document.getElementById("search-input");
     if (!searchInput) return;
 
-    const searchTerm = searchInput.value.toLowerCase();
-    const headings = document.querySelectorAll(".card-content h3");
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const cards = document.querySelectorAll(".model-card");
+    const feedback = document.getElementById("search-feedback");
     let found = false;
+    let firstMatch = null;
 
-    headings.forEach(function(heading) {
-        heading.style.backgroundColor = ""; 
-        if (searchTerm && heading.textContent.toLowerCase().includes(searchTerm)) {
-            if (!found) {
-                heading.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                found = true;
-            }
-            heading.style.backgroundColor = "#badf19ff";
-            setTimeout(() => {
-                heading.style.backgroundColor = "";
-                searchInput.value = "";
-            }, 7000);
+    cards.forEach(function(card) {
+        card.classList.remove("search-hit");
+
+        if (!searchTerm) {
+            card.style.display = "";
+            return;
+        }
+
+        const haystack = card.textContent.toLowerCase();
+        const matched = haystack.includes(searchTerm);
+        card.style.display = matched ? "" : "none";
+
+        if (matched) {
+            found = true;
+            card.classList.add("search-hit");
+            if (!firstMatch) firstMatch = card;
         }
     });
+
+    document.querySelectorAll(".content-section").forEach(function(section) {
+        if (!searchTerm) {
+            section.style.display = "";
+            const header = section.previousElementSibling;
+            if (header && header.classList.contains("section-header")) header.style.display = "";
+            return;
+        }
+
+        const hasVisibleCards = Array.from(section.querySelectorAll(".model-card"))
+            .some(card => card.style.display !== "none");
+        section.style.display = hasVisibleCards ? "" : "none";
+
+        const header = section.previousElementSibling;
+        if (header && header.classList.contains("section-header")) {
+            header.style.display = hasVisibleCards ? "" : "none";
+        }
+    });
+
+    if (!searchTerm) {
+        if (feedback) feedback.style.display = "none";
+        return;
+    }
+
+    if (firstMatch) {
+        firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (feedback) {
+            feedback.textContent = "تم العثور على النموذج";
+            feedback.style.display = "block";
+            feedback.style.color = "#1e5631";
+            setTimeout(() => { feedback.style.display = "none"; }, 2500);
+        }
+    } else if (feedback) {
+        feedback.textContent = "لم يتم العثور على نموذج مطابق";
+        feedback.style.display = "block";
+        feedback.style.color = "#b42318";
+    }
+
+    if (found) {
+        setTimeout(() => {
+            document.querySelectorAll(".model-card.search-hit").forEach(card => {
+                card.classList.remove("search-hit");
+            });
+        }, 12000);
+    }
+
+    clearTimeout(window.__formsSearchClearTimer);
+    window.__formsSearchClearTimer = setTimeout(() => {
+        searchInput.value = "";
+        resetSearchResults();
+    }, 12000);
+}
+
+function resetSearchResults() {
+    const searchInput = document.getElementById("search-input");
+    if (searchInput && searchInput.value.trim() !== "") return;
+
+    document.querySelectorAll(".model-card").forEach(card => {
+        card.style.display = "";
+        card.classList.remove("search-hit");
+    });
+
+    document.querySelectorAll(".content-section").forEach(section => {
+        section.style.display = "";
+        const header = section.previousElementSibling;
+        if (header && header.classList.contains("section-header")) header.style.display = "";
+    });
+
+    const feedback = document.getElementById("search-feedback");
+    if (feedback) feedback.style.display = "none";
 }
 
 function initSearchAndLinks() {
     const searchBtn = document.getElementById("search-button");
+    const clearSearchBtn = document.getElementById("clear-search-button");
     const searchInput = document.getElementById("search-input");
 
     if (searchBtn) searchBtn.addEventListener("click", performSearch);
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener("click", function() {
+            clearTimeout(window.__formsSearchClearTimer);
+            if (searchInput) searchInput.value = "";
+            resetSearchResults();
+            if (searchInput) searchInput.focus();
+        });
+    }
     if (searchInput) {
         searchInput.addEventListener("keypress", function(event) {
             if (event.key === "Enter") performSearch();
         });
+        searchInput.addEventListener("input", resetSearchResults);
     }
 
     document.querySelectorAll('.quick-links a').forEach(link => {
@@ -376,6 +462,23 @@ function initFormClearing() {
 
 // ======================== 9. التهيئة عند تحميل الصفحة ===========================
 document.addEventListener("DOMContentLoaded", () => {
+    const departurePage = document.body.classList.contains("forms-list-page");
+    const backgroundLogo = document.querySelector(".page-background-logo");
+
+    if (departurePage && backgroundLogo && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        window.addEventListener("pointermove", (event) => {
+            const x = ((event.clientX / window.innerWidth) - 0.5) * 18;
+            const y = ((event.clientY / window.innerHeight) - 0.5) * 14;
+            document.body.style.setProperty("--bg-logo-x", `${x.toFixed(1)}px`);
+            document.body.style.setProperty("--bg-logo-y", `${y.toFixed(1)}px`);
+        }, { passive: true });
+
+        document.addEventListener("pointerleave", () => {
+            document.body.style.setProperty("--bg-logo-x", "0px");
+            document.body.style.setProperty("--bg-logo-y", "0px");
+        });
+    }
+
     // 1. فحص إذن الدخول لتجاوز شاشة الرقم السري
     if (localStorage.getItem("departureAccess") === "granted") {
         const passContainer = document.getElementById("password-container");
