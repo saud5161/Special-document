@@ -71,11 +71,6 @@ function setHijriAndDayNow(){
   const alertBox = $('shift-alert');
   if (alertBox) alertBox.style.display = useYesterday ? 'block' : 'none';
 
-  // إرسال للباك لكتابة deta.txt
-  if (window.electronAPI && typeof window.electronAPI.sendDateInfo === 'function') {
-    try { window.electronAPI.sendDateInfo(hijri, weekday); } catch(e){}
-  }
-
   // ===== الإضافات الجديدة: تعبئة "تاريخ الموازنة" و"يوم الموازنة" بالغد تلقائيًا =====
   try {
     // نعتمد نفس "now" المعدّل أعلاه، ثم نأخذ الغد (+1)
@@ -594,13 +589,6 @@ const issuedCard = document.getElementById('card-issued-data');
 try { if (typeof __issued_enforceVisibility === 'function') __issued_enforceVisibility(); } catch {}
   const ok = $('check-officer-name');
   if (ok) { ok.style.display = 'inline'; setTimeout(() => ok.style.display = 'none', 1500); }
-
- // حفظ ملف المناوبة — معطّل افتراضيًا
-const ENABLE_SHIFT_FILE = false;
-if (ENABLE_SHIFT_FILE && window.electronAPI?.saveShift) {
-  try { window.electronAPI.saveShift(data); } catch(e){}
-}
-
 
   // إنشاء form.txt بترميز windows-1256 عبر IPC إن توفر، وإلا تنزيل مباشر
   if (window.electronAPI?.saveFormFile) {

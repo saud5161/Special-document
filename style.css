@@ -557,8 +557,7 @@ body.forms-list-page .page-background-logo {
     filter: sepia(0.55) hue-rotate(92deg) saturate(1.7) contrast(1.18);
     transform: translate3d(var(--bg-logo-x), var(--bg-logo-y), 0) scale(1);
     transition: transform 1.1s cubic-bezier(.2,.8,.2,1);
-    animation: departureLogoBreath 9s ease-in-out infinite;
-    will-change: transform, opacity;
+    animation: departureLogoBreath 9s ease-in-out 1 forwards;
 }
 
 @keyframes departureLogoBreath {
@@ -597,7 +596,7 @@ body.forms-list-page .departure-hero {
     opacity: 0.72;
     pointer-events: none;
     z-index: -1;
-    animation: departureHeroMotion 18s ease-in-out infinite alternate;
+    animation: departureHeroMotion 14s ease-in-out 1 alternate forwards;
 }
 
 body.forms-list-page .departure-hero::after {
@@ -677,8 +676,8 @@ body.forms-list-page .instruction-wrapper,
 body.forms-list-page .whats-new-highlight-box,
 body.forms-list-page .recent-files-widget {
     background-color: rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 body.forms-list-page .quick-links {
@@ -838,8 +837,8 @@ body.forms-list-page .shift-form {
     padding: 16px 18px;
     border-radius: 18px;
     background: rgba(255,255,255,0.84);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     border: 1px solid rgba(46, 112, 88, 0.13);
     box-shadow: 0 14px 32px rgba(34, 77, 61, 0.08);
     overflow: hidden;

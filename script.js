@@ -433,14 +433,7 @@ function autoFillOfficerDetails() {
                 return;
             }
 
-            const fullData = `ComboBox1=${shiftInput.value}\nComboBox2=${hallInput.value}\nComboBox5=${rankInput.value}\nComboBox6=${officerInput.value}`;
-
-            if (window.electronAPI && window.electronAPI.saveShift) {
-                window.electronAPI.saveShift(fullData);
-                alert("✅ تم الحفظ بنجاح وإدراج المعلومات في كل الخطابات");
-            } else {
-                alert("⚠️ فشل الاتصال بـ Electron لحفظ البيانات.");
-            }
+            alert("✅ تم اعتماد البيانات");
         });
     }
 }
@@ -466,11 +459,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const backgroundLogo = document.querySelector(".page-background-logo");
 
     if (departurePage && backgroundLogo && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        let pointerFrame = 0;
+        let pointerX = 0;
+        let pointerY = 0;
+
         window.addEventListener("pointermove", (event) => {
-            const x = ((event.clientX / window.innerWidth) - 0.5) * 18;
-            const y = ((event.clientY / window.innerHeight) - 0.5) * 14;
-            document.body.style.setProperty("--bg-logo-x", `${x.toFixed(1)}px`);
-            document.body.style.setProperty("--bg-logo-y", `${y.toFixed(1)}px`);
+            pointerX = event.clientX;
+            pointerY = event.clientY;
+            if (pointerFrame || document.hidden) return;
+
+            pointerFrame = requestAnimationFrame(() => {
+                const x = ((pointerX / window.innerWidth) - 0.5) * 18;
+                const y = ((pointerY / window.innerHeight) - 0.5) * 14;
+                document.body.style.setProperty("--bg-logo-x", `${x.toFixed(1)}px`);
+                document.body.style.setProperty("--bg-logo-y", `${y.toFixed(1)}px`);
+                pointerFrame = 0;
+            });
         }, { passive: true });
 
         document.addEventListener("pointerleave", () => {
@@ -570,6 +574,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // تشغيل النظام
     loadRecentFiles();
     
-    // تحديث القائمة تلقائياً كل 30 ثانية لتظل حية ومتزامنة
-    setInterval(loadRecentFiles, 30000);
+    // تحديث خفيف عند ظهور النافذة فقط؛ لا حاجة للاستعلام كل 30 ثانية في الخلفية.
+    setInterval(() => {
+        if (!document.hidden) loadRecentFiles();
+    }, 120000);
+
+    document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) loadRecentFiles();
+    });
 });

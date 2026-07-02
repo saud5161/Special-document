@@ -127,15 +127,6 @@ const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/rel
 
 
 
-ipcMain.on('send-date-info', (event, { date, day }) => {
-  const content = `TextBox4=${date}\nTextBox1=${day}`;
-  const filePath = path.join(app.getPath('downloads'), 'deta.txt');
-  try {
-    fs.writeFileSync(filePath, content, 'utf8');
-  } catch (err) {
-    console.error('❌ خطأ في حفظ deta.txt:', err);
-  }
-});
 
 
 
@@ -157,7 +148,9 @@ function createWindow() {
        webPreferences: {
     preload: path.join(__dirname, 'preload.js'),
     contextIsolation: true,
-    nodeIntegration: true
+    nodeIntegration: true,
+    backgroundThrottling: true,
+    spellcheck: false
 }
 
     });
@@ -682,14 +675,6 @@ if (!gotTheLock) {
 }
 
 
-ipcMain.on('save-shift', (event, data) => {
-  const filePath = path.join(app.getPath('downloads'), 'shift.txt');
-
-  // تحويل النص إلى ترميز windows-1256
-  const encodedData = iconv.encode(data, 'windows-1256');
-
-  fs.writeFileSync(filePath, encodedData);
-});
 // استقبال إشارة لتحديث الملفات المحلية فوراً
 ipcMain.on('trigger-sync', () => {
     console.log("🔄 تم طلب تحديث الملفات المحلية... ننتظر ثانية لضمان الحفظ في السحابة");
@@ -698,41 +683,6 @@ ipcMain.on('trigger-sync', () => {
         syncAllWithSupabase();
     }, 1000); // 1000 تعني تأخير ثانية واحدة
 });
-ipcMain.on('send-date-info', (event, { date, day }) => {
-  const filePath = path.join(app.getPath('downloads'), 'deta.txt');
-
-  const iconv = require('iconv-lite');
-
-  function convertEasternToWestern(str) {
-    const eastern = '٠١٢٣٤٥٦٧٨٩';
-    const western = '0123456789';
-    return str.replace(/[٠-٩]/g, d => western[eastern.indexOf(d)]);
-  }
-
-  const cleanDate = convertEasternToWestern(date).trim();
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-  let tomorrowHijri = tomorrow.toLocaleDateString('ar-SA', options).trim();
-  if (!tomorrowHijri.includes('هـ')) {
-    tomorrowHijri += ' هـ';
-  }
-  tomorrowHijri = convertEasternToWestern(tomorrowHijri).trim();
-
-  const dateLine = `TextBox4=${cleanDate}`;
-  const dayLine = `ComboBox7=${day}`;
-  const tomorrowLine = `TextBox160=${tomorrowHijri}`;
-
-  try {
-    const content = `${dateLine}\n${dayLine}\n${tomorrowLine}`;
-    const encodedData = iconv.encode(content, 'windows-1256');
-    fs.writeFileSync(filePath, encodedData);
-  } catch (err) {
-    console.error('❌ خطأ في حفظ deta.txt:', err);
-  }
-});
-
 ipcMain.handle('save-form-file', async (event, text) => {
 const AUTO_DELETE_MS = 120_000; // دقيقتان
   const downloads = app.getPath('downloads');
@@ -788,33 +738,6 @@ ipcMain.handle('save-kashf-status', async (event, text) => {
     return { ok: false, error: String(e) };
   }
 });
-
-
-function clearShiftIfMatchedTime() {
-  const targetTimes = ['05:30', '13:30', '21:30'];
-  let lastCleared = null;
-
-  setInterval(() => {
-    const now = new Date();
-    const currentTime = now.toTimeString().slice(0, 5); // "HH:MM"
-
-    if (targetTimes.includes(currentTime) && lastCleared !== currentTime) {
-      const filePath = path.join(app.getPath('downloads'), 'shift.txt');
-
-      fs.writeFile(filePath, '', (err) => {
-        if (err) {
-          console.error('❌ خطأ أثناء تفريغ shift.txt:', err);
-        } else {
-          console.log(`✔ تم تفريغ shift.txt في ${currentTime}`);
-          lastCleared = currentTime;
-        }
-      });
-    }
-  }, 1000 * 60); // تحقق كل دقيقة
-}
-
-// استدعاء الوظيفة عند بدء التشغيل
-clearShiftIfMatchedTime();
 
 
 // نستخدم مسار userData لضمان عدم حدوث مشاكل في الصلاحيات عند تثبيت التطبيق
