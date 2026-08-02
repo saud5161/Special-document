@@ -469,24 +469,29 @@ function clearIndividualFields() {
 }
 
 // ===== مسارات "كشف الحضور والانصراف" حسب الصالة + المناوبة =====
+// ملف الوورد أصبح ملفاً واحداً موحداً لكل الصالات والمناوبات (12 صفحة مزدوجة).
+// الماكرو داخل الملف هو من يحدد الصفحة الصحيحة تلقائياً بناءً على المناوبة/الصالة
+// المرسلة في form.txt، ويحذف بقية الصفحات، ثم يحفظ نسخة مستقلة في Downloads.
+const KASHF_ALL_HALLS_DOC = "dic/الحضور والانصراف/كشف لكل صالات.docm";
+
 const KASHF_FILES = {
   "1": {
-    "ا": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةا.docm" },
-    "ب": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةب.docm" },
-    "ج": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةج.docm" },
-    "د": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبةد.docm" },
+    "ا": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ا.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "ب": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ب.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "ج": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة ج.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "د": { pdf: "dic/الحضور والانصراف/صالة1/حضور وانصراف مناوبة د.pdf", doc: KASHF_ALL_HALLS_DOC },
   },
   "5": {
-    "ا": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةا.docm" },
-    "ب": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةب.docm" },
-    "ج": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةج.docm" },
-    "د": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبةد.docm" },
+    "ا": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ا.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "ب": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ب.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "ج": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة ج.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "د": { pdf: "dic/الحضور والانصراف/صالة3/حضور وانصراف مناوبة د.pdf", doc: KASHF_ALL_HALLS_DOC },
   },
   "2": {
-    "ا": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ا.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةا.docm" },
-    "ب": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ب.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةب.docm" },
-    "ج": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ج.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةج.docm" },
-    "د": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة د.pdf", doc: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبةد.docm" },
+    "ا": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ا.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "ب": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ب.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "ج": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة ج.pdf", doc: KASHF_ALL_HALLS_DOC },
+    "د": { pdf: "dic/الحضور والانصراف/صالة4/حضور وانصراف مناوبة د.pdf", doc: KASHF_ALL_HALLS_DOC },
   }
 };
 
@@ -4379,8 +4384,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 // =========================================================
-// نظام الحفظ التلقائي للقائمة في الكشف (Kashf Saved Roster)
-// مرتبط بالمناوبة والصالة المحددة - (نظام الدمج الآمن ضد التحديث)
+// نظام الحفظ التلقائي للقائمة في الكشف (Kashf Saved Roster) - إصدار 2
+// مرتبط بالمناوبة والصالة المحددة. يستخدم مفتاح تخزين جديد كلياً (kashf_roster_v2_*)
+// حتى لا يقرأ أي بيانات قديمة تالفة من الإصدار السابق (تجاهل تام للتخزين الموقت السابق).
 // =========================================================
 document.addEventListener("DOMContentLoaded", () => {
   const savedListContainer = document.getElementById("kashf-saved-list");
@@ -4398,19 +4404,36 @@ document.addEventListener("DOMContentLoaded", () => {
   // التقاط أي تفاعل للمستخدم لتفعيل الحفظ
   document.body.addEventListener('click', () => { hasUserInteracted = true; });
 
-  // 1. مفتاح التخزين
+  // مفتاح التخزين (اسم جديد كلياً لتفادي أي تعارض مع بيانات الإصدار القديم)
   function getStorageKey() {
     const shift = (shiftEl ? shiftEl.value.trim() : "");
     const hall = (hallEl ? hallEl.value.trim() : "");
-    if (!shift || !hall) return "kashf_permanent_roster_default";
-    return `kashf_permanent_roster_${shift}_${hall}`;
+    if (!shift || !hall) return "kashf_roster_v2_default";
+    return `kashf_roster_v2_${shift}_${hall}`;
   }
 
-  // 2. تحميل القائمة
+  // يستخرج الاسم الصافي فقط من عنصر قائمة (متاح أو مختار)، دون الرتبة إطلاقاً
+  function extractName(el) {
+    const nameEl = el.querySelector("div > div");
+    return (nameEl ? nameEl.textContent : el.textContent).trim();
+  }
+
+  // إزالة أي تكرار للاسم نفسه من القائمة المحفوظة (يُبقي آخر حالة مسجّلة له)
+  function dedupe(list) {
+    const map = new Map();
+    list.forEach(item => { if (item.name) map.set(item.name, item); });
+    return Array.from(map.values());
+  }
+
+  function getSaved(key) {
+    return dedupe(JSON.parse(localStorage.getItem(key) || "[]"));
+  }
+
+  // تحميل القائمة وعرضها
   function loadSavedRoster() {
     savedListContainer.innerHTML = "";
     const key = getStorageKey();
-    let saved = JSON.parse(localStorage.getItem(key) || "[]");
+    const saved = getSaved(key);
 
     if (saved.length === 0) {
         let msg = (key.includes("default")) ? "حدد المناوبة والصالة لعرض الأسماء" : "لا توجد أسماء محفوظة";
@@ -4423,82 +4446,97 @@ document.addEventListener("DOMContentLoaded", () => {
       div.className = "kashf-list-item saved-item";
       div.dataset.name = item.name;
       div.dataset.status = item.status;
-      
+
       div.innerHTML = `
         <span>${item.name}</span>
         <span class="kashf-badge ${item.status === 'غياب' ? 'absence' : ''}">${item.status}</span>
       `;
 
       div.addEventListener("click", () => {
-        div.classList.toggle("selected-saved-item");
+        restoreSingleItem(div);
       });
 
       savedListContainer.appendChild(div);
     });
   }
 
-  // 3. الحفظ بنظام (الدمج) لعدم مسح الأسماء عند التحديث
+  // تطبيق اسم واحد تلقائياً على الكشف بحالته المحفوظة عند النقر عليه مباشرة
+  function restoreSingleItem(item) {
+    const name = item.dataset.name;
+    const status = item.dataset.status;
+
+    isRestoring = true;
+    hasUserInteracted = true;
+
+    const statusBtns = document.querySelectorAll("#kashf-status-controls button");
+    let targetStatusBtn = Array.from(statusBtns).find(b => b.textContent.trim() === status || b.value === status);
+    if (targetStatusBtn) targetStatusBtn.click();
+
+    setTimeout(() => {
+      const availItems = document.querySelectorAll("#kashf-avail-list .kashf-list-item");
+      let targetAvailItem = Array.from(availItems).find(el => extractName(el) === name);
+      if (targetAvailItem) targetAvailItem.click();
+
+      setTimeout(() => {
+        isRestoring = false;
+        autoSaveRoster();
+      }, 50);
+    }, 30);
+  }
+
+  // الحفظ بنظام الدمج (لا يمسح الأسماء المحفوظة سابقاً، ويمنع تكرار نفس الاسم)
   function autoSaveRoster() {
-    if (isRestoring || !hasUserInteracted) return; 
-    
+    if (isRestoring || !hasUserInteracted) return;
+
     const key = getStorageKey();
-    if (key.includes("default")) return; 
+    if (key.includes("default")) return;
 
     const chosenItems = document.querySelectorAll("#kashf-chosen-list .kashf-list-item");
-    
-    // إذا الكشف فارغ لا نفعل شيئاً (حماية للبيانات المحفوظة عند التحديث)
-    if (chosenItems.length === 0) return; 
 
-    let saved = JSON.parse(localStorage.getItem(key) || "[]");
+    // إذا الكشف فارغ لا نفعل شيئاً (حماية للبيانات المحفوظة عند التحديث)
+    if (chosenItems.length === 0) return;
+
+    let saved = getSaved(key);
     let updated = false;
 
     chosenItems.forEach(el => {
-      let clone = el.cloneNode(true);
-      let statusBadge = clone.querySelector(".kashf-badge");
-      
-      let status = "";
-      if (statusBadge) {
-          status = statusBadge.textContent.trim();
-          statusBadge.remove(); 
-      }
-      
-      let name = clone.textContent.trim(); 
+      const name = extractName(el);
+      const badge = el.querySelector(".kashf-badge");
+      const status = badge ? badge.textContent.trim() : "";
 
-      if (name && status) {
-        let existingIndex = saved.findIndex(item => item.name === name);
-        
-        if (existingIndex !== -1) {
-          // إذا الاسم موجود، نحدث حالته فقط
-          if (saved[existingIndex].status !== status) {
-            saved[existingIndex].status = status;
-            updated = true;
-          }
-        } else {
-          // إذا اسم جديد، نضيفه
-          saved.push({ name, status });
+      if (!name || !status) return;
+
+      const existingIndex = saved.findIndex(item => item.name === name);
+      if (existingIndex !== -1) {
+        if (saved[existingIndex].status !== status) {
+          saved[existingIndex].status = status;
           updated = true;
         }
+      } else {
+        saved.push({ name, status });
+        updated = true;
       }
     });
 
-    // نحفظ فقط لو صار فيه تحديث أو إضافة جديدة
+    saved = dedupe(saved);
+
     if (updated) {
       localStorage.setItem(key, JSON.stringify(saved));
-      loadSavedRoster(); 
+      loadSavedRoster();
     }
   }
 
-  // 4. مراقبة "الحالة في الكشف"
+  // مراقبة "الحالة في الكشف" للحفظ التلقائي عند أي تغيير
   const observer = new MutationObserver(() => {
     autoSaveRoster();
   });
   observer.observe(chosenList, { childList: true, subtree: true });
 
-  // 5. تحديث القائمة فور تغيير المناوبة أو الصالة
+  // تحديث القائمة فور تغيير المناوبة أو الصالة
   if (shiftEl) { shiftEl.addEventListener("change", loadSavedRoster); shiftEl.addEventListener("input", loadSavedRoster); }
   if (hallEl) { hallEl.addEventListener("change", loadSavedRoster); hallEl.addEventListener("input", loadSavedRoster); }
 
-  // 6. استرجاع المحدد أو الكل
+  // استرجاع المحدد أو الكل (دفعة واحدة)
   if (btnRestore) {
     btnRestore.addEventListener("click", () => {
       const selected = document.querySelectorAll("#kashf-saved-list .saved-item.selected-saved-item");
@@ -4506,7 +4544,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (itemsToRestore.length === 0) return;
 
-      isRestoring = true; 
+      isRestoring = true;
       hasUserInteracted = true;
 
       itemsToRestore.forEach((item, index) => {
@@ -4516,38 +4554,32 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             const statusBtns = document.querySelectorAll("#kashf-status-controls button");
             let targetStatusBtn = Array.from(statusBtns).find(b => b.textContent.trim() === status || b.value === status);
-            
+
             if (targetStatusBtn) targetStatusBtn.click();
 
             setTimeout(() => {
                 const availItems = document.querySelectorAll("#kashf-avail-list .kashf-list-item");
-                let targetAvailItem = Array.from(availItems).find(el => {
-                    let elClone = el.cloneNode(true);
-                    let b = elClone.querySelector(".kashf-badge");
-                    if(b) b.remove();
-                    return elClone.textContent.trim().includes(name);
-                });
+                let targetAvailItem = Array.from(availItems).find(el => extractName(el) === name);
+                if (targetAvailItem) targetAvailItem.click();
+            }, 30);
 
-                if (targetAvailItem) targetAvailItem.click(); 
-            }, 30); 
-            
-        }, index * 80); 
+        }, index * 80);
       });
 
       setTimeout(() => {
           isRestoring = false;
-          autoSaveRoster(); 
+          autoSaveRoster();
           itemsToRestore.forEach(item => item.classList.remove("selected-saved-item"));
       }, itemsToRestore.length * 80 + 100);
     });
   }
 
-  // 7. الحذف الآمن
+  // الحذف الآمن
   if (btnDelete) {
     btnDelete.addEventListener("click", () => {
       const selected = document.querySelectorAll("#kashf-saved-list .saved-item.selected-saved-item");
       const key = getStorageKey();
-      let saved = JSON.parse(localStorage.getItem(key) || "[]");
+      let saved = getSaved(key);
 
       if (selected.length > 0) {
         const selectedNames = Array.from(selected).map(el => el.dataset.name);
@@ -4564,7 +4596,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // تحميل أولي
-  setTimeout(loadSavedRoster, 500); 
+  setTimeout(loadSavedRoster, 500);
 });
 // =========================================================
 // ميزة البحث في "القوة المتاحة"
