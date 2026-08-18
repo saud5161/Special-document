@@ -508,6 +508,46 @@
 </div>
 </section>
 
+<!-- بطاقة: معلومات الافادة (تظهر فقط عند اختيار "افادة-غياب") -->
+<section class="card" id="card-ifada-ghiyab" style="display:none">
+  <h3 class="card__title"><i class="fas fa-file-medical"></i> معلومات الافادة</h3>
+
+  <div class="card__body form-grid">
+
+    <!-- تاريخ الغياب -->
+    <label for="AbsenceDate"><i class="fas fa-calendar-alt"></i> تاريخ الغياب</label>
+
+    <div class="date-wrapper">
+      <input id="AbsenceDate" class="h-date" placeholder="—">
+      <!-- زر فتح التقويم الهجري (آخر 20 يوم) -->
+      <span id="absence-date-picker" class="date-icon" title="اختيار من التقويم الهجري">📅  لاختيار التاريخ</span>
+    </div>
+
+    <!-- تقويم هجري مصغّر لآخر 20 يوم -->
+    <div id="absence-hijri-calendar" class="mini-hijri-calendar" hidden>
+      <div class="mini-hijri-calendar__head">
+        اختر تاريخ الغياب (آخر 20 يوم)
+      </div>
+      <div id="absence-hijri-calendar-list" class="mini-hijri-calendar__list">
+        <!-- تُملأ ديناميكياً من JavaScript -->
+      </div>
+    </div>
+
+    <!-- عدد الغياب -->
+    <label for="AbsenceDays"><i class="fas fa-hashtag"></i> عدد الغياب</label>
+    <input id="AbsenceDays" placeholder="عدد أيام الغياب">
+
+    <!-- سبب الغياب -->
+    <label for="AbsenceReason"><i class="fas fa-circle-exclamation"></i> سبب الغياب</label>
+    <input id="AbsenceReason" placeholder="اذكر سبب الغياب">
+
+    <!-- موقع العمل: يُبنى تلقائياً من (المناوبة) + مغادرة الصالة (الصالة) المختارتين أعلاه -->
+    <label for="WorkLocation"><i class="fas fa-building"></i> موقع العمل</label>
+    <input id="WorkLocation" placeholder="يُعبّأ تلقائياً من المناوبة والصالة" readonly>
+
+  </div>
+</section>
+
 <!-- قسم الصلاحيات المنقولة (يظهر فقط عند اختيار "صلاحيات") -->
 <section class="card" id="card-transferred-permissions" style="display:none">
   <h3 class="card_title">الصلاحيات المطلوب نقلها</h3>
@@ -958,6 +998,88 @@
   <input type="text" id="AutoTravelReason" class="mc-wide" style="width: 100%; font-weight: bold; color: #d4a017;" placeholder="سيظهر المستند هنا تلقائياً">
 </div>
     </div> <!-- /moatan-compact -->
+
+    <!-- ==========================================================
+         نموذج موجز (إفادة غياب) — عرض مضغوط مخفي افتراضيًا
+         - القسم الأول: إقرار الفرد بحالة الإجازة المرضية
+         - القسم الثاني: (خاص برئيس المناوبة) الإجراء المتخذ
+    ========================================================== -->
+    <div id="ifada-compact" hidden dir="rtl">
+      <div class="mc-grid mc-compact">
+
+        <!-- في حال ان سبب الغياب (عارض صحي) -->
+        <div class="mc-card" id="ag-sec-reason">
+          <label class="mc-check mc-one-line" id="ag-reason-line">
+            <span>في حال ان سبب الغياب (عارض صحي):</span>
+          </label>
+          <div class="mc-options mc-inline">
+            <label class="mc-check">
+              <input type="checkbox" id="ag-has-sick-leave">
+              <span>لدي إجازة مرضية معتمدة من صحتي</span>
+            </label>
+            <label class="mc-check">
+              <input type="checkbox" id="ag-no-sick-leave">
+              <span>لا ليس لدي إجازة مرضية</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- في حال وجود إجازة مرضية معتمده -->
+        <div class="mc-card" id="ag-sec-uploaded">
+          <label class="mc-check mc-one-line" id="ag-uploaded-line">
+            <span>في حال وجود إجازة مرضية معتمده:</span>
+          </label>
+          <div class="mc-options mc-inline">
+            <label class="mc-check">
+              <input type="checkbox" id="ag-sickleave-uploaded">
+              <span>تم الرفع في خدماتي</span>
+            </label>
+            <label class="mc-check">
+              <input type="checkbox" id="ag-sickleave-not-uploaded">
+              <span>
+                لم يتم الرفع بسبب
+                <input class="mc-wide" id="ag-sickleave-not-uploaded-reason" placeholder="اذكر السبب">
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- في حال عدم وجود إجازة مرضية معتمدة أو ان سبب الغياب ليس عارض صحي -->
+        <label class="mc-check">
+          <input type="checkbox" id="ag-hr-commit">
+          <span>
+            في حال عدم وجود إجازة مرضية معتمدة أو ان سبب الغياب ليس عارض صحي. أتعهد بمراجعة إدارة الموارد البشرية خلال (٤٨) ساعة وعلى ذلك أوقع
+            <input class="mc-mini" id="ag-hr-commit-sign" placeholder="التوقيع">
+          </span>
+        </label>
+
+      </div> <!-- /mc-grid -->
+
+      <!-- (خاص برئيس المناوبة) -->
+      <div class="mc-card" id="ag-sec-shift" style="margin-top:15px; border-top:1px dashed #ccc; padding-top:10px;">
+        <label class="mc-check mc-one-line">
+          <span style="font-weight:bold;">(خاص برئيس المناوبة) — تم الاطلاع على إفادة الفرد وتم اتخاذ الإجراء التالي:</span>
+        </label>
+        <div class="mc-options">
+          <label class="mc-check">
+            <input type="checkbox" id="ag-shift-no-leave-ack">
+            <span>ليس لديه إجازة مرضية معتمدة من صحتي وتم أخذ إقرار عليه بمراجعة إدارة الموارد البشرية خلال (٤٨) ساعة.</span>
+          </label>
+          <label class="mc-check">
+            <input type="checkbox" id="ag-shift-leave-verified">
+            <span>لديه إجازة مرضية معتمدة من صحتي وتم التأكد من رفعها عن طريق خدماتي.</span>
+          </label>
+          <label class="mc-check">
+            <input type="checkbox" id="ag-shift-leave-pending-prev">
+            <span>لديه إجازة مرضية معتمدة من صحتي ولم يتم رفعها لوجود طلب سابق تحت الإجراء. وسيتم متابعة رفعها من قبلي شخصياً بعد انتهاء الطلب السابق مع إعداد نموذج آخر عند الرفع.</span>
+          </label>
+          <label class="mc-check">
+            <input type="checkbox" id="ag-shift-leave-tech-issue">
+            <span>لديه إجازة مرضية معتمدة من صحتي ولم يستطع رفعها بسبب تقني وتم أخذ تعهد عليه بمراجعة شعبة تقنية المعلومات خلال (٤٨) ساعة وسيتم متابعة الرفع عن طريق خدماتي من قبلي شخصياً وإعداد نموذج آخر عند الرفع.</span>
+          </label>
+        </div>
+      </div>
+    </div> <!-- /ifada-compact -->
 
 
   <div id="chief-signal-alert" class="inline-alert" hidden>

@@ -379,6 +379,31 @@ AdminOfficerRank: $('AdminOfficerRank')?.value || '',
     PermitDuration: $('PermitDuration')?.value || '',
     ShiftPower:     $('ShiftPower')?.value     || '',
 
+    // ===== بيانات الافادة (افادة غياب) =====
+    AbsenceDate:    $('AbsenceDate')?.value    || '',
+    AbsenceDays:    $('AbsenceDays')?.value    || '',
+    AbsenceReason:  $('AbsenceReason')?.value  || '',
+    WorkLocation:   $('WorkLocation')?.value   || '',
+
+    // ===== إفادة غياب: إقرار الإجازة المرضية =====
+    // ملاحظة: القيم هنا هي رمز المربع نفسه (☒/☐) وليست True/False، لأن
+    // هذه المربعات في نموذج الوورد (افادة غياب.docm) عبارة عن Bookmarks
+    // نصية يستبدلها الماكرو بنفس القيمة المرسلة حرفياً — إرسال الرمز دائماً
+    // (حتى عند عدم التحديد) يضمن إعادة ضبط المربع بشكل صحيح مع كل تنفيذ.
+    AG_HasApprovedSickLeave:          document.getElementById('ag-has-sick-leave')?.checked ? '☑' : '☐',
+    AG_NoApprovedSickLeave:           document.getElementById('ag-no-sick-leave')?.checked ? '☑' : '☐',
+    AG_SickLeaveUploaded:             document.getElementById('ag-sickleave-uploaded')?.checked ? '☑' : '☐',
+    AG_SickLeaveNotUploaded:          document.getElementById('ag-sickleave-not-uploaded')?.checked ? '☑' : '☐',
+    AG_SickLeaveNotUploadedReason:    (document.getElementById('ag-sickleave-not-uploaded-reason')?.value ?? '').trim(),
+    AG_HRCommit:                      document.getElementById('ag-hr-commit')?.checked ? '☑' : '☐',
+    AG_HRCommitSign:                  (document.getElementById('ag-hr-commit-sign')?.value ?? '').trim(),
+
+    // ===== إفادة غياب: (خاص برئيس المناوبة) =====
+    AG_Shift_NoLeaveAck:              document.getElementById('ag-shift-no-leave-ack')?.checked ? '☑' : '☐',
+    AG_Shift_LeaveVerified:           document.getElementById('ag-shift-leave-verified')?.checked ? '☑' : '☐',
+    AG_Shift_LeavePendingPrevRequest: document.getElementById('ag-shift-leave-pending-prev')?.checked ? '☑' : '☐',
+    AG_Shift_LeaveTechIssue:          document.getElementById('ag-shift-leave-tech-issue')?.checked ? '☑' : '☐',
+
 // ——— يوم الموازنة ———
 BalanceWeekday:   $('BalanceWeekday')?.value   || '',
 BalanceTimeFrom:    $('BalanceTimeFrom')?.value    || '', // وقت الموازنة (من) — الفترة الأساسية
@@ -786,6 +811,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/خطوط/مخالفة خطوط.docm";
   } else if (choice === "استاذان") {
   wordLink.href = "dic/نماذج الافراد/استاذان.docm";
+   } else if (choice === "افادة-غياب") {
+  wordLink.href = "dic/نماذج الافراد/افادة غياب.docm";
    } else if (choice === "منفستات") {
   wordLink.href = "dic/خطوط/ملاحظة على المنفست.docm";
   } else if (choice === "صلاحيات") {
@@ -1381,10 +1408,85 @@ if (choice === "تعقب-مغادرة") {
   if (permit) permit.style.display = "block";
 const issuedSimple = document.getElementById("card-issued");
   if (issuedSimple) issuedSimple.style.display = "block";
-  
+
 }
 
-    
+if (choice === "افادة-غياب") {
+
+  // 1) إخفاء جميع الكروت
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = "none";
+  });
+
+  // 2) إظهار بطاقة التاريخ والمستلم
+  const receipt = document.getElementById("card-receipt");
+  if (receipt) receipt.style.display = "block";
+
+  // 3) إظهار بطاقة بيانات الفرد
+  const indivCard = document.getElementById("card-individual");
+  if (indivCard) indivCard.style.display = "block";
+
+  // 4) فتح الحقول (إلغاء التعطيل)
+  const indivName = document.getElementById("IndividualName");
+  const indivRank = document.getElementById("IndividualRank");
+  if (indivName) indivName.disabled = false;
+  if (indivRank) indivRank.disabled = false;
+
+  // 5) الحقول المطلوب إظهارها داخل بطاقة الفرد
+  const showFields = [
+    "IndividualName",
+    "IndividualRank",
+    "IndividualID"
+  ];
+
+  // إظهار الحقول + عناوينها
+  showFields.forEach(id => {
+    const el  = document.getElementById(id);
+    const lbl = document.querySelector(`label[for='${id}']`);
+
+    if (el)  el.style.display  = "block";
+    if (lbl) lbl.style.display = "block";
+  });
+
+  // 6) إخفاء باقي عناصر بطاقة الفرد (inputs + selects + labels)
+  document
+    .querySelectorAll("#card-individual input, #card-individual select, #card-individual label")
+    .forEach(el => {
+      if (el.tagName === "LABEL") {
+        const f = el.getAttribute("for");
+        if (!showFields.includes(f)) {
+          el.style.display = "none";
+        }
+      } else {
+        if (!showFields.includes(el.id)) {
+          el.style.display = "none";
+        }
+      }
+    });
+
+  // 7) إخفاء الآمر المناوب (الاسم والرتبة + العناوين)
+  const cmdName2  = document.getElementById("commander-name");
+  const cmdRank2  = document.getElementById("commander-rank");
+  const cmdNameL2 = document.querySelector("label[for='commander-name']");
+  const cmdRankL2 = document.querySelector("label[for='commander-rank']");
+
+  if (cmdName2)  cmdName2.style.display = "none";
+  if (cmdRank2)  cmdRank2.style.display = "none";
+  if (cmdNameL2) cmdNameL2.style.display = "none";
+  if (cmdRankL2) cmdRankL2.style.display = "none";
+
+  // 8) إظهار بطاقة معلومات الافادة بدل بطاقة الاستئذان
+  const ifadaCard = document.getElementById("card-ifada-ghiyab");
+  if (ifadaCard) ifadaCard.style.display = "block";
+  const issuedSimple2 = document.getElementById("card-issued");
+  if (issuedSimple2) issuedSimple2.style.display = "block";
+
+  // 9) إظهار الجزء السفلي (إقرار الإجازة المرضية + خاص برئيس المناوبة)
+  const ifadaCompact = document.getElementById("ifada-compact");
+  if (ifadaCompact) ifadaCompact.hidden = false;
+}
+
+
 
 
 
@@ -3446,6 +3548,33 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.addEventListener('input', updateIssuedTitle);
   });
 });
+
+// موقع العمل (إفادة غياب) — يُبنى تلقائياً: {المناوبة} مغادرة الصالة {الصالة}
+function updateWorkLocation(){
+  const field = document.getElementById('WorkLocation');
+  if (!field) return;
+
+  const shift = (document.getElementById('shift-number')?.value || '').trim();
+  const hall  = (document.getElementById('hall-number')?.value  || '').trim();
+
+  if (shift || hall){
+    const parts = [];
+    if (shift) parts.push(shift);
+    parts.push('مغادرة');
+    if (hall) parts.push(hall);
+    field.value = parts.join(' ').replace(/\s+/g,' ').trim();
+  } else {
+    field.value = '';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateWorkLocation();
+  ['shift-number','hall-number'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateWorkLocation);
+  });
+});
 // ===== مؤقت الرجوع التلقائي + إيقافه =====
 const AUTO_BACK_MS = 2 * 60 * 1000; // نفس المدّة الحالية (دقيقتان). غيّرها إن رغبت.
 
@@ -4161,6 +4290,94 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+//تقويم تاريخ الغياب (إفادة غياب)
+// ===== تقويم هجري مصغّر لتاريخ الغياب (آخر 20 يوم) =====
+
+// بناء قائمة آخر 20 يوم هجريًا (اليوم رجوعًا 19 يومًا)
+function buildAbsenceHijriCalendarOptions() {
+  const list = document.getElementById('absence-hijri-calendar-list');
+  if (!list) return;
+
+  list.innerHTML = '';
+
+  const base = getShiftBaseDateForHijri();
+
+  const fmtHijri = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+  const fmtWeekday = new Intl.DateTimeFormat('ar-SA', {
+    weekday: 'long',
+    numberingSystem: 'arab'
+  });
+
+  const RLM = "‏";
+
+  for (let i = 0; i < 20; i++) {
+    const d = new Date(base);
+    d.setDate(base.getDate() - i); // رجوعًا للخلف: آخر 20 يوم
+
+    const parts = fmtHijri.formatToParts(d);
+    const y = parts.find(p => p.type === 'year')?.value || '';
+    const m = parts.find(p => p.type === 'month')?.value || '';
+    const day = parts.find(p => p.type === 'day')?.value || '';
+
+    const hijri = `${RLM}${day}/${m}/${y} هـ`;
+    const weekday = fmtWeekday.format(d);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'mini-hijri-calendar__item';
+    btn.textContent = `${weekday} - ${hijri}`;
+    btn.dataset.hijri = hijri;
+    btn.dataset.weekday = weekday;
+
+    btn.addEventListener('click', () => {
+      const dateInput = document.getElementById('AbsenceDate');
+      if (dateInput) dateInput.value = hijri;
+
+      const popup = document.getElementById('absence-hijri-calendar');
+      if (popup) popup.hidden = true;
+    });
+
+    list.appendChild(btn);
+  }
+}
+
+// ربط التقويم بحقل/زر تاريخ الغياب
+document.addEventListener('DOMContentLoaded', () => {
+  const trigger = document.getElementById('absence-date-picker');
+  const popup   = document.getElementById('absence-hijri-calendar');
+  const dateInput = document.getElementById('AbsenceDate');
+
+  if (!trigger || !popup || !dateInput) return;
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (popup.hidden) {
+      buildAbsenceHijriCalendarOptions();
+      popup.hidden = false;
+    } else {
+      popup.hidden = true;
+    }
+  });
+
+  dateInput.addEventListener('focus', () => {
+    buildAbsenceHijriCalendarOptions();
+    popup.hidden = false;
+  });
+
+  document.addEventListener('click', (e) => {
+    if (popup.hidden) return;
+    const path = e.composedPath ? e.composedPath() : [];
+    if (!path.includes(popup) && !path.includes(trigger) && !path.includes(dateInput)) {
+      popup.hidden = true;
+    }
+  });
+});
+
 // زر تصحيح التاريخ لليوم الفعلي بعد منتصف الليل
 document.addEventListener("DOMContentLoaded", () => {
   const fixBtn = document.getElementById("fix-date-btn");

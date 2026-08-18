@@ -383,6 +383,108 @@ body.help-open #helpBox{ display:block; }
 /* اجعل هذا القسم دائمًا يظهر واضحًا عند القفز له */
 #sec-forbidden { scroll-margin-top: 12px; scroll-margin-bottom: 300px; }
 
+/* =========================
+   تقويم هجري مصغّر لحقل تاريخ الغياب (إفادة غياب) — صغير وقابل للتمرير
+   ========================= */
+#absence-hijri-calendar {
+  grid-column: 2 / 3;
+  background: #ffffff;
+  border: 1px solid #c8d6ff;
+  border-radius: 12px;
+  padding: 6px 8px;
+  box-shadow: var(--shadow-sm);
+  margin-top: 4px;
+  max-width: 100%;
+  max-height: 210px;
+  overflow-y: auto;
+  z-index: 2500;
+}
+
+/* =========================
+   نفس Highlight الخاص بـ moatan-compact، مُطبّق أيضاً على ifada-compact
+   (إفادة غياب) بدون تكرار تعديل كل سطر — تصميم موحّد لكل الأقسام المضغوطة
+   ========================= */
+#ifada-compact .mc-grid {
+  background: linear-gradient(180deg, #fffdf8, #ffffff);
+  border: 1px solid #f2e6c9;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.06);
+  position: relative;
+  scroll-margin-bottom: 300px;
+}
+#ifada-compact .mc-grid::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0; top: 0; bottom: 0;
+  width: 6px;
+  border-start-start-radius: 16px;
+  border-end-start-radius: 16px;
+  background: linear-gradient(180deg, #f1c04a, #e5a90f);
+}
+#ifada-compact .mc-card {
+  background: transparent;
+  border: 0;
+  padding: 8px 4px;
+  margin: 0 0 8px 0;
+}
+#ifada-compact .mc-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0d6efd;
+  font-weight: 700;
+  line-height: 1.6;
+}
+#ifada-compact input[type="checkbox"] {
+  accent-color: #0d6efd;
+  width: 18px; height: 18px; cursor: pointer;
+}
+#ifada-compact .mc-mini,
+#ifada-compact .mc-wide,
+#ifada-compact input.h-date {
+  background: #ffffff;
+  border: 1px solid #c8d6ff;
+  color: #0d6efd;
+  border-radius: 10px;
+  padding: 6px 8px;
+  height: 36px;
+  outline: none;
+  transition: border .15s, box-shadow .15s, background .15s, color .15s;
+}
+#ifada-compact .mc-mini::placeholder,
+#ifada-compact .mc-wide::placeholder,
+#ifada-compact input.h-date::placeholder {
+  color: #9aa3af;
+}
+#ifada-compact .mc-mini:focus,
+#ifada-compact .mc-wide:focus,
+#ifada-compact input.h-date:focus {
+  border-color: #2b6fff;
+  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+}
+
+/* توزيع الخيارات: عمود واحد افتراضياً (كل خيار في سطر لحاله) */
+#ifada-compact .mc-options {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+/* الاستثناء الوحيد: الأزواج القصيرة (لدي/لا ليس لدي، تم الرفع/لم يتم الرفع) تبقى جنباً إلى جنب */
+#ifada-compact .mc-options.mc-inline {
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 14px;
+}
+
+/* بطاقة (خاص برئيس المناوبة) — فاصل بصري خفيف داخل نفس الهايلايت */
+#ag-sec-shift {
+  border-top: 1px dashed #e5d9ad;
+}
+#ag-sec-shift .mc-check.mc-one-line {
+  color: #b3261e;
+}
+
 /* تنبيه inline-alert داخل هذا الهايلايت بالنص الأحمر */
 #moatan-compact .inline-alert {
   color: #b3261e;
@@ -969,9 +1071,11 @@ body.dark-mode {
 body.dark-mode .shell,
 body.dark-mode .action-bar__inner,
 body.dark-mode #moatan-compact .mc-grid,
+body.dark-mode #ifada-compact .mc-grid,
 body.dark-mode #helpBox,
 body.dark-mode .help-overlay__panel,
-body.dark-mode #permit-hijri-calendar {
+body.dark-mode #permit-hijri-calendar,
+body.dark-mode #absence-hijri-calendar {
   background: #1e293b !important; 
   border-color: #334155 !important;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4) !important; 
@@ -1147,6 +1251,7 @@ body.dark-mode .individual-separator {
 }
 
 body.dark-mode #moatan-compact .mc-grid::before,
+body.dark-mode #ifada-compact .mc-grid::before,
 body.dark-mode #mc-forbidden-line::before,
 body.dark-mode .forbidden::before,
 body.dark-mode [data-section="forbidden"]::before {
