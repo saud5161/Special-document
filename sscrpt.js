@@ -4666,15 +4666,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
       div.innerHTML = `
         <span>${item.name}</span>
-        <span class="kashf-badge ${item.status === 'غياب' ? 'absence' : ''}">${item.status}</span>
+        <span style="display:flex; align-items:center; gap:6px;">
+          <span class="kashf-badge ${item.status === 'غياب' ? 'absence' : ''}">${item.status}</span>
+          <button type="button" class="saved-item-remove-btn" title="حذف هذا الاسم فقط">
+            <i class="fas fa-times"></i>
+          </button>
+        </span>
       `;
 
       div.addEventListener("click", () => {
         restoreSingleItem(div);
       });
 
+      const removeBtn = div.querySelector(".saved-item-remove-btn");
+      if (removeBtn) {
+        removeBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          deleteSingleSavedItem(item.name);
+        });
+      }
+
       savedListContainer.appendChild(div);
     });
+  }
+
+  // حذف اسم واحد فقط من القائمة المحفوظة
+  function deleteSingleSavedItem(name) {
+    const key = getStorageKey();
+    let saved = getSaved(key);
+    saved = saved.filter(item => item.name !== name);
+    localStorage.setItem(key, JSON.stringify(saved));
+    loadSavedRoster();
   }
 
   // تطبيق اسم واحد تلقائياً على الكشف بحالته المحفوظة عند النقر عليه مباشرة
@@ -4791,23 +4813,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // الحذف الآمن
+  // حذف القائمة المحفوظة بالكامل
   if (btnDelete) {
     btnDelete.addEventListener("click", () => {
-      const selected = document.querySelectorAll("#kashf-saved-list .saved-item.selected-saved-item");
       const key = getStorageKey();
-      let saved = getSaved(key);
-
-      if (selected.length > 0) {
-        const selectedNames = Array.from(selected).map(el => el.dataset.name);
-        saved = saved.filter(item => !selectedNames.includes(item.name));
-        localStorage.setItem(key, JSON.stringify(saved));
+      if (confirm("هل أنت متأكد من رغبتك في حذف القائمة المحفوظة بالكامل لهذه المناوبة والصالة؟")) {
+        localStorage.removeItem(key);
         loadSavedRoster();
-      } else {
-        if (confirm("هل أنت متأكد من رغبتك في حذف القائمة المحفوظة بالكامل لهذه المناوبة والصالة؟")) {
-          localStorage.removeItem(key);
-          loadSavedRoster();
-        }
       }
     });
   }

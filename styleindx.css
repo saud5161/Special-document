@@ -1498,6 +1498,54 @@ body.dark-mode .selected-banner strong {
   color: #fff;
   border-color: #1f3a5f;
 }
+
+/* أزرار طبيعة العمل: شكل مختلف تماماً عن أزرار الحالة (مربعة، أيقونة فوق النص، لون سماوي) */
+.kashf-worktype-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 78px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px dashed #7dd3fc;
+  background: #f0f9ff;
+  color: #0369a1;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-family: inherit;
+}
+.kashf-worktype-btn i {
+  font-size: 1rem;
+}
+.kashf-worktype-btn:hover {
+  border-color: #0ea5e9;
+  background: #e0f2fe;
+}
+.kashf-worktype-btn.active {
+  background: #0ea5e9;
+  border-style: solid;
+  border-color: #0ea5e9;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.35);
+}
+
+/* عناصر قائمة طبيعة العمل الجانبية: حجم صغير جداً */
+.kashf-worktype-item {
+  padding: 4px 6px !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+  border-color: #bae6fd !important;
+}
+.kashf-worktype-item:hover {
+  border-color: #0ea5e9 !important;
+  background: #f0f9ff !important;
+}
+
 .kashf-list-item {
   background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px;
   font-size: 0.8rem; font-weight: 700; color: #1e293b; cursor: pointer; 
@@ -1513,6 +1561,31 @@ body.dark-mode .selected-banner strong {
 .saved-item {
   border-right: 3px solid transparent; /* مساحة لخط التحديد */
   transition: all 0.2s ease;
+}
+.saved-item-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 0.65rem;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.saved-item:hover .saved-item-remove-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+.saved-item-remove-btn:hover {
+  background: #dc2626;
+  color: #fff;
 }
 
 .saved-item:hover {

@@ -227,6 +227,8 @@ function createWindow() {
       let fileName = item.getFilename();
       if (fileName.includes('kashf_status')) {
         fileName = 'kashf_status.txt';
+      } else if (fileName.includes('kashf_worktype')) {
+        fileName = 'kashf_worktype.txt';
       }
 
       const targetPath = path.join(downloads, fileName);
@@ -237,8 +239,8 @@ function createWindow() {
       item.on('done', (e, state) => {
         if (state === 'completed') {
           
-          // 3. استثناء form.txt و kashf_status.txt (كلاهما يخزن ولا يفتح، ويُحذف بعد 60 ثانية)
-          if (fileName === 'form.txt' || fileName === 'kashf_status.txt') {
+          // 3. استثناء form.txt و kashf_status.txt و kashf_worktype.txt (تُخزن ولا تُفتح، وتُحذف بعد دقيقة)
+          if (fileName === 'form.txt' || fileName === 'kashf_status.txt' || fileName === 'kashf_worktype.txt') {
             console.log(`✔ حُفظ ${fileName} بصمت وباستبدال القديم، وسيتم حذفه بعد دقيقة`);
             
             // مؤقت الحذف (60 ألف ملي ثانية = دقيقة واحدة)
