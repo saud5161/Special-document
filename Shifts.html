@@ -21,6 +21,10 @@
       --violet:#7c3aed;
       --teal:#0f766e;
       --orange:#ea580c;
+      --gold:#b8860b;
+      --gold-bg:#fdf6e3;
+      --gold-border:#f0dfa0;
+      --gold-text:#8a6d00;
       --font:'Tajawal',sans-serif;
     }
 
@@ -151,10 +155,72 @@
     .task-badge.absent-badge { background: var(--danger); }
     .task-badge.group-badge { background: var(--violet); }
     .task-badge.break-badge { background: var(--orange); }
+    .task-badge.timebreak-badge { background: var(--gold); }
 
     .current-target-banner {
       background: #eef2ff; border: 1px solid #c7d2fe; color: #4338ca; padding: 8px 12px;
       margin: 0 8px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 800; min-height: 50px;
+    }
+
+    /* ===== بريكات الاستلام الذكية ===== */
+    .tb-builder{
+      display:none; flex-direction:column; gap:8px; background:#fffdf6; border:1px solid #f0dfa0;
+      border-radius:12px; padding:8px; margin:0 8px 8px; box-shadow:0 2px 8px rgba(184,134,11,.06);
+    }
+    .tb-head{ display:flex; align-items:center; justify-content:space-between; }
+    .tb-title{ font-size:.7rem; font-weight:800; color:var(--gold); }
+    .tb-now{ font-size:.6rem; color:var(--gold-text); background:var(--gold-bg); border:1px solid var(--gold-border); border-radius:20px; padding:2px 7px; font-weight:700; }
+
+    .tb-period-row{ display:flex; gap:4px; }
+    .tb-period-btn{
+      flex:1; text-align:center; padding:4px 2px; border-radius:7px; border:1.4px solid var(--gold-border);
+      background:var(--gold-bg); color:var(--gold-text); font-family:var(--font); font-weight:800; font-size:.6rem;
+      cursor:pointer; transition:.15s; position:relative; display:flex; flex-direction:column; gap:0; align-items:center;
+      line-height:1.35;
+    }
+    .tb-period-btn .tb-period-main{ display:flex; align-items:center; gap:2px; }
+    .tb-period-btn .tb-period-range{ font-size:.5rem; font-weight:600; color:#b8975a; }
+    .tb-period-icon{ font-size:.68rem; }
+    .tb-period-btn.active{ background:var(--gold); color:#fff; border-color:var(--gold); }
+    .tb-period-btn.active .tb-period-range{ color:#fff7e0; }
+    .tb-period-btn .tb-live-dot{
+      position:absolute; top:-3px; left:-3px; width:7px; height:7px; border-radius:50%;
+      background:var(--success); border:2px solid #fff; display:none;
+    }
+    .tb-period-btn.is-live .tb-live-dot{ display:block; }
+
+    .tb-interval-row{ display:flex; align-items:center; justify-content:center; gap:8px; }
+    .tb-interval-label{ font-size:.68rem; font-weight:700; color:#7a5c00; }
+    .tb-stepper{ display:flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--gold-border); border-radius:9px; padding:3px 5px; }
+    .tb-stepper button{
+      width:24px; height:24px; border-radius:7px; border:none; background:var(--gold); color:#fff;
+      font-size:.95rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    }
+    .tb-stepper span{ min-width:16px; text-align:center; font-weight:800; font-size:.8rem; color:#1f2937; }
+
+    .tb-edges-row{
+      display:flex; align-items:center; justify-content:center; gap:6px; font-size:.66rem;
+      font-weight:700; color:#7a5c00; cursor:pointer; user-select:none;
+    }
+    .tb-edges-row input{ width:15px; height:15px; accent-color:var(--gold); cursor:pointer; }
+
+    .tb-summary{
+      font-size:.62rem; color:#7a5c00; background:var(--gold-bg); border:1px dashed var(--gold-border);
+      border-radius:8px; padding:6px 8px; line-height:1.5;
+    }
+
+    .tb-add-btn{
+      border:none; border-radius:9px; padding:9px; background:var(--gold); color:#fff;
+      font-family:var(--font); font-weight:800; font-size:.74rem; cursor:pointer; text-align:center;
+    }
+    .tb-add-btn:active{ transform:scale(.98); }
+
+    /* زر حذف الفترة الظاهر فوق زر الفترة */
+    .tb-slot-wrap{ position:relative; }
+    .tb-slot-del{
+      position:absolute; top:-6px; left:-6px; width:18px; height:18px; border-radius:50%;
+      background:var(--danger); color:#fff; border:2px solid #fff; font-size:.62rem; font-weight:800;
+      display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:2; line-height:1;
     }
 
     /* ===== PDF ===== */
@@ -214,9 +280,36 @@
 
   <div class="mode-tabs">
     <button class="mode-tab active" id="tab-counters" onclick="setMode('counters')">الكونترات</button>
-    <button class="mode-tab" id="tab-groups" onclick="setMode('groups')">المجموعات</button>
+    <button class="mode-tab" id="tab-timebreaks" onclick="setMode('timebreaks')">بريكات حسب الوقت</button>
     <button class="mode-tab" id="tab-breaks" onclick="setMode('breaks')">البريكات</button>
+    <button class="mode-tab" id="tab-groups" onclick="setMode('groups')">المجموعات</button>
   </div>
+
+  <div class="tb-builder" id="timeBreakBuilder">
+    <div class="tb-head">
+      <span class="tb-title">إنشاء فترات الاستلام</span>
+      <span class="tb-now" id="tbNowLabel"></span>
+    </div>
+    <div class="tb-period-row" id="tbPeriodRow"></div>
+    <div class="tb-interval-row">
+      <span class="tb-interval-label">كل</span>
+      <div class="tb-stepper">
+        <button onclick="changeTbStep(-1)">−</button>
+        <span id="tbStepVal">1</span>
+        <button onclick="changeTbStep(1)">+</button>
+      </div>
+      <span class="tb-interval-label">ساعة/ساعات</span>
+    </div>
+    <label class="tb-edges-row" id="tbEdgesRow">
+      <input type="checkbox" id="tbIncludeEdges" onchange="toggleTbIncludeEdges(this.checked)">
+      <span>تضمين أول وآخر ساعة</span>
+    </label>
+    <div class="tb-summary" id="tbSummary"></div>
+    <button class="tb-add-btn" onclick="generateTimeSlotsAuto()">إنشاء الفترات تلقائياً</button>
+  </div>
+
+  <div class="current-target-banner" id="currentTargetBanner">
+      </div>
 
   <div class="counter-strip">
     <div class="strip-title" id="stripTitle">
@@ -225,9 +318,6 @@
     <div class="counter-scroll" id="counterContainer">
         </div>
   </div>
-
-  <div class="current-target-banner" id="currentTargetBanner">
-      </div>
 
   <div class="transfer-area">
     <div class="list-panel">
@@ -292,6 +382,13 @@
       </table>
     </div>
 
+    <div id="pdf-timebreaks-section" style="display:none;">
+      <div class="pdf-section-head" style="margin-top:12px; background:#b8860b;">بريكات حسب وقت الاستلام</div>
+      <table class="pdf-extra-table">
+        <tbody id="pdf-timebreaks-body"></tbody>
+      </table>
+    </div>
+
     <div id="pdf-tasks-section">
       <div class="pdf-section-head" style="margin-top:12px; background:#2c3e50;">المهام الإضافية والغياب</div>
       <table class="pdf-extra-table">
@@ -313,7 +410,8 @@
     let customTasksList = [];
     let customGroupsList = [];
     let customBreaksList = [];
-    let hiddenItems = []; 
+    let customTimeSlots = []; // {label, periodKey, sortVal}
+    let hiddenItems = [];
     
     let isHideModeActive = false;
     let itemsSelectedForHide = [];
@@ -330,16 +428,37 @@
         loadDataAndInitialize();
     };
 
+    const SUPABASE_URL = "https://dkrtiuelioyshbjoocqm.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ts5SGrWhODsG6EH5dUt9Wg_KUvsf-CF";
+
     async function loadDataAndInitialize() {
         try {
-        const response = await fetch('./name.json');
-            if (!response.ok) throw new Error("لم يتم العثور على الملف");
-            employeesData = await response.json();
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/individuals?select=id,name,rank,shift,hall`, {
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`
+                }
+            });
+            if (!response.ok) throw new Error("فشل الاتصال بقاعدة البيانات");
+            const rows = await response.json();
+
+            employeesData = {};
+            rows.forEach(row => {
+                const shift = row.shift || 'غير محدد';
+                const hall = String(row.hall || 'غير محدد');
+                if (!employeesData[shift]) employeesData[shift] = {};
+                if (!employeesData[shift][hall]) employeesData[shift][hall] = [];
+                employeesData[shift][hall].push({
+                    id: row.id,
+                    name: row.name,
+                    rank: row.rank
+                });
+            });
         } catch (error) {
             console.error(error);
-            console.log("سيتم تشغيل التطبيق بدون ملف name.json");
+            console.log("سيتم تشغيل التطبيق بدون بيانات قاعدة البيانات");
         }
-        
+
         loadPrefs();
         generateEmployees();
         setMode('counters');
@@ -359,6 +478,7 @@
                 if(p.customTasksList) customTasksList = p.customTasksList;
                 if(p.customGroupsList) customGroupsList = p.customGroupsList;
                 if(p.customBreaksList) customBreaksList = p.customBreaksList;
+                if(p.customTimeSlots) customTimeSlots = p.customTimeSlots;
                 if(p.hiddenItems) hiddenItems = p.hiddenItems;
             }
         } catch(e){}
@@ -374,6 +494,7 @@
             customTasksList: customTasksList,
             customGroupsList: customGroupsList,
             customBreaksList: customBreaksList,
+            customTimeSlots: customTimeSlots,
             hiddenItems: hiddenItems
         };
         localStorage.setItem(PREFS_KEY, JSON.stringify(p));
@@ -408,12 +529,16 @@
         if(mode === 'counters') titleEl.innerHTML = "<span>1. اختر الكاونتر أو المهمة للتوزيع عليها</span>";
         else if(mode === 'groups') titleEl.innerHTML = "<span>1. اختر المجموعة (العدد مفتوح)</span>";
         else if(mode === 'breaks') titleEl.innerHTML = "<span>1. اختر البريك (العدد مفتوح)</span>";
+        else if(mode === 'timebreaks') titleEl.innerHTML = "<span>1. اختر فترة الاستلام ثم أضف الأفراد لها</span>";
 
         isHideModeActive = false;
         itemsSelectedForHide = [];
         currentTask = null;
         selectedCountersForMerge = [];
-        
+
+        document.getElementById('timeBreakBuilder').style.display = (mode === 'timebreaks') ? 'flex' : 'none';
+        if (mode === 'timebreaks') renderTimeBreakBuilder();
+
         renderCounterStrip();
     }
 
@@ -457,6 +582,156 @@
                 renderCounterStrip();
             } else { alert("موجود مسبقاً."); }
         }
+    }
+
+    // ===== نظام أوقات الاستلام الذكي =====
+    // كل فترة ممثلة كسلسلة "علامات" كل علامة نصف ساعة، لدعم التقسيم نصف ساعة بنصف ساعة
+    function buildTicks(start, end, wrap) {
+        const ticks = [];
+        let h = start;
+        while (true) {
+            ticks.push(h);
+            if (Math.abs(h - end) < 0.001) break;
+            h = +(h + 0.5).toFixed(1);
+            if (wrap && h >= 24) h -= 24;
+            if (ticks.length > 60) break; // حماية من حلقة لا نهائية
+        }
+        return ticks;
+    }
+
+    const RECEPTION_PERIODS = {
+        morning: { key:'morning', label:'صباح', icon:'☀️', order:0, ticks: buildTicks(6, 14, false) },
+        noon:    { key:'noon',    label:'ظهر',  icon:'🌤️', order:1, ticks: buildTicks(14, 22, false) },
+        night:   { key:'night',   label:'ليل',  icon:'🌙', order:2, ticks: buildTicks(22, 6, true) }
+    };
+
+    function detectCurrentPeriodKey() {
+        const h = new Date().getHours();
+        if (h >= 6 && h < 14) return 'morning';
+        if (h >= 14 && h < 22) return 'noon';
+        return 'night';
+    }
+
+    function formatHour12(h) {
+        const hh = Math.floor(h);
+        const isHalf = (h - hh) >= 0.5;
+        const suffix = hh < 12 ? 'ص' : 'م';
+        let displayH = hh % 12;
+        if (displayH === 0) displayH = 12;
+        return isHalf ? `${displayH}:30${suffix}` : `${displayH}${suffix}`;
+    }
+
+    function formatStepLabel(ticks) {
+        const h = ticks / 2;
+        return Number.isInteger(h) ? `${h}` : `${h}`;
+    }
+
+    const TIME_SLOT_COLORS = ['#b8860b','#2563eb','#0f766e','#7c3aed','#c2410c','#0891b2','#be123c','#4d7c0f'];
+
+    let tbPeriodKey = detectCurrentPeriodKey();
+    let tbStepTicks = 2; // 2 علامات = ساعة واحدة
+    let tbIncludeEdges = false;
+
+    function isTimeSlot(task) { return customTimeSlots.some(s => s.label === task); }
+    function getTimeSlot(task) { return customTimeSlots.find(s => s.label === task); }
+
+    function getTimeSlotColor(task) {
+        const idx = customTimeSlots.findIndex(s => s.label === task);
+        return TIME_SLOT_COLORS[Math.max(0, idx) % TIME_SLOT_COLORS.length];
+    }
+
+    function selectTbPeriod(key) {
+        tbPeriodKey = key;
+        renderTimeBreakBuilder();
+    }
+
+    function changeTbStep(delta) {
+        tbStepTicks = Math.max(1, Math.min(12, tbStepTicks + delta));
+        renderTimeBreakBuilder();
+    }
+
+    function toggleTbIncludeEdges(checked) {
+        tbIncludeEdges = checked;
+        renderTimeBreakBuilder();
+    }
+
+    function deleteTimeSlot(label) {
+        customTimeSlots = customTimeSlots.filter(s => s.label !== label);
+        chosen.filter(c => c.task === label).forEach(c => {
+            delete c.task;
+            dailyPool.push(c);
+        });
+        chosen = chosen.filter(c => c.task);
+        dailyPool.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+        if (currentTask === label) currentTask = null;
+        savePrefs();
+        renderCounterStrip();
+        renderTransferLists();
+    }
+
+    // أول ساعة وآخر ساعة في كل فترة استلام لا يوجد بها بريكات افتراضياً (= أول وآخر علامتين)، إلا إذا تم تفعيل "تضمين أول وآخر ساعة"
+    function computeAutoSlots(periodKey, stepTicks, includeEdges) {
+        const period = RECEPTION_PERIODS[periodKey];
+        const ticks = period.ticks;
+        const startIdx = includeEdges ? 0 : 2;
+        const endIdx = includeEdges ? ticks.length - 1 : ticks.length - 1 - 2;
+        const slots = [];
+        for (let idx = startIdx; idx < endIdx; idx += stepTicks) {
+            const endSegIdx = Math.min(idx + stepTicks, endIdx);
+            if (endSegIdx <= idx) break;
+            slots.push({
+                label: `${formatHour12(ticks[idx])} - ${formatHour12(ticks[endSegIdx])}`,
+                periodKey,
+                sortVal: period.order * 100 + idx
+            });
+        }
+        return slots;
+    }
+
+    function renderTimeBreakBuilder() {
+        const liveKey = detectCurrentPeriodKey();
+        document.getElementById('tbNowLabel').textContent = `الآن: ${formatHour12(new Date().getHours() + (new Date().getMinutes() >= 30 ? 0.5 : 0))}`;
+
+        const periodRow = document.getElementById('tbPeriodRow');
+        periodRow.innerHTML = '';
+        Object.values(RECEPTION_PERIODS).forEach(p => {
+            const btn = document.createElement('div');
+            btn.className = `tb-period-btn ${tbPeriodKey === p.key ? 'active' : ''} ${liveKey === p.key ? 'is-live' : ''}`;
+            const rangeTxt = `${formatHour12(p.ticks[0])} - ${formatHour12(p.ticks[p.ticks.length - 1])}`;
+            btn.innerHTML = `<span class="tb-live-dot"></span><span class="tb-period-main"><span class="tb-period-icon">${p.icon}</span><span>${p.label}</span></span><span class="tb-period-range">${rangeTxt}</span>`;
+            btn.onclick = () => selectTbPeriod(p.key);
+            periodRow.appendChild(btn);
+        });
+
+        document.getElementById('tbStepVal').textContent = formatStepLabel(tbStepTicks);
+        document.getElementById('tbIncludeEdges').checked = tbIncludeEdges;
+
+        const slots = computeAutoSlots(tbPeriodKey, tbStepTicks, tbIncludeEdges);
+        const summary = document.getElementById('tbSummary');
+        summary.textContent = slots.length > 0
+            ? `سيتم إنشاء ${slots.length} فترة: ${slots.map(s => s.label).join(' ، ')}`
+            : 'لا يمكن إنشاء فترات بهذا الاختيار';
+    }
+
+    function generateTimeSlotsAuto() {
+        const slots = computeAutoSlots(tbPeriodKey, tbStepTicks, tbIncludeEdges);
+
+        // تكون فترات الاستلام لفترة واحدة فقط (صباح/ظهر/ليل) في نفس الوقت، لذا نستبدل كل الفترات القديمة
+        // (من أي فترة كانت) بدل دمجها مع فترة جديدة
+        customTimeSlots.forEach(s => {
+            chosen.filter(c => c.task === s.label).forEach(c => {
+                delete c.task;
+                dailyPool.push(c);
+            });
+        });
+        chosen = chosen.filter(c => c.task);
+        dailyPool.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+        customTimeSlots = [...slots];
+        customTimeSlots.sort((a, b) => a.sortVal - b.sortVal);
+        savePrefs();
+        renderCounterStrip();
+        renderTransferLists();
     }
 
     function onFilterChange() {
@@ -611,6 +886,7 @@
         if (currentMode === 'counters') itemsToRender = [...DEFAULT_TASKS, ...customTasksList];
         else if (currentMode === 'groups') itemsToRender = [...DEFAULT_GROUPS, ...customGroupsList];
         else if (currentMode === 'breaks') itemsToRender = [...DEFAULT_BREAKS, ...customBreaksList];
+        else if (currentMode === 'timebreaks') itemsToRender = customTimeSlots.map(s => s.label);
 
         itemsToRender.forEach(t => {
             if (hiddenItems.includes(t)) return;
@@ -624,20 +900,37 @@
             const wrapper = document.createElement('div');
             wrapper.style.display = 'flex'; wrapper.style.flexDirection = 'column'; wrapper.style.alignItems = 'center'; wrapper.style.gap = '4px';
 
+            const isTb = currentMode === 'timebreaks';
+            const btnHolder = document.createElement('div');
+            if (isTb) btnHolder.className = 'tb-slot-wrap';
+
             const div = document.createElement('div');
             div.className = `cnt-btn task-cnt-btn ${isFilled ? 'filled' : ''}`;
             if (isHideModeActive && itemsSelectedForHide.includes(t)) div.classList.add('hide-selected');
+            if (isTb) { div.style.borderColor = getTimeSlotColor(t); div.style.color = getTimeSlotColor(t); }
             div.textContent = t;
-            
+
             div.onclick = () => {
                 if (isHideModeActive) toggleHideSelectionMultiple([t]);
                 else selectTask(t);
             };
-            wrapper.appendChild(div);
+            btnHolder.appendChild(div);
+
+            if (isTb && !isHideModeActive) {
+                const delBtn = document.createElement('div');
+                delBtn.className = 'tb-slot-del';
+                delBtn.textContent = '×';
+                delBtn.title = 'حذف الفترة';
+                delBtn.onclick = (ev) => { ev.stopPropagation(); deleteTimeSlot(t); };
+                btnHolder.appendChild(delBtn);
+            }
+
+            wrapper.appendChild(btnHolder);
 
             if (isFilled && !isHideModeActive) {
                 const namesBox = document.createElement('div');
-                namesBox.style.cssText = 'font-size:0.65rem; color:#15803d; background:#dcfce7; border:1px solid #bbf7d0; border-radius:6px; padding:2px 6px; text-align:center; white-space:nowrap; line-height:1.4; font-weight:700;';
+                const nameColor = isTb ? getTimeSlotColor(t) : '#15803d';
+                namesBox.style.cssText = `font-size:0.65rem; color:${nameColor}; background:${isTb ? nameColor + '1a' : '#dcfce7'}; border:1px solid ${isTb ? nameColor + '55' : '#bbf7d0'}; border-radius:6px; padding:2px 6px; text-align:center; white-space:nowrap; line-height:1.4; font-weight:700;`;
                 namesBox.innerHTML = assignedPeople.map(p => formatFirstAndLastName(p.name)).join('<br>');
                 wrapper.appendChild(namesBox);
             }
@@ -648,12 +941,14 @@
         const wrapperControls = document.createElement('div');
         wrapperControls.style.display = 'flex'; wrapperControls.style.gap = '6px'; wrapperControls.style.alignItems = 'flex-start';
 
-        const btnAdd = document.createElement('div');
-        btnAdd.className = `cnt-btn task-cnt-btn add-task-btn`;
-        if (currentMode === 'counters') { btnAdd.textContent = '+ مهمة'; btnAdd.onclick = addNewTask; }
-        else if (currentMode === 'groups') { btnAdd.textContent = '+ مجموعة'; btnAdd.onclick = addNewGroup; }
-        else if (currentMode === 'breaks') { btnAdd.textContent = '+ بريك'; btnAdd.onclick = addNewBreak; }
-        wrapperControls.appendChild(btnAdd);
+        if (currentMode !== 'timebreaks') {
+            const btnAdd = document.createElement('div');
+            btnAdd.className = `cnt-btn task-cnt-btn add-task-btn`;
+            if (currentMode === 'counters') { btnAdd.textContent = '+ مهمة'; btnAdd.onclick = addNewTask; }
+            else if (currentMode === 'groups') { btnAdd.textContent = '+ مجموعة'; btnAdd.onclick = addNewGroup; }
+            else if (currentMode === 'breaks') { btnAdd.textContent = '+ بريك'; btnAdd.onclick = addNewBreak; }
+            wrapperControls.appendChild(btnAdd);
+        }
 
         if (isHideModeActive) {
             const btnConfirmHide = document.createElement('div');
@@ -846,15 +1141,17 @@
             const sortedChosen = [...chosen].sort((a,b) => a.task.localeCompare(b.task, 'ar'));
             sortedChosen.forEach((e) => {
                 let badgeClass = '';
+                let badgeStyle = '';
                 if (e.task === "بدون مهام/غياب") badgeClass = 'absent-badge';
                 else if (isGroup(e.task)) badgeClass = 'group-badge';
+                else if (isTimeSlot(e.task)) badgeStyle = `style="background:${getTimeSlotColor(e.task)}"`;
                 else if (isBreak(e.task)) badgeClass = 'break-badge';
 
                 const div = document.createElement('div');
-                div.className = 'list-item-compact'; 
+                div.className = 'list-item-compact';
                 div.innerHTML = `
                     <div style="font-weight:800;">${formatShortName(e.name)}</div>
-                    <div class="task-badge ${badgeClass}">${e.task}</div>
+                    <div class="task-badge ${badgeClass}" ${badgeStyle}>${e.task}</div>
                 `;
                 div.onclick = () => unassignPerson(e.id);
                 cList.appendChild(div);
@@ -871,7 +1168,7 @@
             return;
         }
 
-        // تطبيق الحد 3 فقط على الكاونترات، وتجاهل المجموعات والبريكات والمهام
+        // تطبيق الحد 3 فقط على الكاونترات، وتجاهل المجموعات والبريكات وفترات الاستلام والمهام (عددها مفتوح)
         if (currentTask.startsWith('كاونتر')) {
             const currentCount = chosen.filter(x => x.task === currentTask).length;
             if (currentCount >= 3) {
@@ -911,12 +1208,15 @@
     }
 
     function resetSchedule() {
-        if (!confirm('تصفير التوزيع بالكامل؟')) return;
+        if (!confirm('تصفير التوزيع بالكامل؟ (سيتم أيضاً حذف فترات الاستلام المُنشأة)')) return;
         chosen = [];
         selectedCountersForMerge = [];
         currentTask = null;
-        onFilterChange(); 
+        customTimeSlots = [];
+        savePrefs();
+        onFilterChange();
         renderCounterStrip();
+        if (currentMode === 'timebreaks') renderTimeBreakBuilder();
     }
     function clearCustomNames() {
     if (confirm('هل أنت متأكد من حذف جميع الأسماء المضافة يدوياً؟')) {
@@ -928,10 +1228,11 @@
     }
 }
     function generateStructuredData() {
-        let cardsMap = {}; 
-        let tasksMap = {}; 
+        let cardsMap = {};
+        let tasksMap = {};
         let groupsMap = {};
         let breaksMap = {};
+        let timeBreaksMap = {};
 
         chosen.forEach(p => {
             if (p.task === "بدون مهام/غياب") {
@@ -959,6 +1260,12 @@
             } else if (isGroup(p.task)) {
                 if(!groupsMap[p.task]) groupsMap[p.task] = { title: p.task, people: [] };
                 groupsMap[p.task].people.push(p);
+            } else if (isTimeSlot(p.task)) {
+                if(!timeBreaksMap[p.task]) {
+                    const slot = getTimeSlot(p.task);
+                    timeBreaksMap[p.task] = { title: p.task, sortVal: slot ? slot.sortVal : 0, people: [] };
+                }
+                timeBreaksMap[p.task].people.push(p);
             } else if (isBreak(p.task)) {
                 if(!breaksMap[p.task]) breaksMap[p.task] = { title: p.task, people: [] };
                 breaksMap[p.task].people.push(p);
@@ -976,7 +1283,8 @@
             cards: Object.values(cardsMap).sort((a,b) => a.sortVal - b.sortVal),
             tasks: Object.values(tasksMap),
             groups: Object.values(groupsMap).sort((a,b) => allGroups.indexOf(a.title) - allGroups.indexOf(b.title)),
-            breaks: Object.values(breaksMap).sort((a,b) => allBreaks.indexOf(a.title) - allBreaks.indexOf(b.title))
+            breaks: Object.values(breaksMap).sort((a,b) => allBreaks.indexOf(a.title) - allBreaks.indexOf(b.title)),
+            timeBreaks: Object.values(timeBreaksMap).sort((a,b) => a.sortVal - b.sortVal)
         };
     }
 
@@ -985,7 +1293,7 @@
         const countSpan = document.getElementById('quickPreviewCount');
         
         const data = generateStructuredData();
-        const allItems = [...data.cards, ...data.tasks, ...data.groups, ...data.breaks];
+        const allItems = [...data.cards, ...data.tasks, ...data.groups, ...data.breaks, ...data.timeBreaks];
         
         countSpan.textContent = `(${chosen.length} موزع)`;
         grid.innerHTML = '';
@@ -1021,6 +1329,17 @@
             grid.innerHTML += `
                 <div class="mini-counter-card" style="border-top:2px solid var(--orange)">
                     <div class="mini-counter-title" style="color:var(--orange)">${b.title} (${b.people.length})</div>
+                    <div class="mini-counter-names">${names || 'فارغ'}</div>
+                </div>
+            `;
+        });
+
+        data.timeBreaks.forEach(tb => {
+            const color = getTimeSlotColor(tb.title);
+            const names = tb.people.map(p => formatFirstAndLastName(p.name)).join('<br>');
+            grid.innerHTML += `
+                <div class="mini-counter-card" style="border-top:2px solid ${color}">
+                    <div class="mini-counter-title" style="color:${color}">${tb.title} (${tb.people.length})</div>
                     <div class="mini-counter-names">${names || 'فارغ'}</div>
                 </div>
             `;
@@ -1068,6 +1387,7 @@
       const countersBody = document.getElementById('pdf-counters-horizontal-body');
       const groupsBody = document.getElementById('pdf-groups-body');
       const breaksBody = document.getElementById('pdf-breaks-body');
+      const timeBreaksBody = document.getElementById('pdf-timebreaks-body');
       const tasksBody = document.getElementById('pdf-tasks-body');
 
       dateEl.innerText = `التاريخ: ${new Date().toLocaleDateString('ar-SA')}`;
@@ -1077,7 +1397,7 @@
         <div><strong>عدد القوة:</strong> ${document.getElementById('forceCountInput').value || '-'}</div>
       `;
 
-      countersBody.innerHTML = ''; groupsBody.innerHTML = ''; breaksBody.innerHTML = ''; tasksBody.innerHTML = '';
+      countersBody.innerHTML = ''; groupsBody.innerHTML = ''; breaksBody.innerHTML = ''; timeBreaksBody.innerHTML = ''; tasksBody.innerHTML = '';
 
       // 1. الكاونترات
       if (data.cards.length === 0) {
@@ -1144,6 +1464,19 @@
           });
       } else {
           document.getElementById('pdf-breaks-section').style.display = 'none';
+      }
+
+      // 3.5 بريكات حسب وقت الاستلام
+      if (data.timeBreaks.length > 0) {
+          document.getElementById('pdf-timebreaks-section').style.display = 'block';
+          data.timeBreaks.forEach(tb => {
+            const namesHtml = tb.people.map(p => `<span style="display:inline-block; padding:2px 8px; background:#fdf6e3; border-radius:4px; margin:2px;">${formatShortName(p.name)}</span>`).join(' ');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="pdf-extra-label">${tb.title}</td><td class="name-cell" style="text-align:right;">${namesHtml || '-'}</td>`;
+            timeBreaksBody.appendChild(tr);
+          });
+      } else {
+          document.getElementById('pdf-timebreaks-section').style.display = 'none';
       }
 
       // 4. المهام الإضافية
