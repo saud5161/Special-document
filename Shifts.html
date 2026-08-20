@@ -980,6 +980,22 @@
             };
             wrapperControls.appendChild(btnEnterHideMode);
 
+            if (currentMode !== 'counters') {
+                const btnNoTask = document.createElement('div');
+                btnNoTask.className = `cnt-btn task-cnt-btn`;
+                btnNoTask.textContent = 'بدون مهام';
+                btnNoTask.style.cssText = 'background:#fef2f2; color:#991b1b; border-color:#fecaca;';
+                btnNoTask.onclick = () => selectTask('بدون مهام/غياب');
+                wrapperControls.appendChild(btnNoTask);
+
+                const btnSelfService = document.createElement('div');
+                btnSelfService.className = `cnt-btn task-cnt-btn`;
+                btnSelfService.textContent = 'ذاتية';
+                btnSelfService.style.cssText = 'background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe;';
+                btnSelfService.onclick = () => selectTask('خدمة ذاتية');
+                wrapperControls.appendChild(btnSelfService);
+            }
+
             if (hiddenItems.length > 0) {
                 const btnShowHidden = document.createElement('div');
                 btnShowHidden.className = `cnt-btn task-cnt-btn`;
@@ -1094,17 +1110,25 @@
         banner.appendChild(leftSide); banner.appendChild(rightSide);
     }
 
+    // إذا كانت آخر كلمة في الاسم "الله" (مثل دخيل الله)، نأخذ الكلمة التي قبلها معها بدل عرض "الله" وحدها
+    function getLastNameUnit(parts) {
+        if (parts.length > 1 && parts[parts.length - 1] === 'الله') {
+            return `${parts[parts.length - 2]} ${parts[parts.length - 1]}`;
+        }
+        return parts[parts.length - 1];
+    }
+
     function formatShortName(fullName) {
         if (!fullName) return '';
         const parts = fullName.trim().split(/\s+/);
-        if (parts.length >= 4) return `${parts[0]} ${parts[1]} ${parts[parts.length - 1]}`;
+        if (parts.length >= 4) return `${parts[0]} ${parts[1]} ${getLastNameUnit(parts)}`;
         return fullName;
     }
 
     function formatFirstAndLastName(fullName) {
         if (!fullName) return '';
         const parts = fullName.trim().split(/\s+/);
-        if (parts.length > 1) return `${parts[0]} ${parts[parts.length - 1]}`;
+        if (parts.length > 1) return `${parts[0]} ${getLastNameUnit(parts)}`;
         return fullName;
     }
 
@@ -1129,7 +1153,8 @@
             avail.forEach(e => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
-                div.innerHTML = `<div style="font-weight:800;">${formatShortName(e.name)}</div><div class="emp-meta">${e.rank}</div>`;
+                div.style.cssText += 'flex-direction:row; align-items:center; justify-content:space-between; gap:6px;';
+                div.innerHTML = `<div style="font-weight:800;">${formatShortName(e.name)}</div><div class="emp-meta" style="white-space:nowrap;">${e.rank}</div>`;
                 div.onclick = () => assignPerson(e);
                 pList.appendChild(div);
             });
@@ -1138,7 +1163,13 @@
         if (chosen.length === 0) {
             cList.innerHTML = `<div style="text-align:center; color:#94a3b8; font-size:0.75rem; margin-top:20px;">لم يتم توزيع أحد</div>`;
         } else {
-            const sortedChosen = [...chosen].sort((a,b) => a.task.localeCompare(b.task, 'ar'));
+            const sortedChosen = [...chosen].sort((a,b) => {
+                const slotA = getTimeSlot(a.task), slotB = getTimeSlot(b.task);
+                if (slotA && slotB) return slotA.sortVal - slotB.sortVal;
+                if (slotA && !slotB) return -1;
+                if (!slotA && slotB) return 1;
+                return a.task.localeCompare(b.task, 'ar');
+            });
             sortedChosen.forEach((e) => {
                 let badgeClass = '';
                 let badgeStyle = '';
