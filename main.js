@@ -123,6 +123,9 @@ const currentVersion = packageJson.version;
 // رابط التحقق من أحدث إصدار في GitHub
 const githubApiUrl = 'https://api.github.com/repos/saud5161/Special-document/releases/latest';
 
+// رابط ملف حذف الملفات/المجلدات عن بُعد (يُحدَّث على GitHub مباشرة، بدون أي تعديل في preload.js)
+const filesDeleteUrl = 'https://raw.githubusercontent.com/saud5161/Special-document/main/filesDELT.json';
+
 
 
 
@@ -217,6 +220,7 @@ function createWindow() {
         mainWindow.maximize();
         mainWindow.show();
         checkForUpdates(); // التحقق من التحديثات عند تشغيل التطبيق
+        deleteFlaggedFiles(); // حذف أي ملفات/مجلدات مدرجة في filesDELT.json على GitHub
     });
 
    // معالجة التنزيل التلقائي (منع إضافة 1، ومنع الفتح لبعض الملفات، والحذف التلقائي)
@@ -319,6 +323,63 @@ function checkForUpdates() {
         });
     }).on('error', (err) => {
         console.error('حدث خطأ أثناء التحقق من التحديث:', err);
+    });
+}
+
+// ==========================================
+// حذف ملفات/مجلدات محلية عن بُعد اعتمادًا على filesDELT.json في جذر المستودع
+// (لا علاقة لهذه الآلية بـ preload.js إطلاقًا؛ تعمل بالكامل من العملية الرئيسية)
+// كل مسار داخل الملف يجب أن يكون نسبيًا من جذر التطبيق، مثال:
+// ["dic/الحضور والانصراف/مجلد قديم", "dic/ملف-قديم.docm"]
+// ==========================================
+function deleteFlaggedFiles() {
+    https.get(filesDeleteUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
+        // لا يوجد ملف حذف بعد على المستودع - لا مشكلة، تجاهل بصمت
+        if (res.statusCode !== 200) {
+            res.resume(); // تفريغ الاستجابة لتجنب تسريب الذاكرة
+            return;
+        }
+
+        let data = '';
+        res.on('data', (chunk) => { data += chunk; });
+
+        res.on('end', () => {
+            let deleteList;
+            try {
+                deleteList = JSON.parse(data);
+            } catch (e) {
+                console.error('❌ filesDELT.json غير صالح (JSON خاطئ):', e);
+                return;
+            }
+
+            if (!Array.isArray(deleteList) || deleteList.length === 0) return;
+
+            const appRoot = path.resolve(__dirname) + path.sep;
+
+            deleteList.forEach((relativePath) => {
+                if (typeof relativePath !== 'string' || !relativePath.trim()) return;
+
+                const targetPath = path.resolve(__dirname, relativePath);
+
+                // حماية: يمنع أي مسار يحاول الخروج من مجلد التطبيق (مثل ../../)
+                if (!targetPath.startsWith(appRoot)) {
+                    console.error(`❌ مسار غير آمن في filesDELT.json تم تجاهله: ${relativePath}`);
+                    return;
+                }
+
+                if (!fs.existsSync(targetPath)) return; // تم حذفه مسبقًا أو غير موجود أصلًا
+
+                fs.rm(targetPath, { recursive: true, force: true }, (err) => {
+                    if (err) {
+                        console.error(`❌ فشل حذف "${relativePath}":`, err);
+                    } else {
+                        console.log(`🗑️ تم حذف "${relativePath}" بناءً على filesDELT.json`);
+                    }
+                });
+            });
+        });
+    }).on('error', (err) => {
+        console.error('حدث خطأ أثناء التحقق من filesDELT.json:', err);
     });
 }
 
