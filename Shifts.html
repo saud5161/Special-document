@@ -736,6 +736,8 @@
 
     // أول ساعة وآخر ساعة في كل فترة استلام لا يوجد بها بريكات افتراضياً (= أول وآخر علامتين)، إلا إذا تم تفعيل "تضمين أول وآخر ساعة"
     // بين كل بريك والذي يليه فترة استلام (عمل) بمقدار workTicks، ثم بريك بمقدار breakTicks، وتتكرر
+    // كل فترة ظاهرة (pill) هي "وقت الاستلام" نفسه (فترة العمل)، ثم يُترك فاصل بمقدار "وقت البريك" (غير ظاهر كفترة)
+    // قبل بدء فترة الاستلام التالية
     function computeAutoSlots(periodKey, breakTicks, includeEdges, workTicks) {
         const period = RECEPTION_PERIODS[periodKey];
         const ticks = period.ticks;
@@ -745,16 +747,14 @@
         const slots = [];
         let idx = startIdx;
         while (idx < endIdx) {
-            idx += workTicks;
-            if (idx >= endIdx) break;
-            const endSegIdx = Math.min(idx + breakTicks, endIdx);
+            const endSegIdx = Math.min(idx + workTicks, endIdx);
             if (endSegIdx <= idx) break;
             slots.push({
                 label: `${formatHour12(ticks[idx])} - ${formatHour12(ticks[endSegIdx])}`,
                 periodKey,
                 sortVal: period.order * 100 + idx
             });
-            idx = endSegIdx;
+            idx = endSegIdx + breakTicks;
         }
         return slots;
     }
