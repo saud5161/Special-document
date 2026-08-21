@@ -198,6 +198,12 @@
     }
     .tb-stepper span{ min-width:16px; text-align:center; font-weight:800; font-size:.8rem; color:#1f2937; }
 
+    .tb-dual-row{ display:flex; gap:6px; }
+    .tb-stepper-block{
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; background:#fff;
+      border:1px solid var(--gold-border); border-radius:9px; padding:6px 4px;
+    }
+
     .tb-edges-row{
       display:flex; align-items:center; justify-content:center; gap:6px; font-size:.66rem;
       font-weight:700; color:#7a5c00; cursor:pointer; user-select:none;
@@ -291,15 +297,28 @@
       <span class="tb-now" id="tbNowLabel"></span>
     </div>
     <div class="tb-period-row" id="tbPeriodRow"></div>
-    <div class="tb-interval-row">
-      <span class="tb-interval-label">كل</span>
-      <div class="tb-stepper">
-        <button onclick="changeTbStep(-1)">−</button>
-        <span id="tbStepVal">1</span>
-        <button onclick="changeTbStep(1)">+</button>
+
+    <div class="tb-dual-row">
+      <div class="tb-stepper-block">
+        <span class="tb-interval-label">وقت الاستلام</span>
+        <div class="tb-stepper">
+          <button onclick="changeTbWork(-1)">−</button>
+          <span id="tbWorkVal">1</span>
+          <button onclick="changeTbWork(1)">+</button>
+        </div>
+        <span class="tb-interval-label">ساعة</span>
       </div>
-      <span class="tb-interval-label">ساعة/ساعات</span>
+      <div class="tb-stepper-block">
+        <span class="tb-interval-label">وقت البريك</span>
+        <div class="tb-stepper">
+          <button onclick="changeTbStep(-1)">−</button>
+          <span id="tbStepVal">1</span>
+          <button onclick="changeTbStep(1)">+</button>
+        </div>
+        <span class="tb-interval-label">ساعة</span>
+      </div>
     </div>
+
     <label class="tb-edges-row" id="tbEdgesRow">
       <input type="checkbox" id="tbIncludeEdges" onchange="toggleTbIncludeEdges(this.checked)">
       <span>تضمين أول وآخر ساعة</span>
@@ -629,7 +648,8 @@
     const TIME_SLOT_COLORS = ['#b8860b','#2563eb','#0f766e','#7c3aed','#c2410c','#0891b2','#be123c','#4d7c0f'];
 
     let tbPeriodKey = detectCurrentPeriodKey();
-    let tbStepTicks = 2; // 2 علامات = ساعة واحدة
+    let tbStepTicks = 2; // 2 علامات = ساعة واحدة (مدة كل بريك)
+    let tbWorkTicks = 2; // 2 علامات = ساعة واحدة (وقت الاستلام بين كل بريك والذي يليه)
     let tbIncludeEdges = false;
 
     function isTimeSlot(task) { return customTimeSlots.some(s => s.label === task); }
@@ -655,6 +675,11 @@
         renderTimeBreakBuilder();
     }
 
+    function changeTbWork(delta) {
+        tbWorkTicks = Math.max(0, Math.min(12, tbWorkTicks + delta));
+        renderTimeBreakBuilder();
+    }
+
     function deleteTimeSlot(label) {
         customTimeSlots = customTimeSlots.filter(s => s.label !== label);
         chosen.filter(c => c.task === label).forEach(c => {
@@ -669,21 +694,67 @@
         renderTransferLists();
     }
 
+    // يحول نص مثل "2ص" أو "2:30م" إلى ساعة عشرية (0-23.5)، أو null إن كانت الصيغة غير صحيحة
+    function parseArabicTime(str) {
+        const m = str.trim().match(/^(\d{1,2})(?::([03]0))?\s*(ص|م)$/);
+        if (!m) return null;
+        let hour = parseInt(m[1]);
+        if (hour < 1 || hour > 12) return null;
+        const minute = m[2] ? parseInt(m[2]) : 0;
+        const period = m[3];
+        if (period === 'م' && hour !== 12) hour += 12;
+        if (period === 'ص' && hour === 12) hour = 0;
+        return hour + (minute === 30 ? 0.5 : 0);
+    }
+
+    function computeManualSortVal(h) {
+        if (h >= 6 && h < 14) return 0 * 100 + Math.round(h * 2);
+        if (h >= 14 && h < 22) return 1 * 100 + Math.round(h * 2);
+        const effH = h < 12 ? h + 24 : h;
+        return 2 * 100 + Math.round(effH * 2);
+    }
+
+    function addManualTimeSlot() {
+        const raw = prompt('أدخل الفترة بصيغة مثل: 2ص-5ص أو 2:30م-4م');
+        if (!raw) return;
+        const parts = raw.split('-');
+        if (parts.length !== 2) { alert('الصيغة غير صحيحة. مثال: 2ص-5ص'); return; }
+
+        const start = parseArabicTime(parts[0]);
+        const end = parseArabicTime(parts[1]);
+        if (start === null || end === null) { alert('صيغة الوقت غير صحيحة. استخدم مثل 2ص أو 2:30م'); return; }
+
+        const label = `${formatHour12(start)} - ${formatHour12(end)}`;
+        if (customTimeSlots.some(s => s.label === label)) { alert('هذه الفترة موجودة مسبقاً.'); return; }
+
+        customTimeSlots.push({ label, periodKey: 'manual', sortVal: computeManualSortVal(start) });
+        customTimeSlots.sort((a, b) => a.sortVal - b.sortVal);
+        savePrefs();
+        selectTask(label);
+        renderCounterStrip();
+    }
+
     // أول ساعة وآخر ساعة في كل فترة استلام لا يوجد بها بريكات افتراضياً (= أول وآخر علامتين)، إلا إذا تم تفعيل "تضمين أول وآخر ساعة"
-    function computeAutoSlots(periodKey, stepTicks, includeEdges) {
+    // بين كل بريك والذي يليه فترة استلام (عمل) بمقدار workTicks، ثم بريك بمقدار breakTicks، وتتكرر
+    function computeAutoSlots(periodKey, breakTicks, includeEdges, workTicks) {
         const period = RECEPTION_PERIODS[periodKey];
         const ticks = period.ticks;
         const startIdx = includeEdges ? 0 : 2;
         const endIdx = includeEdges ? ticks.length - 1 : ticks.length - 1 - 2;
+
         const slots = [];
-        for (let idx = startIdx; idx < endIdx; idx += stepTicks) {
-            const endSegIdx = Math.min(idx + stepTicks, endIdx);
+        let idx = startIdx;
+        while (idx < endIdx) {
+            idx += workTicks;
+            if (idx >= endIdx) break;
+            const endSegIdx = Math.min(idx + breakTicks, endIdx);
             if (endSegIdx <= idx) break;
             slots.push({
                 label: `${formatHour12(ticks[idx])} - ${formatHour12(ticks[endSegIdx])}`,
                 periodKey,
                 sortVal: period.order * 100 + idx
             });
+            idx = endSegIdx;
         }
         return slots;
     }
@@ -703,18 +774,19 @@
             periodRow.appendChild(btn);
         });
 
+        document.getElementById('tbWorkVal').textContent = formatStepLabel(tbWorkTicks);
         document.getElementById('tbStepVal').textContent = formatStepLabel(tbStepTicks);
         document.getElementById('tbIncludeEdges').checked = tbIncludeEdges;
 
-        const slots = computeAutoSlots(tbPeriodKey, tbStepTicks, tbIncludeEdges);
+        const slots = computeAutoSlots(tbPeriodKey, tbStepTicks, tbIncludeEdges, tbWorkTicks);
         const summary = document.getElementById('tbSummary');
         summary.textContent = slots.length > 0
-            ? `سيتم إنشاء ${slots.length} فترة: ${slots.map(s => s.label).join(' ، ')}`
+            ? `سيتم إنشاء ${slots.length} بريك: ${slots.map(s => s.label).join(' ، ')}`
             : 'لا يمكن إنشاء فترات بهذا الاختيار';
     }
 
     function generateTimeSlotsAuto() {
-        const slots = computeAutoSlots(tbPeriodKey, tbStepTicks, tbIncludeEdges);
+        const slots = computeAutoSlots(tbPeriodKey, tbStepTicks, tbIncludeEdges, tbWorkTicks);
 
         // تكون فترات الاستلام لفترة واحدة فقط (صباح/ظهر/ليل) في نفس الوقت، لذا نستبدل كل الفترات القديمة
         // (من أي فترة كانت) بدل دمجها مع فترة جديدة
@@ -994,6 +1066,15 @@
                 btnSelfService.style.cssText = 'background:#eff6ff; color:#1d4ed8; border-color:#bfdbfe;';
                 btnSelfService.onclick = () => selectTask('خدمة ذاتية');
                 wrapperControls.appendChild(btnSelfService);
+            }
+
+            if (currentMode === 'timebreaks') {
+                const btnManualTime = document.createElement('div');
+                btnManualTime.className = `cnt-btn task-cnt-btn`;
+                btnManualTime.textContent = '⏱ وقت يدوي';
+                btnManualTime.style.cssText = 'background:var(--gold-bg); color:var(--gold-text); border-color:var(--gold-border);';
+                btnManualTime.onclick = addManualTimeSlot;
+                wrapperControls.appendChild(btnManualTime);
             }
 
             if (hiddenItems.length > 0) {
