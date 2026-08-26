@@ -21,6 +21,75 @@
 </head>
 
 <body>
+    <!-- =========================
+         حماية الصفحة بنفس الرقم السري المستخدم في صفحة المغادرة (Departure.html)
+         يعتمد على نفس مفتاح localStorage "departureAccess" حتى لا يُطلب الرقم مرتين
+    ========================== -->
+    <div id="password-container" style="
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background: rgb(90, 89, 89);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+">
+  <div style="background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 300px; width: 90%;">
+    <h3 style="margin-bottom: 15px;">الرجاء إدخال الرقم السري </h3>
+    <input type="password" id="page-password" style="padding: 10px; width: 100%;" placeholder="••••••" />
+    <div style="margin-top: 15px;">
+      <button onclick="checkPassword()" style="padding: 10px 20px;">دخول</button>
+      <button onclick="redirectToExit()" style="padding: 10px 20px; background-color: #d9534f; color: white; border: none; margin-right: 10px;">إغلاق</button>
+    </div>
+    <p id="error-msg" style="color: red; margin-top: 10px; display: none;"></p>
+  </div>
+</div>
+<script>
+  (function() {
+    var storedHash = "96cae35ce8a9b0244178bf28e4966c2ce1b8385723a96a6b838858cdd6ca0a1e";
+
+    // إخفاء فوري للطبقة إن كان الدخول ممنوحاً مسبقاً من صفحة المغادرة (نفس المتصفح/الجهاز)
+    if (localStorage.getItem("departureAccess") === "granted") {
+      var c = document.getElementById("password-container");
+      if (c) c.style.display = "none";
+    }
+
+    async function sha256Hex(text) {
+      var data = new TextEncoder().encode(text);
+      var hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      var hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(function(b) { return b.toString(16).padStart(2, "0"); }).join("");
+    }
+
+    window.checkPassword = async function() {
+      var passwordInput = document.getElementById("page-password");
+      var errorMsg = document.getElementById("error-msg");
+      var container = document.getElementById("password-container");
+      if (!passwordInput || !errorMsg || !container) return;
+
+      try {
+        var inputHash = await sha256Hex(passwordInput.value);
+        if (inputHash === storedHash) {
+          localStorage.setItem("departureAccess", "granted");
+          container.style.display = "none";
+        } else {
+          errorMsg.textContent = "الرقم السري غير صحيح، في حال عدم توفر الرقم السري التواصل معي";
+          errorMsg.style.display = "block";
+          passwordInput.value = "";
+        }
+      } catch (e) {
+        console.error("Hash error:", e);
+        errorMsg.textContent = "حدث خطأ تقني أثناء التحقق. جرّب تحديث الصفحة.";
+        errorMsg.style.display = "block";
+      }
+    };
+
+    window.redirectToExit = function() {
+      window.location.href = "passport-d.html";
+    };
+  })();
+</script>
+
      <div class="page-background-logo"></div>
 
   <!-- =========================
