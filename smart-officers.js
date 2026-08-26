@@ -85,10 +85,10 @@ const inputGroups = [
     { type: 'officer', name: 'ListOfficerName', rank: 'ListOfficerRank', canInsert: false },
     { type: 'officer', name: 'AdminOfficerName', rank: 'AdminOfficerRank', canInsert: false },
     
-    // حقول الأفراد (مسموح لها بالإضافة للقاعدة)
-    { type: 'individual', name: 'IndividualName', rank: 'IndividualRank', idField: 'IndividualID', canInsert: true },
-    { type: 'individual', name: 'IndividualName2', rank: 'IndividualRank2', idField: 'IndividualID2', canInsert: true },
-    { type: 'individual', name: 'IndividualName3', rank: 'IndividualRank3', idField: 'IndividualID3', canInsert: true }
+    // حقول الأفراد (تم إيقاف الحفظ في القاعدة: أي اسم يكتبه المستخدم لا يُخزَّن)
+    { type: 'individual', name: 'IndividualName', rank: 'IndividualRank', idField: 'IndividualID', canInsert: false },
+    { type: 'individual', name: 'IndividualName2', rank: 'IndividualRank2', idField: 'IndividualID2', canInsert: false },
+    { type: 'individual', name: 'IndividualName3', rank: 'IndividualRank3', idField: 'IndividualID3', canInsert: false }
 ];
 
 inputGroups.forEach(group => {
@@ -115,9 +115,6 @@ inputGroups.forEach(group => {
 
         // دالة الفحص (تشتغل عند الخروج من حقل الرتبة أو رقم الهوية)
         const handleBlur = () => {
-            // ✅ التعديل الجوهري: إيقاف الدالة فوراً إذا كان الحقل غير مصرح له بالحفظ في القاعدة
-            if (!group.canInsert) return; 
-
             const nameVal = nameInput.value.trim();
             const rankVal = rankInput.value.trim();
             const idVal = idInput ? idInput.value.trim() : "";
@@ -125,14 +122,17 @@ inputGroups.forEach(group => {
             if (!nameVal || !rankVal) return;
 
             if (group.type === 'officer') {
+                // ✅ منع إضافة ضابط جديد للقاعدة إذا كان الحقل غير مصرح له بذلك
+                if (!group.canInsert) return;
+
                 // فحص وإضافة الضباط
                 if (!liveOfficersList.some(o => o.name === nameVal)) {
                     liveOfficersList.push({ name: nameVal, rank: rankVal });
-                    
+
                     // حفظ الاسم فوراً في الذاكرة
                     localStorage.setItem('local_officers_db', JSON.stringify(liveOfficersList));
                     updateOfficersUI(); // تحديث الواجهة مباشرة
-                    
+
                     processInsert('officers', { name: nameVal, rank: rankVal });
                     console.log(`✨ إضافة ضابط جديد: ${nameVal}`);
                 }
@@ -143,18 +143,21 @@ inputGroups.forEach(group => {
                 const hallVal = document.getElementById('hall-number')?.value.trim() || 'عام';
 
                 if (!existing) {
-                    // فرد جديد تماماً
+                    // فرد جديد تماماً — لا يُضاف للقاعدة إذا كان الحقل غير مصرح له بذلك
+                    // (الأسماء الموجودة مسبقاً بالقاعدة تستمر بالتحديث عادي في القسم التالي بغض النظر عن هذا الشرط)
+                    if (!group.canInsert) return;
+
                     liveIndividualsList.push({ name: nameVal, rank: rankVal, national_id: idVal, shift: shiftVal, hall: hallVal });
                     localStorage.setItem('local_individuals_db', JSON.stringify(liveIndividualsList));
-                    
+
                     processInsert('individuals', { name: nameVal, rank: rankVal, national_id: idVal, shift: shiftVal, hall: hallVal });
                     console.log(`✨ إضافة فرد جديد: ${nameVal}`);
-                } 
+                }
                 else if (idVal && !existing.national_id) {
-                    // فرد موجود ولكن تم إدخال هويته للتو (تحديث)
+                    // فرد موجود مسبقاً بالقاعدة وتم إدخال هويته للتو (تحديث) — يعمل دائماً بغض النظر عن canInsert
                     existing.national_id = idVal;
                     localStorage.setItem('local_individuals_db', JSON.stringify(liveIndividualsList));
-                    
+
                     processUpdateId(nameVal, idVal);
                 }
             }
