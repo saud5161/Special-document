@@ -546,19 +546,20 @@ body.forms-list-page {
     --bg-logo-x: 0px;
     --bg-logo-y: 0px;
     background:
-        radial-gradient(circle at 18% 8%, rgba(199, 163, 58, 0.08), transparent 28%),
-        linear-gradient(180deg, #eef5f1 0%, #f8fbf9 42%, #eef5f1 100%);
-    color: #1f3f32;
+        radial-gradient(900px 600px at 14% 6%, rgba(205, 169, 74, 0.14), transparent 55%),
+        radial-gradient(1000px 700px at 88% 90%, rgba(31, 107, 79, 0.5), transparent 55%),
+        linear-gradient(160deg, #0a2419 0%, #071912 55%, #0d2e21 100%);
+    color: #eaf5ef;
     isolation: isolate;
 }
 
 body.forms-list-page .page-background-logo {
     z-index: 0;
-    opacity: 0.38;
-    background-size: auto min(92vh, 1050px);
+    opacity: 0.07;
+    background-size: auto min(78vh, 900px);
     background-position: center center;
-    mix-blend-mode: multiply;
-    filter: sepia(0.55) hue-rotate(92deg) saturate(1.7) contrast(1.18);
+    mix-blend-mode: normal;
+    filter: saturate(1.3);
     transform: translate3d(var(--bg-logo-x), var(--bg-logo-y), 0) scale(1);
     transition: transform 1.1s cubic-bezier(.2,.8,.2,1);
     animation: departureLogoBreath 9s ease-in-out 1 forwards;
@@ -566,19 +567,19 @@ body.forms-list-page .page-background-logo {
 
 @keyframes departureLogoBreath {
     0%, 100% {
-        opacity: 0.32;
-        background-size: auto min(92vh, 1050px);
+        opacity: 0.06;
+        background-size: auto min(78vh, 900px);
     }
     50% {
-        opacity: 0.42;
-        background-size: auto min(94vh, 1080px);
+        opacity: 0.09;
+        background-size: auto min(80vh, 920px);
     }
 }
 
 body.theme-dark.forms-list-page .page-background-logo {
-    opacity: 0.2;
-    mix-blend-mode: screen;
-    filter: grayscale(1) brightness(1.5) contrast(1.12);
+    opacity: 0.07;
+    mix-blend-mode: normal;
+    filter: saturate(1.1);
 }
 
 body.forms-list-page .departure-hero {
@@ -592,12 +593,12 @@ body.forms-list-page .departure-hero {
     box-sizing: border-box;
     border-radius: 0 0 30px 30px;
     background-image:
-        linear-gradient(180deg, rgba(16, 51, 39, 0.18) 0%, rgba(16, 51, 39, 0.08) 50%, rgba(238, 245, 241, 0.94) 100%),
+        linear-gradient(180deg, rgba(7, 25, 18, 0.35) 0%, rgba(7, 25, 18, 0.25) 50%, rgba(10, 36, 25, 0.96) 100%),
         url("img/HewHomeHeroSlide1.jpg");
     background-size: cover;
     background-position: center 62%;
-    box-shadow: inset 0 -70px 80px rgba(238, 245, 241, 0.72);
-    opacity: 0.72;
+    box-shadow: inset 0 -70px 80px rgba(10, 36, 25, 0.8);
+    opacity: 0.55;
     pointer-events: none;
     z-index: -1;
     animation: departureHeroMotion 14s ease-in-out 1 alternate forwards;
@@ -609,8 +610,8 @@ body.forms-list-page .departure-hero::after {
     inset: 0;
     pointer-events: none;
     background:
-        linear-gradient(90deg, rgba(199, 163, 58, 0.12), transparent 30%),
-        linear-gradient(0deg, #eef5f1 0%, transparent 38%);
+        linear-gradient(90deg, rgba(205, 169, 74, 0.18), transparent 30%),
+        linear-gradient(0deg, #0a2419 0%, transparent 38%);
 }
 
 @keyframes departureHeroMotion {
@@ -650,13 +651,65 @@ body.forms-list-page .departure-hero::after {
 
 body.forms-list-page .top-bar {
     height: 62px;
-    background: linear-gradient(90deg, #2d6b54 0%, #3d8067 48%, #2e6f57 100%);
-    border-bottom: 1px solid rgba(255,255,255,0.18);
-    box-shadow: 0 10px 24px rgba(22, 66, 49, 0.26);
+    background: linear-gradient(90deg, #0f3d2c 0%, #1f6b4f 50%, #0f3d2c 100%);
+    border-bottom: 1px solid rgba(205, 169, 74, 0.35);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
-body.forms-list-page .top-bar .right img {
-    height: 46px;
+/* ===== شريط علوي مبسّط: زر إغلاق + التاريخ + الوضع الداكن فقط ===== */
+body.forms-list-page .top-bar .right,
+body.forms-list-page .top-bar .left {
+    flex: 0 0 auto;
+    width: 44px;
+    justify-content: center;
+}
+
+body.forms-list-page .top-bar #date {
+    font-family: 'Cairo', 'Amiri', serif;
+    font-size: 15px;
+    letter-spacing: -.1px;
+}
+
+body.forms-list-page .theme-toggle-text { display: none; }
+
+body.forms-list-page .top-bar .theme-toggle {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+body.forms-list-page .top-bar .theme-toggle i { font-size: 16px; }
+body.forms-list-page .top-bar .theme-toggle:hover {
+    background: rgba(205, 169, 74, 0.22);
+    border-color: rgba(205, 169, 74, 0.4);
+    color: #e8d49a;
+    transform: translateY(-1px) rotate(-8deg);
+}
+
+body.forms-list-page .close-app-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+}
+body.forms-list-page .close-app-btn:hover {
+    background: rgba(220, 53, 69, 0.85);
+    border-color: rgba(220, 53, 69, 0.9);
+    color: #fff;
+    transform: translateY(-1px) rotate(90deg);
+    box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
 }
 
 body.forms-list-page .search-bar {
@@ -664,8 +717,9 @@ body.forms-list-page .search-bar {
     max-width: 620px;
     padding: 5px 8px;
     border-radius: 16px;
-    background: rgba(255,255,255,0.92);
-    border-color: rgba(46, 111, 87, 0.18);
+    background: rgba(255,255,255,0.94);
+    border-color: rgba(205, 169, 74, 0.35);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
 }
 
 body.forms-list-page .content {
@@ -676,13 +730,91 @@ body.forms-list-page .content {
     padding: 14px 24px 34px;
 }
 
+/* ===== الويدجتات الثلاثة (تعليمات / ما الجديد / آخر الملفات): تصميم زجاجي فاخر موحّد ===== */
 body.forms-list-page .instruction-wrapper,
 body.forms-list-page .whats-new-highlight-box,
 body.forms-list-page .recent-files-widget {
-    background-color: rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.035)) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: relative;
+    color: rgba(255, 255, 255, 0.86);
 }
+
+body.forms-list-page .instruction-wrapper::after,
+body.forms-list-page .whats-new-highlight-box::after,
+body.forms-list-page .recent-files-widget::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 18px; right: 18px; height: 2px;
+    background: linear-gradient(90deg, transparent, #cda94a, transparent);
+    opacity: .85;
+}
+
+body.forms-list-page .instruction-title,
+body.forms-list-page .instruction-header h3,
+body.forms-list-page .shift-form h3,
+body.forms-list-page .whats-new-title {
+    color: #fff !important;
+}
+body.forms-list-page .instruction-title .word-icon,
+body.forms-list-page .whats-new-title i {
+    color: #e8d49a !important;
+}
+
+body.forms-list-page .instruction-content {
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+body.forms-list-page .instruction-content strong { color: #fff; }
+
+body.forms-list-page #arrow-icon i { color: rgba(255, 255, 255, 0.6); }
+
+body.forms-list-page .btn-blue,
+body.forms-list-page .btn-green,
+body.forms-list-page .btn-dark {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+body.forms-list-page .whats-new-header { border-bottom-color: rgba(255, 255, 255, 0.14) !important; }
+body.forms-list-page .whats-new-header::after {
+    color: #e8d49a !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+}
+body.forms-list-page .version-badge { background: linear-gradient(135deg, #cda94a, #e8d49a); color: #0f3d2c; }
+
+body.forms-list-page .highlight-item {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+body.forms-list-page .highlight-item:hover { border-color: #cda94a !important; }
+body.forms-list-page .update-text h4 { color: #fff !important; }
+body.forms-list-page .update-text p { color: rgba(255, 255, 255, 0.6) !important; }
+body.forms-list-page .database-icon { background: rgba(31, 107, 79, 0.35) !important; color: #a9e6c9 !important; }
+body.forms-list-page .docs-icon { background: rgba(205, 169, 74, 0.2) !important; color: #e8d49a !important; }
+body.forms-list-page .new-models-list li { color: rgba(255, 255, 255, 0.75) !important; }
+body.forms-list-page .new-models-list li i { color: #cda94a !important; }
+body.forms-list-page .whats-new-link {
+    background-color: rgba(205, 169, 74, 0.14) !important;
+    color: #e8d49a !important;
+    border-color: rgba(205, 169, 74, 0.4) !important;
+}
+body.forms-list-page .whats-new-link:hover { background-color: #cda94a !important; color: #0f3d2c !important; }
+
+body.forms-list-page .recent-files-list li {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.10) !important;
+}
+body.forms-list-page .recent-files-list li:hover {
+    background: rgba(255, 255, 255, 0.09) !important;
+    border-color: #cda94a !important;
+}
+body.forms-list-page .recent-files-list li .file-name,
+body.forms-list-page .recent-files-list li span { color: rgba(255, 255, 255, 0.9) !important; }
+body.forms-list-page .recent-files-list li .file-date { color: rgba(255, 255, 255, 0.55) !important; }
+body.forms-list-page .recent-files-list li[style*="color"] { color: rgba(255, 255, 255, 0.65) !important; }
+body.forms-list-page .recent-files-list-container::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.04); }
+body.forms-list-page .recent-files-list-container::-webkit-scrollbar-thumb { background: #cda94a; }
 
 body.forms-list-page .quick-links {
     position: fixed;
@@ -702,12 +834,12 @@ body.forms-list-page .quick-links {
     overflow-y: hidden;
     white-space: nowrap;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.88);
-    border: 1px solid rgba(46, 112, 88, 0.14);
-    border-right: 1px solid rgba(46, 112, 88, 0.14);
-    box-shadow: 0 12px 26px rgba(34, 77, 61, 0.10);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: linear-gradient(160deg, rgba(7, 25, 18, 0.82), rgba(10, 36, 25, 0.78));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-right: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     scrollbar-width: thin;
 }
 
@@ -725,14 +857,15 @@ body.forms-list-page .quick-links > span {
     margin: 0;
     padding: 5px 10px;
     border-radius: 999px;
-    background: #2f735b;
+    background: linear-gradient(135deg, #1f6b4f, #0f3d2c);
     color: #fff;
     font-size: 12px;
     font-weight: 900;
+    border: 1px solid rgba(205, 169, 74, 0.35);
 }
 
 body.forms-list-page .quick-links > span::before {
-    color: #f6d777;
+    color: #e8d49a;
     margin-left: 6px;
 }
 
@@ -742,21 +875,26 @@ body.forms-list-page .quick-links a {
     border-radius: 999px;
     font-size: 11.5px;
     font-weight: 800;
-    color: #24513f;
-    background: rgba(238, 246, 241, 0.96);
-    border: 1px solid rgba(46, 112, 88, 0.10);
+    color: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     box-shadow: none;
 }
 
 body.forms-list-page .whats-new-highlight-box {
-    width: min(1040px, calc(100% - 36px));
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: top;
+    width: calc(42% - 8px);
     max-width: none;
     box-sizing: border-box;
-    margin: 0 18px 16px auto;
+    margin: 0 0 16px;
     padding: 8px 12px;
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
 }
+body.forms-list-page .whats-new-highlight-box::before { display: none; }
 
 body.forms-list-page .whats-new-header {
     margin-bottom: 0;
@@ -840,11 +978,10 @@ body.forms-list-page .shift-form {
     margin: 0 0 16px;
     padding: 16px 18px;
     border-radius: 18px;
-    background: rgba(255,255,255,0.84);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: 1px solid rgba(46, 112, 88, 0.13);
-    box-shadow: 0 14px 32px rgba(34, 77, 61, 0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
     overflow: hidden;
 }
 
@@ -854,10 +991,16 @@ body.forms-list-page .instruction-wrapper {
     margin-left: 12px;
 }
 
-body.forms-list-page .shift-form,
-body.forms-list-page .recent-files-widget {
+body.forms-list-page .shift-form {
     width: calc(42% - 8px);
     height: 210px;
+}
+
+/* آخر ملفات الوورد: صف كامل مستقل أسفل التعليمات وما الجديد */
+body.forms-list-page .recent-files-widget {
+    width: 100%;
+    height: 190px;
+    display: flex;
 }
 
 body.forms-list-page .instruction-wrapper::before,

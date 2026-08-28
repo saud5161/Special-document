@@ -68,56 +68,18 @@
 
     <div class="top-bar">
         <div class="right">
-            <div class="logo-container">
-                <img src="img/main-httpswww.gdp.gov.saportalassetsimglogo.png" alt="الشعار">
-                <div>
-                </div>
-            </div>
-        </div>
-        <div class="center">
-            <span id="date"></span>
-           
-        </div>
-<div class="left">
-          <a href="#" id="theme-toggle" class="theme-toggle" aria-label="تفعيل الوضع الداكن" aria-pressed="false">
+          <a href="#" id="theme-toggle" class="theme-toggle" aria-label="تفعيل الوضع الداكن" aria-pressed="false" title="الوضع الداكن">
             <i class="fas fa-moon"></i>
             <span class="theme-toggle-text">الوضع الداكن</span>
           </a>
-
-          <a href="https://saud5161.github.io/passportstamp/indexhh.html" 
-             onclick="window.open(this.href, 'popup', 'width=1100,height=800,scrollbars=yes,resizable=yes'); return false;"
-             class="whatsapp-top-btn" title="رسائل التوجية">
-             <i class="fab fa-whatsapp" style="font-size: 16px;"></i>
-             <span>رسائل التوجية</span>
-          </a>
-          <a href="#"><i class="fas fa-desktop"></i></a>
-          
-             
-   
-        
-            <a href="#" onclick="fetchLatestRelease()">
-                <div class="icon-with-notification">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">1</span>
-                </div>
-             </a>
-             
-             <div id="notification-content" style="display: none;">
-                 <p id="latest-release-text">جارٍ التحميل...</p>
-             </div>
-
-            <a id="print-button"><i class="fas fa-print"></i></a>
-            <a href="#" onclick="toggleHeadsetNotification(event)">
-                <div class="icon-with-notification">
-                    <i class="fas fa-headset"></i>
-                    <span class="notification-star">1</span> </div>
-             </a>
-             
-             <div id="headset-notification-content" style="display: none;">
-                 <p id="headset-latest-release-text">في حال وجود اي ملاحظة او اقتراح يرجى التواصل واتس اب فقط مع سعود الحجي رقم جوال 0568190224</p>
-             </div>
-             
-            <a href="passport-d.html"><i class="fa-solid fa-power-off"></i></a>
+        </div>
+        <div class="center">
+            <span id="date"></span>
+        </div>
+        <div class="left">
+            <a href="passport-d.html" class="close-app-btn" title="إغلاق والعودة للرئيسية" aria-label="إغلاق">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
         </div>
     </div>
     
@@ -1056,10 +1018,11 @@
     </div>
     <div class="card-actions">
       <a
-        href="dic/نــماذج  اليومية/خطاب اشارة.docm"
+        href="index.html"
         class="btn-icon word-icon"
         target="_top"
-        title="تعديل Word">
+        title="اشارة-الى"
+        onclick="localStorage.setItem('wordLinkChoice', 'اشارة-الى')">
       </a>
     </div>
   </div>
@@ -2447,4 +2410,20 @@
 </body>
  <script src="script.js"></script>
  <script src="renderer.js"></script>
+ <script>
+  // عرض تاريخ اليوم بالتقويم الهجري في الشريط العلوي (خاص بهذه الصفحة فقط)
+  document.addEventListener("DOMContentLoaded", function () {
+    var dateEl = document.getElementById("date");
+    if (!dateEl) return;
+    try {
+      var options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+      dateEl.textContent = new Date().toLocaleDateString("ar-SA-u-ca-islamic-umalqura", options);
+    } catch (e) {
+      // fallback في حال عدم دعم تقويم أم القرى في هذه البيئة
+      try {
+        dateEl.textContent = new Date().toLocaleDateString("ar-SA-u-ca-islamic", options);
+      } catch (e2) {}
+    }
+  });
+ </script>
 </html>

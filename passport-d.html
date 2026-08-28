@@ -5,215 +5,288 @@
     <title>نماذج الجوازات</title>
     <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/all.css">
-   
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/icon-g.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
 :root{
-  --brand:#3d775f;
-  --brand-2:#2f5f4b;
-  --accent:#868e94;
-  --bg-1:#d3d3d3;
-  --bg-2:#c6c6c6;
-  --surface:#ffffff;
-  --surface-2:#f2f3f4;
+  --brand:#1f6b4f;
+  --brand-2:#0f3d2c;
+  --brand-light:#eaf5ef;
+  --gold:#cda94a;
+  --gold-light:#e8d49a;
+  --ink:#071912;
   --text:#0f172a;
-  --muted:#334155;
-  --shadow: 0 10px 25px rgba(0,0,0,.12);
-  --shadow-2: 0 18px 40px rgba(0,0,0,.18);
-  --radius:18px;
-  --radius-sm:12px;
+  --radius:22px;
+  --radius-sm:14px;
 }
 
 *{ box-sizing:border-box; }
-
 html,body{ height:100%; }
 
 body{
-  font-family: 'Cairo', Arial, sans-serif;
+  font-family: 'Tajawal', 'Cairo', Arial, sans-serif;
   direction: rtl;
   margin:0;
   padding:0;
-  color:var(--text);
-  background: radial-gradient(1200px 600px at 20% 0%, rgba(61,119,95,.25), transparent 60%),
-              radial-gradient(900px 500px at 80% 20%, rgba(134,142,148,.20), transparent 60%),
-              linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  color:#fff;
   overflow-x:hidden;
 }
 
 a{ text-decoration:none; color:inherit; }
 
-/* Top bar */
-.top-bar{
-  background: linear-gradient(90deg, var(--brand), var(--brand-2));
-  color:#fff;
-  padding:10px 14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+/* ===== خلفية احترافية: تدرج غامق + شعار الجوازات كعلامة مائية شفافة ===== */
+.bg-scene{
   position:fixed;
-  top:0;
-  width:100%;
-  z-index:1000;
-  box-shadow: 0 8px 18px rgba(0,0,0,.18);
-  backdrop-filter: blur(6px);
+  inset:0;
+  z-index:-2;
+  background:
+    radial-gradient(900px 600px at 12% 8%, rgba(205,169,74,.14), transparent 55%),
+    radial-gradient(1000px 700px at 88% 85%, rgba(31,107,79,.45), transparent 55%),
+    linear-gradient(160deg, #0a2419 0%, var(--ink) 55%, #0d2e21 100%);
+}
+.bg-scene::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:url('img/main-httpswww.gdp.gov.saportalassetsimglogo.png');
+  background-repeat:no-repeat;
+  background-position:center 46%;
+  background-size: min(58vw, 620px);
+  opacity:.07;
+  filter: saturate(1.4);
+}
+.bg-scene::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image: radial-gradient(rgba(255,255,255,.10) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity:.25;
 }
 
-.top-bar .right, .top-bar .left{ display:flex; align-items:center; gap:10px; }
-
-.top-bar .left{ flex-grow:1; justify-content:flex-end; gap:12px; }
-
-.top-bar .left a{
-  display:inline-flex;
+/* ===== الصفحة ===== */
+.page{
+  min-height:100vh;
+  display:flex;
   align-items:center;
   justify-content:center;
-  width:38px;
-  height:38px;
-  border-radius: 12px;
-  color:#fff;
-  opacity:.95;
-  transition: transform .22s ease, background-color .22s ease, box-shadow .22s ease, opacity .22s ease;
+  padding: 32px 16px;
 }
 
-.top-bar .left a:hover{
-  transform: translateY(-2px);
-  background-color: rgba(255,255,255,.12);
-  box-shadow: 0 10px 20px rgba(0,0,0,.18);
-  opacity:1;
-}
-
-.top-bar .left a:active{ transform: translateY(0); box-shadow:none; }
-
-#date{
-  font-family: 'Amiri', serif;
-  font-size: 14px;
-  color:#fff;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.10);
+/* ===== اللوحة الزجاجية الرئيسية ===== */
+.glass-panel{
+  position:relative;
+  width:min(680px, 96vw);
+  background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.035));
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   border: 1px solid rgba(255,255,255,.16);
+  border-radius: 28px;
+  box-shadow: 0 30px 70px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.14);
+  padding: 32px 30px 26px;
+  overflow:hidden;
+  animation: fadeUp .6s cubic-bezier(.2,.8,.2,1) both;
+}
+.glass-panel::before{
+  content:"";
+  position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:.9;
 }
 
-/* Logo */
-.top-bar .right .logo-container{ display:flex; align-items:center; gap:10px; }
-
-.top-bar .right img{
-  height:56px;
+/* ===== رأس اللوحة: الشعار + العنوان + التاريخ ===== */
+.panel-header{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.panel-header img{
+  height:52px;
   width:auto;
-  margin-left:0;
-  filter: drop-shadow(0 6px 10px rgba(0,0,0,.22));
+  filter: drop-shadow(0 8px 14px rgba(0,0,0,.4));
+}
+.brand-text{ display:flex; flex-direction:column; gap:2px; }
+.brand-text h1{
+  margin:0;
+  font-size: 19px;
+  font-weight:900;
+  color:#fff;
+  letter-spacing:-.2px;
+}
+.brand-text h1 span{ color: var(--gold-light); }
+.brand-text p{
+  margin:0;
+  font-size: 11.5px;
+  color: rgba(255,255,255,.55);
+}
+#date{
+  margin-inline-start:auto;
+  font-size: 11.5px;
+  color: rgba(255,255,255,.75);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  white-space:nowrap;
 }
 
-.top-bar .right div{
-  font-size:12px;
-  text-align:right;
+/* ===== المربعات الرئيسية: مغادرة / القدوم ===== */
+.hero-grid{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
 }
 
-.top-bar .right div div{ line-height:1.25; opacity:.98; }
-
-/* Main area */
-.buttons-container{
-  min-height:100vh;
+.hero-card{
+  position:relative;
+  background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.03));
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: var(--radius);
+  padding: 30px 16px 24px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  gap:18px;
-  padding: 96px 18px 28px;
-  width:100%;
-}
-
-.buttons-container::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px);
-  background-size: 22px 22px;
-  opacity:.35;
-  mix-blend-mode: overlay;
-}
-
-.buttons-container a{
-  width:100%;
-  max-width: 560px;
-  background: linear-gradient(145deg, var(--surface), var(--surface-2));
-  color: var(--brand-2);
-  border: 1px solid rgba(15,23,42,.08);
-  padding: 18px 54px;
-  font-size: 22px;
-  border-radius: var(--radius);
-  cursor:pointer;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-  box-shadow: var(--shadow);
-  transition: transform .28s ease, box-shadow .28s ease, background .28s ease, color .28s ease, border-color .28s ease;
-  isolation:isolate;
+  gap: 8px;
+  text-align:center;
   overflow:hidden;
+  isolation:isolate;
+  cursor:pointer;
+  transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s ease, border-color .3s ease, background .3s ease;
+  animation: fadeUp .6s ease both;
 }
+.hero-card:nth-child(1){ animation-delay: .08s; }
+.hero-card:nth-child(2){ animation-delay: .16s; }
 
-/* Subtle shine */
-.buttons-container a::after{
+.hero-card::after{
   content:"";
   position:absolute;
   inset:-2px;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.40) 35%, transparent 70%);
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.28) 35%, transparent 70%);
   transform: translateX(120%);
-  transition: transform .55s ease;
+  transition: transform .65s ease;
   z-index:0;
 }
+.hero-card:hover::after{ transform: translateX(-120%); }
 
-.buttons-container a span, .buttons-container a i{ position:relative; z-index:1; }
-
-.buttons-container a i{
-  font-size: 34px;
-  position:absolute;
-  right:18px;
-  color: var(--brand);
-  transition: transform .28s ease, color .28s ease, filter .28s ease;
-  filter: drop-shadow(0 10px 14px rgba(0,0,0,.12));
+.hero-card:hover{
+  transform: translateY(-6px);
+  border-color: rgba(205,169,74,.5);
+  background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.05));
+  box-shadow: 0 20px 40px rgba(0,0,0,.35), 0 0 0 1px rgba(205,169,74,.15);
 }
+.hero-card:active{ transform: translateY(-2px); }
 
-.buttons-container a:hover{
-  transform: translateY(-6px) scale(1.015);
-  box-shadow: var(--shadow-2);
-  border-color: rgba(61,119,95,.35);
-  background: linear-gradient(145deg, rgba(61,119,95,.95), rgba(47,95,75,.95));
+.hero-ring{
+  position:relative; z-index:1;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 22px;
+  color: var(--gold-light);
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.16), rgba(255,255,255,.02));
+  border: 1.5px solid rgba(205,169,74,.5);
+  box-shadow: 0 0 0 5px rgba(205,169,74,.08);
+  margin-bottom: 4px;
+  transition: transform .3s ease, background .3s ease, color .3s ease, box-shadow .3s ease;
+}
+.hero-card:hover .hero-ring{
+  transform: scale(1.08);
+  background: linear-gradient(145deg, var(--brand), var(--brand-2));
   color:#fff;
+  box-shadow: 0 0 0 7px rgba(205,169,74,.14), 0 10px 20px rgba(0,0,0,.3);
 }
 
-.buttons-container a:hover::after{ transform: translateX(-120%); }
-
-.buttons-container a:hover i{
-  transform: scale(1.15) rotate(-6deg);
+.hero-card h2{
+  position:relative; z-index:1;
+  margin:0;
+  font-size: 19px;
+  font-weight:900;
   color:#fff;
-  filter: drop-shadow(0 14px 18px rgba(0,0,0,.22));
+  letter-spacing:-.2px;
+}
+.hero-card p{
+  position:relative; z-index:1;
+  margin:0;
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  line-height:1.5;
 }
 
-.buttons-container a:active{
-  transform: translateY(-2px) scale(1.005);
-  box-shadow: 0 10px 22px rgba(0,0,0,.16);
+/* ===== فاصل ===== */
+.panel-divider{
+  height:1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  margin: 24px 0 16px;
 }
 
-/* Focus accessibility */
-.buttons-container a:focus-visible,
-.top-bar .left a:focus-visible,
-.password-box button:focus-visible,
-.password-box input:focus-visible{
-  outline: 3px solid rgba(255,255,255,.55);
-  outline-offset: 3px;
+/* ===== أدوات ثانوية: أيقونة + عنوان الإجراء فقط ===== */
+.utility-row{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap: 6px;
 }
 
-/* Password modal */
+.utility-card{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  padding: 9px 16px;
+  color: rgba(255,255,255,.62);
+  border-radius: 999px;
+  cursor:pointer;
+  transition: color .22s ease, background .22s ease, transform .22s ease;
+  animation: fadeUp .6s ease both;
+}
+.utility-card:nth-child(1){ animation-delay: .24s; }
+.utility-card:nth-child(2){ animation-delay: .30s; }
+.utility-card:nth-child(3){ animation-delay: .36s; }
+
+.utility-card:hover{
+  color:#fff;
+  background: rgba(255,255,255,.08);
+  transform: translateY(-2px);
+}
+.utility-card:active{ transform: translateY(0); }
+
+.utility-icon{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 14px;
+  color: var(--gold-light);
+  transition: transform .22s ease;
+}
+.utility-card:hover .utility-icon{ transform: scale(1.12); }
+
+.utility-card strong{ font-size: 12.5px; font-weight:700; }
+
+.utility-card .lock-badge{
+  font-size: 8.5px;
+  color: var(--gold);
+  margin-inline-start: 1px;
+}
+
+/* ===== نافذة الرقم السري ===== */
 .password-container{
   display:none;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  background: rgba(2,6,23,.55);
+  background: rgba(2,6,23,.65);
+  backdrop-filter: blur(4px);
   position:fixed;
   top:0; left:0;
   width:100%;
@@ -223,16 +296,29 @@ a{ text-decoration:none; color:inherit; }
 }
 
 .password-box{
-  width:min(420px, 100%);
+  width:min(380px, 100%);
   background: linear-gradient(145deg, #ffffff, #f4f6f7);
-  padding: 18px;
+  padding: 26px 24px;
   border-radius: var(--radius);
-  box-shadow: 0 20px 45px rgba(0,0,0,.28);
+  box-shadow: 0 24px 60px rgba(0,0,0,.4);
   text-align:center;
   position:relative;
   border: 1px solid rgba(15,23,42,.10);
   animation: popIn .22s ease-out;
 }
+
+.password-box .lock-icon{
+  width:52px; height:52px;
+  margin: 0 auto 12px;
+  border-radius:16px;
+  background: var(--brand-light);
+  color: var(--brand);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px;
+}
+
+.password-box h3{ margin:0 0 4px; font-size:16px; color:var(--text); }
+.password-box .sub{ margin:0 0 6px; font-size:11.5px; color:rgba(15,23,42,.55); }
 
 .password-box input{
   padding: 12px 12px;
@@ -242,170 +328,98 @@ a{ text-decoration:none; color:inherit; }
   border-radius: 12px;
   border: 1px solid rgba(15,23,42,.15);
   background:#fff;
+  text-align:center;
+  letter-spacing: 4px;
   transition: box-shadow .2s ease, border-color .2s ease;
 }
-
 .password-box input:focus{
-  border-color: rgba(61,119,95,.6);
-  box-shadow: 0 0 0 4px rgba(61,119,95,.18);
+  border-color: rgba(31,107,79,.6);
+  box-shadow: 0 0 0 4px rgba(31,107,79,.16);
   outline:none;
 }
 
 .password-box button{
   padding: 11px 16px;
-  font-size: 18px;
+  font-size: 15px;
+  font-weight:700;
   cursor:pointer;
   border:none;
   background: linear-gradient(90deg, var(--brand), var(--brand-2));
   color:#fff;
   border-radius: 12px;
-  margin-top: 10px;
+  margin-top: 8px;
   width:100%;
   transition: transform .18s ease, filter .18s ease;
 }
-
-.password-box button:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+.password-box button:hover{ transform: translateY(-1px); filter: brightness(1.08); }
 
 .password-box .close-btn{
   background: linear-gradient(90deg, #f44336, #d32f2f);
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
-/* Responsiveness */
-@media (max-width: 768px){
-  #date{ font-size: 13px; }
-  .buttons-container{ padding-top: 92px; }
-  .buttons-container a{
-    padding: 16px 48px;
-    font-size: 20px;
-    max-width: 520px;
-  }
-  .buttons-container a i{ font-size: 8vw; right: 14px; }
-  .top-bar .left a{ width:36px; height:36px; border-radius: 12px; }
-  .top-bar .right img{ height: 52px; }
+/* ===== إتاحة الوصول ===== */
+.hero-card:focus-visible,
+.utility-card:focus-visible,
+.password-box button:focus-visible,
+.password-box input:focus-visible{
+  outline: 3px solid rgba(205,169,74,.65);
+  outline-offset: 3px;
 }
 
-@media (max-width: 480px){
-  .buttons-container a{
-    padding: 14px 44px;
-    font-size: 18px;
-    border-radius: 16px;
-  }
-  .buttons-container a i{ font-size: 10vw; right: 12px; }
-  #date{ display:none; } /* keeps bar clean on very small screens */
-}
-
-
-/* ===== Page header ===== */
-.page-header{
-  width: min(980px, calc(100% - 32px));
-  margin: 92px auto 8px;
-  padding: 18px 18px;
-  border-radius: 18px;
-  background: linear-gradient(145deg, rgba(255,255,255,.70), rgba(255,255,255,.55));
-  border: 1px solid rgba(15,23,42,.08);
-  box-shadow: 0 10px 22px rgba(0,0,0,.10);
-}
-.page-header h1{
-  margin: 0 0 6px;
-  font-size: 22px;
-  color: var(--brand-2);
-}
-.page-header p{
-  margin: 0;
-  font-size: 14px;
-  color: rgba(15,23,42,.72);
-  line-height: 1.7;
-}
-
-/* ===== Square icon boxes (buttons) ===== */
-.buttons-container a{
-  padding: 18px 120px 18px 64px; /* extra space for icon box on the right */
-}
-
-.buttons-container a i{
-  width: 56px;
-  height: 56px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(61,119,95,.12);
-  border: 1px solid rgba(61,119,95,.22);
-  border-radius: 14px; /* مربع بحواف ناعمة */
-  box-shadow: 0 6px 14px rgba(0,0,0,.10);
-  color: var(--brand);
-}
-
-.buttons-container a:hover i{
-  background: rgba(255,255,255,.18);
-  border-color: rgba(255,255,255,.40);
-  box-shadow: 0 10px 18px rgba(0,0,0,.20);
-  filter: none;
-}
-
-/* Make top-bar icons look like square controls too */
-.top-bar .left a{
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 6px 14px rgba(0,0,0,.12);
-}
-.top-bar .left a:hover{
-  background: rgba(255,255,255,.18);
-  border-color: rgba(255,255,255,.28);
-}
-
-/* Responsive tweaks */
-@media (max-width: 768px){
-  .page-header{ margin-top: 92px; }
-  .buttons-container a{ padding: 16px 104px 16px 54px; }
-  .buttons-container a i{ width: 50px; height: 50px; }
-}
-@media (max-width: 480px){
-  .page-header{ margin-top: 92px; padding: 14px; }
-  .buttons-container a{ padding: 14px 96px 14px 46px; }
-  .buttons-container a i{ width: 46px; height: 46px; }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce){
-  *{ transition: none !important; animation: none !important; scroll-behavior: auto !important; }
-}
-
-/* Animations */
+/* ===== الحركات ===== */
 @keyframes popIn{
   from{ opacity:0; transform: scale(.96); }
   to{ opacity:1; transform: scale(1); }
 }
-</style>
+@keyframes fadeUp{
+  from{ opacity:0; transform: translateY(16px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* ===== الاستجابة ===== */
+@media (max-width: 560px){
+  .hero-grid{ grid-template-columns: 1fr; }
+  .panel-header{ flex-wrap:wrap; }
+  #date{ margin-inline-start:0; order:3; }
+  .glass-panel{ padding: 26px 18px 22px; }
+}
+    </style>
     <script>
-        
-
-
- 
         function checkPassword(action) {
             var passwordContainer = document.getElementById("password-container");
-            passwordContainer.style.display = "flex";
             document.getElementById("password-action").value = action;
+            document.getElementById("password-input").value = "";
+            passwordContainer.style.display = "flex";
+
+            if (action === "update") {
+                document.getElementById("password-box-title").textContent = "تأكيد تحديث البرنامج";
+                document.getElementById("password-box-sub").textContent = "الرجاء إدخال الرقم السري لتأكيد بدء تحديث كامل البرنامج";
+            }
+
             document.getElementById("password-input").focus();
         }
 
         function closePasswordBox() {
-            var passwordContainer = document.getElementById("password-container");
-            passwordContainer.style.display = "none";
+            document.getElementById("password-container").style.display = "none";
         }
 
         function verifyPassword() {
             var passwordInput = document.getElementById("password-input").value;
-            var correctPassword = "12345";
             var action = document.getElementById("password-action").value;
 
-            if (passwordInput === correctPassword) {
-                if (action === "developer") {
-                    window.location.href = "link3.html"; // استبدل هذا الرابط بالرابط الذي تريده
-                } else if (action === "departure") {
-                    window.location.href = "Departure.html"; // استبدل هذا الرابط بالرابط الذي تريده
-                } else if (action === "arrival") {
-                    window.location.href = "Arrival.html"; // استبدل هذا الرابط بالرابط الذي تريده
+            var passwordsByAction = {
+                update: "123123"
+            };
+
+            var correctPassword = passwordsByAction[action];
+
+            if (correctPassword && passwordInput === correctPassword) {
+                if (action === "update") {
+                    window.location.href = "update.html";
                 }
             } else {
                 alert("الرقم السري غير صحيح");
@@ -413,19 +427,12 @@ a{ text-decoration:none; color:inherit; }
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            var today = new Date();
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            var formattedDate = today.toLocaleDateString('ar-SA', options);
-            document.getElementById("date").textContent = formattedDate;
-
-            var unavailableButtons = document.querySelectorAll(".unavailable");
-
-            unavailableButtons.forEach(function(button) {
-                button.addEventListener("click", function(event) {
-                    event.preventDefault();
-                    alert("سوف يتم توفيره قريباً");
-                });
-            });
+            var dateEl = document.getElementById("date");
+            if (dateEl) {
+                var today = new Date();
+                var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateEl.textContent = today.toLocaleDateString('ar-SA', options);
+            }
 
             document.getElementById("password-input").addEventListener("keyup", function(event) {
                 if (event.key === "Enter") {
@@ -433,85 +440,81 @@ a{ text-decoration:none; color:inherit; }
                 }
             });
 
-            document.getElementById("print-button").addEventListener("click", function() {
-                window.print();
-            });
-        });
- 
-
- function openFolder() {
-        const fs = require('fs');
-        const path = require('path');
-        const exec = require('child_process').exec;
-
-        // تحديد مسار المجلد داخل مجلد التطبيق
-        const folderPath = path.join(__dirname, 'dic');
-
-        // فتح المجلد باستخدام مستكشف الملفات
-        exec(`start "" "${folderPath}"`, (error) => {
-            if (error) {
-                console.error(`Error opening folder: ${error.message}`);
-            } else {
-                console.log('Folder opened successfully');
+            // ===== زر "تعديل الملفات": يفتح مجلد النماذج المحلي (dic) عبر الجسر الآمن customAPI =====
+            var editFilesBtn = document.querySelector(".open-folder");
+            if (editFilesBtn) {
+                editFilesBtn.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    if (window.customAPI && window.customAPI.openFilesFolder) {
+                        window.customAPI.openFilesFolder();
+                    } else {
+                        alert("تعذّر فتح مجلد الملفات، الرجاء إعادة تشغيل البرنامج.");
+                    }
+                });
             }
         });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        document.querySelector(".open-folder").addEventListener("click", function(event) {
-            event.preventDefault();
-            openFolder();
-        });
-    });
-
-
-
-        
     </script>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="right">
-            <div class="logo-container">
+    <div class="bg-scene"></div>
+
+    <div class="page">
+        <div class="glass-panel">
+
+            <div class="panel-header">
                 <img src="img/main-httpswww.gdp.gov.saportalassetsimglogo.png" alt="الشعار">
-                
+                <div class="brand-text">
+                    <h1>جوازات <span>مطار الملك خالد</span></h1>
+                    <p>منصة النماذج والإجراءات</p>
+                </div>
+                <span id="date"></span>
             </div>
-        </div>
-        <div class="left">
-            
-            <span id="date"></span>
-            <a id="print-button" title="طباعة"><i class="fas fa-print"></i></a>
-            <a href="#" title="الوضع المكتبي"><i class="fas fa-desktop"></i></a>
-            <a href="#" title="التنبيهات"><i class="fas fa-bell"></i></a>
-            <a href="#" title="الدعم"><i class="fas fa-headset"></i></a>
-            <a href="#" title="الملفات"><i class="fas fa-file-alt"></i></a>
+
+            <!-- المربعات الرئيسية: القدوم والمغادرة فقط -->
+            <div class="hero-grid">
+                <a href="Arrival.html" class="hero-card">
+                    <span class="hero-ring"><i class="fas fa-plane-arrival"></i></span>
+                    <h2>القدوم</h2>
+                    <p>إجراءات ونماذج قدوم المسافرين</p>
+                </a>
+
+                <a href="Departure.html" class="hero-card">
+                    <span class="hero-ring"><i class="fas fa-plane-departure"></i></span>
+                    <h2>مغادرة</h2>
+                    <p>إجراءات ونماذج مغادرة المسافرين</p>
+                </a>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <!-- أدوات ثانوية: أيقونة + عنوان الإجراء فقط -->
+            <div class="utility-row">
+                <a href="#" class="utility-card open-folder">
+                    <span class="utility-icon"><i class="fas fa-folder-open"></i></span>
+                    <strong>تعديل الملفات</strong>
+                </a>
+
+                <a href="#" class="utility-card" onclick="event.preventDefault(); checkPassword('update');">
+                    <span class="utility-icon"><i class="fas fa-cloud-arrow-down"></i></span>
+                    <strong>تحديث البرنامج كامل</strong>
+                    <span class="lock-badge"><i class="fas fa-lock"></i></span>
+                </a>
+
+                <a href="control.html" class="utility-card">
+                    <span class="utility-icon"><i class="fas fa-database"></i></span>
+                    <strong>تعديل قاعدة البيانات</strong>
+                </a>
+            </div>
+
         </div>
     </div>
 
-    
-
-    <div class="buttons-container">
-        <a href="Arrival.html" ><i class="fas fa-plane-arrival"></i> <span>القدوم</span></a>
-        <a href="Departure.html" ><i class="fas fa-plane-departure"></i> <span>مغادرة</span></a>
-
-        <a href="#" class="open-folder">
-            <i class="fas fa-folder-open"></i> <span>تعديل الملفات</span>
-        </a>
-        <a href="update.html">
-    <i class="fas fa-download"></i> <span>تحديث البرنامج كامل</span>
-</a>
-<a href="control.html">
-    <i class="fas fa-database"></i> <span>تعديل قاعدة البيانات</span>
-</a>
-
-
-        
-        
-
-    </div>
     <div id="password-container" class="password-container">
         <div class="password-box">
-            <input id="password-input" type="password" placeholder="أدخل الرقم السري">
+            <div class="lock-icon"><i class="fas fa-shield-halved"></i></div>
+            <h3 id="password-box-title">تأكيد الدخول</h3>
+            <p class="sub" id="password-box-sub">الرجاء إدخال الرقم السري للمتابعة</p>
+            <input id="password-input" type="password" inputmode="numeric" placeholder="••••••">
             <input type="hidden" id="password-action" value="">
             <button onclick="verifyPassword()">تأكيد</button>
             <button class="close-btn" onclick="closePasswordBox()">إغلاق</button>

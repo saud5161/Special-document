@@ -608,7 +608,14 @@
 
     <!-- سبب الغياب -->
     <label for="AbsenceReason"><i class="fas fa-circle-exclamation"></i> سبب الغياب</label>
-    <input id="AbsenceReason" placeholder="اذكر سبب الغياب">
+    <div>
+      <input id="AbsenceReason" placeholder="اذكر سبب الغياب">
+      <div class="reason-quick-picks">
+        <button type="button" class="reason-quick-btn" data-reason="عارض صحي">
+          <i class="fas fa-briefcase-medical"></i> عارض صحي
+        </button>
+      </div>
+    </div>
 
     <!-- موقع العمل: يُبنى تلقائياً من (المناوبة) + مغادرة الصالة (الصالة) المختارتين أعلاه -->
     <label for="WorkLocation"><i class="fas fa-building"></i> موقع العمل</label>
@@ -616,6 +623,34 @@
 
   </div>
 </section>
+
+<script>
+  // اختيار سريع لسبب الغياب (مثل: عارض صحي) بالنقر على المربع بدل الكتابة يدوياً
+  document.addEventListener("DOMContentLoaded", function () {
+    var reasonInput = document.getElementById("AbsenceReason");
+    var quickBtns = document.querySelectorAll(".reason-quick-btn");
+    if (!reasonInput || !quickBtns.length) return;
+
+    quickBtns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var reason = btn.getAttribute("data-reason");
+        reasonInput.value = reason;
+        reasonInput.dispatchEvent(new Event("input", { bubbles: true }));
+        reasonInput.dispatchEvent(new Event("change", { bubbles: true }));
+
+        quickBtns.forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+      });
+    });
+
+    // إزالة التفعيل المرئي إذا عدّل المستخدم النص يدوياً لقيمة مختلفة
+    reasonInput.addEventListener("input", function () {
+      quickBtns.forEach(function (b) {
+        b.classList.toggle("active", b.getAttribute("data-reason") === reasonInput.value);
+      });
+    });
+  });
+</script>
 
 <!-- قسم الصلاحيات المنقولة (يظهر فقط عند اختيار "صلاحيات") -->
 <section class="card" id="card-transferred-permissions" style="display:none">
@@ -902,6 +937,30 @@
 
           </div>
         </section>
+
+        <!-- =========================================================
+             بطاقة: خطاب إشارة إلى
+             - الإشارة (قابلة للتعديل، مع اقتراحات جاهزة)
+             - الموضوع
+             - الإفادة
+        ========================================================== -->
+        <section class="card" id="card-eshara" style="display:none">
+          <h3 class="card__title"><i class="fas fa-reply-all"></i> خطاب إشارة إلى</h3>
+          <div class="card__body form-grid">
+            <label for="EsharaText"><i class="fas fa-quote-right"></i> الإشارة</label>
+            <input id="EsharaText" list="eshara-options" placeholder="اشارة الى خطاب سعادتكم رقم ........ وتاريخ ..........." />
+            <datalist id="eshara-options">
+              <option value="اشارة الى خطاب سعادتكم رقم ........ وتاريخ ..........."></option>
+            </datalist>
+
+            <label for="EsharaSubject"><i class="fas fa-heading"></i> الموضوع</label>
+            <input id="EsharaSubject" placeholder="اكتب الموضوع" />
+
+            <label for="EsharaStatement"><i class="fas fa-align-right"></i> الإفادة</label>
+            <textarea id="EsharaStatement" class="row-span-2" rows="4" placeholder="اكتب نص الإفادة"></textarea>
+          </div>
+        </section>
+
 <section class="card" id="card-kashf-leaves" style="display:none;">
   <h3 class="card__title"><i class="fas fa-users-slash"></i> إسناد الحالات (إجازات، غياب، راحة)</h3>
   <div class="card__body">

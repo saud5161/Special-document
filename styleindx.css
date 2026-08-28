@@ -89,6 +89,18 @@ body{
   box-shadow: 0 0 0 3px rgba(13,110,253,.15);
 }
 
+/* أزرار اختيار سريع لسبب الغياب (مثل: عارض صحي) */
+.reason-quick-picks{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.reason-quick-btn{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 10px; border-radius:999px;
+  border:1px solid #c8d6ff; background:#eef4ff; color:var(--blue-700);
+  font-size:.78rem; font-weight:700; font-family:inherit; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s, transform .15s;
+}
+.reason-quick-btn:hover{ background:#dde9ff; transform:translateY(-1px); }
+.reason-quick-btn.active{ background:var(--blue-700); border-color:var(--blue-700); color:#fff; }
+
 input[type="checkbox"], input[type="radio"]{ accent-color: var(--blue-700); }
 
 /* علامة ✓ يسار النص عند وجود قيمة */

@@ -327,6 +327,11 @@ MC_Doc_3m:              document.getElementById('mc-doc-3m')?.checked ? 'True' :
 MC_Doc_6m:              document.getElementById('mc-doc-6m')?.checked ? 'True' : 'False',
 
 
+// ===== خطاب إشارة إلى =====
+EsharaText:      $('EsharaText')?.value      || '',
+EsharaSubject:   $('EsharaSubject')?.value   || '',
+EsharaStatement: $('EsharaStatement')?.value || '',
+
 // ===== معلومات الجهة الطالبة =====
 RequestingAgency:      $('RequestingAgency')?.value || '',
 
@@ -615,29 +620,52 @@ const choice =
   (localStorage.getItem('wordLinkChoice') ||
    localStorage.getItem('lastWordLinkChoice') || '').trim();
 // ==========================================================
-  // إضافة: معالجة غياب الأفراد (ملف txt منفصل لكل فرد + 5 ثواني)
+  // معالجة غياب الأفراد: كل الأفراد (حتى 5) في ملف واحد وفتح واحد فقط للوورد
   // ==========================================================
   if (choice === "غياب-افراد") {
     const count = parseInt(document.getElementById('absence-count')?.value) || 1;
-    const baseData = collect(); // جمع كل البيانات الأساسية
+    const baseData = collect(); // جمع كل البيانات المشتركة (الضابط، الرتبة، الشفت، الصالة، التاريخ...)
+
+    baseData.AbsenceCount = String(count);
+
+    // ✅ ضمان إرسال "عنوان الصادر" فعلياً ضمن form.txt (وليس مجرد قيمة ظاهرة في الواجهة فقط)
+    const issuedTitleVal = (document.getElementById('IssuedTitle')?.value || '').trim();
+    if (issuedTitleVal) {
+      baseData.IssuedTitle = issuedTitleVal;
+    } else {
+      delete baseData.IssuedTitle;
+    }
+
+    // ✅ ضمان تضمين تاريخ اليوم الهجري في form.txt — يُحسب مباشرة دائماً (بغض النظر عن حقل الواجهة) لضمان وجوده دوماً
+    try {
+      const now = new Date();
+      const fmt = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const parts = fmt.formatToParts(now);
+      const y = parts.find(p => p.type === 'year')?.value || '';
+      const m = parts.find(p => p.type === 'month')?.value || '';
+      const d = parts.find(p => p.type === 'day')?.value || '';
+      baseData.TodayDate = `${d}/${m}/${y} هـ`;
+    } catch (e) {
+      // في حال فشل الحساب لأي سبب نُبقي على القيمة القادمة من collect() إن وُجدت
+    }
 
     for (let i = 1; i <= count; i++) {
-      let nameEl = document.getElementById('IndividualName_Dyn' + i);
-      let rankEl = document.getElementById('IndividualRank_Dyn' + i);
-      let issuedEl = document.getElementById('IssuedNumber_Dyn' + i);
-      
-      // وضع اسم ورتبة ورقم صادر الفرد الحالي فقط في البيانات
-      baseData.IndividualName = nameEl ? nameEl.value : '';
-      baseData.IndividualRank = rankEl ? rankEl.value : '';
-      baseData.IssuedNumber   = issuedEl ? issuedEl.value : ''; // 👈 جلب رقم الصادر
+      const nameEl = document.getElementById('IndividualName_Dyn' + i);
+      const rankEl = document.getElementById('IndividualRank_Dyn' + i);
+      const issuedEl = document.getElementById('IssuedNumber_Dyn' + i);
 
-      const currentIni = payloadToIni(baseData);
+      baseData['IndividualName' + i] = nameEl ? nameEl.value : '';
+      baseData['IndividualRank' + i] = rankEl ? rankEl.value : '';
+      baseData['IssuedNumber' + i] = issuedEl ? issuedEl.value : '';
+    }
 
-      // تنزيل ملف txt للفرد الحالي
+    const ini = payloadToIni(baseData);
+
+      // تنزيل ملف txt واحد يحتوي بيانات كل الأفراد
       if (window.electronAPI?.saveFormFile) {
-        try { await window.electronAPI.saveFormFile(currentIni); } catch (e) {}
+        try { await window.electronAPI.saveFormFile(ini); } catch (e) {}
       } else {
-        const blob = new Blob([currentIni], { type: 'text/plain;charset=windows-1256' });
+        const blob = new Blob([ini], { type: 'text/plain;charset=windows-1256' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url; a.download = 'form.txt';
@@ -645,17 +673,11 @@ const choice =
         URL.revokeObjectURL(url);
       }
 
-  // فتح نموذج الوورد ليقرأ ملف الـ txt
-      const link = document.createElement("a");
-      link.href = "dic/نماذج الافراد/غياب افراد.docm";
-      link.target = "_top"; // 👈 هذا التعديل يمنع ظهور الصفحة المنبثقة الفارغة
-      link.click();
-
-      // انتظار 5 ثواني قبل تكرار العملية للفرد التالي
-      if (i < count) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-      }
-    }
+    // فتح نموذج الوورد مرة واحدة فقط — سيقرأ بيانات كل الأفراد ويعبئهم كلٌ في صفحته
+    const link = document.createElement("a");
+    link.href = "dic/نماذج الافراد/غياب افراد.docm";
+    link.target = "_top"; // يمنع ظهور الصفحة المنبثقة الفارغة
+    link.click();
 
     clearIndividualFields();
     const keepOpen = document.getElementById("KeepPageOpen");
@@ -825,6 +847,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/تعديل جواز مقيم.docm";
   } else if (choice === "خطاب-للافراد") {
   wordLink.href = "dic/نــماذج  اليومية/خطاب لفرد.docm";
+  } else if (choice === "اشارة-الى") {
+  wordLink.href = "dic/نــماذج  اليومية/خطاب اشارة.docm";
 } else {
   wordLink.href = "default.docm";
 }
@@ -1661,8 +1685,29 @@ if (choice === "عسكري-رحلة-مواصلة") {
 
   
 
+if (choice === "اشارة-الى") {
+  // إظهار بطاقة "خطاب إشارة إلى"
+  const eshCard = document.getElementById("card-eshara");
+  if (eshCard) eshCard.style.display = "block";
+
+  // إبقاء: التاريخ والمستلم + الإشارة/الموضوع/الإفادة + بيانات الصادر
+  // وإخفاء بيانات المسافر وبيانات الرحلة وباقي البطاقات
+  const keepIds = new Set(["card-receipt", "card-eshara", "card-issued"]);
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = keepIds.has(card.id) ? "" : "none";
+  });
+  if (eshCard) eshCard.style.display = "block";
+
+  // إخفاء اسم/رتبة الآمر المناوب مع الـ labels (تبقى بقية بيانات التاريخ والمستلم ظاهرة)
+  ["commander-name", "commander-rank"].forEach(id => {
+    const el = document.getElementById(id);
+    const lbl = document.querySelector(`label[for="${id}"]`);
+    if (el) el.style.display = "none";
+    if (lbl) lbl.style.display = "none";
+  });
+}
 if (choice === "تعذر-مغادرة") {
-    
+
 
     // 2) إخفاء نوع التأشيرة
     const visaField = document.getElementById("VisaType");
