@@ -2505,9 +2505,10 @@ function computeReceiveDefaults(mins = _minutesNow()){
   const choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
   const isKashf = (choice === "كشف");
 
-  // كل حدود 40/41 تتحول إلى 20 في وضع كشف
+  // كل حدود 40/41 تتحول إلى 20 في وضع كشف (نهاية الفترة)
+  // وحد بداية الفترة التالية (41) يصبح 01 في وضع كشف بدل 20 — ليبدأ الوقت الجديد مبكرًا بما يكفي
   const CUT  = isKashf ? 20 : 40; // بدل 40
-  const CUTP = isKashf ? 20 : 41; // بدل 41 (في كشف تصبح 20)
+  const CUTP = isKashf ? 1  : 41; // بدل 41 (في كشف تصبح 01 بدل 20)
 
   // الحدود بالدقائق
   const M_13_40 = 13*60 + CUT;   // كان 13:40 → في كشف 13:20
@@ -2521,12 +2522,12 @@ function computeReceiveDefaults(mins = _minutesNow()){
     return { from: '2م', to: '10م' };
   }
 
-  // 21:41 - 23:59 أو 00:00 - 05:40  (وفي كشف: 21:20 - 23:59 أو 00:00 - 05:20)
-  if (mins >= M_21_41 || mins <= M_05_40){
+  // 21:41 - 23:59 أو 00:00 - 05:40  (وفي كشف: 21:01 - 23:59 أو 00:00 - 05:00، لأن الفترة الصباحية تبدأ من 05:01)
+  if (mins >= M_21_41 || mins <= (M_05_41 - 1)){
     return { from: '10م', to: '6ص' };
   }
 
-  // 05:41 - 13:40  (وفي كشف: 05:20 - 13:20)
+  // 05:41 - 13:40  (وفي كشف: 05:01 - 13:20)
   if (mins >= M_05_41 && mins <= M_13_40){
     return { from: '6ص', to: '2م' };
   }
