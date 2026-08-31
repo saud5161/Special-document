@@ -675,6 +675,80 @@ body.help-open #helpBox{ display:block; }
 }
 
 
+/* تخطيط بطاقة "بيانات الصادر": مربعات مصغّرة بجانب بعضها */
+.issued-data-grid{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.issued-stat{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 12px;
+  flex: 0 0 auto;
+}
+.issued-stat label{
+  font-size: .8rem;
+  font-weight: 700;
+  color: #475569;
+  text-align: center;
+  white-space: nowrap;
+}
+.issued-stat input{ margin: 0; }
+.issued-stat__pair{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.issued-stat__pair input{
+  width: 72px;
+  text-align: center;
+}
+.issued-stat--featured{
+  background: #dcfce7;
+  border-color: #16a34a;
+}
+.issued-stat--featured label{ color: #166534; }
+.issued-title-row{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 1px dashed #e2e8f0;
+  padding-top: 12px;
+}
+.issued-title-row label{
+  font-weight: 700;
+  color: #1e2935;
+  font-size: .95rem;
+  white-space: nowrap;
+}
+.issued-title-row input{ flex: 1; min-width: 220px; }
+.issued-stat input,
+.issued-title-row input{
+  background:#ffffff;
+  border:1px solid #c8d6ff;
+  color:var(--blue-700);
+  border-radius:12px;
+  padding:8px 12px;
+  transition:border .15s, box-shadow .15s, background .15s, color .15s;
+}
+.issued-stat input:focus,
+.issued-title-row input:focus{
+  border-color: var(--blue-600);
+  box-shadow: 0 0 0 3px rgba(13,110,253,.15);
+  outline: none;
+}
+@media (max-width:560px){
+  .issued-stat{ flex: 1 1 calc(50% - 10px); }
+}
+
 /* حقل صغير للأرقام فقط (قسم بيانات الصادر) */
 .sm-num{
   max-width: 120px;
@@ -887,6 +961,20 @@ label {
 
 .date-btn:hover {
   background: #e7f0ff;
+}
+
+/* اقتراح بجانب الحقل مباشرة (مثال: اقتراح وقت استلام البوابات) */
+.input-with-suggest--inline{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.input-with-suggest--inline input{ flex: 1; min-width: 90px; }
+.input-with-suggest--inline .name-suggest{
+  grid-column: auto;
+  margin: 0;
+  flex: 0 0 auto;
 }
 
 /* ====================== اقتراحات اسم القائمة ====================== */

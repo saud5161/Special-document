@@ -332,6 +332,16 @@ EsharaText:      $('EsharaText')?.value      || '',
 EsharaSubject:   $('EsharaSubject')?.value   || '',
 EsharaStatement: $('EsharaStatement')?.value || '',
 
+// ===== أسماء البوابات (استلام-اليوم) =====
+GateOfficerName1: $('GateOfficerName1')?.value || '',
+GateOfficerRank1: $('GateOfficerRank1')?.value || '',
+GateReceiveFrom1: $('GateReceiveFrom1')?.value || '',
+GateReceiveTo1:   $('GateReceiveTo1')?.value   || '',
+GateOfficerName2: $('GateOfficerName2')?.value || '',
+GateOfficerRank2: $('GateOfficerRank2')?.value || '',
+GateReceiveFrom2: $('GateReceiveFrom2')?.value || '',
+GateReceiveTo2:   $('GateReceiveTo2')?.value   || '',
+
 // ===== معلومات الجهة الطالبة =====
 RequestingAgency:      $('RequestingAgency')?.value || '',
 
@@ -620,6 +630,18 @@ const choice =
   (localStorage.getItem('wordLinkChoice') ||
    localStorage.getItem('lastWordLinkChoice') || '').trim();
 // ==========================================================
+  // حفظ أسماء مستلمي البوابات في اقتراحات المتصفح (حسب المناوبة/الصالة) عند الحفظ
+  if (choice === "استلام-اليوم") {
+    try {
+      const shift = document.getElementById('shift-number')?.value || '';
+      const hall  = document.getElementById('hall-number')?.value || '';
+      [1, 2].forEach(idx => {
+        const name = document.getElementById('GateOfficerName' + idx)?.value || '';
+        if (name.trim()) addGateRecent(shift, hall, name);
+      });
+    } catch (e) {}
+  }
+  // ==========================================================
   // معالجة غياب الأفراد: كل الأفراد (حتى 5) في ملف واحد وفتح واحد فقط للوورد
   // ==========================================================
   if (choice === "غياب-افراد") {
@@ -683,6 +705,47 @@ const choice =
     const keepOpen = document.getElementById("KeepPageOpen");
     if (!keepOpen || !keepOpen.checked) scheduleAutoBack(AUTO_BACK_MS);
     return; // إيقاف إكمال الدالة الأصلية لكي لا تتعارض
+  }
+  // ==========================================================
+  // معالجة مغادرة-مواطن: عدة مسافرين (حتى 6) في نفس الصف الأول للجدول + صفوف إضافية تُنشأ في الوورد
+  // ==========================================================
+  if (choice === "مغادرة-مواطن") {
+    const count = parseInt(document.getElementById('traveler-count')?.value) || 1;
+    const baseData = collect(); // المسافر رقم 1 (TravelerName/id/PassportNumber/Nationality) يُجمع كالمعتاد
+
+    baseData.TravelerCount = String(count);
+
+    for (let i = 2; i <= count; i++) {
+      const nameEl = document.getElementById('TravelerName' + i);
+      const idEl = document.getElementById('TravelerID' + i);
+      const passEl = document.getElementById('PassportNumber' + i);
+
+      baseData['TravelerName' + i] = nameEl ? nameEl.value : '';
+      baseData['TravelerID' + i] = idEl ? idEl.value : '';
+      baseData['PassportNumber' + i] = passEl ? passEl.value : '';
+    }
+
+    const ini = payloadToIni(baseData);
+
+    if (window.electronAPI?.saveFormFile) {
+      try { await window.electronAPI.saveFormFile(ini); } catch (e) {}
+    } else {
+      const blob = new Blob([ini], { type: 'text/plain;charset=windows-1256' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'form.txt';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    const link = document.createElement("a");
+    link.href = "dic/السعودين/مواطن مغادر.docm";
+    link.target = "_top";
+    link.click();
+
+    const keepOpen = document.getElementById("KeepPageOpen");
+    if (!keepOpen || !keepOpen.checked) scheduleAutoBack(AUTO_BACK_MS);
+    return;
   }
   // ==========================================================
 // إن لم تكن استلام-اليوم نحذف التخزين ونخفي القسم، وإلا نخزّن ونُظهره
@@ -2364,6 +2427,8 @@ document.addEventListener("DOMContentLoaded", () => {
       NAME_DB = db;
       // تعبئة أولية إن كانت المناوبة/الصالة محددة
       populateNamesForCurrentSelection();
+      // ✅ نفس الأمر لقائمة أسماء البوابات (استلام-اليوم) — قد تُحمّل القاعدة بعد أن كانت المناوبة/الصالة محددة مسبقًا
+      if (typeof populateGateNamesForCurrentSelection === 'function') populateGateNamesForCurrentSelection();
     })
     .catch(err => console.error("فشل تحميل name.json", err));
 
@@ -4994,6 +5059,264 @@ document.addEventListener('click', (e) => {
   renderAbsenceFields(parseInt(val));
 });
 
+
+// =========================================================
+// مغادرة-مواطن: عدد المسافرين (1-6) — اسم + رقم هوية وطنية + رقم وثيقة لكل مسافر
+// الجنسية تلقائيًا "السعودية" لكل المسافرين (نفس المسافر 1) — لا حقل منفصل لها
+// =========================================================
+function renderTravelerFields(count) {
+  const container = document.getElementById('traveler-fields-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  for (let i = 2; i <= count; i++) {
+    container.innerHTML += `
+      <div class="individual-separator" style="grid-column: 1 / -1; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px;">مسافر رقم (${i})</div>
+      <label><i class="fas fa-id-card"></i> اسم المسافر (${i})</label>
+      <input id="TravelerName${i}" placeholder="اسم المسافر" />
+      <label><i class="fas fa-address-card"></i> رقم الهوية الوطنية (${i})</label>
+      <input id="TravelerID${i}" placeholder="مثال: 2000000000" />
+      <label><i class="fas fa-passport"></i> رقم الوثيقة (${i})</label>
+      <input id="PassportNumber${i}" placeholder="ادخل رقم الوثيقة" />
+    `;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const choice = (localStorage.getItem("wordLinkChoice") || localStorage.getItem("lastWordLinkChoice") || "").trim();
+  if (choice === "مغادرة-مواطن") {
+    const row = document.getElementById('traveler-count-row');
+    const lbl = document.getElementById('traveler-count-label');
+    if (row) row.style.display = '';
+    if (lbl) lbl.style.display = '';
+    renderTravelerFields(1);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('#traveler-chips .chip');
+  if (!btn) return;
+
+  const val = btn.getAttribute('data-value');
+  const hiddenInput = document.getElementById('traveler-count');
+  if (hiddenInput) hiddenInput.value = val;
+
+  document.querySelectorAll('#traveler-chips .chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+
+  renderTravelerFields(parseInt(val));
+});
+
+// =========================================================
+// أسماء البوابات (استلام-اليوم): مصدرين للاقتراحات
+// 1) قاعدة الأسماء NAME_DB حسب المناوبة/الصالة (نفس أسلوب الغياب) — تعبئة الرتبة تلقائيًا
+// 2) أسماء محفوظة سابقًا في نفس المتصفح حسب المناوبة/الصالة، بعلامة ✕ لحذف الاقتراح
+// =========================================================
+function populateGateNamesForCurrentSelection() {
+  const dataList = document.getElementById("gate-officer-list");
+  if (!dataList || !NAME_DB) return;
+  dataList.innerHTML = "";
+
+  const { shift, hall } = getShiftHall();
+  if (!shift || !hall || !NAME_DB[shift] || !NAME_DB[shift][hall]) return;
+
+  NAME_DB[shift][hall].forEach(item => {
+    const opt = document.createElement("option");
+    opt.value = item.name;
+    opt.label = item.rank;
+    dataList.appendChild(opt);
+  });
+}
+
+function autoFillGateRankByName(idx) {
+  const nameInput = document.getElementById('GateOfficerName' + idx);
+  const rankInput = document.getElementById('GateOfficerRank' + idx);
+  if (!nameInput || !rankInput || !NAME_DB) return;
+
+  const { shift, hall } = getShiftHall();
+  if (!shift || !hall || !NAME_DB[shift] || !NAME_DB[shift][hall]) return;
+
+  const name = String(nameInput.value || "").trim();
+  if (!name) return;
+
+  const hit = NAME_DB[shift][hall].find(e => e.name === name);
+  if (hit && hit.rank) rankInput.value = hit.rank;
+}
+
+// ---- تخزين الأسماء المستخدَمة سابقًا (محلي في نفس المتصفح) حسب المناوبة/الصالة ----
+function _gateRecentsKey(shift, hall) {
+  return `gateOfficerRecents_${_normShift(shift)}_${_normHall(hall)}`;
+}
+function getGateRecents(shift, hall) {
+  try {
+    const raw = localStorage.getItem(_gateRecentsKey(shift, hall));
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) { return []; }
+}
+function addGateRecent(shift, hall, name) {
+  name = String(name || '').trim();
+  if (!name || !shift || !hall) return;
+  try {
+    let arr = getGateRecents(shift, hall);
+    arr = arr.filter(n => n !== name);
+    arr.unshift(name);
+    if (arr.length > 10) arr = arr.slice(0, 10);
+    localStorage.setItem(_gateRecentsKey(shift, hall), JSON.stringify(arr));
+  } catch (e) {}
+}
+function removeGateRecent(shift, hall, name) {
+  try {
+    let arr = getGateRecents(shift, hall).filter(n => n !== name);
+    localStorage.setItem(_gateRecentsKey(shift, hall), JSON.stringify(arr));
+  } catch (e) {}
+}
+
+function setupGateOfficerSuggestions(idx) {
+  const nameInput = document.getElementById('GateOfficerName' + idx);
+  const shiftEl   = document.getElementById('shift-number');
+  const hallEl    = document.getElementById('hall-number');
+  const box       = document.getElementById('GateOfficerSuggestions' + idx);
+  const items     = document.getElementById('GateOfficerSuggestionsItems' + idx);
+
+  if (!nameInput || !shiftEl || !hallEl || !box || !items) return;
+
+  box.hidden = false;
+  box.style.display = 'flex';
+
+  const refresh = () => {
+    items.innerHTML = '';
+    const shift = _normShift(shiftEl.value || '');
+    const hall  = _normHall(hallEl.value || '');
+
+    if (!shift || !hall) {
+      const msg = document.createElement('div');
+      msg.className = 'name-suggest__empty';
+      msg.textContent = 'اختر الشفت والصالة لعرض الاقتراحات';
+      items.appendChild(msg);
+      return;
+    }
+
+    const recents = getGateRecents(shift, hall);
+    if (!recents.length) {
+      const msg = document.createElement('div');
+      msg.className = 'name-suggest__empty';
+      msg.textContent = 'لا توجد اقتراحات محفوظة لهذه المناوبة والصالة';
+      items.appendChild(msg);
+      return;
+    }
+
+    recents.forEach(name => {
+      const wrap = document.createElement('span');
+      wrap.style.display = 'inline-flex';
+      wrap.style.alignItems = 'center';
+      wrap.style.gap = '2px';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'name-suggest__btn';
+      btn.textContent = name;
+      btn.addEventListener('click', () => {
+        nameInput.value = name;
+        nameInput.dispatchEvent(new Event('change', { bubbles: true }));
+        nameInput.focus();
+      });
+
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'name-suggest__btn';
+      del.title = 'حذف الاقتراح';
+      del.textContent = '✕';
+      del.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeGateRecent(shift, hall, name);
+        refresh();
+      });
+
+      wrap.appendChild(btn);
+      wrap.appendChild(del);
+      items.appendChild(wrap);
+    });
+  };
+
+  shiftEl.addEventListener('input', refresh);
+  shiftEl.addEventListener('change', refresh);
+  hallEl.addEventListener('input', refresh);
+  hallEl.addEventListener('change', refresh);
+  nameInput.addEventListener('focus', refresh);
+
+  refresh();
+  return { refresh };
+}
+
+// اقتراح (وليس تعبئة تلقائية) لوقت الاستلام من/إلى = نفس وقت استلام الشفت الحالي
+// يظهر كصندوق اقتراح بجانب الحقل، وتُملأ القيمة فقط عند الضغط عليه
+function renderGateReceiveTimeSuggestion(fieldId, boxId, itemsId, value) {
+  const input = document.getElementById(fieldId);
+  const box   = document.getElementById(boxId);
+  const items = document.getElementById(itemsId);
+  if (!input || !box || !items) return;
+
+  box.hidden = false;
+  box.style.display = 'flex';
+  items.innerHTML = '';
+
+  if (!value) {
+    const msg = document.createElement('div');
+    msg.className = 'name-suggest__empty';
+    msg.textContent = 'لا يوجد اقتراح — حدد وقت استلام الشفت أعلاه';
+    items.appendChild(msg);
+    return;
+  }
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'name-suggest__btn';
+  btn.textContent = value;
+  btn.addEventListener('click', () => {
+    input.value = value;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.focus();
+  });
+  items.appendChild(btn);
+}
+
+function applyGateReceiveTimeDefaults() {
+  const fromVal = document.getElementById('ReceiveTimeFrom')?.value || '';
+  const toVal   = document.getElementById('ReceiveTimeTo')?.value   || '';
+  [1, 2].forEach(idx => {
+    renderGateReceiveTimeSuggestion('GateReceiveFrom' + idx, 'GateReceiveFromSuggestions' + idx, 'GateReceiveFromSuggestionsItems' + idx, fromVal);
+    renderGateReceiveTimeSuggestion('GateReceiveTo' + idx, 'GateReceiveToSuggestions' + idx, 'GateReceiveToSuggestionsItems' + idx, toVal);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const choice = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+  if (choice !== 'استلام-اليوم') return;
+
+  const shiftEl = document.getElementById('shift-number');
+  const hallEl  = document.getElementById('hall-number');
+  const fromEl  = document.getElementById('ReceiveTimeFrom');
+  const toEl    = document.getElementById('ReceiveTimeTo');
+
+  const refreshGateNames = () => populateGateNamesForCurrentSelection();
+  if (shiftEl) shiftEl.addEventListener('change', refreshGateNames);
+  if (hallEl)  hallEl.addEventListener('change', refreshGateNames);
+  refreshGateNames();
+
+  [1, 2].forEach(idx => {
+    const nameEl = document.getElementById('GateOfficerName' + idx);
+    if (nameEl) {
+      nameEl.addEventListener('change', () => autoFillGateRankByName(idx));
+      nameEl.addEventListener('blur', () => autoFillGateRankByName(idx));
+    }
+    setupGateOfficerSuggestions(idx);
+  });
+
+  if (fromEl) fromEl.addEventListener('change', applyGateReceiveTimeDefaults);
+  if (toEl)   toEl.addEventListener('change', applyGateReceiveTimeDefaults);
+  applyGateReceiveTimeDefaults();
+});
 
 function toggleBalanceNightVisibility() {
   const now = new Date();

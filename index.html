@@ -325,6 +325,65 @@
 
     <label for="AdminOfficerRank"><i class="fas fa-medal"></i> رتبته</label>
     <input id="AdminOfficerRank" list="ranks" placeholder="الرتبة">
+
+    <!-- أسماء البوابات -->
+    <div class="individual-separator" style="grid-column: 1 / -1; margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 10px; color: var(--gold-700); font-weight: 800; font-size: 16px;">أسماء البوابات</div>
+
+    <label for="GateOfficerName1"><i class="fas fa-user-shield"></i> اسم مستلم البوابة (1)</label>
+    <div class="input-with-suggest">
+      <input id="GateOfficerName1" list="gate-officer-list" placeholder="اختر أو اكتب الاسم" autocomplete="off">
+      <div id="GateOfficerSuggestions1" class="name-suggest" hidden>
+        <span class="name-suggest__title"> اقتراح :</span>
+        <div id="GateOfficerSuggestionsItems1" class="name-suggest__items" role="listbox" aria-label="اقتراحات اسم مستلم البوابة 1"></div>
+      </div>
+    </div>
+    <label for="GateOfficerRank1"><i class="fas fa-medal"></i> رتبته</label>
+    <input id="GateOfficerRank1" list="ranks" placeholder="الرتبة">
+    <label for="GateReceiveFrom1"><i class="fas fa-clock"></i> وقت الاستلام من الساعة</label>
+    <div class="input-with-suggest input-with-suggest--inline">
+      <input id="GateReceiveFrom1" placeholder="مثال: 2م">
+      <div id="GateReceiveFromSuggestions1" class="name-suggest" hidden>
+        <span class="name-suggest__title"> اقتراح :</span>
+        <div id="GateReceiveFromSuggestionsItems1" class="name-suggest__items" role="listbox" aria-label="اقتراح وقت الاستلام من (1)"></div>
+      </div>
+    </div>
+    <label for="GateReceiveTo1"><i class="fas fa-clock"></i> وقت الاستلام إلى الساعة</label>
+    <div class="input-with-suggest input-with-suggest--inline">
+      <input id="GateReceiveTo1" placeholder="مثال: 10م">
+      <div id="GateReceiveToSuggestions1" class="name-suggest" hidden>
+        <span class="name-suggest__title"> اقتراح :</span>
+        <div id="GateReceiveToSuggestionsItems1" class="name-suggest__items" role="listbox" aria-label="اقتراح وقت الاستلام إلى (1)"></div>
+      </div>
+    </div>
+
+    <label for="GateOfficerName2"><i class="fas fa-user-shield"></i> اسم مستلم البوابة (2)</label>
+    <div class="input-with-suggest">
+      <input id="GateOfficerName2" list="gate-officer-list" placeholder="اختر أو اكتب الاسم" autocomplete="off">
+      <div id="GateOfficerSuggestions2" class="name-suggest" hidden>
+        <span class="name-suggest__title"> اقتراح :</span>
+        <div id="GateOfficerSuggestionsItems2" class="name-suggest__items" role="listbox" aria-label="اقتراحات اسم مستلم البوابة 2"></div>
+      </div>
+    </div>
+    <label for="GateOfficerRank2"><i class="fas fa-medal"></i> رتبته</label>
+    <input id="GateOfficerRank2" list="ranks" placeholder="الرتبة">
+    <label for="GateReceiveFrom2"><i class="fas fa-clock"></i> وقت الاستلام من الساعة</label>
+    <div class="input-with-suggest input-with-suggest--inline">
+      <input id="GateReceiveFrom2" placeholder="مثال: 2م">
+      <div id="GateReceiveFromSuggestions2" class="name-suggest" hidden>
+        <span class="name-suggest__title"> اقتراح :</span>
+        <div id="GateReceiveFromSuggestionsItems2" class="name-suggest__items" role="listbox" aria-label="اقتراح وقت الاستلام من (2)"></div>
+      </div>
+    </div>
+    <label for="GateReceiveTo2"><i class="fas fa-clock"></i> وقت الاستلام إلى الساعة</label>
+    <div class="input-with-suggest input-with-suggest--inline">
+      <input id="GateReceiveTo2" placeholder="مثال: 10م">
+      <div id="GateReceiveToSuggestions2" class="name-suggest" hidden>
+        <span class="name-suggest__title"> اقتراح :</span>
+        <div id="GateReceiveToSuggestionsItems2" class="name-suggest__items" role="listbox" aria-label="اقتراح وقت الاستلام إلى (2)"></div>
+      </div>
+    </div>
+
+    <datalist id="gate-officer-list"></datalist>
   </div>
 </section>
 <!-- =========================================================
@@ -332,31 +391,46 @@
 ========================================================= -->
 <section class="card" id="card-issued-data" style="display:none">
   <h3 class="card__title"><i class="fas fa-file-alt"></i> بيانات الصادر</h3>
-  <div class="card__body form-grid">
+  <div class="card__body">
     <!-- ملاحظة (مخفية بدون حذف) -->
-    <label style="display:none"></label>
     <div class="muted" style="display:none">سيتم توزيع ارقــام الصادر تلقائيا بعد التعبئة</div>
 
-    <label for="IssuedAttendance"><i class="fas fa-user-check"></i> الحضور والانصراف</label>
-    <input id="IssuedAttendance"
-       class="sm-num att-green att-tall"
-       inputmode="numeric" pattern="\d*"
-       oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-       type="text"
-       placeholder="ادخل رقم الصادر">
-    <label for="IssuedBalance"><i class="fas fa-scale-balanced"></i> الموازنة</label>
-    <input id="IssuedBalance" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
-    <label for="IssuedManifests"><i class="fas fa-list"></i> المنفستات</label>
-    <input id="IssuedManifests" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
-    <label for="IssuedReports"><i class="fas fa-file-lines"></i> التقارير</label>
-    <input id="IssuedReports" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
-    <label for="IssuedGates"><i class="fas fa-door-open"></i> البوابات</label>
-    <input id="IssuedGates" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
-    <label for="IssuedExtra1"><i class="fas fa-plus"></i>اضافي </label>
-    <input id="IssuedExtra1" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
-        <label for="IssuedTitle">عنوان الصادر</label>
-    <input id="IssuedTitle" type="text" placeholder="= / م (المناوبة) مغادرة (الصالة) /">
+    <div class="issued-data-grid">
+      <div class="issued-stat issued-stat--featured">
+        <label for="IssuedAttendance"><i class="fas fa-user-check"></i> الحضور والانصراف</label>
+        <input id="IssuedAttendance"
+           class="sm-num att-green att-tall"
+           inputmode="numeric" pattern="\d*"
+           oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+           type="text"
+           placeholder="ادخل رقم الصادر">
+      </div>
+      <div class="issued-stat">
+        <label for="IssuedBalance"><i class="fas fa-scale-balanced"></i> الموازنة</label>
+        <input id="IssuedBalance" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+      </div>
+      <div class="issued-stat">
+        <label for="IssuedManifests"><i class="fas fa-list"></i> المنفستات</label>
+        <input id="IssuedManifests" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+      </div>
+      <div class="issued-stat">
+        <label for="IssuedReports"><i class="fas fa-file-lines"></i> التقارير</label>
+        <input id="IssuedReports" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+      </div>
+      <div class="issued-stat">
+        <label for="IssuedGates"><i class="fas fa-door-open"></i> البوابات</label>
+        <input id="IssuedGates" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+      </div>
+      <div class="issued-stat">
+        <label for="IssuedExtra1"><i class="fas fa-plus"></i> اضافي</label>
+        <input id="IssuedExtra1" class="sm-num" inputmode="numeric" pattern="\d*" oninput="this.value=this.value.replace(/[^0-9]/g,'')" type="text" placeholder="">
+      </div>
+    </div>
 
+    <div class="issued-title-row">
+      <label for="IssuedTitle"><i class="fas fa-heading"></i> عنوان الصادر</label>
+      <input id="IssuedTitle" type="text" placeholder="= / م (المناوبة) مغادرة (الصالة) /">
+    </div>
   </div>
 </section>
      
@@ -697,34 +771,45 @@
             </span>
           </h3>
         
-        <div class="card__body form-grid">
-          <!-- وقت الاستلام -->
-          <label for="ReceiveTimeFrom"><i class="fas fa-clock"></i> وقت الاستلام (من)</label>
-          <input id="ReceiveTimeFrom" placeholder="مثال: 2م" />
+        <div class="card__body">
+          <div class="issued-data-grid">
+            <!-- وقت الاستلام -->
+            <div class="issued-stat">
+              <label><i class="fas fa-clock"></i> وقت الاستلام</label>
+              <div class="issued-stat__pair">
+                <input id="ReceiveTimeFrom" placeholder="من: 2م" title="وقت الاستلام (من)" />
+                <input id="ReceiveTimeTo" placeholder="إلى: 10م" title="وقت الاستلام (إلى)" />
+              </div>
+            </div>
 
-          <label for="ReceiveTimeTo"><i class="fas fa-clock"></i> وقت الاستلام (إلى)</label>
-          <input id="ReceiveTimeTo" placeholder="مثال: 10م" />
+            <!-- وقت الموازنة -->
+            <div class="issued-stat">
+              <label><i class="fas fa-business-time"></i> وقت الموازنة</label>
+              <div class="issued-stat__pair">
+                <input id="BalanceTimeFrom" placeholder="من: 2م" title="وقت الموازنة (من)" />
+                <input id="BalanceTimeTo" placeholder="إلى: 10م" title="وقت الموازنة (إلى)" />
+              </div>
+            </div>
 
-          <!-- وقت الموازنة -->
-          <label for="BalanceTimeFrom"><i class=""></i> وقت الموازنة (من)</label>
-          <input id="BalanceTimeFrom" placeholder="مثال: 2م" />
-
-          <label for="BalanceTimeTo"><i class=""></i> وقت الموازنة (إلى)</label>
-          <input id="BalanceTimeTo" placeholder="مثال: 10م" />
-
-          <!-- وقت الموازنة شفت المساء -->
-          <label for="EveningBalanceFrom"><i class="fas fa-moon"></i> الموازنة (المساء) من</label>
-          <input id="EveningBalanceFrom" placeholder="مثال: 10م" />
-
-          <label for="EveningBalanceTo"><i class="fas fa-moon"></i> الموازنة (المساء) إلى</label>
-          <input id="EveningBalanceTo" placeholder="مثال: 6ص" />
+            <!-- وقت الموازنة شفت المساء -->
+            <div class="issued-stat">
+              <label><i class="fas fa-moon"></i> الموازنة (المساء)</label>
+              <div class="issued-stat__pair">
+                <input id="EveningBalanceFrom" placeholder="من: 10م" title="الموازنة (المساء) من" />
+                <input id="EveningBalanceTo" placeholder="إلى: 6ص" title="الموازنة (المساء) إلى" />
+              </div>
+            </div>
+          </div>
 
           <!-- تاريخ/يوم الموازنة -->
-          <label for="BalanceDateNight"><i class="fas fa-calendar-night"></i> تاريخ الموازنة (ليل فقط)</label>
-          <input id="BalanceDateNight" placeholder="يُملأ تلقائيًا: تاريخ الغد (هجري)" />
-
-          <label for="BalanceWeekday"><i class="fas fa-calendar-day"></i> يوم الموازنة</label>
-          <input id="BalanceWeekday" placeholder="يُملأ تلقائيًا: يوم الغد" />
+          <div class="issued-title-row">
+            <label for="BalanceDateNight"><i class="fas fa-calendar-night"></i> تاريخ الموازنة (ليل فقط)</label>
+            <input id="BalanceDateNight" placeholder="يُملأ تلقائيًا: تاريخ الغد (هجري)" />
+          </div>
+          <div class="issued-title-row">
+            <label for="BalanceWeekday"><i class="fas fa-calendar-day"></i> يوم الموازنة</label>
+            <input id="BalanceWeekday" placeholder="يُملأ تلقائيًا: يوم الغد" />
+          </div>
         </div>
       </section>
 
@@ -795,8 +880,25 @@
 
             <label for="VisaType"><i class="fas fa-stamp"></i> نوع التأشيرة</label>
             <input id="VisaType" list="visaTypes" placeholder="زيارة / نهائي / عمرة / ..." />
-            
+
             <datalist id="visaTypes"></datalist>
+
+            <!-- عدد المسافرين (تظهر فقط في مغادرة-مواطن) -->
+            <label for="traveler-count" id="traveler-count-label" style="display:none"><i class="fas fa-users"></i> عدد المسافرين</label>
+            <div class="with-chips" id="traveler-count-row" data-target="#traveler-count" style="display:none">
+              <input id="traveler-count" value="1" readonly />
+              <div class="chips-container" id="traveler-chips">
+                <button type="button" class="chip active" data-value="1">1</button>
+                <button type="button" class="chip" data-value="2">2</button>
+                <button type="button" class="chip" data-value="3">3</button>
+                <button type="button" class="chip" data-value="4">4</button>
+                <button type="button" class="chip" data-value="5">5</button>
+                <button type="button" class="chip" data-value="6">6</button>
+              </div>
+            </div>
+
+            <!-- حقول المسافرين الإضافيين (2-6) تُضاف هنا ديناميكيًا؛ الجنسية تلقائيًا مثل المسافر 1 (السعودية) -->
+            <div id="traveler-fields-container" style="display:contents"></div>
           </div>
         </section>
         <section class="card" id="card-pledge-passport-expiry" style="display:none">
