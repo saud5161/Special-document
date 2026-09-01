@@ -1409,12 +1409,12 @@
         title="عرض PDF"
         onclick="window.open(this.href,'popup','width=800,height=600');return false;">
       </a>
-        <a 
-          href="index.html" 
-          class="btn-icon word-icon" 
-          target="_top" 
+        <a
+          href="index.html"
+          class="btn-icon word-icon"
+          target="_top"
           title="تعديل Word"
-          onclick="localStorage.setItem('wordLinkChoice', 'تخلف-مغادرة')">
+          onclick="openTakhalufChoiceModal(event); return false;">
         </a>
       <a
         href="javascript:void(0);"
@@ -2406,6 +2406,99 @@
             </div>
         </div>
     </div>
+
+    <!-- نافذة اختيار نوع "تخلف على الرحلة": راكب عادي / ترانزيت -->
+    <style>
+      #takhaluf-choice-overlay{
+        display:none;
+        position:fixed; inset:0; z-index:9999;
+        background:rgba(15,23,42,.55);
+        align-items:center; justify-content:center;
+      }
+      #takhaluf-choice-overlay .tkf-modal{
+        background:#ffffff;
+        border-radius:16px;
+        padding:28px 26px;
+        width:min(420px, 90vw);
+        text-align:center;
+        box-shadow:0 20px 50px rgba(0,0,0,.35);
+        font-family:inherit;
+      }
+      #takhaluf-choice-overlay .tkf-modal h3{
+        margin:0 0 6px;
+        color:#d4a017;
+        font-size:19px;
+        font-weight:800;
+        display:flex; align-items:center; justify-content:center; gap:8px;
+      }
+      #takhaluf-choice-overlay .tkf-modal p{
+        margin:0 0 20px;
+        color:#64748b;
+        font-size:13px;
+      }
+      #takhaluf-choice-overlay .tkf-actions{
+        display:flex; gap:14px;
+      }
+      #takhaluf-choice-overlay .tkf-btn{
+        flex:1;
+        display:flex; flex-direction:column; align-items:center; gap:8px;
+        padding:18px 10px;
+        border-radius:14px;
+        border:2px solid transparent;
+        cursor:pointer;
+        font-size:15px;
+        font-weight:700;
+        transition:transform .12s, box-shadow .12s, border-color .12s;
+      }
+      #takhaluf-choice-overlay .tkf-btn i{ font-size:22px; }
+      #takhaluf-choice-overlay .tkf-btn:hover{ transform:translateY(-3px); }
+      #takhaluf-choice-overlay .tkf-btn--normal{
+        background:#eef4ff; color:#0d6efd; border-color:#c8d6ff;
+      }
+      #takhaluf-choice-overlay .tkf-btn--normal:hover{ box-shadow:0 8px 18px rgba(13,110,253,.25); }
+      #takhaluf-choice-overlay .tkf-btn--transit{
+        background:#fef7e0; color:#a16207; border-color:#f3d98b;
+      }
+      #takhaluf-choice-overlay .tkf-btn--transit:hover{ box-shadow:0 8px 18px rgba(212,160,23,.25); }
+      #takhaluf-choice-overlay .tkf-close{
+        margin-top:18px;
+        background:none; border:none;
+        color:#94a3b8; font-size:12.5px; cursor:pointer;
+        text-decoration:underline;
+      }
+    </style>
+    <div id="takhaluf-choice-overlay" onclick="if(event.target===this) closeTakhalufChoiceModal();">
+      <div class="tkf-modal">
+        <h3><i class="fa-solid fa-plane-slash"></i> نوع التخلف على الرحلة</h3>
+        <p>اختر نوع الحالة لفتح نموذج الوورد المناسب لها</p>
+        <div class="tkf-actions">
+          <button type="button" class="tkf-btn tkf-btn--normal" onclick="resolveTakhalufChoice('تخلف-مغادرة')">
+            <i class="fa-solid fa-user"></i>
+            راكب عادي
+          </button>
+          <button type="button" class="tkf-btn tkf-btn--transit" onclick="resolveTakhalufChoice('تخلف-ترانزيت')">
+            <i class="fa-solid fa-route"></i>
+            ترانزيت
+          </button>
+        </div>
+        <button type="button" class="tkf-close" onclick="closeTakhalufChoiceModal()">إغلاق</button>
+      </div>
+    </div>
+    <script>
+      function openTakhalufChoiceModal(e){
+        if (e) e.preventDefault();
+        const el = document.getElementById('takhaluf-choice-overlay');
+        if (el) el.style.display = 'flex';
+      }
+      function closeTakhalufChoiceModal(){
+        const el = document.getElementById('takhaluf-choice-overlay');
+        if (el) el.style.display = 'none';
+      }
+      function resolveTakhalufChoice(choice){
+        localStorage.setItem('wordLinkChoice', choice);
+        window.top.location.href = 'index.html';
+      }
+    </script>
 
 </body>
  <script src="script.js"></script>

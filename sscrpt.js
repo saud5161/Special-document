@@ -872,6 +872,8 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/نــماذج  اليومية/مواليد.docm";
   } else if (choice === "تخلف-مغادرة") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تخلف على الرحلة فقط.docm";
+  } else if (choice === "تخلف-ترانزيت") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/تخلف ترانزيت.docm";
   } else if (choice === "تخلف-تعهد" || choice === "تعهد") {
   wordLink.href = "dic/السعودين/تعهد.docm";
   } else if (choice === "تعقب-مغادرة") {
@@ -1577,7 +1579,14 @@ if (choice === "افادة-غياب") {
 
 
 
-if (choice === "تخلف-مغادرة") {
+if (choice === "تخلف-ترانزيت") {
+  // إخفاء رقم الهوية - إقامة (خاص بترانزيت فقط، لا يظهر في تخلف-مغادرة العادي)
+  const idField = document.getElementById("id");
+  const idLabel = document.querySelector("label[for='id']");
+  if (idField) idField.style.display = "none";
+  if (idLabel) idLabel.style.display = "none";
+}
+if (choice === "تخلف-مغادرة" || choice === "تخلف-ترانزيت") {
   // إخفاء اسم الآمر المناوب ورتبته
   const cmdName  = document.getElementById("commander-name");
   const cmdRank  = document.getElementById("commander-rank");
@@ -4970,7 +4979,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const printAlert = document.getElementById("print-alert-msg");
 
   if (printAlert) {
-    if (choice === "تخلف-مغادرة") {
+    if (choice === "تخلف-مغادرة" || choice === "تخلف-ترانزيت") {
       printAlert.style.display = "flex";
     } else {
       printAlert.style.display = "none";
