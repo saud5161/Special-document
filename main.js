@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, globalShortcut, Menu, ipcMain, dialog } = require('electron');
 
 const path = require('path');
 const https = require('https');
@@ -114,6 +114,10 @@ function stopExcelCleanerInterval() {
 let mainWindow;
 const MAX_FILES = 5; // الحد الأقصى لعدد النسخ المسموح بها (بما في ذلك النسخة الأصلية)
 let currentIndex = 0; // نبدأ من النسخة 1
+// ✅ عدّاد دوران مستقل لكل مستند على حدة (بدلاً من عدّاد واحد مشترك بين كل المستندات)
+// كان العدّاد القديم مشتركًا بين كل الملفات، فيتسبب أحيانًا في رسالة "الملف مفتوح" لملف
+// لم يُفتح 6 مرات فعليًا، بسبب فتح ملفات أخرى مختلفة بينها استهلكت نفس العدّاد.
+const currentIndexByFile = {};
 
 // مسار ملف package.json
 const packageJsonPath = path.join(__dirname, 'package.json');
@@ -651,19 +655,43 @@ function openFile(filePath) {
             if (error) console.error(`Error opening file: ${error.message}`);
         });
     } else {
-        const newFileName = getNextFileName(downloadsDir, fileName);
-        const newFilePath = path.join(downloadsDir, newFileName);
+        // ✅ نفحص كل الخانات الست (0..5) لنفس اسم المستند، ونستخدم أول خانة متاحة (غير مفتوحة حاليًا)
+        // بدل الاعتماد على عدّاد دوّار قد يشير لخانة لا تزال مفتوحة رغم وجود خانات أخرى فارغة.
+        tryOpenInFirstAvailableSlot(downloadsDir, filePath, fileName, 0);
+    }
+}
 
-        fs.copyFile(filePath, newFilePath, (err) => {
-            if (err) {
-                console.error(`Error copying file: ${err.message}`);
+function tryOpenInFirstAvailableSlot(downloadsDir, filePath, fileName, slotIndex) {
+    const fileExt = path.extname(fileName);
+    const baseName = path.basename(fileName, fileExt);
+    const newFileName = `${baseName}(${slotIndex})${fileExt}`;
+    const newFilePath = path.join(downloadsDir, newFileName);
+
+    fs.copyFile(filePath, newFilePath, (err) => {
+        if (err) {
+            const isLocked = (err.code === 'EBUSY' || err.code === 'EPERM');
+            if (isLocked && slotIndex < MAX_FILES) {
+                // هذه الخانة مفتوحة حاليًا (مقفلة) — جرّب الخانة التالية
+                tryOpenInFirstAvailableSlot(downloadsDir, filePath, fileName, slotIndex + 1);
                 return;
             }
-            exec(`start "" "${newFilePath}"`, (error) => {
-                if (error) console.error(`Error opening file: ${error.message}`);
-            });
+            console.error(`Error copying file: ${err.message}`);
+            // ✅ جُرّبت كل الخانات الست (0..5) وكلها مفتوحة فعليًا الآن — هذا هو الحد الأقصى الحقيقي
+            if (isLocked) {
+                dialog.showMessageBox(mainWindow, {
+                    type: 'warning',
+                    title: 'تنبيه',
+                    message: `وصلت إلى الحد الأعلى لعرض نفس المستند (${fileName}).`,
+                    detail: 'أغلق الملف المفتوح لنفس المستند، ثم أعد النقر على "تنفيذ".\nالعدد الإجمالي هو 6 ملفات في نفس الوقت.',
+                    buttons: ['حسنًا']
+                });
+            }
+            return;
+        }
+        exec(`start "" "${newFilePath}"`, (error) => {
+            if (error) console.error(`Error opening file: ${error.message}`);
         });
-    }
+    });
 }
 
 
@@ -672,25 +700,14 @@ function openFile(filePath) {
 function getNextFileName(dir, fileName) {
     const fileExt = path.extname(fileName);
     const baseName = path.basename(fileName, fileExt);
-    const newFileName = `${baseName}(${currentIndex})${fileExt}`;
-    currentIndex = (currentIndex % MAX_FILES) + 1;
+
+    if (!(baseName in currentIndexByFile)) currentIndexByFile[baseName] = 0;
+    const idx = currentIndexByFile[baseName];
+    const newFileName = `${baseName}(${idx})${fileExt}`;
+    currentIndexByFile[baseName] = (idx % MAX_FILES) + 1;
     return newFileName;
 }
 
-// تسجيل اختصار Ctrl+P عند تركيز التطبيق فقط
-app.on('browser-window-focus', () => {
-    globalShortcut.register('Control+P', () => {
-        const focusedWindow = BrowserWindow.getFocusedWindow();
-        if (focusedWindow) {
-            focusedWindow.webContents.print();
-        }
-    });
-});
-
-// إلغاء تسجيل الاختصار عند فقدان التركيز
-app.on('browser-window-blur', () => {
-    globalShortcut.unregister('Control+P');
-});
 
 // 1. استدعاء ملف المزامنة الذي قمنا بإنشائه
 const syncOfficersWithSupabase = require('./sync-supabase.js');
@@ -783,6 +800,36 @@ ipcMain.handle('save-kashf-status', async (event, text) => {
     console.error('❌ فشل حفظ kashf_status.txt:', e);
     return { ok: false, error: String(e) };
   }
+});
+
+// ✅ عدّاد نوافذ/عمليات الوورد المفتوحة حاليًا (للتحذير قبل الوصول للحد الأقصى المسبب لتعليق الملف الجديد)
+// نعتمد على عدّ عمليات WINWORD.EXE عبر tasklist بدل الاتصال بالوورد عن طريق COM:
+// COM (GetActiveObject) قد يتجمّد بلا نهاية لو كان أحد مستندات الوورد المفتوحة "مشغولاً"
+// (مثلاً نافذة تنبيه/ماكرو معلّقة) — وهذا بالضبط ما يسبب تعليق الصفحة الجديد الذي أبلغ عنه المستخدم.
+// tasklist لا يتواصل مع الوورد نفسه إطلاقاً، فهو فوري ولا يمكن أن يتجمّد.
+ipcMain.handle('count-open-word-docs', () => {
+  return new Promise((resolve) => {
+    let settled = false;
+    const safeResolve = (val) => {
+      if (settled) return;
+      settled = true;
+      resolve(val);
+    };
+
+    // مهلة احتياطية (لن تُستخدم عمليًا لأن tasklist سريع جداً، لكن للأمان التام)
+    const hardTimeout = setTimeout(() => safeResolve(0), 2000);
+
+    exec('tasklist /FI "IMAGENAME eq WINWORD.EXE" /FO CSV /NH', { timeout: 1500 }, (err, stdout) => {
+      clearTimeout(hardTimeout);
+      if (err) {
+        // tasklist يرجع خطأ لو لم توجد أي عملية مطابقة على بعض إصدارات ويندوز — يعني العدد صفر
+        safeResolve(0);
+        return;
+      }
+      const lines = String(stdout).split(/\r?\n/).filter(l => l.trim().toUpperCase().startsWith('"WINWORD.EXE"'));
+      safeResolve(lines.length);
+    });
+  });
 });
 
 

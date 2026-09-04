@@ -620,6 +620,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // حفظ/تنفيذ
 async function saveAll() {
+  // ✅ تحذير قبل الوصول للحد الأقصى لعدد مستندات الوورد المفتوحة (يسبب تعليق الملف الجديد)
+  try {
+    const openWordDocs = await window.customAPI?.countOpenWordDocs?.();
+    if (typeof openWordDocs === 'number' && openWordDocs >= 6) {
+      alert('تنبيه: وصلت للحد الأقصى (6 ملفات وورد مفتوحة في نفس الوقت).\n\nيرجى إغلاق أحد ملفات الوورد المفتوحة أولاً قبل فتح ملف جديد، وإلا سيبدو الملف الجديد وكأنه معلّق.');
+      return;
+    }
+  } catch (e) {}
+
   const data = collect();
   const ini  = payloadToIni(data);
     clearIndividualFields();
