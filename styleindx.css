@@ -675,6 +675,49 @@ body.help-open #helpBox{ display:block; }
 }
 
 
+/* إبراز حقول: اسم ضابط الصالة/رتبته، اسم الآمر المناوب/رتبته، المناوبة، الصالة — بشكل واضح ومضغوط */
+.form-grid > label.field-important{
+  font-family: 'Tajawal', 'AL-Mohanad Bold', sans-serif;
+  font-weight: 800;
+  font-size: 1.02rem;
+  color: var(--gold-700);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.form-grid :where(input,select).field-important-input{
+  font-family: 'Tajawal', 'AL-Mohanad Bold', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 9px 12px;
+  border-width: 1.5px;
+  border-color: #e2c26b;
+  color: #1e2935;
+}
+.form-grid :where(input,select).field-important-input::placeholder{
+  color: #b08a2e;
+  opacity: .55;
+}
+.form-grid :where(input,select).field-important-input:focus{
+  border-color: var(--gold-700);
+  box-shadow: 0 0 0 3px rgba(212,160,23,.18);
+}
+.field-important-wrap .chips-container .chip{
+  width: 30px;
+  height: 30px;
+  font-family: 'Tajawal', 'AL-Mohanad Bold', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  border-width: 1.5px;
+  border-color: #e2c26b;
+  color: var(--gold-700);
+}
+.field-important-wrap .chips-container .chip.active{
+  background: var(--gold-700);
+  border-color: var(--gold-700);
+  color: #ffffff;
+}
+
 /* تخطيط بطاقة "بيانات الصادر": مربعات مصغّرة بجانب بعضها */
 .issued-data-grid{
   display: flex;

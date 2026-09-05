@@ -193,19 +193,19 @@
             <input id="custom-weekday" class="form-control" placeholder="—">
 
             <!-- بيانات الضابط -->
-            <label for="officer-name"><i class="fas fa-user-tie"></i> اسم ضابط الصالة</label>
-            <input id="officer-name" list="names" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
+            <label for="officer-name" class="field-important"><i class="fas fa-user-tie"></i> اسم ضابط الصالة</label>
+            <input id="officer-name" list="names" class="row-span-2 field-important-input" placeholder="اختر أو اكتب الاسم" />
 
-            <label for="officer-rank"><i class="fas fa-medal"></i> الرتبة</label>
-            <input id="officer-rank" list="ranks" placeholder="الرتبة" />
-            
+            <label for="officer-rank" class="field-important"><i class="fas fa-medal"></i> الرتبة</label>
+            <input id="officer-rank" list="ranks" class="field-important-input" placeholder="الرتبة" />
+
             <!-- بيانات الآمر المناوب -->
-            <label for="commander-name"><i class="fas fa-user-shield"></i> اسم الآمر المناوب</label>
-            <input id="commander-name" list="commanders" class="row-span-2" placeholder="اختر أو اكتب الاسم" />
+            <label for="commander-name" class="field-important"><i class="fas fa-user-shield"></i> اسم الآمر المناوب</label>
+            <input id="commander-name" list="commanders" class="row-span-2 field-important-input" placeholder="اختر أو اكتب الاسم" />
             <datalist id="commanders"></datalist>
-           
-            <label for="commander-rank"><i class="fas fa-medal"></i> رتبته</label>
-            <input id="commander-rank" list="ranks" placeholder="الرتبة" />
+
+            <label for="commander-rank" class="field-important"><i class="fas fa-medal"></i> رتبته</label>
+            <input id="commander-rank" list="ranks" class="field-important-input" placeholder="الرتبة" />
 
 
 
@@ -241,9 +241,9 @@
               <option value="رئيس رقباء"></option>
             </datalist>
             <!-- المناوبة مع أزرار اختصار -->
-<label for="shift-number"><i class="fas fa-clock"></i> المناوبة</label>
-<div class="with-chips" data-target="#shift-number">
-  <input id="shift-number" list="shifts" placeholder="ا / ب / ج / د" />
+<label for="shift-number" class="field-important"><i class="fas fa-clock"></i> المناوبة</label>
+<div class="with-chips field-important-wrap" data-target="#shift-number">
+  <input id="shift-number" list="shifts" class="field-important-input" placeholder="ا / ب / ج / د" />
   <div class="chips-container">
     <button type="button" class="chip" data-value="ا">ا</button>
     <button type="button" class="chip" data-value="ب">ب</button>
@@ -252,9 +252,9 @@
   </div>
 </div>
 
-<label for="hall-number"><i class="fas fa-building"></i> الصالة</label>
-<div class="with-chips" data-target="#hall-number">
-  <input id="hall-number" list="halls" placeholder="1 / 2 / 5" />
+<label for="hall-number" class="field-important"><i class="fas fa-building"></i> الصالة</label>
+<div class="with-chips field-important-wrap" data-target="#hall-number">
+  <input id="hall-number" list="halls" class="field-important-input" placeholder="1 / 2 / 5" />
   <div class="chips-container">
     <button type="button" class="chip" data-value="1">1</button>
     <button type="button" class="chip" data-value="2">2</button>
@@ -901,6 +901,18 @@
             <div id="traveler-fields-container" style="display:contents"></div>
           </div>
         </section>
+
+        <!-- قسم مستقل: بند إضافي خاص بـ تخلف-مغادرة / تخلف-ترانزيت فقط -->
+        <section class="card" id="card-not-departed" style="display:none">
+          <h3 class="card__title"><i class="fas fa-plane-slash"></i> بند إضافي</h3>
+          <div class="card__body">
+            <label for="NotDeparted" style="display:flex; align-items:flex-start; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="NotDeparted" style="margin-top:4px;">
+              <span>لم يغادر المسافر على رحلته حسب خطاب الشركة الناقلة/بيان المانيفست</span>
+            </label>
+          </div>
+        </section>
+
         <section class="card" id="card-pledge-passport-expiry" style="display:none">
           <h3 class="card__title"><i class="fas fa-passport"></i> تخزين تعهد</h3>
           <div class="card__body form-grid">

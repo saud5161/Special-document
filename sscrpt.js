@@ -332,6 +332,9 @@ EsharaText:      $('EsharaText')?.value      || '',
 EsharaSubject:   $('EsharaSubject')?.value   || '',
 EsharaStatement: $('EsharaStatement')?.value || '',
 
+// ===== بند إضافي: تخلف-مغادرة / تخلف-ترانزيت =====
+NotDeparted: document.getElementById('NotDeparted')?.checked ? 'True' : 'False',
+
 // ===== أسماء البوابات (استلام-اليوم) =====
 GateOfficerName1: $('GateOfficerName1')?.value || '',
 GateOfficerRank1: $('GateOfficerRank1')?.value || '',
@@ -1599,6 +1602,10 @@ if (choice === "تخلف-ترانزيت") {
   if (idLabel) idLabel.style.display = "none";
 }
 if (choice === "تخلف-مغادرة" || choice === "تخلف-ترانزيت") {
+  // إظهار قسم "بند إضافي" (لم يغادر المسافر على رحلته...)
+  const notDepartedCard = document.getElementById("card-not-departed");
+  if (notDepartedCard) notDepartedCard.style.display = "block";
+
   // إخفاء اسم الآمر المناوب ورتبته
   const cmdName  = document.getElementById("commander-name");
   const cmdRank  = document.getElementById("commander-rank");
