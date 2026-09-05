@@ -162,11 +162,35 @@
         </ul>
          <div id="messageBox" style="margin-top: 10px; font-weight: bold;"></div>
            <div class="update-button-container">
-            <a href="#" onclick="location.reload()" class="sidebar-refresh-btn">
+            <a href="#" onclick="handleUpdateClick(event)" class="sidebar-refresh-btn">
             <i class="fas fa-arrows-rotate"></i> <span>تحديث النماذج</span>
           </a>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; margin-top:6px; cursor:pointer; user-select:none;">
+              <input type="checkbox" id="force-update-checkbox">
+              فرض التحديث (تجاوز الذاكرة المؤقتة)
+            </label>
             <div id="messageBox" style="margin-top: 10px; font-weight: bold;"></div>
           </div>
+          <script>
+            async function handleUpdateClick(e) {
+              e.preventDefault();
+              const forceEl = document.getElementById('force-update-checkbox');
+              const box = document.getElementById('messageBox');
+              if (forceEl && forceEl.checked && window.customAPI && window.customAPI.forceUpdateAll) {
+                if (box) { box.textContent = '🔄 جارٍ فرض التحديث...'; box.style.color = 'blue'; }
+                try {
+                  const n = await window.customAPI.forceUpdateAll();
+                  if (box) { box.textContent = `✅ تم فرض تحديث ${n} ملف${n > 1 ? 'ات' : ''}`; box.style.color = 'green'; }
+                  setTimeout(() => location.reload(), 1200);
+                } catch (err) {
+                  console.error('فشل فرض التحديث:', err);
+                  if (box) { box.textContent = '❌ فشل فرض التحديث، الرجاء المحاولة لاحقًا'; box.style.color = 'red'; }
+                }
+              } else {
+                location.reload();
+              }
+            }
+          </script>
 
         </div>
         
