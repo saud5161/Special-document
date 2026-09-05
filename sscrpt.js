@@ -45,6 +45,106 @@ function setIssuedDateFromBaseDate(baseDate){
   dst.value = `${d}/${m}/${y} هـ`;
 }
 
+// إضافة "/" تلقائيًا أثناء الكتابة في حقول التاريخ اليدوية (يوم/شهر/سنة)
+// مع الحفاظ على موضع المؤشر حتى يمكن التعديل/الحذف في منتصف التاريخ (اليوم أو الشهر) بشكل طبيعي
+// يقبل "/" التي يكتبها المستخدم يدويًا أيضًا (مثال: كتابة "7/" تتحول تلقائيًا إلى "07/")
+// وإن لم يفصل المستخدم يدويًا ووصل الجزء الحالي رقمين، يُفصل تلقائيًا كالسابق
+function _formatSlashDate(raw) {
+  raw = raw.replace(/\s/g, '/'); // المسافة تُعامَل كفاصلة "/" أيضًا
+  raw = raw.replace(/[^\d/]/g, '');
+  raw = raw.replace(/\/{2,}/g, '/'); // منع تكرار الفاصلة (// أو أكثر) — حماية إضافية
+  let segs = raw.split('/');
+  if (segs.length > 3) segs = segs.slice(0, 3);
+
+  if (segs.length === 1 && segs[0].length > 2) {
+    segs = [segs[0].slice(0, 2), segs[0].slice(2)];
+  }
+  if (segs.length === 2 && segs[1].length > 2) {
+    segs = [segs[0], segs[1].slice(0, 2), segs[1].slice(2)];
+  }
+  if (segs.length > 3) segs = segs.slice(0, 3);
+
+  let day   = (segs[0] || '').slice(0, 2);
+  let month = segs.length >= 2 ? (segs[1] || '').slice(0, 2) : '';
+  let year  = segs.length >= 3 ? (segs[2] || '').slice(0, 4) : '';
+
+  const hasFirstSlash  = segs.length >= 2;
+  const hasSecondSlash = segs.length >= 3;
+
+  // صفر بادئ فقط للأقسام المُنهاة يدويًا بفاصلة وهي مكوّنة من رقم واحد
+  if (hasFirstSlash && day.length === 1) day = '0' + day;
+  if (hasSecondSlash && month.length === 1) month = '0' + month;
+
+  let out = day;
+  if (hasFirstSlash || day.length === 2) out += '/' + month;
+  if (hasSecondSlash) out += '/' + year;
+  return out;
+}
+function attachAutoSlashDate(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  // عند الحذف بالضغط على Backspace مباشرة بعد "/": نحذف الرقم قبلها أيضًا
+  // (وإلا يبدو الحقل "عالقًا" لأن الحذف يزيل الشرطة فقط وتعاد إضافتها فورًا)
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && el.selectionStart === el.selectionEnd) {
+      const pos = el.selectionStart;
+      if (pos > 0 && el.value[pos - 1] === '/') {
+        e.preventDefault();
+        const newVal = el.value.slice(0, pos - 2) + el.value.slice(pos);
+        el.value = _formatSlashDate(newVal);
+        const newPos = Math.max(0, pos - 2);
+        el.setSelectionRange(newPos, newPos);
+      }
+      return;
+    }
+
+    // منع تكرار الفاصلة: لو ضغط المستخدم "/" أو مسافة والحرف الذي قبل المؤشر فاصلة بالفعل، نتجاهلها
+    if ((e.key === '/' || e.key === ' ') && el.selectionStart === el.selectionEnd) {
+      const pos = el.selectionStart;
+      if (pos > 0 && el.value[pos - 1] === '/') {
+        e.preventDefault();
+      }
+    }
+  });
+
+  el.addEventListener('input', () => {
+    const caretPos = el.selectionStart;
+    // إذا كان آخر ما كتبه المستخدم فعليًا هو "/" أو مسافة (تُعامَل كفاصلة أيضًا)، نضع المؤشر بعد الفاصلة المقابلة في الناتج
+    // (وليس حسب عدد الأرقام، لأن إضافة صفر بادئ يزيح مواضع الأرقام التي كتبها المستخدم)
+    const lastTypedChar = caretPos > 0 ? el.value[caretPos - 1] : '';
+    const justTypedSlash = lastTypedChar === '/' || lastTypedChar === ' ';
+    const digitsBeforeCaret  = el.value.slice(0, caretPos).replace(/\D/g, '').length;
+    const slashesBeforeCaret = (el.value.slice(0, caretPos).match(/[/ ]/g) || []).length;
+
+    const out = _formatSlashDate(el.value);
+    el.value = out;
+
+    let newPos;
+    if (justTypedSlash) {
+      let count = 0; newPos = out.length;
+      for (let i = 0; i < out.length; i++) {
+        if (out[i] === '/') {
+          count++;
+          if (count === slashesBeforeCaret) { newPos = i + 1; break; }
+        }
+      }
+    } else {
+      // إعادة وضع المؤشر بعد نفس عدد الأرقام التي كانت قبله سابقًا (بدل أن يقفز للنهاية)
+      let seen = 0; newPos = out.length;
+      for (let i = 0; i < out.length; i++) {
+        if (/\d/.test(out[i])) seen++;
+        if (seen === digitsBeforeCaret) { newPos = i + 1; break; }
+      }
+      if (digitsBeforeCaret === 0) newPos = 0;
+    }
+    el.setSelectionRange(newPos, newPos);
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  ['PassportIssueDate', 'BirthDate', 'CommandDate'].forEach(attachAutoSlashDate);
+});
+
 // ضبط التاريخ الهجري + اليوم تلقائيًا + إرسالها للباك إن توفّر Electron
 function setHijriAndDayNow(){
   const now = new Date();
