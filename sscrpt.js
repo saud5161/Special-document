@@ -30,17 +30,15 @@ function _isNoDateRollbackChoice(){
   } catch { return false; }
 }
 
-// "تاريخ الصادر" = تاريخ اليوم السابق دائمًا بالنسبة للتاريخ المعروض حاليًا في custom-hijri-date
-// مثال: التاريخ المعروض 23/3 ← تاريخ الصادر يظهر 22/3
+// "تاريخ الصادر" = نفس تاريخ اليوم (نفس القيمة والمنطق المستخدم في custom-hijri-date تمامًا)
+// أي أنه يتبع نفس قاعدة إرجاع التاريخ لليوم السابق بين 12ص و05:40ص (baseDate تصل هنا وقد طُبِّق عليها ذلك مسبقًا)
 function setIssuedDateFromBaseDate(baseDate){
   const dst = document.getElementById('IssuedDate');
   if (!dst) return;
-  const prevDay = new Date(baseDate);
-  prevDay.setDate(prevDay.getDate() - 1);
   const fmt = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', {
     day: '2-digit', month: '2-digit', year: 'numeric'
   });
-  const parts = fmt.formatToParts(prevDay);
+  const parts = fmt.formatToParts(baseDate);
   const y = parts.find(p => p.type === 'year')?.value || '';
   const m = parts.find(p => p.type === 'month')?.value || '';
   const d = parts.find(p => p.type === 'day')?.value || '';
@@ -50,16 +48,24 @@ function setIssuedDateFromBaseDate(baseDate){
 // ضبط التاريخ الهجري + اليوم تلقائيًا + إرسالها للباك إن توفّر Electron
 function setHijriAndDayNow(){
   const now = new Date();
+  const issuedBase = new Date(now); // نسخة منفصلة لتاريخ الصادر — تُطبَّق عليها قاعدة الإرجاع دائمًا بلا استثناء
   let useYesterday = false;
 
   const hour = now.getHours();
   const minute = now.getMinutes();
 
-  // بين 00:00 و 05:40 (أو 05:20 في كشف) نرجع لليوم السابق
+  const shouldRollback = (hour < 5 || (hour === 5 && minute < _cutMinuteForShift()));
+
+  // تاريخ اليوم المعروض: بين 00:00 و 05:40 (أو 05:20 في كشف) نرجع لليوم السابق
   // باستثناء اختيارات معينة (اشعار/اشعار-منع/منع-سفر/قبض/تفتيش) يظهر فيها دائمًا تاريخ اليوم الفعلي
-  if (!_isNoDateRollbackChoice() && (hour < 5 || (hour === 5 && minute < _cutMinuteForShift()))) {
+  if (!_isNoDateRollbackChoice() && shouldRollback) {
     now.setDate(now.getDate() - 1);
     useYesterday = true;
+  }
+
+  // تاريخ الصادر: يطبّق قاعدة الإرجاع لليوم السابق دائمًا، حتى في الاختيارات المستثناة أعلاه
+  if (shouldRollback) {
+    issuedBase.setDate(issuedBase.getDate() - 1);
   }
 // داخل setHijriAndDayNow()… بعد حساب hour/minute وتعبئة الحقول
 {
@@ -89,7 +95,7 @@ function setHijriAndDayNow(){
   const weekday = new Intl.DateTimeFormat('ar-SA',{weekday:'long', numberingSystem:'arab'}).format(now);
 
   $('custom-hijri-date') && ( $('custom-hijri-date').value = hijri );
-  setIssuedDateFromBaseDate(now);
+  setIssuedDateFromBaseDate(issuedBase);
   $('custom-weekday')    && ( $('custom-weekday').value    = weekday );
 
   const hdr = $('header-date');
@@ -4567,7 +4573,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // تعبئة القيم الجديدة
     document.getElementById('custom-hijri-date').value = hijri;
     document.getElementById('custom-weekday').value = weekday;
-    setIssuedDateFromBaseDate(now);
+
+    // تاريخ الصادر: يطبّق قاعدة الإرجاع لليوم السابق دائمًا بناءً على الوقت الفعلي الحالي
+    const hh = now.getHours(), mm = now.getMinutes();
+    const shouldRollback = (hh < 5 || (hh === 5 && mm < _cutMinuteForShift()));
+    const issuedBase = new Date(now);
+    if (shouldRollback) issuedBase.setDate(issuedBase.getDate() - 1);
+    setIssuedDateFromBaseDate(issuedBase);
     const hdr = document.getElementById('header-date');
     if (hdr) hdr.textContent = `${weekday} - ${hijri}`;
 
