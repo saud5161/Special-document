@@ -22,6 +22,31 @@ function _cutMinuteForShift(){
   return _isKashfChoice() ? 20 : 40;
 }
 
+// اختيارات لا يُطبَّق عليها إرجاع التاريخ لليوم السابق — يظهر فيها دائمًا تاريخ اليوم الفعلي
+function _isNoDateRollbackChoice(){
+  try {
+    const c = (localStorage.getItem('wordLinkChoice') || localStorage.getItem('lastWordLinkChoice') || '').trim();
+    return ['اشعار', 'اشعار-منع', 'منع-سفر', 'قبض', 'تفتيش'].includes(c);
+  } catch { return false; }
+}
+
+// "تاريخ الصادر" = تاريخ اليوم السابق دائمًا بالنسبة للتاريخ المعروض حاليًا في custom-hijri-date
+// مثال: التاريخ المعروض 23/3 ← تاريخ الصادر يظهر 22/3
+function setIssuedDateFromBaseDate(baseDate){
+  const dst = document.getElementById('IssuedDate');
+  if (!dst) return;
+  const prevDay = new Date(baseDate);
+  prevDay.setDate(prevDay.getDate() - 1);
+  const fmt = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', {
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  });
+  const parts = fmt.formatToParts(prevDay);
+  const y = parts.find(p => p.type === 'year')?.value || '';
+  const m = parts.find(p => p.type === 'month')?.value || '';
+  const d = parts.find(p => p.type === 'day')?.value || '';
+  dst.value = `${d}/${m}/${y} هـ`;
+}
+
 // ضبط التاريخ الهجري + اليوم تلقائيًا + إرسالها للباك إن توفّر Electron
 function setHijriAndDayNow(){
   const now = new Date();
@@ -31,7 +56,8 @@ function setHijriAndDayNow(){
   const minute = now.getMinutes();
 
   // بين 00:00 و 05:40 (أو 05:20 في كشف) نرجع لليوم السابق
-  if (hour < 5 || (hour === 5 && minute < _cutMinuteForShift())) {
+  // باستثناء اختيارات معينة (اشعار/اشعار-منع/منع-سفر/قبض/تفتيش) يظهر فيها دائمًا تاريخ اليوم الفعلي
+  if (!_isNoDateRollbackChoice() && (hour < 5 || (hour === 5 && minute < _cutMinuteForShift()))) {
     now.setDate(now.getDate() - 1);
     useYesterday = true;
   }
@@ -63,6 +89,7 @@ function setHijriAndDayNow(){
   const weekday = new Intl.DateTimeFormat('ar-SA',{weekday:'long', numberingSystem:'arab'}).format(now);
 
   $('custom-hijri-date') && ( $('custom-hijri-date').value = hijri );
+  setIssuedDateFromBaseDate(now);
   $('custom-weekday')    && ( $('custom-weekday').value    = weekday );
 
   const hdr = $('header-date');
@@ -443,6 +470,7 @@ IssuedExtra1:     $('IssuedExtra1')?.value     || '', // صادر إضافي 1 (
     IssuedReports:    $('IssuedReports')?.value    || '', // التقارير
     IssuedGates:      $('IssuedGates')?.value      || '', // البوابات
     IssuedTitle: $('IssuedTitle')?.value || '', // عنوان الصادر
+    IssuedDate:  $('IssuedDate')?.value  || '', // تاريخ الصادر (نفس التاريخ الهجري الحالي)
     // صادر إضافي — يُحسب تلقائيًا من IssuedExtra1 بدون حقول إضافية
     IssuedExtra1:     ex1Raw, // من الحقل الوحيد الموجود
     IssuedExtra2:     ex2,
@@ -4539,6 +4567,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // تعبئة القيم الجديدة
     document.getElementById('custom-hijri-date').value = hijri;
     document.getElementById('custom-weekday').value = weekday;
+    setIssuedDateFromBaseDate(now);
     const hdr = document.getElementById('header-date');
     if (hdr) hdr.textContent = `${weekday} - ${hijri}`;
 
