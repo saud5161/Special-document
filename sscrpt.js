@@ -720,7 +720,10 @@ const choice =
   // ==========================================================
   if (choice === "مغادرة-مواطن") {
     const count = parseInt(document.getElementById('traveler-count')?.value) || 1;
-    const baseData = collect(); // المسافر رقم 1 (TravelerName/id/PassportNumber/Nationality) يُجمع كالمعتاد
+    // ⚠️ لا نستدعي collect() هنا من جديد: clearIndividualFields() أعلاه يكون قد أفرغ
+    // حقل #IssuedNumber بالفعل (نفس id المستخدم في clearIndividualFields)، فتُعاد قراءته فارغًا.
+    // نعيد استخدام النسخة "data" المجمّعة في بداية saveAll() قبل التفريغ، وهي تحتوي القيم الصحيحة.
+    const baseData = { ...data }; // المسافر رقم 1 (TravelerName/id/PassportNumber/Nationality/IssuedNumber...)
 
     baseData.TravelerCount = String(count);
 
