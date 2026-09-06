@@ -9,8 +9,41 @@
     <link rel="icon" href="img/icon-g.png" type="image/x-icon">
     <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/all.css">
+
+    <style>
+        div.model-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 34px !important;
+            color: #1e5631;
+            position: relative;
+        }
+        .badge-icon {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            font-size: 14px;
+            background: #ffffff;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 1px solid #eef2f5;
+        }
+        .badge-red { color: #d32f2f; }
+        .badge-gold { color: #c7a33a; }
+        .badge-green { color: #1e5631; }
+
+        .model-card:hover div.model-icon {
+            color: #c7a33a !important;
+        }
+    </style>
 </head>
-<body>
+<body class="forms-list-page">
     <div id="password-container" style="
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0;
@@ -35,60 +68,26 @@
 
     <div class="top-bar">
         <div class="right">
-            <div class="logo-container">
-                <img src="img/main-httpswww.gdp.gov.saportalassetsimglogo.png" alt="الشعار">
-                <div>
-                  </div>
-            </div>
+          <a href="#" id="theme-toggle" class="theme-toggle" aria-label="تفعيل الوضع الداكن" aria-pressed="false" title="الوضع الداكن">
+            <i class="fas fa-moon"></i>
+            <span class="theme-toggle-text">الوضع الداكن</span>
+          </a>
         </div>
         <div class="center">
             <span id="date"></span>
         </div>
         <div class="left">
-            <a href="#" id="theme-toggle" class="theme-toggle" aria-label="تفعيل الوضع الداكن" aria-pressed="false">
-              <i class="fas fa-moon"></i>
-              <span class="theme-toggle-text">الوضع الداكن</span>
+            <a href="passport-d.html" class="close-app-btn" title="إغلاق والعودة للرئيسية" aria-label="إغلاق">
+                <i class="fa-solid fa-xmark"></i>
             </a>
-
-            <a href="dic/Doc4.docm">
-                <i class="btn-icon word-icon" style="color: #ffffff;"></i>
-            </a>
-            <a href="dic/تثبيت البرنامج + التحديثات.pdf" target="_blank" style="font-size: 14px; color: #2c3e50; text-decoration: none;">
-              <i class="fa-solid fa-circle-question" style="margin-left: 5px;"></i> تعليمات
-            </a>
-
-            <a href="#"><i class="fas fa-desktop"></i></a>
-        
-            <a href="#" onclick="fetchLatestRelease()">
-                <div class="icon-with-notification">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">1</span>
-                </div>
-             </a>
-             <div id="notification-content" style="display: none;">
-                 <p id="latest-release-text">جارٍ التحميل...</p>
-             </div>
-             
-            <a id="print-button"><i class="fas fa-print"></i></a>
-            
-            <a href="#" onclick="toggleHeadsetNotification(event)">
-                <div class="icon-with-notification">
-                    <i class="fas fa-headset"></i>
-                    <span class="notification-star">1</span>
-                </div>
-             </a>
-             <div id="headset-notification-content" style="display: none;">
-                 <p id="headset-latest-release-text">في حال وجود اي ملاحظة او اقتراح يرجى التواصل واتس اب فقط مع سعود الحجي رقم جوال 0568190224</p>
-             </div>
-             
-            <a href="passport-d.html"><i class="fa-solid fa-power-off"></i></a>
         </div>
     </div>
-    
+
     <div class="search-bar">
         <div style="margin: 20px;"></div>
         <input type="text" id="search-input" placeholder="ابحث هنا...">
         <button id="search-button">بحث</button>
+        <button id="clear-search-button" type="button" title="تفريغ البحث">تفريغ</button>
         <div id="search-feedback" class="search-feedback" aria-live="polite" style="display:none;"></div>
         <div style="margin: 20px;"></div>
     </div>
@@ -134,15 +133,42 @@
           </li>
         </ul>
 
+        <div id="messageBox" style="margin-top: 10px; font-weight: bold;"></div>
         <div class="update-button-container">
-            <a href="#" onclick="location.reload()" class="sidebar-refresh-btn">
+            <a href="#" onclick="handleUpdateClick(event)" class="sidebar-refresh-btn">
                 <i class="fas fa-arrows-rotate"></i> <span>تحديث النماذج</span>
             </a>
+            <label style="display:flex; align-items:center; gap:6px; font-size:11px; margin-top:6px; cursor:pointer; user-select:none;">
+              <input type="checkbox" id="force-update-checkbox">
+              فرض التحديث (تجاوز الذاكرة المؤقتة)
+            </label>
             <div id="messageBox" style="margin-top: 10px; font-weight: bold;"></div>
         </div>
+        <script>
+            async function handleUpdateClick(e) {
+              e.preventDefault();
+              const forceEl = document.getElementById('force-update-checkbox');
+              const box = document.getElementById('messageBox');
+              if (forceEl && forceEl.checked && window.customAPI && window.customAPI.forceUpdateAll) {
+                if (box) { box.textContent = '🔄 جارٍ فرض التحديث...'; box.style.color = 'blue'; }
+                try {
+                  const n = await window.customAPI.forceUpdateAll();
+                  if (box) { box.textContent = `✅ تم فرض تحديث ${n} ملف${n > 1 ? 'ات' : ''}`; box.style.color = 'green'; }
+                  setTimeout(() => location.reload(), 1200);
+                } catch (err) {
+                  console.error('فشل فرض التحديث:', err);
+                  if (box) { box.textContent = '❌ فشل فرض التحديث، الرجاء المحاولة لاحقًا'; box.style.color = 'red'; }
+                }
+              } else {
+                location.reload();
+              }
+            }
+        </script>
     </div>
-        
+
     <div class="content">
+        <div class="departure-hero" role="img" aria-label="مطار الملك خالد الدولي"></div>
+
         <div class="quick-links">
             <span>انتقال سريع:</span>
             <a href="#">جميع النماذج اليومية</a>
@@ -163,11 +189,6 @@
               <span id="arrow-icon"><i class="fa fa-chevron-down"></i></span>
             </h3>
           </div>
-          <div style="font-size: 13px; color: green; margin-top: 15px; display: flex; align-items: center; gap: 8px;">
-            ⚠️ في حال توقف مربع التعبئة في نماذج الوورد اضغط على الشريط في الأعلى أيقونة
-            <span class="btn-icon word-icon" style="pointer-events: none;"></span>
-          </div>
-
           <div id="instruction-content" style="display: none;" class="instruction-content">
             <ol>
               <li><strong>في حال ظهور رسالة "قامت مايكروسوفت بمنع وحدات المايكرو"</strong><br>يرجى مشاهدة الشرح: <a href="vido/2024-08-26 06-08-25.mp4" class="btn-blue">عرض الشرح</a></li>
@@ -180,7 +201,50 @@
           </div>
         </div>
 
-        
+        <button id="feedback-toggle-btn" class="feedback-toggle-btn" onclick="toggleFeedbackBox()">
+            <i class="fas fa-comment-dots"></i> مساعدة واقتراحات
+        </button>
+
+        <div id="feedback-popup-box" class="feedback-popup-box">
+            <div class="feedback-header">
+                <h4><i class="fas fa-comment-dots"></i> تواصل مع المطور</h4>
+                <button class="close-feedback-btn" onclick="toggleFeedbackBox()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="feedback-body">
+                <p style="font-size: 11px; color: #64748b; margin-top: 0; margin-bottom: 10px; font-weight: bold;">سيتم إرسال رسالتك مباشرة للمطور</p>
+
+                <label for="feedback-type">نوع الرسالة</label>
+                <select id="feedback-type">
+                    <option value="اقتراح">💡 اقتراح</option>
+                    <option value="مشكلة">⚠️ مشكلة</option>
+                    <option value="تعديل">✏️ طلب تعديل</option>
+                </select>
+
+                <label for="feedback-message">التفاصيل</label>
+                <textarea id="feedback-message" rows="3" placeholder="اكتب تفاصيل الاقتراح أو المشكلة هنا..."></textarea>
+
+                <button id="submit-feedback-btn" class="btn-primary" onclick="sendFeedbackToSupabase()">إرسال الرسالة</button>
+                <p id="feedback-status-msg" style="margin-top: 10px; font-weight: 800; font-size: 12px; text-align: center; display: none;"></p>
+            </div>
+        </div>
+
+        <div class="shift-form recent-files-widget">
+          <div class="instruction-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 style="margin: 0;">
+              <i class="fa-solid fa-clock-rotate-left" style="color: #c7a33a; margin-left: 8px;"></i>
+              <span> اخر ملفات الوورد التي تم حفظها</span>
+            </h3>
+            <button class="btn-green" onclick="openDownloadsFolderDirect()" style="margin: 0; padding: 6px 12px; font-size: 11px; cursor: pointer;">
+              <i class="fa-solid fa-folder-open"></i> فتح
+            </button>
+          </div>
+
+          <div class="recent-files-list-container">
+            <ul id="recent-docm-list" class="recent-files-list">
+              <li style="text-align: center; color: #64748b; font-size: 12px;"><i class="fas fa-spinner fa-spin"></i> جاري الاتصال وجلب الملفات...</li>
+            </ul>
+          </div>
+        </div>
 
         <div class="section-header highlight-style">
             <h2><i class="fas fa-calendar-check"></i> الحضور والانصراف</h2>
@@ -1171,5 +1235,20 @@
 
     <script src="script.js"></script>
     <script src="renderer.js"></script>
+    <script>
+      // عرض تاريخ اليوم بالتقويم الهجري في الشريط العلوي (خاص بهذه الصفحة فقط)
+      document.addEventListener("DOMContentLoaded", function () {
+        var dateEl = document.getElementById("date");
+        if (!dateEl) return;
+        try {
+          var options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+          dateEl.textContent = new Date().toLocaleDateString("ar-SA-u-ca-islamic-umalqura", options);
+        } catch (e) {
+          try {
+            dateEl.textContent = new Date().toLocaleDateString("ar-SA-u-ca-islamic", options);
+          } catch (e2) {}
+        }
+      });
+    </script>
 </body>
 </html>
