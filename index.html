@@ -509,6 +509,19 @@
   <option value="مشغل كاونتر"></option>
   <option value="قائمة"></option>
 </datalist>
+
+<!-- مدير الإدارة (يظهر فقط في وضع خطاب-المناوبات) -->
+<label for="ManagerDept" id="ManagerDeptLabel" style="display:none">
+  <i class="fas fa-user-tie"></i> مدير إدارة
+</label>
+<input id="ManagerDept"
+       list="managerDeptOptions"
+       placeholder="اختر أو اكتب اسم الإدارة"
+       style="display:none">
+<datalist id="managerDeptOptions">
+  <option value="الموارد البشرية"></option>
+  <option value="المناوبات"></option>
+</datalist>
 <input id="ApplyDuration" list="apply-durations" placeholder="ساعة … 6 ساعات" style="display:none">
 <datalist id="apply-durations">
   <option value="ساعة"></option>
@@ -1019,6 +1032,32 @@
 
           </div>
         </section>
+
+        <!-- قسم مستقل: بيانات عطل السيتا (تظهر فقط عند اختيار عطل-سيتا) -->
+        <section class="card" id="card-cita-fault" style="display:none">
+          <h3 class="card__title"><i class="fas fa-server"></i> بيانات عطل السيتا</h3>
+          <div class="card__body">
+            <div class="issued-title-row">
+              <label for="FaultTime"><i class="fas fa-clock"></i> وقت العطل</label>
+              <input id="FaultTime" type="text" placeholder="مثال: 12:50 مساءً">
+              <button type="button" class="ampm-quick-btn" data-target="FaultTime" data-ampm="صباحاً">صباحاً</button>
+              <button type="button" class="ampm-quick-btn" data-target="FaultTime" data-ampm="مساءً">مساءً</button>
+            </div>
+
+            <div class="issued-title-row">
+              <label for="FaultEndTime"><i class="fas fa-clock"></i> وقت انتهاء العطل</label>
+              <input id="FaultEndTime" type="text" placeholder="مثال: 01:10 مساءً">
+              <button type="button" class="ampm-quick-btn" data-target="FaultEndTime" data-ampm="صباحاً">صباحاً</button>
+              <button type="button" class="ampm-quick-btn" data-target="FaultEndTime" data-ampm="مساءً">مساءً</button>
+            </div>
+
+            <div class="issued-title-row">
+              <label for="ReportNumber"><i class="fas fa-hashtag"></i> رقم البلاغ</label>
+              <input id="ReportNumber" type="text" placeholder="رقم البلاغ">
+            </div>
+          </div>
+        </section>
+
         <section class="card" id="card-flight-now" style="display:none">
           <h3 class="card__title"><i class="fas fa-plane-departure"></i> بيانات الرحلة المغادر عليها الآن</h3>
           <div class="card__body form-grid">

@@ -753,6 +753,16 @@ body.help-open #helpBox{ display:block; }
   width: 72px;
   text-align: center;
 }
+.issued-stat__pair select{
+  width: 68px;
+  text-align: center;
+  background:#ffffff;
+  border:1px solid #c8d6ff;
+  color:var(--blue-700);
+  border-radius:10px;
+  padding:6px 8px;
+  font-weight:700;
+}
 .issued-stat--featured{
   background: #dcfce7;
   border-color: #16a34a;
@@ -791,6 +801,21 @@ body.help-open #helpBox{ display:block; }
 @media (max-width:560px){
   .issued-stat{ flex: 1 1 calc(50% - 10px); }
 }
+
+/* أزرار إدراج سريع لصباحاً/مساءً بجانب حقول وقت العطل */
+.ampm-quick-btn{
+  border:1px solid #c8d6ff;
+  background:#eef3ff;
+  color:var(--blue-700);
+  border-radius:10px;
+  padding:7px 12px;
+  font-size:.85rem;
+  font-weight:700;
+  cursor:pointer;
+  transition:background .15s, border .15s;
+}
+.ampm-quick-btn:hover{ background:#dfe9ff; }
+.ampm-quick-btn:active{ background:var(--blue-600); color:#fff; }
 
 /* حقل صغير للأرقام فقط (قسم بيانات الصادر) */
 .sm-num{

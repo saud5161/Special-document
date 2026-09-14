@@ -145,6 +145,36 @@ document.addEventListener('DOMContentLoaded', () => {
   ['PassportIssueDate', 'BirthDate', 'CommandDate'].forEach(attachAutoSlashDate);
 });
 
+// أزرار إدراج سريع لصباحاً/مساءً بجانب حقلي وقت العطل ووقت الانتهاء
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.ampm-quick-btn');
+  if (!btn) return;
+  const target = document.getElementById(btn.dataset.target);
+  if (!target) return;
+  let val = (target.value || '').replace(/\s*(صباحاً|مساءً)\s*$/, '').trim();
+  if (!/\d/.test(val)) {
+    alert('ادخل الوقت أولاً');
+    target.focus();
+    return;
+  }
+  target.value = (val + ' ' + btn.dataset.ampm).trim();
+  target.focus();
+});
+
+// رقم البلاغ: إبقاء البادئة "INC" ثابتة، ومنع مسحها بالكامل عند التركيز على حقل فارغ
+document.addEventListener('DOMContentLoaded', () => {
+  const reportNumberField = document.getElementById('ReportNumber');
+  if (reportNumberField) {
+    reportNumberField.addEventListener('focus', () => {
+      if (!reportNumberField.value) {
+        reportNumberField.value = 'INC';
+        reportNumberField.setSelectionRange(3, 3);
+      }
+    });
+  }
+});
+
+
 // ضبط التاريخ الهجري + اليوم تلقائيًا + إرسالها للباك إن توفّر Electron
 function setHijriAndDayNow(){
   const now = new Date();
@@ -577,6 +607,12 @@ IssuedExtra1:     $('IssuedExtra1')?.value     || '', // صادر إضافي 1 (
     IssuedGates:      $('IssuedGates')?.value      || '', // البوابات
     IssuedTitle: $('IssuedTitle')?.value || '', // عنوان الصادر
     IssuedDate:  $('IssuedDate')?.value  || '', // تاريخ الصادر (نفس التاريخ الهجري الحالي)
+
+    // ===== عطل السيتا: القيمة المجمّعة (مثال: "12:50 مساءً") تُقرأ من حقل مخفي واحد يُحدَّث تلقائيًا =====
+    FaultTime: $('FaultTime')?.value || '',
+    FaultEndTime: $('FaultEndTime')?.value || '',
+    ReportNumber: $('ReportNumber')?.value || '',
+    ManagerDept: $('ManagerDept')?.value || '',
     // صادر إضافي — يُحسب تلقائيًا من IssuedExtra1 بدون حقول إضافية
     IssuedExtra1:     ex1Raw, // من الحقل الوحيد الموجود
     IssuedExtra2:     ex2,
@@ -1023,6 +1059,10 @@ if (choice === "خطاب-باسم") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تخلف على الرحلة فقط.docm";
   } else if (choice === "تخلف-ترانزيت") {
   wordLink.href = "dic/خطابات جاهزة لتعديل/تخلف ترانزيت.docm";
+  } else if (choice === "تخلف-معاد") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/تخلف-معاد.docm";
+  } else if (choice === "عطل-سيتا") {
+  wordLink.href = "dic/خطابات جاهزة لتعديل/عطل في تسجيل المسافرين.docm";
   } else if (choice === "تخلف-تعهد" || choice === "تعهد") {
   wordLink.href = "dic/السعودين/تعهد.docm";
   } else if (choice === "تعقب-مغادرة") {
@@ -1728,33 +1768,57 @@ if (choice === "افادة-غياب") {
 
 
 
-if (choice === "تخلف-ترانزيت") {
-  // إخفاء رقم الهوية - إقامة (خاص بترانزيت فقط، لا يظهر في تخلف-مغادرة العادي)
+if (choice === "تخلف-ترانزيت" || choice === "تخلف-معاد") {
+  // إخفاء رقم الهوية - إقامة (خاص بترانزيت ومعاد، لا يظهر في تخلف-مغادرة العادي)
   const idField = document.getElementById("id");
   const idLabel = document.querySelector("label[for='id']");
   if (idField) idField.style.display = "none";
   if (idLabel) idLabel.style.display = "none";
 }
-if (choice === "تخلف-مغادرة" || choice === "تخلف-ترانزيت") {
+if (choice === "عطل-سيتا") {
+  // إخفاء بيانات المسافر وبيانات الرحلة (بيانات التاريخ والمستلم تبقى ظاهرة كالمعتاد)
+  const travelerCard = document.getElementById("card-traveler");
+  const flightCard = document.getElementById("card-flight");
+  if (travelerCard) travelerCard.style.display = "none";
+  if (flightCard) flightCard.style.display = "none";
+
+  // إظهار قسم بيانات عطل السيتا
+  const citaCard = document.getElementById("card-cita-fault");
+  if (citaCard) citaCard.style.display = "block";
+  // وقت العطل ووقت الانتهاء يُدخلان يدويًا في حقل واحد لكل منهما (FaultTime / FaultEndTime)
+
+  // رقم البلاغ: تعبئة البادئة "INC" تلقائيًا ووضع المؤشر بعد C مباشرة
+  const reportNumberField = document.getElementById('ReportNumber');
+  if (reportNumberField && !reportNumberField.value) {
+    reportNumberField.value = 'INC';
+    reportNumberField.focus();
+    reportNumberField.setSelectionRange(3, 3);
+  }
+}
+if (choice === "تخلف-مغادرة" || choice === "تخلف-ترانزيت" || choice === "تخلف-معاد") {
   // إظهار قسم "بند إضافي" (لم يغادر المسافر على رحلته...)
   const notDepartedCard = document.getElementById("card-not-departed");
   if (notDepartedCard) notDepartedCard.style.display = "block";
 
-  // إخفاء اسم الآمر المناوب ورتبته
-  const cmdName  = document.getElementById("commander-name");
-  const cmdRank  = document.getElementById("commander-rank");
-  const cmdNameL = document.querySelector("label[for='commander-name']");
-  const cmdRankL = document.querySelector("label[for='commander-rank']");
-  if (cmdName)  cmdName.style.display = "none";
-  if (cmdRank)  cmdRank.style.display = "none";
-  if (cmdNameL) cmdNameL.style.display = "none";
-  if (cmdRankL) cmdRankL.style.display = "none";
+  // إخفاء اسم الآمر المناوب ورتبته (باستثناء تخلف-معاد يبقى ظاهرًا)
+  if (choice !== "تخلف-معاد") {
+    const cmdName  = document.getElementById("commander-name");
+    const cmdRank  = document.getElementById("commander-rank");
+    const cmdNameL = document.querySelector("label[for='commander-name']");
+    const cmdRankL = document.querySelector("label[for='commander-rank']");
+    if (cmdName)  cmdName.style.display = "none";
+    if (cmdRank)  cmdRank.style.display = "none";
+    if (cmdNameL) cmdNameL.style.display = "none";
+    if (cmdRankL) cmdRankL.style.display = "none";
+  }
 
-  // إخفاء نوع التأشيرة فقط
-  const visaEl  = document.getElementById("VisaType");
-  const visaLbl = document.querySelector("label[for='VisaType']");
-  if (visaEl)  visaEl.style.display = "none";
-  if (visaLbl) visaLbl.style.display = "none";
+  // إخفاء نوع التأشيرة (باستثناء تخلف-مغادرة/راكب عادي يبقى ظاهرًا)
+  if (choice !== "تخلف-مغادرة") {
+    const visaEl  = document.getElementById("VisaType");
+    const visaLbl = document.querySelector("label[for='VisaType']");
+    if (visaEl)  visaEl.style.display = "none";
+    if (visaLbl) visaLbl.style.display = "none";
+  }
 }
 
 
@@ -2346,6 +2410,17 @@ if (choice === "تعديل-جواز") {
     const jobLabel = document.getElementById("IndividualJobNatureLabel");
     if (jobField) jobField.style.display = "block";
     if (jobLabel) jobLabel.style.display = "block";
+
+    // 4.1) إظهار حقل "مدير إدارة" فقط في وضع خطاب-المناوبات
+    const managerDeptField = document.getElementById("ManagerDept");
+    const managerDeptLabel = document.getElementById("ManagerDeptLabel");
+    if (choice === "خطاب-المناوبات") {
+      if (managerDeptField) managerDeptField.style.display = "block";
+      if (managerDeptLabel) managerDeptLabel.style.display = "block";
+    } else {
+      if (managerDeptField) managerDeptField.style.display = "none";
+      if (managerDeptLabel) managerDeptLabel.style.display = "none";
+    }
 
     // 5) إخفاء المجموعات (2) و (3) داخل بطاقة الفرد
     [
@@ -5139,7 +5214,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const printAlert = document.getElementById("print-alert-msg");
 
   if (printAlert) {
-    if (choice === "تخلف-مغادرة" || choice === "تخلف-ترانزيت") {
+    if (choice === "تخلف-مغادرة" || choice === "تخلف-ترانزيت" || choice === "تخلف-معاد") {
       printAlert.style.display = "flex";
     } else {
       printAlert.style.display = "none";

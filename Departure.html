@@ -1071,7 +1071,7 @@
   <div class="model-card">
     <div class="card-content">
       <div class="model-icon"><i class="fa-solid fa-user-tie"></i></div>
-      <h3>خطاب لمدير ادارة المناوبات</h3>
+      <h3>خطاب لمدير ادارة المناوبات/الموارد</h3>
       <p>خطاب لرد على خطاب معين</p>
     </div>
     <div class="card-actions">     
@@ -1556,10 +1556,11 @@
     </div>
     <div class="card-actions">
       <a
-        href="dic/خطابات جاهزة لتعديل/عطل في تسجيل المسافرين.docx"
+        href="index.html"
         class="btn-icon word-icon"
         target="_top"
-        title="تعديل Word">
+        title="تعديل Word"
+        onclick="localStorage.setItem('wordLinkChoice', 'عطل-سيتا')">
       </a>
     </div>
   </div>
@@ -2484,6 +2485,10 @@
         background:#fef7e0; color:#a16207; border-color:#f3d98b;
       }
       #takhaluf-choice-overlay .tkf-btn--transit:hover{ box-shadow:0 8px 18px rgba(212,160,23,.25); }
+      #takhaluf-choice-overlay .tkf-btn--returned{
+        background:#eafaf0; color:#1e5631; border-color:#a9dfc0;
+      }
+      #takhaluf-choice-overlay .tkf-btn--returned:hover{ box-shadow:0 8px 18px rgba(30,86,49,.25); }
       #takhaluf-choice-overlay .tkf-close{
         margin-top:18px;
         background:none; border:none;
@@ -2504,6 +2509,10 @@
             <i class="fa-solid fa-route"></i>
             ترانزيت
           </button>
+          <button type="button" class="tkf-btn tkf-btn--returned" onclick="resolveTakhalufChoice('تخلف-معاد')">
+            <i class="fa-solid fa-rotate-left"></i>
+            معاد
+          </button>
         </div>
         <button type="button" class="tkf-close" onclick="closeTakhalufChoiceModal()">إغلاق</button>
       </div>
@@ -2523,6 +2532,7 @@
         window.top.location.href = 'index.html';
       }
     </script>
+
 
 </body>
  <script src="script.js"></script>
