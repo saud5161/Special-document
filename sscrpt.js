@@ -840,17 +840,19 @@ const choice =
       delete baseData.IssuedTitle;
     }
 
-    // ✅ ضمان تضمين تاريخ اليوم الهجري في form.txt — يُحسب مباشرة دائماً (بغض النظر عن حقل الواجهة) لضمان وجوده دوماً
-    try {
-      const now = new Date();
-      const fmt = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', { day: '2-digit', month: '2-digit', year: 'numeric' });
-      const parts = fmt.formatToParts(now);
-      const y = parts.find(p => p.type === 'year')?.value || '';
-      const m = parts.find(p => p.type === 'month')?.value || '';
-      const d = parts.find(p => p.type === 'day')?.value || '';
-      baseData.TodayDate = `${d}/${m}/${y} هـ`;
-    } catch (e) {
-      // في حال فشل الحساب لأي سبب نُبقي على القيمة القادمة من collect() إن وُجدت
+// ✅ الاعتماد على التاريخ المكتوب يدوياً، وحسابه تلقائياً فقط إذا كان الحقل فارغاً
+    if (!baseData.TodayDate || baseData.TodayDate.trim() === '') {
+      try {
+        const now = new Date();
+        const fmt = new Intl.DateTimeFormat('en-SA-u-ca-islamic-umalqura', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const parts = fmt.formatToParts(now);
+        const y = parts.find(p => p.type === 'year')?.value || '';
+        const m = parts.find(p => p.type === 'month')?.value || '';
+        const d = parts.find(p => p.type === 'day')?.value || '';
+        baseData.TodayDate = `${d}/${m}/${y} هـ`;
+      } catch (e) {
+        // في حال فشل الحساب لأي سبب نُبقي على القيمة القادمة من collect() إن وُجدت
+      }
     }
 
     for (let i = 1; i <= count; i++) {
