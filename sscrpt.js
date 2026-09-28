@@ -4277,6 +4277,122 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 
+/* ===== صندوق مدمج: اقتراحات الرحلات المجدولة حسب الصالة المختارة (آخر/القادمة 4 ساعات) ===== */
+(function () {
+  const WINDOW_MIN = 4 * 60; // 4 ساعات بالدقائق
+  let cachedRoutes = null;
+
+  function timeToMinutes(hhmm) {
+    const m = String(hhmm || '').match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return null;
+    return (parseInt(m[1], 10) * 60) + parseInt(m[2], 10);
+  }
+
+  async function loadNearbyFlightsData() {
+    if (cachedRoutes) return cachedRoutes;
+    try {
+      const res = await fetch('fly.json', { cache: 'no-store' });
+      const data = await res.json();
+
+      const airlineByIata = new Map();
+      (data.airlines || []).forEach(a => {
+        const code = String(a.iata || '').toUpperCase().trim();
+        const ar = String(a.name_ar || '').trim();
+        if (code && ar) airlineByIata.set(code, ar);
+      });
+
+      const codes = Array.from(airlineByIata.keys()).sort((a, b) => b.length - a.length);
+      const getPrefix = no => {
+        const up = String(no || '').toUpperCase();
+        for (const c of codes) { if (up.startsWith(c)) return c; }
+        return (up.match(/^[A-Z]+/) || [''])[0];
+      };
+
+      cachedRoutes = (data.extra_routes || [])
+        .map(r => ({
+          no: r.no,
+          dest: r.dest || '',
+          hall: String(r.hall || ''),
+          minutes: timeToMinutes(r.time),
+          airlineAr: airlineByIata.get(getPrefix(r.no)) || ''
+        }))
+        .filter(r => r.minutes !== null && r.hall);
+
+      return cachedRoutes;
+    } catch (e) {
+      console.error('❌ فشل تحميل الرحلات المجدولة القريبة:', e);
+      return [];
+    }
+  }
+
+  function renderChips(container, list) {
+    if (!container) return;
+    container.innerHTML = '';
+    if (!list.length) {
+      container.innerHTML = '<span class="nearby-flights-empty">لا توجد رحلات مجدولة قريبة لهذه الصالة</span>';
+      return;
+    }
+    list.forEach(r => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'nearby-flights-chip';
+      btn.textContent = r.no;
+      btn.title = r.dest ? `${r.no} — ${r.dest}` : r.no;
+      btn.addEventListener('click', () => applyFlight(r));
+      container.appendChild(btn);
+    });
+  }
+
+  function applyFlight(r) {
+    const airlineField = document.getElementById('AirlineName');
+    const flightField = document.getElementById('FlightNumber');
+    const destField = document.getElementById('TravelDestination');
+
+    if (airlineField && r.airlineAr) airlineField.value = r.airlineAr;
+    if (flightField) flightField.value = r.no;
+    if (destField && r.dest) destField.value = r.dest;
+  }
+
+  async function refreshNearbyFlights() {
+    const listEl = document.getElementById('nearbyFlightsList');
+    if (!listEl) return;
+
+    const hallField = document.getElementById('hall-number');
+    const selectedHall = String(hallField?.value || '').trim();
+
+    if (!selectedHall) {
+      listEl.innerHTML = '<span class="nearby-flights-empty">اختر الصالة أولاً</span>';
+      return;
+    }
+
+    const routes = await loadNearbyFlightsData();
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+
+    const nearby = [];
+    routes.forEach(r => {
+      if (r.hall !== selectedHall) return;
+      const forward = ((r.minutes - nowMin) + 1440) % 1440;   // دقائق حتى موعد الرحلة القادم
+      const backward = ((nowMin - r.minutes) + 1440) % 1440;  // دقائق منذ آخر موعد للرحلة
+      const order = Math.min(forward, backward);
+      if (order <= WINDOW_MIN) nearby.push({ ...r, _order: order });
+    });
+
+    nearby.sort((a, b) => a._order - b._order);
+    renderChips(listEl, nearby);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    refreshNearbyFlights();
+    setInterval(refreshNearbyFlights, 5 * 60 * 1000); // تحديث كل 5 دقائق
+
+    const hallField = document.getElementById('hall-number');
+    if (hallField) {
+      ['input', 'change'].forEach(ev => hallField.addEventListener(ev, refreshNearbyFlights));
+    }
+  });
+})();
+
 
 (function(){
   const $ = (id)=>document.getElementById(id);

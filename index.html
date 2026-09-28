@@ -1008,6 +1008,14 @@
               <span id="prev-flight-note" style="font-size:12px; margin-inline-start:8px; color:#6b7280;" hidden>السابقة</span>
             </h3>
                       <div class="card__body form-grid">
+                        <!-- صندوق مدمج وصغير: اقتراحات الرحلات المجدولة حسب الصالة المختارة -->
+            <div class="nearby-flights-box" id="nearby-flights-box">
+              <div class="nearby-flights-box__title"><i class="fas fa-satellite-dish"></i> اختر الرحلات المجدولة في الصالة المختارة</div>
+              <div class="nearby-flights-chips" id="nearbyFlightsList">
+                <span class="nearby-flights-empty">اختر الصالة أولاً</span>
+              </div>
+            </div>
+
                         <!-- الخطوط الناقلة -->
             <label for="AirlineName"><i class="fas fa-plane-departure"></i> الخطوط الناقلة</label>
             <input id="AirlineName" list="airlines" placeholder="مثال: السعودية" />
@@ -1027,7 +1035,7 @@
             <div id="travel-route-row" class="form-row" hidden>
             <label for="TravelRoute"><i class="fas fa-route"></i> خط سير الرحلة</label>
             <input id="TravelRoute" placeholder="مثال: الرياض → دبي → لندن">
-            
+
           </div>
 
           </div>

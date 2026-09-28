@@ -802,6 +802,53 @@ body.help-open #helpBox{ display:block; }
   .issued-stat{ flex: 1 1 calc(50% - 10px); }
 }
 
+/* صندوق مدمج وصغير: اقتراحات الرحلات المجدولة حسب الصالة المختارة (داخل بيانات الرحلة) */
+.nearby-flights-box{
+  grid-column: 1 / -1;
+  background:#f8faff;
+  border:1px dashed #c8d6ff;
+  border-radius:10px;
+  padding:6px 8px;
+  margin-top:2px;
+  margin-bottom:2px;
+}
+.nearby-flights-box__title{
+  font-weight:700;
+  font-size:.72rem;
+  color:#64748b;
+  margin-bottom:5px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+.nearby-flights-box__title i{ font-size:.7rem; }
+.nearby-flights-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  max-height:64px;
+  overflow-y:auto;
+}
+.nearby-flights-chip{
+  border:1px solid #c8d6ff;
+  background:#ffffff;
+  color:var(--blue-700);
+  border-radius:6px;
+  padding:2px 8px;
+  font-size:.7rem;
+  font-weight:700;
+  cursor:pointer;
+  direction:ltr;
+  line-height:1.6;
+  transition:background .15s, border .15s, transform .1s;
+}
+.nearby-flights-chip:hover{ background:#e3ebff; }
+.nearby-flights-chip:active{ transform:scale(.96); }
+.nearby-flights-empty{
+  color:#94a3b8;
+  font-size:.7rem;
+}
+
 /* أزرار إدراج سريع لصباحاً/مساءً بجانب حقول وقت العطل */
 .ampm-quick-btn{
   border:1px solid #c8d6ff;
