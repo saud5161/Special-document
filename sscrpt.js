@@ -45,100 +45,19 @@ function setIssuedDateFromBaseDate(baseDate){
   dst.value = `${d}/${m}/${y} هـ`;
 }
 
-// إضافة "/" تلقائيًا أثناء الكتابة في حقول التاريخ اليدوية (يوم/شهر/سنة)
-// مع الحفاظ على موضع المؤشر حتى يمكن التعديل/الحذف في منتصف التاريخ (اليوم أو الشهر) بشكل طبيعي
-// يقبل "/" التي يكتبها المستخدم يدويًا أيضًا (مثال: كتابة "7/" تتحول تلقائيًا إلى "07/")
-// وإن لم يفصل المستخدم يدويًا ووصل الجزء الحالي رقمين، يُفصل تلقائيًا كالسابق
+// تنسيق حقول التاريخ اليدوية (يوم/شهر/سنة): بدون إدراج "/" أثناء الكتابة إطلاقًا،
+// يتم فقط تنسيق القيمة (يوم/شهر/سنة) بعد الانتهاء من الكتابة (blur)، والسنة تظهر من اليسار (LTR)
 function _formatSlashDate(raw) {
-  raw = raw.replace(/\s/g, '/'); // المسافة تُعامَل كفاصلة "/" أيضًا
-  raw = raw.replace(/[^\d/]/g, '');
-  raw = raw.replace(/\/{2,}/g, '/'); // منع تكرار الفاصلة (// أو أكثر) — حماية إضافية
-  let segs = raw.split('/');
-  if (segs.length > 3) segs = segs.slice(0, 3);
-
-  if (segs.length === 1 && segs[0].length > 2) {
-    segs = [segs[0].slice(0, 2), segs[0].slice(2)];
-  }
-  if (segs.length === 2 && segs[1].length > 2) {
-    segs = [segs[0], segs[1].slice(0, 2), segs[1].slice(2)];
-  }
-  if (segs.length > 3) segs = segs.slice(0, 3);
-
-  let day   = (segs[0] || '').slice(0, 2);
-  let month = segs.length >= 2 ? (segs[1] || '').slice(0, 2) : '';
-  let year  = segs.length >= 3 ? (segs[2] || '').slice(0, 4) : '';
-
-  const hasFirstSlash  = segs.length >= 2;
-  const hasSecondSlash = segs.length >= 3;
-
-  // صفر بادئ فقط للأقسام المُنهاة يدويًا بفاصلة وهي مكوّنة من رقم واحد
-  if (hasFirstSlash && day.length === 1) day = '0' + day;
-  if (hasSecondSlash && month.length === 1) month = '0' + month;
-
-  let out = day;
-  if (hasFirstSlash || day.length === 2) out += '/' + month;
-  if (hasSecondSlash) out += '/' + year;
-  return out;
+  const parts = String(raw || '').split(/[^\d]+/).filter(Boolean);
+  return parts.join('/');
 }
 function attachAutoSlashDate(id) {
   const el = document.getElementById(id);
   if (!el) return;
-
-  // عند الحذف بالضغط على Backspace مباشرة بعد "/": نحذف الرقم قبلها أيضًا
-  // (وإلا يبدو الحقل "عالقًا" لأن الحذف يزيل الشرطة فقط وتعاد إضافتها فورًا)
-  el.addEventListener('keydown', (e) => {
-    if (e.key === 'Backspace' && el.selectionStart === el.selectionEnd) {
-      const pos = el.selectionStart;
-      if (pos > 0 && el.value[pos - 1] === '/') {
-        e.preventDefault();
-        const newVal = el.value.slice(0, pos - 2) + el.value.slice(pos);
-        el.value = _formatSlashDate(newVal);
-        const newPos = Math.max(0, pos - 2);
-        el.setSelectionRange(newPos, newPos);
-      }
-      return;
-    }
-
-    // منع تكرار الفاصلة: لو ضغط المستخدم "/" أو مسافة والحرف الذي قبل المؤشر فاصلة بالفعل، نتجاهلها
-    if ((e.key === '/' || e.key === ' ') && el.selectionStart === el.selectionEnd) {
-      const pos = el.selectionStart;
-      if (pos > 0 && el.value[pos - 1] === '/') {
-        e.preventDefault();
-      }
-    }
-  });
-
-  el.addEventListener('input', () => {
-    const caretPos = el.selectionStart;
-    // إذا كان آخر ما كتبه المستخدم فعليًا هو "/" أو مسافة (تُعامَل كفاصلة أيضًا)، نضع المؤشر بعد الفاصلة المقابلة في الناتج
-    // (وليس حسب عدد الأرقام، لأن إضافة صفر بادئ يزيح مواضع الأرقام التي كتبها المستخدم)
-    const lastTypedChar = caretPos > 0 ? el.value[caretPos - 1] : '';
-    const justTypedSlash = lastTypedChar === '/' || lastTypedChar === ' ';
-    const digitsBeforeCaret  = el.value.slice(0, caretPos).replace(/\D/g, '').length;
-    const slashesBeforeCaret = (el.value.slice(0, caretPos).match(/[/ ]/g) || []).length;
-
-    const out = _formatSlashDate(el.value);
-    el.value = out;
-
-    let newPos;
-    if (justTypedSlash) {
-      let count = 0; newPos = out.length;
-      for (let i = 0; i < out.length; i++) {
-        if (out[i] === '/') {
-          count++;
-          if (count === slashesBeforeCaret) { newPos = i + 1; break; }
-        }
-      }
-    } else {
-      // إعادة وضع المؤشر بعد نفس عدد الأرقام التي كانت قبله سابقًا (بدل أن يقفز للنهاية)
-      let seen = 0; newPos = out.length;
-      for (let i = 0; i < out.length; i++) {
-        if (/\d/.test(out[i])) seen++;
-        if (seen === digitsBeforeCaret) { newPos = i + 1; break; }
-      }
-      if (digitsBeforeCaret === 0) newPos = 0;
-    }
-    el.setSelectionRange(newPos, newPos);
+  el.dir = 'ltr';
+  el.style.textAlign = 'left';
+  el.addEventListener('blur', () => {
+    el.value = _formatSlashDate(el.value);
   });
 }
 document.addEventListener('DOMContentLoaded', () => {
@@ -562,28 +481,37 @@ AdminOfficerRank: $('AdminOfficerRank')?.value || '',
 
     // ===== بيانات الافادة (افادة غياب) =====
     AbsenceDate:    $('AbsenceDate')?.value    || '',
-    AbsenceDays:    $('AbsenceDays')?.value    || '',
+    AbsenceWeekday: $('AbsenceWeekday')?.value || '',
     AbsenceReason:  $('AbsenceReason')?.value  || '',
     WorkLocation:   $('WorkLocation')?.value   || '',
 
-    // ===== إفادة غياب: إقرار الإجازة المرضية =====
+    // ===== إفادة غياب: سبب الغياب =====
     // ملاحظة: القيم هنا هي رمز المربع نفسه (☒/☐) وليست True/False، لأن
     // هذه المربعات في نموذج الوورد (افادة غياب.docm) عبارة عن Bookmarks
     // نصية يستبدلها الماكرو بنفس القيمة المرسلة حرفياً — إرسال الرمز دائماً
     // (حتى عند عدم التحديد) يضمن إعادة ضبط المربع بشكل صحيح مع كل تنفيذ.
-    AG_HasApprovedSickLeave:          document.getElementById('ag-has-sick-leave')?.checked ? '☑' : '☐',
-    AG_NoApprovedSickLeave:           document.getElementById('ag-no-sick-leave')?.checked ? '☑' : '☐',
+    AG_Reason_SickLt3:                document.getElementById('ag-reason-sick-lt3')?.checked ? '☑' : '☐',
+    AG_Reason_SickGt3:                document.getElementById('ag-reason-sick-gt3')?.checked ? '☑' : '☐',
+    AG_Reason_FatherLeave:            document.getElementById('ag-reason-father-leave')?.checked ? '☑' : '☐',
+    AG_Reason_ReviewVisit:            document.getElementById('ag-reason-review-visit')?.checked ? '☑' : '☐',
+    AG_Reason_CompanionLeave:         document.getElementById('ag-reason-companion-leave')?.checked ? '☑' : '☐',
+    AG_Reason_Death:                  document.getElementById('ag-reason-death')?.checked ? '☑' : '☐',
+    AG_Reason_Other:                  document.getElementById('ag-reason-other')?.checked ? '☑' : '☐',
+    AG_Reason_OtherReason:            (document.getElementById('ag-reason-other-text')?.value ?? '').trim(),
+
+    // ===== إفادة غياب: إقرار الإجازة المرضية =====
     AG_SickLeaveUploaded:             document.getElementById('ag-sickleave-uploaded')?.checked ? '☑' : '☐',
     AG_SickLeaveNotUploaded:          document.getElementById('ag-sickleave-not-uploaded')?.checked ? '☑' : '☐',
     AG_SickLeaveNotUploadedReason:    (document.getElementById('ag-sickleave-not-uploaded-reason')?.value ?? '').trim(),
-    AG_HRCommit:                      document.getElementById('ag-hr-commit')?.checked ? '☑' : '☐',
-    AG_HRCommitSign:                  (document.getElementById('ag-hr-commit-sign')?.value ?? '').trim(),
+    AG_NoLeaveAck:                    document.getElementById('ag-no-leave-ack')?.checked ? '☑' : '☐',
+    AG_NoLeaveAckSign:                (document.getElementById('ag-no-leave-ack-sign')?.value ?? '').trim(),
 
     // ===== إفادة غياب: (خاص برئيس المناوبة) =====
-    AG_Shift_NoLeaveAck:              document.getElementById('ag-shift-no-leave-ack')?.checked ? '☑' : '☐',
-    AG_Shift_LeaveVerified:           document.getElementById('ag-shift-leave-verified')?.checked ? '☑' : '☐',
-    AG_Shift_LeavePendingPrevRequest: document.getElementById('ag-shift-leave-pending-prev')?.checked ? '☑' : '☐',
-    AG_Shift_LeaveTechIssue:          document.getElementById('ag-shift-leave-tech-issue')?.checked ? '☑' : '☐',
+    AG_Shift_SahtiVerified:           document.getElementById('ag-shift-sahti-verified')?.checked ? '☑' : '☐',
+    AG_Shift_Uploaded:                document.getElementById('ag-shift-uploaded')?.checked ? '☑' : '☐',
+    AG_Shift_NotUploaded:             document.getElementById('ag-shift-not-uploaded')?.checked ? '☑' : '☐',
+    AG_Shift_NotUploadedReason:       (document.getElementById('ag-shift-not-uploaded-reason')?.value ?? '').trim(),
+    AG_Shift_NoResponse:              document.getElementById('ag-shift-no-response')?.checked ? '☑' : '☐',
 
 // ——— يوم الموازنة ———
 BalanceWeekday:   $('BalanceWeekday')?.value   || '',
@@ -2266,6 +2194,10 @@ if (choice === "استلام-اليوم") {
   const shaftOnlyFields = document.getElementById("shaft-only-fields");
   if (shaftOnlyFields) shaftOnlyFields.style.display = "block";
 
+  // 3.1) إظهار قسم "أسماء البوابات" (يظهر فقط في استلام-اليوم)
+  const gatesSection = document.getElementById("gates-section");
+  if (gatesSection) gatesSection.style.display = "contents";
+
   // 4) إخفاء اسم/رتبة الآمر المناوب + ملصقاتها
   const hideSelectors = [
   "#commander-name",
@@ -2338,6 +2270,10 @@ if (choice === "تعديل-جواز") {
   // 3) إظهار بطاقة "أسماء القوائم والأعمال الإدارية"
   const listsCard = document.getElementById("card-lists-admin");
   if (listsCard) listsCard.style.setProperty('display', 'block', 'important');
+
+  // 3.1) إخفاء قسم "أسماء البوابات" (خاص باستلام-اليوم فقط)
+  const gatesSectionTJ = document.getElementById("gates-section");
+  if (gatesSectionTJ) gatesSectionTJ.style.setProperty('display', 'none', 'important');
 
   // 4) استخدام CSS قوي لإجبار حقول القائمة على الظهور ومنع أي كود آخر من إخفائها
   if (!document.getElementById("force-taadeel-jawaz-style")) {
@@ -4335,9 +4271,10 @@ document.addEventListener('DOMContentLoaded', () => {
     list.forEach(r => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'nearby-flights-chip';
+      btn.className = 'nearby-flights-chip' + (r._departed ? ' nearby-flights-chip--departed' : '');
       btn.textContent = r.no;
-      btn.title = r.dest ? `${r.no} — ${r.dest}` : r.no;
+      const statusLabel = r._departed ? 'أقلعت' : 'مجدولة';
+      btn.title = r.dest ? `${r.no} — ${r.dest} (${statusLabel})` : `${r.no} (${statusLabel})`;
       btn.addEventListener('click', () => applyFlight(r));
       container.appendChild(btn);
     });
@@ -4375,10 +4312,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const forward = ((r.minutes - nowMin) + 1440) % 1440;   // دقائق حتى موعد الرحلة القادم
       const backward = ((nowMin - r.minutes) + 1440) % 1440;  // دقائق منذ آخر موعد للرحلة
       const order = Math.min(forward, backward);
-      if (order <= WINDOW_MIN) nearby.push({ ...r, _order: order });
+      if (order <= WINDOW_MIN) nearby.push({ ...r, _order: order, _departed: backward < forward });
     });
 
-    nearby.sort((a, b) => a._order - b._order);
+    // ترتيب: الرحلات التي أقلعت أولاً (يمين الصفحة لأنها RTL)، ثم المجدولة بعدها، وكل مجموعة مرتبة حسب الأقرب زمنيًا
+    nearby.sort((a, b) => {
+      if (a._departed !== b._departed) return a._departed ? -1 : 1;
+      return a._order - b._order;
+    });
     renderChips(listEl, nearby);
   }
 
@@ -4521,7 +4462,8 @@ if (n2) n2.style.display = perm ? '' : 'none';
     // عناصر "صلاحيات" الجديدة (رقم الهوية + رقم المشغل للفرد 1 و2)
 // عناصر "صلاحيات" والاستئذان (رقم الهوية + رقم المشغل للفرد 1 و2)
 const estethan = getChoice() === 'استاذان';
-showPair("IndividualID", perm || estethan); // إظهار رقم الهوية في الصلاحيات والاستئذان
+const ghiyab   = getChoice() === 'افادة-غياب';
+showPair("IndividualID", perm || estethan || ghiyab); // إظهار رقم الهوية في الصلاحيات والاستئذان وإفادة الغياب
 ["OperatorNumber1","IndividualID2","OperatorNumber2"].forEach(id => showPair(id, perm));
 // إظهار/إخفاء قسم "الصلاحيات المنقولة"
 const permCard = document.getElementById('card-transferred-permissions');
@@ -4803,6 +4745,9 @@ function buildAbsenceHijriCalendarOptions() {
     btn.addEventListener('click', () => {
       const dateInput = document.getElementById('AbsenceDate');
       if (dateInput) dateInput.value = hijri;
+
+      const weekdayInput = document.getElementById('AbsenceWeekday');
+      if (weekdayInput) weekdayInput.value = weekday;
 
       const popup = document.getElementById('absence-hijri-calendar');
       if (popup) popup.hidden = true;

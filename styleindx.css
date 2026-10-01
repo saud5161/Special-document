@@ -489,6 +489,17 @@ body.help-open #helpBox{ display:block; }
   gap: 14px;
 }
 
+/* مجموعات أطول (سبب الغياب: 7 خيارات) — تلتف على عدة أسطر بدل الخروج خارج الصندوق */
+#ifada-compact .mc-options.mc-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-top: 8px;
+}
+#ifada-compact .mc-options.mc-wrap .mc-check {
+  flex: 0 0 auto;
+}
+
 /* بطاقة (خاص برئيس المناوبة) — فاصل بصري خفيف داخل نفس الهايلايت */
 #ag-sec-shift {
   border-top: 1px dashed #e5d9ad;
@@ -822,6 +833,28 @@ body.help-open #helpBox{ display:block; }
   gap:5px;
 }
 .nearby-flights-box__title i{ font-size:.7rem; }
+.nearby-flights-legend{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  margin-inline-start:6px;
+  font-weight:500;
+}
+.nearby-flights-legend__item{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:.68rem;
+  color:#64748b;
+}
+.nearby-flights-legend__dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+}
+.nearby-flights-legend__dot--departed{ background:#ef4444; }
+.nearby-flights-legend__dot--scheduled{ background:#3b82f6; }
 .nearby-flights-chips{
   display:flex;
   flex-wrap:wrap;
@@ -844,6 +877,12 @@ body.help-open #helpBox{ display:block; }
 }
 .nearby-flights-chip:hover{ background:#e3ebff; }
 .nearby-flights-chip:active{ transform:scale(.96); }
+.nearby-flights-chip--departed{
+  background:#fee2e2;
+  border-color:#fca5a5;
+  color:#b91c1c;
+}
+.nearby-flights-chip--departed:hover{ background:#fecaca; }
 .nearby-flights-empty{
   color:#94a3b8;
   font-size:.7rem;
