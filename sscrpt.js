@@ -387,6 +387,7 @@ MC_Jawazat_Date:        (document.getElementById('mc-jawazatDate')?.value ?? '')
 
 MC_Diplomatic:          document.getElementById('mc-diplomatic')?.checked ? 'True' : 'False',
 MC_Diplomatic_Desc:     (document.getElementById('mc-diplomaticDesc')?.value ?? '').trim(),
+MC_Crew:                document.getElementById('mc-crew')?.checked ? 'True' : 'False',
 
 MC_Under18:             document.getElementById('mc-under18')?.checked ? 'True' : 'False',
 
@@ -2933,6 +2934,7 @@ const forbiddenSubs = [
   '#mc-moi',
   '#mc-jawazat',
   '#mc-diplomatic',
+  '#mc-crew',
   '#mc-under18',
   '#mc-permit'          // ✅ الفرع الجديد: لديه تصريح سفر
 ];
@@ -4884,7 +4886,7 @@ function updateAutoTravelReason() {
 // ربط الوظيفة بالعناصر عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
   const checkboxes = [
-    'mc-moi', 'mc-jawazat', 'mc-diplomatic', 'mc-under18', 'mc-permit'
+    'mc-moi', 'mc-jawazat', 'mc-diplomatic', 'mc-crew', 'mc-under18', 'mc-permit'
   ];
 
   checkboxes.forEach(id => {
